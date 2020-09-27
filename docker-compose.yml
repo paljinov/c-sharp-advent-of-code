@@ -1,0 +1,9 @@
+version: "3.8"
+
+services:
+    app:
+        build:
+            context: .
+            dockerfile: ./docker/release.Dockerfile
+        stdin_open: true
+        tty: true

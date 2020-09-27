@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 
 namespace App.Helpers
 {
@@ -7,10 +6,7 @@ namespace App.Helpers
     {
         public static string GetProjectRootPath()
         {
-            string assemblyResolverBaseDir = AppDomain.CurrentDomain.BaseDirectory;
-            string projectRootPath = Directory.GetParent(assemblyResolverBaseDir).Parent.Parent.Parent.FullName;
-
-            return projectRootPath;
+            return Environment.CurrentDirectory;
         }
     }
 }
