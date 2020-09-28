@@ -18,7 +18,7 @@ using App.Helpers;
 
 namespace App.Tasks.Year2015.Day1
 {
-    class Part2
+    class Part2 : ITask<int>
     {
         public int Program()
         {
