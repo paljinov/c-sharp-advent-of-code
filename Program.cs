@@ -1,4 +1,5 @@
-﻿using System;
+﻿using App.Helpers;
+using System;
 using System.Text.RegularExpressions;
 
 namespace App
@@ -44,8 +45,10 @@ namespace App
                 return;
             }
 
+            string input = ReadInputHelper.ReadTaskInput(Int32.Parse(year), Int32.Parse(day));
+
             dynamic task = Activator.CreateInstance(taskType);
-            var result = task.Program();
+            var result = task.Solution(input);
 
             Console.WriteLine($"Result is {result}.");
         }

@@ -33,16 +33,13 @@ For example:
 To what floor do the instructions take Santa?
 */
 
-using App.Helpers;
-
 namespace App.Tasks.Year2015.Day1
 {
     class Part1 : ITask<int>
     {
-        public int Program()
+        public int Solution(string input)
         {
             int floor = 0;
-            string input = ReadInputHelper.ReadTaskInput(2015, 1);
 
             foreach (char parenthesis in input)
             {

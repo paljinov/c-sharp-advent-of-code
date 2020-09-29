@@ -30,11 +30,11 @@ namespace App.Tasks.Year2015.Day2
 {
     class Part2 : ITask<int>
     {
-        public int Program()
+        public int Solution(string input)
         {
             int ribbonTotalFeet = 0;
 
-            List<Box> boxes = BoxesRepository.GetBoxes();
+            List<Box> boxes = BoxesRepository.GetBoxes(input);
             foreach (Box box in boxes)
             {
                 int[] boxSides = new int[] { box.Length, box.Width, box.Height };

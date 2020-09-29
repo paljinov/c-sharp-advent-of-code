@@ -20,17 +20,14 @@ For example:
   and Robo-Santa going the other.
 */
 
-using App.Helpers;
 using System.Text;
 
 namespace App.Tasks.Year2015.Day3
 {
     class Part2 : ITask<int>
     {
-        public int Program()
+        public int Solution(string moves)
         {
-            string moves = ReadInputHelper.ReadTaskInput(2015, 3);
-
             StringBuilder santaMoves = new StringBuilder();
             StringBuilder roboSantaMoves = new StringBuilder();
 

@@ -28,11 +28,11 @@ namespace App.Tasks.Year2015.Day2
 {
     class Part1 : ITask<int>
     {
-        public int Program()
+        public int Solution(string input)
         {
             int wrappingPaperTotalSquareFeet = 0;
 
-            List<Box> boxes = BoxesRepository.GetBoxes();
+            List<Box> boxes = BoxesRepository.GetBoxes(input);
             foreach (Box box in boxes)
             {
                 int wrappingPaperBoxSquareFeet =

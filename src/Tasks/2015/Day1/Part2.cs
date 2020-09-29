@@ -14,16 +14,13 @@ What is the position of the character that causes Santa to first enter the
 basement?
 */
 
-using App.Helpers;
-
 namespace App.Tasks.Year2015.Day1
 {
     class Part2 : ITask<int>
     {
-        public int Program()
+        public int Solution(string input)
         {
             int floor = 0;
-            string input = ReadInputHelper.ReadTaskInput(2015, 1);
 
             for (int i = 0; i <= input.Length; i++)
             {

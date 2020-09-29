@@ -23,16 +23,12 @@ For example:
   houses.
 */
 
-using App.Helpers;
-
 namespace App.Tasks.Year2015.Day3
 {
     class Part1 : ITask<int>
     {
-        public int Program()
+        public int Solution(string moves)
         {
-            string moves = ReadInputHelper.ReadTaskInput(2015, 3);
-
             var houseLocations = Houses.GetVisitedHousesLocationsForMoves(moves);
 
             return houseLocations.Count;

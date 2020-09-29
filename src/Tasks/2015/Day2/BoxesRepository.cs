@@ -1,4 +1,3 @@
-using App.Helpers;
 using System;
 using System.Collections.Generic;
 
@@ -6,10 +5,8 @@ namespace App.Tasks.Year2015.Day2
 {
     class BoxesRepository
     {
-        public static List<Box> GetBoxes()
+        public static List<Box> GetBoxes(string input)
         {
-            string input = ReadInputHelper.ReadTaskInput(2015, 2);
-
             List<Box> boxes = new List<Box>();
 
             string[] boxesString = input.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
