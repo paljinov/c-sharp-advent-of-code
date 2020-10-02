@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace App.Tasks.Year2015.Day5
 {

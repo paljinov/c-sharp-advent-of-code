@@ -45,7 +45,7 @@ namespace App
                 return;
             }
 
-            string input = ReadInputHelper.ReadTaskInput(Int32.Parse(year), Int32.Parse(day));
+            string input = ReadInputHelper.ReadTaskInput(int.Parse(year), int.Parse(day));
 
             dynamic task = Activator.CreateInstance(taskType);
             var result = task.Solution(input);
