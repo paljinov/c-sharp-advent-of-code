@@ -1,6 +1,7 @@
 ﻿using App.Helpers;
 using System;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace App
 {
@@ -46,11 +47,15 @@ namespace App
             }
 
             string input = ReadInputHelper.ReadTaskInput(int.Parse(year), int.Parse(day));
-
             dynamic task = Activator.CreateInstance(taskType);
-            var result = task.Solution(input);
 
-            Console.WriteLine($"Result is {result}.");
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            var result = task.Solution(input);
+            stopwatch.Stop();
+
+            Console.WriteLine("====================================");
+            Console.WriteLine($"Execution time: {stopwatch.ElapsedMilliseconds} miliseconds");
+            Console.WriteLine($"Result: {result}");
         }
     }
 }
