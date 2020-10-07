@@ -22,7 +22,7 @@ namespace App.Tasks.Year2015.Day11
                 {
                     newPassword[i]++;
                 }
-                 // If current letter iz 'z'
+                // If current letter is 'z'
                 else
                 {
                     // Go left until letter is 'z', going left is possible until first password letter is reached
