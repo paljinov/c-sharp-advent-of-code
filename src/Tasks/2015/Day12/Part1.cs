@@ -21,20 +21,25 @@ You will not encounter any strings containing numbers.
 What is the sum of all numbers in the document?
 */
 
+using System.Text.RegularExpressions;
+
 namespace App.Tasks.Year2015.Day12
 {
     class Part1 : ITask<int>
     {
-        private readonly JsonDocumentSum jsonDocumentSum;
-
-        public Part1()
-        {
-            jsonDocumentSum = new JsonDocumentSum();
-        }
-
         public int Solution(string input)
         {
-            int sum = jsonDocumentSum.Calculate(input);
+            int sum = 0;
+
+            Regex digitRegex = new Regex(@"(-?\d+)");
+            MatchCollection digitMatches = digitRegex.Matches(input);
+
+            foreach (Match digitMatch in digitMatches)
+            {
+                GroupCollection groups = digitMatch.Groups;
+                sum += int.Parse(groups[1].Value);
+            }
+
             return sum;
         }
     }
