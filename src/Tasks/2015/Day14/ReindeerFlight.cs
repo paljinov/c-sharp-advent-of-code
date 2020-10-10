@@ -1,6 +1,6 @@
 namespace App.Tasks.Year2015.Day14
 {
-    class Reindeer
+    class ReindeerFlight
     {
         /// <summary>
         /// Reindeer flight speed in km/s.

@@ -29,41 +29,29 @@ Given the descriptions of each reindeer (in your puzzle input), after exactly
 */
 
 using System.Collections.Generic;
+using System.Linq;
 
 namespace App.Tasks.Year2015.Day14
 {
     class Part1 : ITask<int>
     {
+        private readonly ReindeersFlightData reindeersFlightData;
+
+        public Part1()
+        {
+            reindeersFlightData = new ReindeersFlightData();
+        }
+
         public int Solution(string input)
         {
-            int winningReindeerTraveledDistance = 0;
-            int timeLimitInSeconds = 2503;
+            Dictionary<string, ReindeerFlight> reindeersFlightData = this.reindeersFlightData.ParseInput(input);
+            Dictionary<int, Dictionary<string, int>> traveledDistancesAfterEachSecond =
+                this.reindeersFlightData.CalculateReindeersTraveledDistancesAfterEachSecond(reindeersFlightData);
 
-            List<Reindeer> reindeerDescriptions = ReindeerTraveledDistance.ParseReindeerDescriptions(input);
-            foreach (Reindeer reindeer in reindeerDescriptions)
-            {
-                int secondsPassed = 0;
-                int traveledDistance = 0;
+            Dictionary<string, int> finalTraveledDistances =
+                traveledDistancesAfterEachSecond[ReindeersFlightData.FlightDurationLimit];
 
-                while (secondsPassed + reindeer.FlightTime + reindeer.RestTime <= timeLimitInSeconds)
-                {
-                    traveledDistance += reindeer.FlightTime * reindeer.FlightSpeed;
-                    secondsPassed += reindeer.FlightTime + reindeer.RestTime;
-                }
-
-                int remainingFlightTime = timeLimitInSeconds - secondsPassed;
-                if (remainingFlightTime > reindeer.FlightTime)
-                {
-                    remainingFlightTime = reindeer.FlightTime;
-                }
-
-                traveledDistance += remainingFlightTime * reindeer.FlightSpeed;
-
-                if (traveledDistance > winningReindeerTraveledDistance)
-                {
-                    winningReindeerTraveledDistance = traveledDistance;
-                }
-            }
+            int winningReindeerTraveledDistance = finalTraveledDistances.Values.Max();
 
             return winningReindeerTraveledDistance;
         }
