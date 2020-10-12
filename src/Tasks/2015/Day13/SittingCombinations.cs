@@ -51,7 +51,7 @@ namespace App.Tasks.Year2015.Day13
         /// [
         ///     1st combination => [
         ///         Alice->Bob => 54,
-        ///         Alice->Carol => - 79,
+        ///         Alice->Carol => -79,
         ///         ...
         ///     ],
         ///     ...
@@ -62,7 +62,7 @@ namespace App.Tasks.Year2015.Day13
             List<Dictionary<string, int>> sittingCombinations = new List<Dictionary<string, int>>();
 
             List<string> personsBase = GetPersons(sittingsHappiness).ToList();
-            var personPermutations = new List<List<string>>();
+            List<List<string>> personPermutations = new List<List<string>>();
             GetPersonsPermuations(personsBase, 0, personsBase.Count - 1, personPermutations);
 
             foreach (List<string> persons in personPermutations)
@@ -84,9 +84,9 @@ namespace App.Tasks.Year2015.Day13
                         $"{rightNeighbor}->{person}"
                     };
 
-                    foreach (var n in neighbors)
+                    foreach (string sittingNextTo in neighbors)
                     {
-                        sittingCombination.TryAdd(n, sittingsHappiness[n]);
+                        sittingCombination.TryAdd(sittingNextTo, sittingsHappiness[sittingNextTo]);
                     }
                 }
 
@@ -108,7 +108,7 @@ namespace App.Tasks.Year2015.Day13
             foreach (Dictionary<string, int> sittingCombination in sittingCombinations)
             {
                 int happinessChange = 0;
-                foreach (var neighbor in sittingCombination)
+                foreach (KeyValuePair<string, int> neighbor in sittingCombination)
                 {
                     happinessChange += neighbor.Value;
                 }
@@ -160,11 +160,11 @@ namespace App.Tasks.Year2015.Day13
             }
             else
             {
-                for (var i = start; i <= end; i++)
+                for (int i = start; i <= end; i++)
                 {
                     SwapPersons(persons, start, i);
                     GetPersonsPermuations(persons, start + 1, end, personsPermutations);
-                    SwapPersons(persons, start, i);
+                    SwapPersons(persons, start, i); // reset order for next pass
                 }
             }
 
