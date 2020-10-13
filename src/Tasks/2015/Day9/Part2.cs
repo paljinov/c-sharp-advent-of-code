@@ -17,11 +17,18 @@ namespace App.Tasks.Year2015.Day9
 {
     class Part2 : ITask<int>
     {
+        private readonly PossibleRoutes possibleRoutes;
+
+        public Part2()
+        {
+            possibleRoutes = new PossibleRoutes();
+        }
+
         public int Solution(string input)
         {
             int longestRouteDistance = 0;
 
-            var possibleRoutes = PossibleRoutes.GetPossibleRoutes(input);
+            var possibleRoutes = this.possibleRoutes.GetPossibleRoutes(input);
             foreach (var route in possibleRoutes)
             {
                 if (route.Value > longestRouteDistance)

@@ -7,7 +7,7 @@ namespace App.Tasks.Year2015.Day9
 {
     class PossibleRoutes
     {
-        public static Dictionary<string, int> GetPossibleRoutes(string input)
+        public Dictionary<string, int> GetPossibleRoutes(string input)
         {
             Dictionary<string, int> possibleRoutes = new Dictionary<string, int>();
 
@@ -30,7 +30,7 @@ namespace App.Tasks.Year2015.Day9
             return possibleRoutes;
         }
 
-        private static Dictionary<string, List<LocationsDistance>> GroupByStartLocation(string[] distancesString)
+        private Dictionary<string, List<LocationsDistance>> GroupByStartLocation(string[] distancesString)
         {
             Dictionary<string, List<LocationsDistance>> groupedLocationsDistances =
                 new Dictionary<string, List<LocationsDistance>>();
@@ -81,7 +81,7 @@ namespace App.Tasks.Year2015.Day9
         /// <param name="currentRoute"></param>
         /// <param name="groupedLocationsDistances"></param>
         /// <param name="possibleRoutes"></param>
-        private static void CalculatePossibleRoutesStartingFromLocation(
+        private void CalculatePossibleRoutesStartingFromLocation(
             string currentRoute,
             Dictionary<string, List<LocationsDistance>> groupedLocationsDistances,
             Dictionary<string, int> possibleRoutes
