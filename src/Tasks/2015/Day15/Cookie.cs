@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 
 namespace App.Tasks.Year2015.Day15
 {
@@ -9,41 +8,73 @@ namespace App.Tasks.Year2015.Day15
     {
         public const int TotalTeaspoons = 100;
 
-        public int GetHighestScoringCookie(Dictionary<string, Ingredient> ingredientsDictionary)
+        public int GetHighestScoringCookie(Dictionary<string, Ingredient> ingredients)
         {
             int highestScoringCookie = 0;
 
-            List<Ingredient> ingredients = ingredientsDictionary.Values.ToList();
-
-            for (int i = 0; i < TotalTeaspoons; i++)
+            List<Dictionary<string, int>> ingredientsPermutations = new List<Dictionary<string, int>>();
+            Dictionary<string, int> teaspoons = new Dictionary<string, int>();
+            foreach (KeyValuePair<string, Ingredient> ingredient in ingredients)
             {
-                for (int j = 0; j < TotalTeaspoons; j++)
+                teaspoons.Add(ingredient.Key, 0);
+            }
+
+            GetIngredientsPermutations(ingredientsPermutations, teaspoons, -1);
+            foreach (Dictionary<string, int> ingredientsPermutation in ingredientsPermutations)
+            {
+                int capacity = 0;
+                int durability = 0;
+                int flavor = 0;
+                int texture = 0;
+
+                foreach (KeyValuePair<string, int> ingredient in ingredientsPermutation)
                 {
-                    for (int k = 0; k < TotalTeaspoons; k++)
-                    {
-                        for (int h = 0; h < TotalTeaspoons; h++)
-                        {
-                            if (i + j + k + h == TotalTeaspoons)
-                            {
-                                int capacity = Math.Max(0, i * ingredients[0].Capacity + j * ingredients[1].Capacity
-                                    + k * ingredients[2].Capacity + h * ingredients[3].Capacity);
-                                int durability = Math.Max(0, i * ingredients[0].Durability + j * ingredients[1].Durability
-                                    + k * ingredients[2].Durability + h * ingredients[3].Durability);
-                                int flavor = Math.Max(0, i * ingredients[0].Flavor + j * ingredients[1].Flavor
-                                    + k * ingredients[2].Flavor + h * ingredients[3].Flavor);
-                                int texture = Math.Max(0, i * ingredients[0].Texture + j * ingredients[1].Texture
-                                    + k * ingredients[2].Texture + h * ingredients[3].Texture);
+                    string ingredientName = ingredient.Key;
+                    int teaspoonsCount = ingredient.Value;
 
-                                int product = capacity * durability * flavor * texture;
-
-                                highestScoringCookie = Math.Max(product, highestScoringCookie);
-                            }
-                        }
-                    }
+                    capacity += teaspoonsCount * ingredients[ingredientName].Capacity;
+                    durability += teaspoonsCount * ingredients[ingredientName].Durability;
+                    flavor += teaspoonsCount * ingredients[ingredientName].Flavor;
+                    texture += teaspoonsCount * ingredients[ingredientName].Texture;
                 }
+
+                int product = Math.Max(0, capacity) * Math.Max(0, durability)
+                    * Math.Max(0, flavor) * Math.Max(0, texture);
+                highestScoringCookie = Math.Max(product, highestScoringCookie);
             }
 
             return highestScoringCookie;
+        }
+
+        private void GetIngredientsPermutations(
+            List<Dictionary<string, int>> ingredientsPermutations,
+            Dictionary<string, int> teaspoons,
+            int currentIngredient
+        )
+        {
+            List<string> ingredients = teaspoons.Keys.ToList();
+            currentIngredient++;
+
+            for (int i = 0; i <= TotalTeaspoons; i++)
+            {
+                teaspoons[ingredients[currentIngredient]] = i;
+
+                if (currentIngredient < ingredients.Count - 1)
+                {
+                    GetIngredientsPermutations(ingredientsPermutations, teaspoons, currentIngredient);
+                }
+
+                int teaspoonsCount = teaspoons.Values.Sum();
+                // If the amounts of each ingredient add up to specified number of teaspoons
+                if (teaspoonsCount == TotalTeaspoons)
+                {
+                    ingredientsPermutations.Add(new Dictionary<string, int>(teaspoons));
+                    // Set current ingredient to 0 teaspoons
+                    teaspoons[ingredients[currentIngredient]] = 0;
+                    // Iterator is increasing so teaspoons sum will always be above total limit
+                    break;
+                }
+            }
         }
     }
 }
