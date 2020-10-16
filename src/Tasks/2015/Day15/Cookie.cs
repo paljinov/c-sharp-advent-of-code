@@ -8,7 +8,9 @@ namespace App.Tasks.Year2015.Day15
     {
         public const int TotalTeaspoons = 100;
 
-        public int GetHighestScoringCookie(Dictionary<string, Ingredient> ingredients)
+        public const int TotalCalories = 500;
+
+        public int GetHighestScoringCookie(Dictionary<string, Ingredient> ingredients, bool calorieCriterion = false)
         {
             int highestScoringCookie = 0;
 
@@ -23,6 +25,15 @@ namespace App.Tasks.Year2015.Day15
             foreach (Dictionary<string, int> ingredientsPermutation in ingredientsPermutations)
             {
                 int cookieScore = CalculateCookieScore(ingredientsPermutation, ingredients);
+                if (calorieCriterion)
+                {
+                    int calories = CalculateCookieCalories(ingredientsPermutation, ingredients);
+                    if (calories != TotalCalories)
+                    {
+                        continue;
+                    }
+                }
+
                 highestScoringCookie = Math.Max(cookieScore, highestScoringCookie);
             }
 
@@ -85,6 +96,24 @@ namespace App.Tasks.Year2015.Day15
                 * Math.Max(0, flavor) * Math.Max(0, texture);
 
             return score;
+        }
+
+        private int CalculateCookieCalories(
+           Dictionary<string, int> ingredientsPermutation,
+           Dictionary<string, Ingredient> ingredients
+       )
+        {
+            int calories = 0;
+
+            foreach (KeyValuePair<string, int> ingredient in ingredientsPermutation)
+            {
+                string ingredientName = ingredient.Key;
+                int teaspoonsCount = ingredient.Value;
+
+                calories += teaspoonsCount * ingredients[ingredientName].Calories;
+            }
+
+            return calories;
         }
     }
 }

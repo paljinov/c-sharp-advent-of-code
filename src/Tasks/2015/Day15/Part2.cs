@@ -16,13 +16,28 @@ Given the ingredients in your kitchen and their properties, what is the total
 score of the highest-scoring cookie you can make with a calorie total of 500?
 */
 
+using System.Collections.Generic;
+
 namespace App.Tasks.Year2015.Day15
 {
     class Part2 : ITask<int>
     {
+        private readonly Cookie cookie;
+
+        private readonly IngredientsRepository ingredientsRepository;
+
+        public Part2()
+        {
+            cookie = new Cookie();
+            ingredientsRepository = new IngredientsRepository();
+        }
+
         public int Solution(string input)
         {
-            return 0;
+            Dictionary<string, Ingredient> ingredients = ingredientsRepository.ParseInput(input);
+            int highestScoringCookie = cookie.GetHighestScoringCookie(ingredients, true);
+
+            return highestScoringCookie;
         }
     }
 }

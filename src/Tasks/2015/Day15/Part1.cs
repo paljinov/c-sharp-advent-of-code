@@ -42,7 +42,6 @@ Given the ingredients in your kitchen and their properties, what is the total
 score of the highest-scoring cookie you can make?
 */
 
-using System;
 using System.Collections.Generic;
 
 namespace App.Tasks.Year2015.Day15
@@ -62,7 +61,7 @@ namespace App.Tasks.Year2015.Day15
         public int Solution(string input)
         {
             Dictionary<string, Ingredient> ingredients = ingredientsRepository.ParseInput(input);
-            int highestScoringCookie = cookie.GetHighestScoringCookie(ingredients);
+            int highestScoringCookie = cookie.GetHighestScoringCookie(ingredients, false);
 
             return highestScoringCookie;
         }
