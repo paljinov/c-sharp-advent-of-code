@@ -22,25 +22,8 @@ namespace App.Tasks.Year2015.Day15
             GetIngredientsPermutations(ingredientsPermutations, teaspoons, -1);
             foreach (Dictionary<string, int> ingredientsPermutation in ingredientsPermutations)
             {
-                int capacity = 0;
-                int durability = 0;
-                int flavor = 0;
-                int texture = 0;
-
-                foreach (KeyValuePair<string, int> ingredient in ingredientsPermutation)
-                {
-                    string ingredientName = ingredient.Key;
-                    int teaspoonsCount = ingredient.Value;
-
-                    capacity += teaspoonsCount * ingredients[ingredientName].Capacity;
-                    durability += teaspoonsCount * ingredients[ingredientName].Durability;
-                    flavor += teaspoonsCount * ingredients[ingredientName].Flavor;
-                    texture += teaspoonsCount * ingredients[ingredientName].Texture;
-                }
-
-                int product = Math.Max(0, capacity) * Math.Max(0, durability)
-                    * Math.Max(0, flavor) * Math.Max(0, texture);
-                highestScoringCookie = Math.Max(product, highestScoringCookie);
+                int cookieScore = CalculateCookieScore(ingredientsPermutation, ingredients);
+                highestScoringCookie = Math.Max(cookieScore, highestScoringCookie);
             }
 
             return highestScoringCookie;
@@ -75,6 +58,33 @@ namespace App.Tasks.Year2015.Day15
                     break;
                 }
             }
+        }
+
+        private int CalculateCookieScore(
+            Dictionary<string, int> ingredientsPermutation,
+            Dictionary<string, Ingredient> ingredients
+        )
+        {
+            int capacity = 0;
+            int durability = 0;
+            int flavor = 0;
+            int texture = 0;
+
+            foreach (KeyValuePair<string, int> ingredient in ingredientsPermutation)
+            {
+                string ingredientName = ingredient.Key;
+                int teaspoonsCount = ingredient.Value;
+
+                capacity += teaspoonsCount * ingredients[ingredientName].Capacity;
+                durability += teaspoonsCount * ingredients[ingredientName].Durability;
+                flavor += teaspoonsCount * ingredients[ingredientName].Flavor;
+                texture += teaspoonsCount * ingredients[ingredientName].Texture;
+            }
+
+            int score = Math.Max(0, capacity) * Math.Max(0, durability)
+                * Math.Max(0, flavor) * Math.Max(0, texture);
+
+            return score;
         }
     }
 }
