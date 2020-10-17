@@ -61,7 +61,7 @@ namespace App.Tasks.Year2015.Day15
         public int Solution(string input)
         {
             Dictionary<string, Ingredient> ingredients = ingredientsRepository.ParseInput(input);
-            int highestScoringCookie = cookie.GetHighestScoringCookie(ingredients, false);
+            int highestScoringCookie = cookie.CalculateHighestScoringCookie(ingredients, false);
 
             return highestScoringCookie;
         }

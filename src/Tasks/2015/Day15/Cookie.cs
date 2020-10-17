@@ -10,7 +10,16 @@ namespace App.Tasks.Year2015.Day15
 
         public const int TotalCalories = 500;
 
-        public int GetHighestScoringCookie(Dictionary<string, Ingredient> ingredients, bool calorieCriterion = false)
+        /// <summary>
+        /// Calculate highest cookie score.
+        /// </summary>
+        /// <param name="ingredients"></param>
+        /// <param name="calorieCriterion"></param>
+        /// <returns></returns>
+        public int CalculateHighestScoringCookie(
+            Dictionary<string, Ingredient> ingredients,
+            bool calorieCriterion = false
+        )
         {
             int highestScoringCookie = 0;
 
@@ -24,7 +33,6 @@ namespace App.Tasks.Year2015.Day15
             GetIngredientsPermutations(ingredientsPermutations, teaspoons, -1);
             foreach (Dictionary<string, int> ingredientsPermutation in ingredientsPermutations)
             {
-                int cookieScore = CalculateCookieScore(ingredientsPermutation, ingredients);
                 if (calorieCriterion)
                 {
                     int calories = CalculateCookieCalories(ingredientsPermutation, ingredients);
@@ -34,12 +42,20 @@ namespace App.Tasks.Year2015.Day15
                     }
                 }
 
+                int cookieScore = CalculateCookieScore(ingredientsPermutation, ingredients);
+
                 highestScoringCookie = Math.Max(cookieScore, highestScoringCookie);
             }
 
             return highestScoringCookie;
         }
 
+        /// <summary>
+        /// Get all ingredients teaspoons valid permutations.
+        /// </summary>
+        /// <param name="ingredientsPermutations"></param>
+        /// <param name="teaspoons"></param>
+        /// <param name="currentIngredient"></param>
         private void GetIngredientsPermutations(
             List<Dictionary<string, int>> ingredientsPermutations,
             Dictionary<string, int> teaspoons,
@@ -53,24 +69,33 @@ namespace App.Tasks.Year2015.Day15
             {
                 teaspoons[ingredients[currentIngredient]] = i;
 
+                // If current ingredient is not last recursive iterataton through ingredients is continued
                 if (currentIngredient < ingredients.Count - 1)
                 {
                     GetIngredientsPermutations(ingredientsPermutations, teaspoons, currentIngredient);
                 }
-
-                int teaspoonsCount = teaspoons.Values.Sum();
-                // If the amounts of each ingredient add up to specified number of teaspoons
-                if (teaspoonsCount == TotalTeaspoons)
+                // If current ingredient is last check is made to be sure total number of teaspoons adds up to limit
+                else
                 {
-                    ingredientsPermutations.Add(new Dictionary<string, int>(teaspoons));
-                    // Set current ingredient to 0 teaspoons
-                    teaspoons[ingredients[currentIngredient]] = 0;
-                    // Iterator is increasing so teaspoons sum will always be above total limit
-                    break;
+                    int teaspoonsCount = teaspoons.Values.Sum();
+                    if (teaspoonsCount == TotalTeaspoons)
+                    {
+                        ingredientsPermutations.Add(new Dictionary<string, int>(teaspoons));
+                        // Set current ingredient to 0 teaspoons
+                        teaspoons[ingredients[currentIngredient]] = 0;
+                        // Iterator is increasing so teaspoons sum after this will always be above total limit
+                        break;
+                    }
                 }
             }
         }
 
+        /// <summary>
+        /// Calculate total cookie score.
+        /// </summary>
+        /// <param name="ingredientsPermutation"></param>
+        /// <param name="ingredients"></param>
+        /// <returns></returns>
         private int CalculateCookieScore(
             Dictionary<string, int> ingredientsPermutation,
             Dictionary<string, Ingredient> ingredients
@@ -98,6 +123,12 @@ namespace App.Tasks.Year2015.Day15
             return score;
         }
 
+        /// <summary>
+        /// Calculate cookie calories.
+        /// </summary>
+        /// <param name="ingredientsPermutation"></param>
+        /// <param name="ingredients"></param>
+        /// <returns></returns>
         private int CalculateCookieCalories(
            Dictionary<string, int> ingredientsPermutation,
            Dictionary<string, Ingredient> ingredients
