@@ -55,21 +55,26 @@ namespace App.Tasks.Year2015.Day13
 {
     class Part1 : ITask<int>
     {
-        private readonly SittingCombinations sittingCombinations;
+        private readonly SittingHappinessRepository sittingHappinessRepository;
+
+        private readonly SittingArrangements sittingArrangements;
 
         public Part1()
         {
-            sittingCombinations = new SittingCombinations();
+            sittingHappinessRepository = new SittingHappinessRepository();
+            sittingArrangements = new SittingArrangements();
         }
 
         public int Solution(string input)
         {
-            Dictionary<string, int> sittingsHappiness = this.sittingCombinations.Parse(input);
-            List<Dictionary<string, int>> sittingCombinations =
-                this.sittingCombinations.GetSittingCombinations(sittingsHappiness);
+            Dictionary<string, int> sittingHappiness = sittingHappinessRepository.Parse(input);
+            List<string> attendees = sittingHappinessRepository.GetDinnerAttendees(sittingHappiness);
+
+            List<Dictionary<string, int>> sittingArrangements =
+                this.sittingArrangements.GetSittingArrangements(sittingHappiness, attendees);
 
             int optimalTotalChangeInHappiness =
-                this.sittingCombinations.CalculateOptimalTotalChangeInHappiness(sittingCombinations);
+                this.sittingArrangements.CalculateOptimalSeatingArrangement(sittingArrangements);
 
             return optimalTotalChangeInHappiness;
         }

@@ -17,32 +17,44 @@ using System.Collections.Generic;
 
 namespace App.Tasks.Year2015.Day13
 {
-     class Part2 : ITask<int>
+    class Part2 : ITask<int>
     {
-        private readonly SittingCombinations sittingCombinations;
+        private readonly SittingHappinessRepository sittingHappinessRepository;
+
+        private readonly SittingArrangements sittingArrangements;
 
         public Part2()
         {
-            sittingCombinations = new SittingCombinations();
+            sittingHappinessRepository = new SittingHappinessRepository();
+            sittingArrangements = new SittingArrangements();
         }
 
         public int Solution(string input)
         {
-            Dictionary<string, int> sittingsHappiness = this.sittingCombinations.Parse(input);
-            HashSet<string> persons = this.sittingCombinations.GetPersons(sittingsHappiness);
-            foreach (string person in persons)
-            {
-                sittingsHappiness.Add($"Me->{person}", 0);
-                sittingsHappiness.Add($"{person}->Me", 0);
-            }
+            Dictionary<string, int> sittingHappiness = sittingHappinessRepository.Parse(input);
+            List<string> attendees = sittingHappinessRepository.GetDinnerAttendees(sittingHappiness);
 
-            List<Dictionary<string, int>> sittingCombinations =
-                this.sittingCombinations.GetSittingCombinations(sittingsHappiness);
+            // Add yourself to the dinner table
+            AddYourselfToTheDinnerTable(sittingHappiness, attendees);
+
+            List<Dictionary<string, int>> sittingArrangements =
+                this.sittingArrangements.GetSittingArrangements(sittingHappiness, attendees);
 
             int optimalTotalChangeInHappiness =
-                this.sittingCombinations.CalculateOptimalTotalChangeInHappiness(sittingCombinations);
+                this.sittingArrangements.CalculateOptimalSeatingArrangement(sittingArrangements);
 
             return optimalTotalChangeInHappiness;
+        }
+
+        private void AddYourselfToTheDinnerTable(Dictionary<string, int> sittingHappiness, List<string> attendees)
+        {
+            foreach (string attendee in attendees)
+            {
+                sittingHappiness.Add($"Me->{attendee}", 0);
+                sittingHappiness.Add($"{attendee}->Me", 0);
+            }
+
+            attendees.Add("Me");
         }
     }
 }

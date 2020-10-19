@@ -1,55 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace App.Tasks.Year2015.Day13
 {
-    class SittingCombinations
+    class SittingArrangements
     {
         /// <summary>
-        /// Parse input string to sittings happiness.
+        /// Get sitting arrangements.
         /// </summary>
-        /// <param name="input"></param>
+        /// <param name="sittingHappiness"></param>
+        /// <param name="attendees"></param>
         /// <returns>
         /// [
-        ///     Alice->Bob => 54,
-        ///     Alice->Carol => - 79,
-        ///     ...
-        /// ]
-        /// </returns>
-        public Dictionary<string, int> Parse(string input)
-        {
-            Dictionary<string, int> sittingsHappiness = new Dictionary<string, int>();
-
-            Regex sittingHappinessRegex = new Regex(@"^(\w+).+?(\w+)\s(\d+).+?(\w+)\.$");
-
-            string[] sittingsHappinessStrings = input.Split(Environment.NewLine);
-            foreach (string neighborsString in sittingsHappinessStrings)
-            {
-                Match sittingHappinessMatch = sittingHappinessRegex.Match(neighborsString);
-                GroupCollection groups = sittingHappinessMatch.Groups;
-
-                string neighbors = $"{groups[1].Value}->{groups[4].Value}";
-                int happinessUnits = int.Parse(groups[3].Value);
-                if (groups[2].Value == "lose")
-                {
-                    happinessUnits *= -1;
-                }
-
-                sittingsHappiness.Add(neighbors, happinessUnits);
-            }
-
-            return sittingsHappiness;
-        }
-
-        /// <summary>
-        /// Get sitting combinations with happiness.
-        /// </summary>
-        /// <param name="sittingsHappiness"></param>
-        /// <returns>
-        /// [
-        ///     1st combination => [
+        ///     1st arrangement => [
         ///         Alice->Bob => 54,
         ///         Alice->Carol => -79,
         ///         ...
@@ -57,58 +21,60 @@ namespace App.Tasks.Year2015.Day13
         ///     ...
         /// ]
         /// </returns>
-        public List<Dictionary<string, int>> GetSittingCombinations(Dictionary<string, int> sittingsHappiness)
+        public List<Dictionary<string, int>> GetSittingArrangements(
+            Dictionary<string, int> sittingHappiness,
+            List<string> attendees
+        )
         {
-            List<Dictionary<string, int>> sittingCombinations = new List<Dictionary<string, int>>();
+            List<Dictionary<string, int>> sittingArrangements = new List<Dictionary<string, int>>();
+            List<List<string>> sittingArrangementsPermuations = new List<List<string>>();
+            GetSittingArrangementsPermuations(attendees, 0, attendees.Count - 1, sittingArrangementsPermuations);
 
-            List<string> personsBase = GetPersons(sittingsHappiness).ToList();
-            List<List<string>> personPermutations = new List<List<string>>();
-            GetPersonsPermuations(personsBase, 0, personsBase.Count - 1, personPermutations);
-
-            foreach (List<string> persons in personPermutations)
+            foreach (List<string> sittingArrangementsPermuation in sittingArrangementsPermuations)
             {
-                Dictionary<string, int> sittingCombination = new Dictionary<string, int>();
-                for (int i = 0; i < persons.Count; i++)
-                {
-                    int leftNeighborIndex = i == 0 ? persons.Count - 1 : i - 1;
-                    int rightNeighborIndex = i == persons.Count - 1 ? 0 : i + 1;
+                Dictionary<string, int> sittingArrangement = new Dictionary<string, int>();
 
-                    string person = persons.ElementAt(i);
-                    string leftNeighbor = persons.ElementAt(leftNeighborIndex);
-                    string rightNeighbor = persons.ElementAt(rightNeighborIndex);
+                for (int i = 0; i < sittingArrangementsPermuation.Count; i++)
+                {
+                    int leftNeighborIndex = i == 0 ? sittingArrangementsPermuation.Count - 1 : i - 1;
+                    int rightNeighborIndex = i == sittingArrangementsPermuation.Count - 1 ? 0 : i + 1;
+
+                    string attendee = sittingArrangementsPermuation.ElementAt(i);
+                    string leftNeighbor = sittingArrangementsPermuation.ElementAt(leftNeighborIndex);
+                    string rightNeighbor = sittingArrangementsPermuation.ElementAt(rightNeighborIndex);
 
                     string[] neighbors = new string[] {
-                        $"{person}->{leftNeighbor}",
-                        $"{leftNeighbor}->{person}",
-                        $"{person}->{rightNeighbor}",
-                        $"{rightNeighbor}->{person}"
+                        $"{attendee}->{leftNeighbor}",
+                        $"{leftNeighbor}->{attendee}",
+                        $"{attendee}->{rightNeighbor}",
+                        $"{rightNeighbor}->{attendee}"
                     };
 
                     foreach (string sittingNextTo in neighbors)
                     {
-                        sittingCombination.TryAdd(sittingNextTo, sittingsHappiness[sittingNextTo]);
+                        sittingArrangement.TryAdd(sittingNextTo, sittingHappiness[sittingNextTo]);
                     }
                 }
 
-                sittingCombinations.Add(sittingCombination);
+                sittingArrangements.Add(sittingArrangement);
             }
 
-            return sittingCombinations;
+            return sittingArrangements;
         }
 
         /// <summary>
-        /// Calculate optimal (max) total change in happiness.
+        /// Calculate optimal seating arrangement - maximum total change in happiness.
         /// </summary>
-        /// <param name="sittingCombinations"></param>
+        /// <param name="sittingArrangements"></param>
         /// <returns></returns>
-        public int CalculateOptimalTotalChangeInHappiness(List<Dictionary<string, int>> sittingCombinations)
+        public int CalculateOptimalSeatingArrangement(List<Dictionary<string, int>> sittingArrangements)
         {
             int optimalTotalChangeInHappiness = 0;
 
-            foreach (Dictionary<string, int> sittingCombination in sittingCombinations)
+            foreach (Dictionary<string, int> sittingArrangement in sittingArrangements)
             {
                 int happinessChange = 0;
-                foreach (KeyValuePair<string, int> neighbor in sittingCombination)
+                foreach (KeyValuePair<string, int> neighbor in sittingArrangement)
                 {
                     happinessChange += neighbor.Value;
                 }
@@ -120,68 +86,47 @@ namespace App.Tasks.Year2015.Day13
         }
 
         /// <summary>
-        /// Get persons which sit around the table.
+        /// Get all sitting arrangements permuations around the table.
         /// </summary>
-        /// <param name="sittingsHappiness"></param>
-        /// <returns></returns>
-        public HashSet<string> GetPersons(Dictionary<string, int> sittingsHappiness)
-        {
-            HashSet<string> persons = new HashSet<string>();
-            foreach (KeyValuePair<string, int> sittingHappiness in sittingsHappiness)
-            {
-                string[] personsNames = sittingHappiness.Key.Split("->");
-                foreach (string personName in personsNames)
-                {
-                    persons.Add(personName);
-                }
-            }
-
-            return persons;
-        }
-
-        /// <summary>
-        /// Get all possible sitting orders around the table.
-        /// </summary>
-        /// <param name="persons"></param>
+        /// <param name="attendees"></param>
         /// <param name="start"></param>
         /// <param name="end"></param>
-        /// <param name="personsPermutations"></param>
-        /// <returns></returns>
-        private List<List<string>> GetPersonsPermuations(
-            List<string> persons,
+        /// <param name="sittingArrangementsPermuations"></param>
+        private void GetSittingArrangementsPermuations(
+            List<string> attendees,
             int start,
             int end,
-            List<List<string>> personsPermutations
+            List<List<string>> sittingArrangementsPermuations
         )
         {
             if (start == end)
             {
-                personsPermutations.Add(new List<string>(persons));
+                sittingArrangementsPermuations.Add(new List<string>(attendees));
             }
             else
             {
-                for (int i = start; i <= end; i++)
+                for (int i = start; i < end; i++)
                 {
-                    SwapPersons(persons, start, i);
-                    GetPersonsPermuations(persons, start + 1, end, personsPermutations);
-                    SwapPersons(persons, start, i); // reset order for next pass
+                    SwapAttendees(attendees, start, i);
+                    GetSittingArrangementsPermuations(attendees, start + 1, end, sittingArrangementsPermuations);
+
+                    // Reset attendees order for the next iteration
+                    SwapAttendees(attendees, start, i);
                 }
             }
-
-            return personsPermutations;
         }
 
         /// <summary>
-        /// Swap two persons in a list.
+        /// Swap two attendees in a list.
         /// </summary>
-        /// <param name="persons"></param>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        private void SwapPersons(List<string> persons, int a, int b)
+        /// <param name="attendees"></param>
+        /// <param name="i"></param>
+        /// <param name="j"></param>
+        private void SwapAttendees(List<string> attendees, int i, int j)
         {
-            string aPerson = persons[a];
-            persons[a] = persons[b];
-            persons[b] = aPerson;
+            string tempAttendee = attendees[i];
+            attendees[i] = attendees[j];
+            attendees[j] = tempAttendee;
         }
     }
 }
