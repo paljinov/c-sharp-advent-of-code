@@ -6,9 +6,9 @@ namespace App.Tasks.Year2015.Day15
 {
     class Cookie
     {
-        public const int TotalTeaspoons = 100;
+        private const int TotalTeaspoons = 100;
 
-        public const int TotalCalories = 500;
+        private const int TotalCalories = 500;
 
         /// <summary>
         /// Calculate highest cookie score.
