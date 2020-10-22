@@ -5,8 +5,6 @@ namespace App.Tasks.Year2015.Day7
 {
     class WireSignals
     {
-        private readonly SortedDictionary<string, ushort> wireSignals = new SortedDictionary<string, ushort>();
-
         /// <summary>
         /// Calculate wire signals.
         /// </summary>
@@ -14,11 +12,13 @@ namespace App.Tasks.Year2015.Day7
         /// <returns></returns>
         public SortedDictionary<string, ushort> CalculateWireSignals(Dictionary<string, string> instructions)
         {
+            SortedDictionary<string, ushort> wireSignals = new SortedDictionary<string, ushort>();
+
             foreach (KeyValuePair<string, string> instruction in instructions)
             {
                 if (!wireSignals.ContainsKey(instruction.Key))
                 {
-                    (string wire, ushort signal) = CalculateWireSignal(instruction.Value, instructions);
+                    (string wire, ushort signal) = CalculateWireSignal(instruction.Value, instructions, wireSignals);
                     wireSignals.Add(wire, signal);
                 }
             }
@@ -31,8 +31,13 @@ namespace App.Tasks.Year2015.Day7
         /// </summary>
         /// <param name="instructionString"></param>
         /// <param name="instructions"></param>
+        /// <param name="wireSignals"></param>
         /// <returns>Wire name and signal.</returns>
-        private (string, ushort) CalculateWireSignal(string instructionString, Dictionary<string, string> instructions)
+        private (string, ushort) CalculateWireSignal(
+            string instructionString,
+            Dictionary<string, string> instructions,
+            SortedDictionary<string, ushort> wireSignals
+        )
         {
             Regex assignmentRegex = new Regex(@"^(\w+) -> (\w+)$");
             Match assignmentMatch = assignmentRegex.Match(instructionString);
@@ -41,7 +46,7 @@ namespace App.Tasks.Year2015.Day7
             if (assignmentMatch.Success)
             {
                 GroupCollection groups = assignmentMatch.Groups;
-                ushort wire = GetWireSignal(groups[1].Value, instructions);
+                ushort wire = GetWireSignal(groups[1].Value, instructions, wireSignals);
 
                 return (groups[2].Value, wire);
             }
@@ -52,7 +57,7 @@ namespace App.Tasks.Year2015.Day7
                 Match bitwiseComplementMatch = bitwiseComplementRegex.Match(instructionString);
 
                 GroupCollection groups = bitwiseComplementMatch.Groups;
-                ushort wire = GetWireSignal(groups[1].Value, instructions);
+                ushort wire = GetWireSignal(groups[1].Value, instructions, wireSignals);
 
                 return (groups[2].Value, (ushort)(~wire));
             }
@@ -63,7 +68,7 @@ namespace App.Tasks.Year2015.Day7
                 Match shiftMatch = shiftRegex.Match(instructionString);
 
                 GroupCollection groups = shiftMatch.Groups;
-                ushort wire = GetWireSignal(groups[1].Value, instructions);
+                ushort wire = GetWireSignal(groups[1].Value, instructions, wireSignals);
 
                 ushort shiftCount = ushort.Parse(groups[3].Value);
                 if (groups[2].Value.Equals("LSHIFT"))
@@ -82,8 +87,8 @@ namespace App.Tasks.Year2015.Day7
                 Match bitwiseMatch = bitwiseRegex.Match(instructionString);
 
                 GroupCollection groups = bitwiseMatch.Groups;
-                ushort firstWire = GetWireSignal(groups[1].Value, instructions);
-                ushort secondWire = GetWireSignal(groups[3].Value, instructions);
+                ushort firstWire = GetWireSignal(groups[1].Value, instructions, wireSignals);
+                ushort secondWire = GetWireSignal(groups[3].Value, instructions, wireSignals);
 
                 if (groups[2].Value == "AND")
                 {
@@ -106,7 +111,11 @@ namespace App.Tasks.Year2015.Day7
         /// <param name="instructions"></param>
         /// <param name="wireSignals"></param>
         /// <returns>Wire signal.</returns>
-        private ushort GetWireSignal(string wireInput, Dictionary<string, string> instructions)
+        private ushort GetWireSignal(
+            string wireInput,
+            Dictionary<string, string> instructions,
+            SortedDictionary<string, ushort> wireSignals
+        )
         {
             // Check is wire input signal (value integer)
             if (ushort.TryParse(wireInput, out ushort wireSignal))
@@ -121,7 +130,7 @@ namespace App.Tasks.Year2015.Day7
             }
 
             // Calculate wire signal (recursion)
-            wireSignal = CalculateWireSignal(instructions[wireInput], instructions).Item2;
+            wireSignal = CalculateWireSignal(instructions[wireInput], instructions, wireSignals).Item2;
             wireSignals.Add(wireInput, wireSignal);
 
             return wireSignal;

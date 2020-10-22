@@ -12,15 +12,25 @@ namespace App.Tasks.Year2015.Day7
 {
     class Part2 : ITask<int>
     {
+        private readonly InstructionsRepository instructionsRepository;
+
+        private readonly WireSignals wireSignals;
+
+        public Part2()
+        {
+            instructionsRepository = new InstructionsRepository();
+            wireSignals = new WireSignals();
+        }
+
         public int Solution(string input)
         {
-            Dictionary<string, string> instructions = InstructionsRepository.GetInstructions(input);
-            SortedDictionary<string, ushort> wireSignals = (new WireSignals()).CalculateWireSignals(instructions);
+            Dictionary<string, string> instructions = instructionsRepository.GetInstructions(input);
+            SortedDictionary<string, ushort> wireSignals = this.wireSignals.CalculateWireSignals(instructions);
 
             wireSignals.TryGetValue("a", out ushort wireA);
             instructions["b"] = $"{wireA} -> b";
 
-            wireSignals = (new WireSignals()).CalculateWireSignals(instructions);
+            wireSignals = this.wireSignals.CalculateWireSignals(instructions);
             wireSignals.TryGetValue("a", out wireA);
 
             return wireA;

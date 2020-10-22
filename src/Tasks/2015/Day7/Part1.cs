@@ -62,10 +62,20 @@ namespace App.Tasks.Year2015.Day7
 {
     class Part1 : ITask<ushort>
     {
+        private readonly InstructionsRepository instructionsRepository;
+
+        private readonly WireSignals wireSignals;
+
+        public Part1()
+        {
+            instructionsRepository = new InstructionsRepository();
+            wireSignals = new WireSignals();
+        }
+
         public ushort Solution(string input)
         {
-            Dictionary<string, string> instructions = InstructionsRepository.GetInstructions(input);
-            SortedDictionary<string, ushort> wireSignals = (new WireSignals()).CalculateWireSignals(instructions);
+            Dictionary<string, string> instructions = instructionsRepository.GetInstructions(input);
+            SortedDictionary<string, ushort> wireSignals = this.wireSignals.CalculateWireSignals(instructions);
 
             wireSignals.TryGetValue("a", out ushort wireA);
 

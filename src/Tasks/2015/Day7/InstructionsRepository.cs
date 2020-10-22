@@ -12,7 +12,7 @@ namespace App.Tasks.Year2015.Day7
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        public static Dictionary<string, string> GetInstructions(string input)
+        public Dictionary<string, string> GetInstructions(string input)
         {
             Dictionary<string, string> instructions = new Dictionary<string, string>();
 
