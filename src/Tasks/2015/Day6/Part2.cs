@@ -31,11 +31,18 @@ namespace App.Tasks.Year2015.Day6
 {
     class Part2 : ITask<int>
     {
+        private readonly LightsSetupInstructionsRepository lightsSetupInstructionsRepository;
+
+        public Part2()
+        {
+            lightsSetupInstructionsRepository = new LightsSetupInstructionsRepository();
+        }
+
         public int Solution(string input)
         {
             int[,] lights = new int[1000, 1000];
 
-            List<LightsRectangle> lightsSetupInstructions = LightsSetupInstructions.GetInstructions(input);
+            List<LightsRectangle> lightsSetupInstructions = lightsSetupInstructionsRepository.GetInstructions(input);
             foreach (LightsRectangle lightsRectangle in lightsSetupInstructions)
             {
                 for (int i = lightsRectangle.X1; i <= lightsRectangle.X2; i++)

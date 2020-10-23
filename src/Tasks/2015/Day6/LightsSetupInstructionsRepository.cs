@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace App.Tasks.Year2015.Day6
 {
-    class LightsSetupInstructions
+    class LightsSetupInstructionsRepository
     {
-        public static List<LightsRectangle> GetInstructions(string input)
+        public List<LightsRectangle> GetInstructions(string input)
         {
             List<LightsRectangle> lightsSetupInstructions = new List<LightsRectangle>();
 
