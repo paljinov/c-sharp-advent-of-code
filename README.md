@@ -1,5 +1,9 @@
 # C# (C-Sharp) Advent of Code solutions
 
+## Tasks solutions:
+* [2015](./src/Tasks/2015)
+* [2016](./src/Tasks/2016)
+
 ## Local development:
 
 ### Run watcher, runs source code on file change:
