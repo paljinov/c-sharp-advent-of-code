@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -5,10 +6,11 @@ namespace App.Tasks.Year2016.Day1
 {
     class CityStreetGrid
     {
-        public List<(int, int)> CalculateVisitedLocations(string[] instructions)
+        public List<(int, int)> CalculateVisitedBlocksAfterMove(string[] instructions)
         {
-            List<(int, int)> visitedLocations = new List<(int, int)>();
-            (int x, int y) location = (0, 0);
+            List<(int, int)> visitedBlocks = new List<(int, int)>();
+            (int x, int y) currentBlock = (0, 0);
+            visitedBlocks.Add(currentBlock);
 
             CardinalDirection faceDirection = CardinalDirection.North;
 
@@ -27,57 +29,110 @@ namespace App.Tasks.Year2016.Day1
                     case CardinalDirection.North:
                         if (turn == 'R')
                         {
-                            location.x += blocks;
+                            currentBlock.x += blocks;
                             faceDirection = CardinalDirection.East;
                         }
                         else
                         {
-                            location.x -= blocks;
+                            currentBlock.x -= blocks;
                             faceDirection = CardinalDirection.West;
                         }
                         break;
                     case CardinalDirection.East:
                         if (turn == 'R')
                         {
-                            location.y -= blocks;
+                            currentBlock.y -= blocks;
                             faceDirection = CardinalDirection.South;
                         }
                         else
                         {
-                            location.y += blocks;
+                            currentBlock.y += blocks;
                             faceDirection = CardinalDirection.North;
                         }
                         break;
                     case CardinalDirection.South:
                         if (turn == 'R')
                         {
-                            location.x -= blocks;
+                            currentBlock.x -= blocks;
                             faceDirection = CardinalDirection.West;
                         }
                         else
                         {
-                            location.x += blocks;
+                            currentBlock.x += blocks;
                             faceDirection = CardinalDirection.East;
                         }
                         break;
                     case CardinalDirection.West:
                         if (turn == 'R')
                         {
-                            location.y += blocks;
+                            currentBlock.y += blocks;
                             faceDirection = CardinalDirection.North;
                         }
                         else
                         {
-                            location.y -= blocks;
+                            currentBlock.y -= blocks;
                             faceDirection = CardinalDirection.South;
                         }
                         break;
                 }
 
-                visitedLocations.Add(location);
+                visitedBlocks.Add(currentBlock);
             }
 
-            return visitedLocations;
+            return visitedBlocks;
+        }
+
+        public List<(int, int)> CalculateAllVisitedLocations(List<(int, int)> visitedBlocks)
+        {
+            List<(int, int)> allVisitedLocations = new List<(int, int)>()
+            {
+                visitedBlocks[0]
+            };
+
+            for (int i = 0; i < visitedBlocks.Count - 1; i++)
+            {
+                (int x, int y) currentBlock = (visitedBlocks[i].Item1, visitedBlocks[i].Item2);
+                (int x, int y) nextBlock = (visitedBlocks[i + 1].Item1, visitedBlocks[i + 1].Item2);
+
+                // If moving by x axis
+                if (currentBlock.x != nextBlock.x)
+                {
+                    while (currentBlock.x != nextBlock.x)
+                    {
+                        if (nextBlock.x > currentBlock.x)
+                        {
+                            currentBlock.x++;
+                        }
+                        else
+                        {
+                            currentBlock.x--;
+                        }
+
+                        (int x, int y) visitedLocation = (currentBlock.x, nextBlock.y);
+                        allVisitedLocations.Add(visitedLocation);
+                    }
+                }
+                // If moving by y axis
+                else
+                {
+                    while (currentBlock.y != nextBlock.y)
+                    {
+                        if (nextBlock.y > currentBlock.y)
+                        {
+                            currentBlock.y++;
+                        }
+                        else
+                        {
+                            currentBlock.y--;
+                        }
+
+                        (int x, int y) visitedLocation = (nextBlock.x, currentBlock.y);
+                        allVisitedLocations.Add(visitedLocation);
+                    }
+                }
+            }
+
+            return allVisitedLocations;
         }
     }
 }
