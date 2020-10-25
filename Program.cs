@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Text.RegularExpressions;
 using App.Helpers;
 
@@ -54,7 +55,9 @@ namespace App
 
         private static int ParseYearInput(string year)
         {
-            Regex regex = new Regex(@"^20\d{2}$");
+            int currentYear = DateTime.UtcNow.Year;
+
+            Regex regex = new Regex($@"^201[5-9]|202[0-{currentYear.ToString().Last()}]$");
             if (!regex.Match(year).Success)
             {
                 throw new ArgumentException($"Year {year} is not valid.");
