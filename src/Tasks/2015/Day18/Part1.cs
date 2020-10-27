@@ -101,23 +101,9 @@ namespace App.Tasks.Year2015.Day18
         public int Solution(string input)
         {
             bool[,] lightsGrid = initialLightsConfigurationRepository.ParseInput(input);
-            bool[,] lightsGridAfterAnimation = this.lightsGrid.Animate(lightsGrid);
+            int lightsTurnedOn = this.lightsGrid.CalculateLightsOnAfterAnimation(lightsGrid);
 
-            // Count lights which are on
-            int lightsOn = 0;
-            for (int i = 0; i < lightsGridAfterAnimation.GetLength(0); i++)
-            {
-                for (int j = 0; j < lightsGridAfterAnimation.GetLength(1); j++)
-                {
-                    bool light = lightsGridAfterAnimation[i, j];
-                    if (light)
-                    {
-                        lightsOn++;
-                    }
-                }
-            }
-
-            return lightsOn;
+            return lightsTurnedOn;
         }
     }
 }

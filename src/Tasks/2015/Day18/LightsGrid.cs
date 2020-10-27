@@ -4,17 +4,39 @@ namespace App.Tasks.Year2015.Day18
     {
         public const int Steps = 100;
 
-        public bool[,] Animate(bool[,] lightsGrid)
+        public int CalculateLightsOnAfterAnimation(bool[,] lightsGrid, bool cornerLightsStuckOn = false)
+        {
+            lightsGrid = Animate(lightsGrid, cornerLightsStuckOn);
+
+            // Count lights which are on
+            int lightsOn = 0;
+
+            for (int i = 0; i < lightsGrid.GetLength(0); i++)
+            {
+                for (int j = 0; j < lightsGrid.GetLength(1); j++)
+                {
+                    bool light = lightsGrid[i, j];
+                    if (light)
+                    {
+                        lightsOn++;
+                    }
+                }
+            }
+
+            return lightsOn;
+        }
+
+        private bool[,] Animate(bool[,] lightsGrid, bool cornerLightsStuckOn)
         {
             for (int i = 0; i < Steps; i++)
             {
-                lightsGrid = MakeStep(lightsGrid);
+                lightsGrid = MakeAnimationStep(lightsGrid, cornerLightsStuckOn);
             }
 
             return lightsGrid;
         }
 
-        private bool[,] MakeStep(bool[,] lightsGrid)
+        private bool[,] MakeAnimationStep(bool[,] lightsGrid, bool cornerLightsStuckOn)
         {
             int rows = lightsGrid.GetLength(0);
             int columns = lightsGrid.GetLength(1);
@@ -25,39 +47,29 @@ namespace App.Tasks.Year2015.Day18
             {
                 for (int j = 0; j < columns; j++)
                 {
-                    bool light = lightsGrid[i, j];
-                    lightsAfterStep[i, j] = light;
-
-                    int onNeighbors = 0;
-                    int offNeighbors = 0;
-
-                    // Count neighbors with on and off state
-                    for (int k = i - 1; k <= i + 1; k++)
+                    if (cornerLightsStuckOn)
                     {
-                        for (int h = j - 1; h <= j + 1; h++)
+                        // If it is corner light, it is stuck on
+                        if ((i == 0 && j == 0) || (i == 0 && j == columns - 1)
+                            || (i == rows - 1 && j == 0) || (i == rows - 1 && j == columns - 1))
                         {
-                            // If neighbor exists and is not current light itself
-                            if (!(k == i && h == j) && k >= 0 && k <= (rows - 1) && h >= 0 && h <= (columns - 1))
-                            {
-                                if (lightsGrid[k, h])
-                                {
-                                    onNeighbors++;
-                                }
-                                else
-                                {
-                                    offNeighbors++;
-                                }
-                            }
+                            lightsAfterStep[i, j] = true;
+                            continue;
                         }
                     }
 
+                    bool light = lightsGrid[i, j];
+                    lightsAfterStep[i, j] = light;
+
+                    int turnedOnNeighbors = CountTurnedOnNeighbors(i, j, lightsGrid);
+
                     // A light which is on stays on when 2 or 3 neighbors are on, and turns off otherwise
-                    if (light && !(onNeighbors == 2 || onNeighbors == 3))
+                    if (light && !(turnedOnNeighbors == 2 || turnedOnNeighbors == 3))
                     {
                         lightsAfterStep[i, j] = false;
                     }
                     // A light which is off turns on if exactly 3 neighbors are on, and stays off otherwise
-                    else if (!light && onNeighbors == 3)
+                    else if (!light && turnedOnNeighbors == 3)
                     {
                         lightsAfterStep[i, j] = true;
                     }
@@ -65,6 +77,32 @@ namespace App.Tasks.Year2015.Day18
             }
 
             return lightsAfterStep;
+        }
+
+        private int CountTurnedOnNeighbors(int i, int j, bool[,] lightsGrid)
+        {
+            int rows = lightsGrid.GetLength(0);
+            int columns = lightsGrid.GetLength(1);
+
+            int turnedOnNeighbors = 0;
+
+            // Count turned on neighbors
+            for (int k = i - 1; k <= i + 1; k++)
+            {
+                for (int h = j - 1; h <= j + 1; h++)
+                {
+                    // If neighbor exists and is not current light itself
+                    if (!(k == i && h == j) && k >= 0 && k <= (rows - 1) && h >= 0 && h <= (columns - 1))
+                    {
+                        if (lightsGrid[k, h])
+                        {
+                            turnedOnNeighbors++;
+                        }
+                    }
+                }
+            }
+
+            return turnedOnNeighbors;
         }
     }
 }
