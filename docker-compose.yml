@@ -4,6 +4,8 @@ services:
     app:
         build:
             context: .
-            dockerfile: ./docker/release.Dockerfile
+            dockerfile: ./docker/publish.Dockerfile
+            args:
+                BUILD_CONFIGURATION: Debug
         stdin_open: true
         tty: true

@@ -7,15 +7,18 @@ RUN dotnet restore
 
 # Copy everything else and build
 COPY . ./
-RUN dotnet publish -c Debug -o out
+ARG BUILD_CONFIGURATION=Debug
+RUN dotnet publish -c $BUILD_CONFIGURATION -o out
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS runtime
 
-# VSDBG debugger
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends unzip \
-    && curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l /vsdbg
+ARG BUILD_CONFIGURATION=Debug
+RUN if [ "$BUILD_CONFIGURATION" = "Debug" ]; then \
+        # Install VSDBG debugger
+        apt-get update && apt-get install -y --no-install-recommends unzip \
+        && curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l /vsdbg ; \
+    fi
 
 WORKDIR /app
 COPY --from=sdk /app/out .
