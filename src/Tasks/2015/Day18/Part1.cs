@@ -1,4 +1,4 @@
-﻿/*
+/*
 --- Day 18: Like a GIF For Your Yard ---
 
 After the million lights incident, the fire code has gotten stricter: now, at

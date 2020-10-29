@@ -1,4 +1,4 @@
-﻿/*
+/*
 --- Day 17: No Such Thing as Too Much ---
 
 The elves bought too much eggnog again - 150 liters this time. To fit it all

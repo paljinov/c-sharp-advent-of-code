@@ -1,4 +1,4 @@
-﻿/*
+/*
 --- Day 6: Probably a Fire Hazard ---
 
 Because your neighbors keep defeating you in the holiday house decorating

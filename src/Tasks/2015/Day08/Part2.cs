@@ -1,4 +1,4 @@
-﻿/*
+/*
 --- Part Two ---
 
 Now, let's go the other way. In addition to finding the number of characters of

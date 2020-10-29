@@ -1,4 +1,4 @@
-﻿/*
+/*
 --- Day 4: The Ideal Stocking Stuffer ---
 
 Santa needs help mining some AdventCoins (very similar to bitcoins) to use as

@@ -1,4 +1,4 @@
-﻿/*
+/*
 --- Part Two ---
 
 You just finish implementing your winning light pattern when you realize you

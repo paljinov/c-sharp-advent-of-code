@@ -1,4 +1,4 @@
-﻿/*
+/*
 --- Day 10: Elves Look, Elves Say ---
 
 Today, the Elves are playing a game called look-and-say. They take turns making

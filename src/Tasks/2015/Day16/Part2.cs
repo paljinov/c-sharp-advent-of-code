@@ -1,4 +1,4 @@
-﻿/*
+/*
 --- Part Two ---
 
 As you're about to send the thank you note, something in the MFCSAM's

@@ -1,4 +1,4 @@
-﻿/*
+/*
 --- Part Two ---
 
 Then, you notice the instructions continue on the back of the Recruiting

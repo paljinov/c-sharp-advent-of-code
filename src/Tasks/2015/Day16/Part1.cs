@@ -1,4 +1,4 @@
-﻿/*
+/*
 --- Day 16: Aunt Sue ---
 
 Your Aunt Sue has given you a wonderful gift, and you'd like to send her a thank

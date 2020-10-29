@@ -1,4 +1,4 @@
-﻿/*
+/*
 --- Part Two ---
 
 While playing with all the containers in the kitchen, another load of eggnog

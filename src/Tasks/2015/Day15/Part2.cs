@@ -1,4 +1,4 @@
-﻿/*
+/*
 --- Part Two ---
 
 Your cookie recipe becomes wildly popular! Someone asks if you can make another

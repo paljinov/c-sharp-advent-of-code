@@ -1,4 +1,4 @@
-﻿/*
+/*
 --- Day 12: JSAbacusFramework.io ---
 
 Santa's Accounting-Elves need help balancing the books after a recent order.

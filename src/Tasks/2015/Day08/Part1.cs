@@ -1,4 +1,4 @@
-﻿/*
+/*
 --- Day 8: Matchsticks ---
 
 Space on the sleigh is limited this year, and so Santa will be bringing his list

@@ -1,4 +1,4 @@
-﻿/*
+/*
 --- Part Two ---
 
 In all the commotion, you realize that you forgot to seat yourself. At this

@@ -1,4 +1,4 @@
-﻿/*
+/*
 --- Part Two ---
 
 Now, take the signal you got on wire a, override wire b to that signal, and

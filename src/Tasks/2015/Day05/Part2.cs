@@ -1,4 +1,4 @@
-﻿/*
+/*
 --- Part Two ---
 
 Realizing the error of his ways, Santa has switched to a better model of

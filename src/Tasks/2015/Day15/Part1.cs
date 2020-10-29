@@ -1,4 +1,4 @@
-﻿/*
+/*
 --- Day 15: Science for Hungry People ---
 
 Today, you set out on the task of perfecting your milk-dunking cookie recipe.

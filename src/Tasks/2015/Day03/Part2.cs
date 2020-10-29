@@ -1,4 +1,4 @@
-﻿/*
+/*
 --- Part Two ---
 
 The next year, to speed up the process, Santa creates a robot version of

@@ -1,4 +1,4 @@
-﻿/*
+/*
 --- Part Two ---
 
 Uh oh - the Accounting-Elves have realized that they double-counted everything

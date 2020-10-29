@@ -1,4 +1,4 @@
-﻿/*
+/*
 --- Part Two ---
 
 Neat, right? You might also enjoy hearing John Conway talking about this

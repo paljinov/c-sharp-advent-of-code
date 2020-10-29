@@ -1,4 +1,4 @@
-﻿/*
+/*
 --- Day 1: No Time for a Taxicab ---
 
 Santa's sleigh uses a very high-precision clock to guide its movements, and the

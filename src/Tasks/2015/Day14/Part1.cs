@@ -1,4 +1,4 @@
-﻿/*
+/*
 --- Day 14: Reindeer Olympics ---
 
 This year is the Reindeer Olympics! Reindeer can fly at high speeds, but must

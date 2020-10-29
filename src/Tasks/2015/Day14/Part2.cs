@@ -1,4 +1,4 @@
-﻿/*
+/*
 --- Part Two ---
 
 Seeing how reindeer move in bursts, Santa decides he's not pleased with the old

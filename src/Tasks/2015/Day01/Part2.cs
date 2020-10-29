@@ -1,4 +1,4 @@
-﻿/*
+/*
 --- Part Two ---
 
 Now, given the same instructions, find the position of the first character that

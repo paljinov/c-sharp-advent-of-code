@@ -1,4 +1,4 @@
-﻿/*
+/*
 --- Part Two ---
 
 The elves are also running low on ribbon. Ribbon is all the same width, so they
