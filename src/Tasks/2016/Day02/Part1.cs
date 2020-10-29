@@ -48,8 +48,14 @@ desk. What is the bathroom code?
 
 namespace App.Tasks.Year2016.Day2
 {
-    class Part1 : ITask<int>
+    class Part1 : ITask<string>
     {
+        private readonly char[,] keypad = new char[,] {
+            { '1', '2', '3' },
+            { '4', '5', '6' },
+            { '7', '8', '9' }
+        };
+
         private readonly InstructionsRepository instructionsRepository;
 
         private readonly Code code;
@@ -60,10 +66,10 @@ namespace App.Tasks.Year2016.Day2
             code = new Code();
         }
 
-        public int Solution(string input)
+        public string Solution(string input)
         {
             string[] instructions = instructionsRepository.ParseInput(input);
-            int code = this.code.Find(instructions);
+            string code = this.code.FindCode(keypad, instructions);
 
             return code;
         }

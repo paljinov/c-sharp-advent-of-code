@@ -1,36 +1,33 @@
-using System;
 using System.Text;
 
 namespace App.Tasks.Year2016.Day2
 {
     class Code
     {
-        private readonly int[,] keypad = new int[,] {
-            { 1, 2, 3 },
-            { 4, 5, 6 },
-            { 7, 8, 9 }
-        };
+        public const char NotExistingKey = 'X';
 
-        public int Find(string[] instructions)
+        private const char StartingKey = '5';
+
+        public string FindCode(char[,] keypad, string[] instructions)
         {
             StringBuilder sb = new StringBuilder();
 
             // Starting digit
-            int digit = 5;
+            char key = StartingKey;
             foreach (string digitInstructions in instructions)
             {
-                digit = FindDigitForInstructions(digitInstructions, digit);
-                sb.Append(digit);
+                key = FindKeyForInstructions(keypad, digitInstructions, key);
+                sb.Append(key);
             }
 
-            int code = int.Parse(sb.ToString());
+            string code = sb.ToString();
 
             return code;
         }
 
-        private int FindDigitForInstructions(string digitInstructions, int startingKey)
+        private char FindKeyForInstructions(char[,] keypad, string digitInstructions, int startingKey)
         {
-            (int i, int j) = FindKeypadKeyPosition(startingKey);
+            (int i, int j) = FindKeyPosition(keypad, startingKey);
 
             foreach (char instruction in digitInstructions)
             {
@@ -38,29 +35,41 @@ namespace App.Tasks.Year2016.Day2
                 {
                     // moves up
                     case 'U':
-                        i = i - 1 > 0 ? i - 1 : 0;
+                        if (i - 1 >= 0 && keypad[i - 1, j] != NotExistingKey)
+                        {
+                            i--;
+                        }
                         break;
                     // moves down
                     case 'D':
-                        i = i + 1 < keypad.GetLength(0) ? i + 1 : keypad.GetLength(0) - 1;
+                        if (i + 1 < keypad.GetLength(0) && keypad[i + 1, j] != NotExistingKey)
+                        {
+                            i++;
+                        }
                         break;
                     // moves left
                     case 'L':
-                        j = j - 1 > 0 ? j - 1 : 0;
+                        if (j - 1 >= 0 && keypad[i, j - 1] != NotExistingKey)
+                        {
+                            j--;
+                        }
                         break;
                     // moves right
                     case 'R':
-                        j = j + 1 < keypad.GetLength(1) ? j + 1 : keypad.GetLength(1) - 1;
+                        if (j + 1 < keypad.GetLength(1) && keypad[i, j + 1] != NotExistingKey)
+                        {
+                            j++;
+                        }
                         break;
                 }
             }
 
-            int digit = keypad[i, j];
+            char key = keypad[i, j];
 
-            return digit;
+            return key;
         }
 
-        private (int, int) FindKeypadKeyPosition(int key)
+        private (int, int) FindKeyPosition(char[,] keypad, int key)
         {
             for (int i = 0; i < keypad.GetLength(0); i++)
             {
