@@ -68,7 +68,7 @@ namespace App.Tasks.Year2015.Day19
             string startingMolecule = inputRepository.GetStartingMolecule(input);
             List<(string, string)> replacements = inputRepository.GetReplacements(input);
 
-            int distinctMolecules = molecules.DisctinctMoleculesCount(startingMolecule, replacements);
+            int distinctMolecules = molecules.CountCreatedDisctinctMolecules(startingMolecule, replacements);
 
             return distinctMolecules;
         }

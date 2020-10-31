@@ -26,9 +26,11 @@ namespace App.Tasks.Year2015.Day19
             foreach (string replacementString in replacementsStrings)
             {
                 Match replacementMatches = replacementsRegex.Match(replacementString);
-                GroupCollection groups = replacementMatches.Groups;
-
-                replacements.Add((groups[1].Value, groups[2].Value));
+                if (replacementMatches.Success)
+                {
+                    GroupCollection groups = replacementMatches.Groups;
+                    replacements.Add((groups[1].Value, groups[2].Value));
+                }
             }
 
             return replacements;

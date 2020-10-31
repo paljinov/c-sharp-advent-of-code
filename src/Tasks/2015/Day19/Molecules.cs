@@ -7,13 +7,7 @@ namespace App.Tasks.Year2015.Day19
 {
     class Molecules
     {
-        public int DisctinctMoleculesCount(string startingMolecule, List<(string, string)> replacements)
-        {
-            HashSet<string> molecules = CalculateDistinctMolecules(startingMolecule, replacements);
-            return molecules.Count;
-        }
-
-        private HashSet<string> CalculateDistinctMolecules(string startingMolecule, List<(string, string)> replacements)
+        public int CountCreatedDisctinctMolecules(string startingMolecule, List<(string, string)> replacements)
         {
             HashSet<string> molecules = new HashSet<string>();
 
@@ -43,7 +37,32 @@ namespace App.Tasks.Year2015.Day19
                 }
             }
 
-            return molecules;
+            return molecules.Count;
+        }
+
+        public int DecomposeMoleculeToSingleElectron(
+            string molecule,
+            List<(string, string)> replacements,
+            string singleElectron
+        )
+        {
+            int steps = 0;
+            while (molecule != singleElectron)
+            {
+                // Replace in opposite direction to single electron
+                foreach ((string replacement, string original) in replacements)
+                {
+                    var regex = new Regex(original);
+                    if (regex.Match(molecule).Success)
+                    {
+                        // Replace only one occurence
+                        molecule = regex.Replace(molecule, replacement, 1);
+                        steps++;
+                    }
+                }
+            }
+
+            return steps;
         }
     }
 }
