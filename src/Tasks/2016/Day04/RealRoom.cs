@@ -8,33 +8,33 @@ namespace App.Tasks.Year2016.Day4
     {
         public bool IsRealRoom(Room room)
         {
-            Dictionary<char, int> letterOccurrences = GetLetterOccurrences(room.Name);
-            List<int> occurences = letterOccurrences.Values.ToList().OrderByDescending(i => i).ToList();
+            Dictionary<int, string> letterOccurrences = GetDescendingLetterOccurrences(room.Name);
 
-            for (int i = 0; i < room.Checksum.Length; i++)
+            foreach (char c in room.Checksum)
             {
-                char c = room.Checksum[i];
-                var lettersWithOccurences = letterOccurrences.Where(x => x.Value == occurences[0]);
+                KeyValuePair<int, string> mostOccurences = letterOccurrences.First();
 
-                StringBuilder sb = new StringBuilder();
-                foreach (var lwo in lettersWithOccurences)
-                {
-                    sb.Append(lwo.Key);
-                }
-                string lettersWithOccurencesString = sb.ToString();
-
-                if (!lettersWithOccurencesString.Contains(c))
+                string letters = mostOccurences.Value;
+                if (!letters.Contains(c))
                 {
                     return false;
                 }
 
-                occurences.RemoveAt(0);
+                letters = letters.Replace(c.ToString(), string.Empty);
+                if (letters == string.Empty)
+                {
+                    letterOccurrences.Remove(mostOccurences.Key);
+                }
+                else
+                {
+                    letterOccurrences[mostOccurences.Key] = letters;
+                }
             }
 
             return true;
         }
 
-        private Dictionary<char, int> GetLetterOccurrences(string roomName)
+        private Dictionary<int, string> GetDescendingLetterOccurrences(string roomName)
         {
             Dictionary<char, int> letters = new Dictionary<char, int>();
             foreach (char letter in roomName)
@@ -52,7 +52,22 @@ namespace App.Tasks.Year2016.Day4
                 }
             }
 
-            return letters;
+            Dictionary<int, string> letterOccurrences = new Dictionary<int, string>();
+            foreach (KeyValuePair<char, int> letter in letters)
+            {
+                if (letterOccurrences.ContainsKey(letter.Value))
+                {
+                    letterOccurrences[letter.Value] = letterOccurrences[letter.Value] + letter.Key.ToString();
+                }
+                else
+                {
+                    letterOccurrences.Add(letter.Value, letter.Key.ToString());
+                }
+            }
+
+            letterOccurrences = letterOccurrences.OrderByDescending(l => l.Key).ToDictionary(l => l.Key, l => l.Value);
+
+            return letterOccurrences;
         }
     }
 }
