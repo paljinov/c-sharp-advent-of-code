@@ -6,28 +6,48 @@ namespace App.Tasks.Year2016.Day4
 {
     class RealRoom
     {
-        public bool IsRealRoom(Room room)
+        public List<Room> FilterRealRooms(List<Room> possibleRooms)
+        {
+            List<Room> realRooms = new List<Room>();
+
+            foreach (Room possibleRoom in possibleRooms)
+            {
+                if (IsRealRoom(possibleRoom))
+                {
+                    realRooms.Add(possibleRoom);
+                }
+            }
+
+            return realRooms;
+        }
+
+        private bool IsRealRoom(Room room)
         {
             Dictionary<int, string> letterOccurrences = GetDescendingLetterOccurrences(room.Name);
 
             foreach (char c in room.Checksum)
             {
+                // Get letters with most occurences
                 KeyValuePair<int, string> mostOccurences = letterOccurrences.First();
 
-                string letters = mostOccurences.Value;
-                if (!letters.Contains(c))
+                StringBuilder letters = new StringBuilder(mostOccurences.Value);
+                // If checksum letter is not among those with most occurences it is not the real room
+                if (!letters.ToString().Contains(c))
                 {
                     return false;
                 }
 
+                // Remove checked checksum from letters with most occurences
                 letters = letters.Replace(c.ToString(), string.Empty);
-                if (letters == string.Empty)
+                // If there aren't any letters left with this number of occurences
+                if (letters.Length == 0)
                 {
                     letterOccurrences.Remove(mostOccurences.Key);
                 }
+                // If there are still letters with this number of occurences
                 else
                 {
-                    letterOccurrences[mostOccurences.Key] = letters;
+                    letterOccurrences[mostOccurences.Key] = letters.ToString();
                 }
             }
 
@@ -36,6 +56,7 @@ namespace App.Tasks.Year2016.Day4
 
         private Dictionary<int, string> GetDescendingLetterOccurrences(string roomName)
         {
+            // Letter occurrences
             Dictionary<char, int> letters = new Dictionary<char, int>();
             foreach (char letter in roomName)
             {
@@ -52,20 +73,23 @@ namespace App.Tasks.Year2016.Day4
                 }
             }
 
-            Dictionary<int, string> letterOccurrences = new Dictionary<int, string>();
+            Dictionary<int, StringBuilder> letterOccurrencesSb = new Dictionary<int, StringBuilder>();
+            // Put letters with same number of occurrences under same key (number of occurrences)
             foreach (KeyValuePair<char, int> letter in letters)
             {
-                if (letterOccurrences.ContainsKey(letter.Value))
+                if (letterOccurrencesSb.ContainsKey(letter.Value))
                 {
-                    letterOccurrences[letter.Value] = letterOccurrences[letter.Value] + letter.Key.ToString();
+                    letterOccurrencesSb[letter.Value] = letterOccurrencesSb[letter.Value].Append(letter.Key.ToString());
                 }
                 else
                 {
-                    letterOccurrences.Add(letter.Value, letter.Key.ToString());
+                    letterOccurrencesSb.Add(letter.Value, new StringBuilder(letter.Key.ToString()));
                 }
             }
 
-            letterOccurrences = letterOccurrences.OrderByDescending(l => l.Key).ToDictionary(l => l.Key, l => l.Value);
+            // Sort descending by number of occurrences
+            Dictionary<int, string> letterOccurrences =
+                letterOccurrencesSb.OrderByDescending(l => l.Key).ToDictionary(l => l.Key, l => l.Value.ToString());
 
             return letterOccurrences;
         }

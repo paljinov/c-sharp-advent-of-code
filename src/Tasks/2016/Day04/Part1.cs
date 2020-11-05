@@ -32,7 +32,7 @@ namespace App.Tasks.Year2016.Day4
     {
         private readonly RoomRepository roomRepository;
 
-         private readonly RealRoom realRoom;
+        private readonly RealRoom realRoom;
 
         public Part1()
         {
@@ -45,12 +45,11 @@ namespace App.Tasks.Year2016.Day4
             int sectorIDsSum = 0;
 
             List<Room> possibleRooms = roomRepository.GetPossibleRooms(input);
-            foreach (Room possibleRoom in possibleRooms)
+            List<Room> realRooms = realRoom.FilterRealRooms(possibleRooms);
+
+            foreach (Room realRoom in realRooms)
             {
-                if (realRoom.IsRealRoom(possibleRoom))
-                {
-                    sectorIDsSum += possibleRoom.SectorId;
-                }
+                sectorIDsSum += realRoom.SectorId;
             }
 
             return sectorIDsSum;
