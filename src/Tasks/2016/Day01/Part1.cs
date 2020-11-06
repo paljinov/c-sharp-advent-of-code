@@ -57,7 +57,8 @@ namespace App.Tasks.Year2016.Day1
             string[] instructions = instructionsRepository.GetInstructions(input);
             List<(int, int)> visitedBlocks = cityStreetGrid.CalculateVisitedBlocksAfterMove(instructions);
 
-            (int x, int y) lastBlock = visitedBlocks[visitedBlocks.Count - 1];
+            (int x, int y) lastBlock;
+            (lastBlock.x, lastBlock.y) = visitedBlocks[^1];
             int blocksAway = Math.Abs(lastBlock.x) + Math.Abs(lastBlock.y);
 
             return blocksAway;

@@ -91,8 +91,10 @@ namespace App.Tasks.Year2016.Day1
 
             for (int i = 0; i < visitedBlocks.Count - 1; i++)
             {
-                (int x, int y) currentBlock = (visitedBlocks[i].Item1, visitedBlocks[i].Item2);
-                (int x, int y) nextBlock = (visitedBlocks[i + 1].Item1, visitedBlocks[i + 1].Item2);
+                (int x, int y) currentBlock;
+                (int x, int y) nextBlock;
+                (currentBlock.x, currentBlock.y) = (visitedBlocks[i].Item1, visitedBlocks[i].Item2);
+                (nextBlock.x, nextBlock.y) = (visitedBlocks[i + 1].Item1, visitedBlocks[i + 1].Item2);
 
                 // If moving by x axis
                 if (currentBlock.x != nextBlock.x)
