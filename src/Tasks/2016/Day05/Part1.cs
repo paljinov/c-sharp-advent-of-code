@@ -41,7 +41,7 @@ namespace App.Tasks.Year2016.Day5
 
         public string Solution(string input)
         {
-            return password.FindPasswordForDoorId(input, "00000");
+            return password.FindPasswordForDoorId(input);
         }
     }
 }

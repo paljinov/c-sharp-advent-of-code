@@ -8,22 +8,54 @@ namespace App.Tasks.Year2016.Day5
     {
         private const int PasswordLength = 8;
 
-        public string FindPasswordForDoorId(string doorId, string startsWithPrefix)
+        private const string HashStartsWithPrefix = "00000";
+
+        public string FindPasswordForDoorId(string doorId)
         {
-            string password = string.Empty;
+            StringBuilder password = new StringBuilder();
 
             int i = 0;
             while (password.Length < PasswordLength)
             {
                 i++;
                 string hash = GetMd5HashForString(doorId + i);
-                if (hash.StartsWith(startsWithPrefix))
+                if (hash.StartsWith(HashStartsWithPrefix))
                 {
-                    password += hash[startsWithPrefix.Length];
+                    password.Append(hash[HashStartsWithPrefix.Length]);
                 }
             }
 
-            return password;
+            return password.ToString();
+        }
+
+        public string FindPasswordForDoorIdWithPositionCondition(string doorId)
+        {
+            char[] password = new char[PasswordLength];
+            int foundPasswordCharacters = 0;
+
+            int i = 0;
+            while (foundPasswordCharacters < PasswordLength)
+            {
+                i++;
+                string hash = GetMd5HashForString(doorId + i);
+                if (hash.StartsWith(HashStartsWithPrefix))
+                {
+                    int position = (int)char.GetNumericValue(hash[HashStartsWithPrefix.Length]);
+                    // If character is integer in allowed password length range
+                    if (position >= 0 && position < PasswordLength)
+                    {
+                        char character = hash[HashStartsWithPrefix.Length + 1];
+
+                        if (password[position] == '\0')
+                        {
+                            password[position] = character;
+                            foundPasswordCharacters++;
+                        }
+                    }
+                }
+            }
+
+            return new string(password);
         }
 
         public static string GetMd5HashForString(string input)
