@@ -14,7 +14,7 @@ namespace App.Helpers
                 dayDirectory = $"0{dayDirectory}";
             }
 
-            string taskInputPath = $"{projectRootPath}/src/Tasks/{year}/Day{dayDirectory}/input.txt";
+            string taskInputPath = Path.Combine(projectRootPath, $"src/Tasks/{year}/Day{dayDirectory}/input.txt");
             if (!File.Exists(taskInputPath))
             {
                 throw new FileNotFoundException($"Task input with year {year} and day {day} does not exists.");

@@ -6,7 +6,8 @@ namespace App.Helpers
     {
         public static string GetProjectRootPath()
         {
-            return Environment.CurrentDirectory;
+            string projectRoot = AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin"));
+            return projectRoot;
         }
     }
 }
