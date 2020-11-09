@@ -5,12 +5,12 @@ namespace App.Tasks.Year2015.Day4
 {
     class PrefixHashSolution
     {
-        public static int FindIntegerWhichGivesMd5HashWithPrefix(string secretKey, string startsWithPrefix)
+        public int FindIntegerWhichGivesMd5HashWithPrefix(string secretKey, string hashStartsWithPrefix)
         {
             string hash = string.Empty;
             int i = 0;
 
-            while (!hash.StartsWith(startsWithPrefix))
+            while (!hash.StartsWith(hashStartsWithPrefix))
             {
                 i++;
                 hash = GetMd5HashForString(secretKey + i);
@@ -19,7 +19,7 @@ namespace App.Tasks.Year2015.Day4
             return i;
         }
 
-        public static string GetMd5HashForString(string input)
+        public string GetMd5HashForString(string input)
         {
             MD5 md5 = MD5.Create();
 
