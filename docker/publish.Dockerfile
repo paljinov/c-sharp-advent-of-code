@@ -17,7 +17,7 @@ ARG BUILD_CONFIGURATION=Debug
 RUN if [ "$BUILD_CONFIGURATION" = "Debug" ]; then \
         # Install VSDBG debugger
         apt-get update && apt-get install -y --no-install-recommends unzip \
-        && curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l /vsdbg ; \
+        && curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l /remote_debugger ; \
     fi
 
 WORKDIR /app

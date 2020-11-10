@@ -5,7 +5,5 @@ services:
         build:
             context: .
             dockerfile: ./docker/publish.Dockerfile
-            args:
-                BUILD_CONFIGURATION: Debug
         stdin_open: true
         tty: true

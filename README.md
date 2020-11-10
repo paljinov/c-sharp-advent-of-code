@@ -34,7 +34,7 @@ dotnet run
 ### Run source code by publishing the application and its dependencies:
 1. Build and compose app container
     ```sh
-    docker-compose up -d --force-recreate --build
+    docker-compose -f docker-compose.yml -f docker-compose.publish.yml up -d --force-recreate --build
     ```
 2. Get a bash shell in the container running container: 
     ```sh
