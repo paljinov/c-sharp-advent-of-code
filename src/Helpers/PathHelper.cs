@@ -6,7 +6,16 @@ namespace App.Helpers
     {
         public static string GetProjectRootPath()
         {
-            string projectRoot = AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.IndexOf("bin"));
+            string baseDirectory = AppContext.BaseDirectory;
+            int index = baseDirectory.IndexOf("bin");
+
+            string projectRoot = baseDirectory;
+            // If bin directory index is found
+            if (index >= 0)
+            {
+                projectRoot = baseDirectory.Substring(0, index);
+            }
+
             return projectRoot;
         }
     }
