@@ -4,6 +4,6 @@ services:
     app:
         build:
             context: .
-            dockerfile: ./docker/publish.Dockerfile
+            dockerfile: ./docker/Dockerfile.release
         stdin_open: true
         tty: true

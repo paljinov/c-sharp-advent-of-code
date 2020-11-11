@@ -4,6 +4,6 @@ services:
     app:
         build:
             context: .
-            dockerfile: ./docker/watch.Dockerfile
+            dockerfile: ./docker/Dockerfile.watch
         volumes:
             - ./:/app

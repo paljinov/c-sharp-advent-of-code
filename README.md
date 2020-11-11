@@ -31,10 +31,24 @@ dotnet run
     ```sh
     dotnet watch run
     ```
-### Run source code by publishing the application and its dependencies:
+### Debug configuration:
 1. Build and compose app container
     ```sh
-    docker-compose -f docker-compose.yml -f docker-compose.publish.yml up -d --force-recreate --build
+    docker-compose -f docker-compose.yml -f docker-compose.debug.yml up -d --force-recreate --build
+    ```
+2. Get a bash shell in the container running container: 
+    ```sh
+    docker exec -it c-sharp-advent-of-code_app_1 /bin/bash
+    ```
+3. Run assembly:
+    ```sh
+    dotnet run
+    ```
+
+### Release configuration:
+1. Build and compose app container
+    ```sh
+    docker-compose up -d --force-recreate --build
     ```
 2. Get a bash shell in the container running container: 
     ```sh
@@ -44,8 +58,6 @@ dotnet run
     ```sh
     dotnet AdventOfCode.dll
     ```
-
-Default build configuration is "Debug", change "BUILD_CONFIGURATION" ARG to "Release" if needed.
 
 ### Check logs:
 ```sh
