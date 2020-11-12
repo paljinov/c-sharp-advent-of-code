@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS sdk
+FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS sdk
 
 # VSDBG debugger
 RUN apt-get update \
