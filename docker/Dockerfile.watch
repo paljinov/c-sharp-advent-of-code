@@ -6,4 +6,4 @@ RUN apt-get update \
     && curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l /remote_debugger
 
 WORKDIR /app
-# ENTRYPOINT ["dotnet", "watch", "run"]
+# ENTRYPOINT ["dotnet", "watch", "run", "-c", "Debug"]
