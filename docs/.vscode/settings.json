@@ -1,0 +1,14 @@
+{
+    "docker.commands.composeUp": [
+        {
+            "label": "composeUp",
+            "template": "docker-compose -f docker-compose.yml ${configurationFile} up -d --force-recreate --build"
+        }
+    ],
+    "docker.commands.composeDown": [
+        {
+            "label": "composeDown",
+            "template": "docker-compose -f docker-compose.yml ${configurationFile} down"
+        }
+    ]
+}

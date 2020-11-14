@@ -1,0 +1,73 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": ".NET Core Launch",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/bin/Debug/net5.0/AdventOfCode.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "console": "integratedTerminal",
+            "logging": {
+                "moduleLoad": false
+            },
+            "requireExactSource": false,
+        },
+        {
+            "name": "Docker .NET Core Launch",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "debug",
+            "cwd": "/app",
+            "program": "/app/bin/Debug/net5.0/AdventOfCode.dll",
+            "pipeTransport": {
+                "pipeProgram": "docker",
+                "pipeArgs": [
+                    "exec",
+                    "-i",
+                    "c-sharp-advent-of-code_app_1"
+                ],
+                "pipeCwd": "${workspaceFolder}",
+                "debuggerPath": "/remote_debugger/vsdbg",
+                "quoteArgs": false
+            },
+            "sourceFileMap": {
+                "/app": "${workspaceFolder}"
+            },
+            "logging": {
+                "moduleLoad": false
+            },
+            "requireExactSource": false,
+        },
+        {
+            "name": "Docker .NET Core Attach",
+            "type": "coreclr",
+            "request": "attach",
+            "processId": "${command:pickProcess}",
+            "pipeTransport": {
+                "pipeProgram": "docker",
+                "pipeArgs": [
+                    "exec",
+                    "-i",
+                    "c-sharp-advent-of-code_app_1"
+                ],
+                "pipeCwd": "${workspaceFolder}",
+                "debuggerPath": "/remote_debugger/vsdbg",
+                "quoteArgs": false
+            },
+            "sourceFileMap": {
+                "/app": "${workspaceFolder}"
+            },
+            "logging": {
+                "moduleLoad": false
+            },
+            "requireExactSource": false,
+        }
+    ]
+}
