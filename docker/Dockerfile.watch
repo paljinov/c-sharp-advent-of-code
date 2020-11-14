@@ -6,4 +6,6 @@ RUN apt-get update \
     && curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l /remote_debugger
 
 WORKDIR /app
+
+ENV DOTNET_ENVIRONMENT=Development
 # ENTRYPOINT ["dotnet", "watch", "run", "-c", "Debug"]
