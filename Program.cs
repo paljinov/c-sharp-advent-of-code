@@ -19,14 +19,9 @@ namespace App
 
             try
             {
-                Console.WriteLine("Year:");
-                year = ParseYearInput(Console.ReadLine());
-
-                Console.WriteLine("Day:");
-                day = ParseDayInput(Console.ReadLine());
-
-                Console.WriteLine("Part:");
-                part = ParsePartInput(Console.ReadLine());
+                year = ParseYearInput(Environment.GetEnvironmentVariable("AOC_YEAR"));
+                day = ParseDayInput(Environment.GetEnvironmentVariable("AOC_DAY"));
+                part = ParsePartInput(Environment.GetEnvironmentVariable("AOC_PART"));
             }
             catch (ArgumentException e)
             {

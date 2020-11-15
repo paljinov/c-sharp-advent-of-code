@@ -4,6 +4,8 @@
 * [2015](./src/Tasks/2015)
 * [2016](./src/Tasks/2016)
 
+Make `.env` file and fill year, day and part for task you wish to debug or run.
+
 ## Local development:
 
 ### Run watcher, runs source code on file change:

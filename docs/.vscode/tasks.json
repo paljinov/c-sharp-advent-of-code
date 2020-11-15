@@ -5,12 +5,14 @@
     "tasks": [
         {
             "label": "build",
-            "command": "dotnet",
             "type": "process",
+            "command": "dotnet",
             "args": [
                 "build"
             ],
-            "problemMatcher": "$tsc"
+            "problemMatcher": [
+                "$tsc"
+            ]
         },
         {
             "label": "watch",

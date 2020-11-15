@@ -36,5 +36,8 @@ msbuild.wrn
 # Visual Studio 2015
 .vs/
 
-# VS Code launch configuration
+# Environment file
+.env
+
+# VS Code debugging configuration documentation
 !docs/.vscode

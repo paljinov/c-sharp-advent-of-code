@@ -12,12 +12,11 @@
             "program": "${workspaceFolder}/bin/Debug/net5.0/AdventOfCode.dll",
             "args": [],
             "cwd": "${workspaceFolder}",
-            "stopAtEntry": false,
-            "console": "integratedTerminal",
+            "console": "internalConsole",
             "logging": {
                 "moduleLoad": false
             },
-            "requireExactSource": false,
+            "requireExactSource": false
         },
         {
             "name": "Docker .NET Core Launch",
@@ -26,6 +25,7 @@
             "preLaunchTask": "debug",
             "cwd": "/app",
             "program": "/app/bin/Debug/net5.0/AdventOfCode.dll",
+            "console": "internalConsole",
             "pipeTransport": {
                 "pipeProgram": "docker",
                 "pipeArgs": [
@@ -34,7 +34,7 @@
                     "c-sharp-advent-of-code_app_1"
                 ],
                 "pipeCwd": "${workspaceFolder}",
-                "debuggerPath": "/remote_debugger/vsdbg",
+                "debuggerPath": "/vsdbg/vsdbg",
                 "quoteArgs": false
             },
             "sourceFileMap": {
@@ -43,13 +43,14 @@
             "logging": {
                 "moduleLoad": false
             },
-            "requireExactSource": false,
+            "requireExactSource": false
         },
+
         {
             "name": "Docker .NET Core Attach",
             "type": "coreclr",
             "request": "attach",
-            "processId": "${command:pickProcess}",
+            "processName": "/app/bin/Debug/net5.0/AdventOfCode",
             "pipeTransport": {
                 "pipeProgram": "docker",
                 "pipeArgs": [
@@ -58,7 +59,7 @@
                     "c-sharp-advent-of-code_app_1"
                 ],
                 "pipeCwd": "${workspaceFolder}",
-                "debuggerPath": "/remote_debugger/vsdbg",
+                "debuggerPath": "/vsdbg/vsdbg",
                 "quoteArgs": false
             },
             "sourceFileMap": {
@@ -67,7 +68,7 @@
             "logging": {
                 "moduleLoad": false
             },
-            "requireExactSource": false,
+            "requireExactSource": false
         }
     ]
 }

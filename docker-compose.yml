@@ -5,5 +5,7 @@ services:
         build:
             context: .
             dockerfile: ./docker/Dockerfile.release
+        env_file:
+            - .env
         stdin_open: true
         tty: true
