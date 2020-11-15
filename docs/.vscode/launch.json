@@ -10,9 +10,9 @@
             "request": "launch",
             "preLaunchTask": "build",
             "program": "${workspaceFolder}/bin/Debug/net5.0/AdventOfCode.dll",
-            "args": [],
             "cwd": "${workspaceFolder}",
             "console": "internalConsole",
+            "envFile": "${workspaceFolder}/.env",
             "logging": {
                 "moduleLoad": false
             },
