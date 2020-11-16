@@ -19,9 +19,29 @@ namespace App
 
             try
             {
-                year = ParseYearInput(Environment.GetEnvironmentVariable("AOC_YEAR"));
-                day = ParseDayInput(Environment.GetEnvironmentVariable("AOC_DAY"));
-                part = ParsePartInput(Environment.GetEnvironmentVariable("AOC_PART"));
+                string yearEnv = Environment.GetEnvironmentVariable("AOC_YEAR");
+                string dayEnv = Environment.GetEnvironmentVariable("AOC_DAY");
+                string partEnv = Environment.GetEnvironmentVariable("AOC_PART");
+
+                if (string.IsNullOrEmpty(yearEnv))
+                {
+                    Console.WriteLine("Task year is not set.");
+                    return;
+                }
+                if (string.IsNullOrEmpty(dayEnv))
+                {
+                    Console.WriteLine("Task day is not set.");
+                    return;
+                }
+                if (string.IsNullOrEmpty(partEnv))
+                {
+                    Console.WriteLine("Task part is not set.");
+                    return;
+                }
+
+                year = ParseYearInput(yearEnv);
+                day = ParseDayInput(dayEnv);
+                part = ParsePartInput(partEnv);
             }
             catch (ArgumentException e)
             {
