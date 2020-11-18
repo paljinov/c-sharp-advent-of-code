@@ -4,7 +4,7 @@ namespace App.Tasks.Year2015.Day21
 {
     class ShopItemRepository
     {
-        private readonly Dictionary<string, Item> Weapons = new Dictionary<string, Item>()
+        private readonly Dictionary<string, Item> weapons = new Dictionary<string, Item>()
         {
             { "Dagger", new Item { Cost=8, Damage=4, Armor=0 } },
             { "Shortsword", new Item { Cost=10, Damage=5, Armor=0 } },
@@ -13,7 +13,7 @@ namespace App.Tasks.Year2015.Day21
             { "Greataxe", new Item { Cost=74, Damage=8, Armor=0 } }
         };
 
-        private readonly Dictionary<string, Item> Armors = new Dictionary<string, Item>()
+        private readonly Dictionary<string, Item> armors = new Dictionary<string, Item>()
         {
             { "Leather", new Item { Cost=13, Damage=0, Armor=1 } },
             { "Chainmail", new Item { Cost=31, Damage=0, Armor=2 } },
@@ -22,7 +22,7 @@ namespace App.Tasks.Year2015.Day21
             { "Platemail", new Item { Cost=102, Damage=0, Armor=5 } }
         };
 
-        private readonly Dictionary<string, Item> Rings = new Dictionary<string, Item>()
+        private readonly Dictionary<string, Item> rings = new Dictionary<string, Item>()
         {
             { "Damage +1", new Item { Cost=25, Damage=1, Armor=0 } },
             { "Damage +2", new Item { Cost=50, Damage=2, Armor=0 } },
@@ -34,12 +34,12 @@ namespace App.Tasks.Year2015.Day21
 
         public Dictionary<string, Item> GetWeapons()
         {
-            return Weapons;
+            return weapons;
         }
 
         public Dictionary<string, Item> GetArmors()
         {
-            Dictionary<string, Item> armors = new Dictionary<string, Item>(Armors)
+            Dictionary<string, Item> armors = new Dictionary<string, Item>(this.armors)
             {
                 // Armor is optional
                 { "None", new Item { Cost = 0, Damage = 0, Armor = 0 } }
@@ -50,7 +50,7 @@ namespace App.Tasks.Year2015.Day21
 
         public Dictionary<string, Item> GetRings()
         {
-            Dictionary<string, Item> rings = new Dictionary<string, Item>(Rings)
+            Dictionary<string, Item> rings = new Dictionary<string, Item>(this.rings)
             {
                 // Ring is optional
                 { "None", new Item { Cost = 0, Damage = 0, Armor = 0 } }

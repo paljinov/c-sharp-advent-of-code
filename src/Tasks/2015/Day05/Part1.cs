@@ -66,7 +66,7 @@ namespace App.Tasks.Year2015.Day5
 
             foreach (char c in str)
             {
-                if(vowels.Contains(c))
+                if (vowels.Contains(c))
                 {
                     stringVowels++;
                 }

@@ -63,7 +63,7 @@ namespace App.Tasks.Year2015.Day8
         private string GetStringInMemory(string stringCode)
         {
             // Remove start and end quote
-            string stringInMemory = stringCode.Trim(new Char[] { '"' });
+            string stringInMemory = stringCode.Trim(new char[] { '"' });
             // Remove backslash escape
             stringInMemory = stringInMemory.Replace(@"\\", @"\");
             // Remove quote escape

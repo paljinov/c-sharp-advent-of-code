@@ -22,7 +22,8 @@ namespace App.Tasks.Year2015.Day15
                 Match match = ingredientsRegex.Match(ingredientString);
                 GroupCollection groups = match.Groups;
 
-                Ingredient ingredient = new Ingredient {
+                Ingredient ingredient = new Ingredient
+                {
                     Capacity = int.Parse(groups[2].Value),
                     Durability = int.Parse(groups[3].Value),
                     Flavor = int.Parse(groups[4].Value),

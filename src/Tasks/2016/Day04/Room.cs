@@ -4,6 +4,6 @@ namespace App.Tasks.Year2016.Day4
     {
         public string Name { get; set; }
         public int SectorId { get; set; }
-        public string Checksum  { get; set; }
+        public string Checksum { get; set; }
     }
 }

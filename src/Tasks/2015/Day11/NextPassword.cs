@@ -8,7 +8,7 @@ namespace App.Tasks.Year2015.Day11
         public string Find(string input)
         {
             char[] newPassword = input.ToCharArray();
-            string end = new String('z', newPassword.Length);
+            string end = new string('z', newPassword.Length);
 
             bool newPasswordFound = false;
             // Setting index to last letter
