@@ -28,7 +28,7 @@ dotnet run
     ```
 2. Get a bash shell in the container running container: 
     ```sh
-    docker exec -it c-sharp-advent-of-code_app_1 /bin/bash
+    docker-compose exec app /bin/bash
     ```
 3. Run watcher:
     ```sh
@@ -41,7 +41,7 @@ dotnet run
     ```
 2. Get a bash shell in the container running container: 
     ```sh
-    docker exec -it c-sharp-advent-of-code_app_1 /bin/bash
+    docker-compose exec app /bin/bash
     ```
 3. Run assembly:
     ```sh
@@ -55,7 +55,7 @@ dotnet run
     ```
 2. Get a bash shell in the container running container: 
     ```sh
-    docker exec -it c-sharp-advent-of-code_app_1 /bin/bash
+    docker-compose exec app /bin/bash
     ```
 3. Run assembly:
     ```sh
