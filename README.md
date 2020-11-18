@@ -66,3 +66,6 @@ dotnet run
 ```sh
 docker-compose logs -ft app
 ```
+
+## Docs:
+* [Visual Studio Code settings](./docs/VisualStudioCode.md)

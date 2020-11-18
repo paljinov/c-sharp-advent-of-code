@@ -79,7 +79,7 @@ namespace App.Tasks.Year2016.Day4
             {
                 if (letterOccurrencesSb.ContainsKey(letter.Value))
                 {
-                    letterOccurrencesSb[letter.Value] = letterOccurrencesSb[letter.Value].Append(letter.Key.ToString());
+                    letterOccurrencesSb[letter.Value] = letterOccurrencesSb[letter.Value].Append(letter.Key);
                 }
                 else
                 {
