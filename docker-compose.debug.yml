@@ -5,3 +5,9 @@ services:
         build:
             context: .
             dockerfile: ./src/docker/Dockerfile.debug
+    tests:
+        build:
+            context: .
+            dockerfile: ./tests/docker/Dockerfile.debug
+        stdin_open: true
+        tty: true

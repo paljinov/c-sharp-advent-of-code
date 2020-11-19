@@ -7,3 +7,11 @@ services:
             dockerfile: ./src/docker/Dockerfile.watch
         volumes:
             - ./src:/app
+    tests:
+        build:
+            context: .
+            dockerfile: ./tests/docker/Dockerfile.watch
+        volumes:
+            - ./tests:/aoc/tests
+        stdin_open: true
+        tty: true

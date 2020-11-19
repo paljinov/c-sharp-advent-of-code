@@ -1,0 +1,13 @@
+FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS sdk
+
+# VSDBG debugger
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends unzip \
+    && curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l /vsdbg
+
+WORKDIR /aoc/src
+COPY ./src ./
+
+WORKDIR /aoc/tests
+
+# ENTRYPOINT ["dotnet", "watch", "test"]

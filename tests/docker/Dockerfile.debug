@@ -1,0 +1,20 @@
+FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS sdk
+
+# VSDBG debugger
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends unzip \
+    && curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l /vsdbg
+
+WORKDIR /aoc/src
+COPY ./src ./
+
+# Copy csproj and restore as distinct layers
+WORKDIR /aoc/tests
+COPY ./tests/*.csproj ./
+RUN dotnet restore
+
+# Copy everything else and build
+COPY ./tests ./
+RUN dotnet build -c Debug
+
+# ENTRYPOINT ["dotnet", "test"]
