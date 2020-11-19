@@ -4,4 +4,4 @@ services:
     app:
         build:
             context: .
-            dockerfile: ./docker/Dockerfile.debug
+            dockerfile: ./src/docker/Dockerfile.debug

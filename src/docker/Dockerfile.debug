@@ -8,11 +8,11 @@ RUN apt-get update \
 WORKDIR /app
 
 # Copy csproj and restore as distinct layers
-COPY *.csproj ./
+COPY ./src/*.csproj ./
 RUN dotnet restore
 
 # Copy everything else and build
-COPY . ./
+COPY ./src ./
 RUN dotnet build -c Debug
 
 ENV DOTNET_ENVIRONMENT=Development

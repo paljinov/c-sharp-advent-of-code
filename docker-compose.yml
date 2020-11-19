@@ -4,8 +4,8 @@ services:
     app:
         build:
             context: .
-            dockerfile: ./docker/Dockerfile.release
+            dockerfile: ./src/docker/Dockerfile.release
         env_file:
-            - .env
+            - ./src/.env
         stdin_open: true
         tty: true
