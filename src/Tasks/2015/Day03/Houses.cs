@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace App.Tasks.Year2015.Day3
 {
-    class Houses
+    public class Houses
     {
         public static HashSet<(int, int)> GetVisitedHousesLocationsForMoves(string moves)
         {

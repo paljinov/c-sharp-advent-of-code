@@ -23,7 +23,7 @@ using System.Collections.Generic;
 
 namespace App.Tasks.Year2016.Day3
 {
-    class Part1 : ITask<int>
+    public class Part1 : ITask<int>
     {
         private readonly DesignDocumentRepository designDocumentRepository;
 

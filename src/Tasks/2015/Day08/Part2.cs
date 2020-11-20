@@ -24,7 +24,7 @@ using System;
 
 namespace App.Tasks.Year2015.Day8
 {
-    class Part2 : ITask<int>
+    public class Part2 : ITask<int>
     {
         public int Solution(string input)
         {

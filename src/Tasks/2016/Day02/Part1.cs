@@ -48,7 +48,7 @@ desk. What is the bathroom code?
 
 namespace App.Tasks.Year2016.Day2
 {
-    class Part1 : ITask<string>
+    public class Part1 : ITask<string>
     {
         private readonly char[,] keypad = new char[,] {
             { '1', '2', '3' },

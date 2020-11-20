@@ -2,7 +2,7 @@ using System;
 
 namespace App.Tasks.Year2016.Day2
 {
-    class InstructionsRepository
+    public class InstructionsRepository
     {
         public string[] ParseInput(string input)
         {

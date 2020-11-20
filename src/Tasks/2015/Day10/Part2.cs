@@ -10,7 +10,7 @@ times. What is the length of the new result?
 
 namespace App.Tasks.Year2015.Day10
 {
-    class Part2 : ITask<int>
+    public class Part2 : ITask<int>
     {
         public int Solution(string input)
         {

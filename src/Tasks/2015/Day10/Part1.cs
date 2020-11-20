@@ -25,7 +25,7 @@ is the length of the result?
 
 namespace App.Tasks.Year2015.Day10
 {
-    class Part1 : ITask<int>
+    public class Part1 : ITask<int>
     {
         public int Solution(string input)
         {

@@ -1,6 +1,6 @@
 namespace App.Tasks.Year2015.Day16
 {
-    class Compounds
+    public class Compounds
     {
         public int? Children { get; set; }
         public int? Cats { get; set; }

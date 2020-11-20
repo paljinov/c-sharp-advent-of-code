@@ -33,7 +33,7 @@ proud of your solution if it uses a cinematic "decrypting" animation.
 
 namespace App.Tasks.Year2016.Day5
 {
-    class Part2 : ITask<string>
+    public class Part2 : ITask<string>
     {
         private readonly Password password;
 

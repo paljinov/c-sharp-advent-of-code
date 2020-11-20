@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace App.Tasks.Year2015.Day2
 {
-    class BoxesRepository
+    public class BoxesRepository
     {
         public static List<Box> GetBoxes(string input)
         {

@@ -30,7 +30,7 @@ Given the actual Door ID, what is the password?
 
 namespace App.Tasks.Year2016.Day5
 {
-    class Part1 : ITask<string>
+    public class Part1 : ITask<string>
     {
         private readonly Password password;
 

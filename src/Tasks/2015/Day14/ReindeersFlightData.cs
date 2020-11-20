@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace App.Tasks.Year2015.Day14
 {
-    class ReindeersFlightData
+    public class ReindeersFlightData
     {
         /// <summary>
         /// Flight duration in seconds.

@@ -2,7 +2,7 @@ using System;
 
 namespace App.Tasks.Year2015.Day18
 {
-    class InitialLightsConfigurationRepository
+    public class InitialLightsConfigurationRepository
     {
         public bool[,] ParseInput(string input)
         {

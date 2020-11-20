@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace App.Tasks.Year2016.Day4
 {
-    class RoomRepository
+    public class RoomRepository
     {
         public List<Room> GetPossibleRooms(string input)
         {

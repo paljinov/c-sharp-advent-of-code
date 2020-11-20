@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace App.Tasks.Year2015.Day13
 {
-    class SittingArrangements
+    public class SittingArrangements
     {
         /// <summary>
         /// Get sitting arrangements.

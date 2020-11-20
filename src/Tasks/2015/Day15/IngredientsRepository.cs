@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace App.Tasks.Year2015.Day15
 {
-    class IngredientsRepository
+    public class IngredientsRepository
     {
         public Dictionary<string, Ingredient> ParseInput(string input)
         {

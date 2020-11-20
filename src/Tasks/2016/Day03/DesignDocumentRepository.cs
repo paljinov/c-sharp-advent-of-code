@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace App.Tasks.Year2016.Day3
 {
-    class DesignDocumentRepository
+    public class DesignDocumentRepository
     {
         public List<Sides> ParseInput(string input)
         {

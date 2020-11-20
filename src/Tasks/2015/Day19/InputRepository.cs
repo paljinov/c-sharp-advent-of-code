@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace App.Tasks.Year2015.Day19
 {
-    class InputRepository
+    public class InputRepository
     {
         public string GetStartingMolecule(string input)
         {

@@ -22,7 +22,7 @@ For example:
 
 namespace App.Tasks.Year2015.Day4
 {
-    class Part1 : ITask<int>
+    public class Part1 : ITask<int>
     {
         private const string HashStartsWithPrefix = "00000";
 

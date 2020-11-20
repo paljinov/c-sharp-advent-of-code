@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace App.Tasks.Year2015.Day7
 {
-    class WireSignals
+    public class WireSignals
     {
         /// <summary>
         /// Calculate wire signals.

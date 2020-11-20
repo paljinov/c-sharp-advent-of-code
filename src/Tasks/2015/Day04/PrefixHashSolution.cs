@@ -3,7 +3,7 @@ using System.Text;
 
 namespace App.Tasks.Year2015.Day4
 {
-    class PrefixHashSolution
+    public class PrefixHashSolution
     {
         public int FindIntegerWhichGivesMd5HashWithPrefix(string secretKey, string hashStartsWithPrefix)
         {

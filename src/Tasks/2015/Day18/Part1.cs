@@ -86,7 +86,7 @@ lights are on after 100 steps?
 
 namespace App.Tasks.Year2015.Day18
 {
-    class Part1 : ITask<int>
+    public class Part1 : ITask<int>
     {
         private readonly InitialLightsConfigurationRepository initialLightsConfigurationRepository;
 

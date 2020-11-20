@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace App.Tasks.Year2015.Day17
 {
-    class ContainersCombinations
+    public class ContainersCombinations
     {
         public const int EggnogLiters = 150;
 

@@ -6,7 +6,7 @@ Now find one that starts with six zeroes.
 
 namespace App.Tasks.Year2015.Day4
 {
-    class Part2 : ITask<int>
+    public class Part2 : ITask<int>
     {
         private const string HashStartsWithPrefix = "000000";
 

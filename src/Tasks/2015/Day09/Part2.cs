@@ -15,7 +15,7 @@ What is the distance of the longest route?
 
 namespace App.Tasks.Year2015.Day9
 {
-    class Part2 : ITask<int>
+    public class Part2 : ITask<int>
     {
         private readonly PossibleRoutes possibleRoutes;
 

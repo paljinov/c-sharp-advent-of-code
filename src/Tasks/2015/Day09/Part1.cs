@@ -31,7 +31,7 @@ What is the distance of the shortest route?
 
 namespace App.Tasks.Year2015.Day9
 {
-    class Part1 : ITask<int>
+    public class Part1 : ITask<int>
     {
         private readonly PossibleRoutes possibleRoutes;
 

@@ -28,7 +28,7 @@ using System.Linq;
 
 namespace App.Tasks.Year2015.Day14
 {
-    class Part2 : ITask<int>
+    public class Part2 : ITask<int>
     {
         private readonly ReindeersFlightData reindeersFlightData;
 

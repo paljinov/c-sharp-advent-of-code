@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace App.Tasks.Year2015.Day21
 {
-    class ShopItemRepository
+    public class ShopItemRepository
     {
         private readonly Dictionary<string, Item> weapons = new Dictionary<string, Item>()
         {

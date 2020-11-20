@@ -24,7 +24,7 @@ using System.Text;
 
 namespace App.Tasks.Year2015.Day3
 {
-    class Part2 : ITask<int>
+    public class Part2 : ITask<int>
     {
         public int Solution(string moves)
         {

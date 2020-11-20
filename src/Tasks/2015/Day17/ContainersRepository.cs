@@ -2,7 +2,7 @@ using System;
 
 namespace App.Tasks.Year2015.Day17
 {
-    class ContainersRepository
+    public class ContainersRepository
     {
         public int[] ParseInput(string input)
         {

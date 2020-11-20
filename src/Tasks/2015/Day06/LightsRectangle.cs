@@ -1,6 +1,6 @@
 namespace App.Tasks.Year2015.Day6
 {
-    class LightsRectangle
+    public class LightsRectangle
     {
         public Instructions Instruction { get; set; }
         public int X1 { get; set; }

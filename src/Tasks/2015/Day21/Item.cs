@@ -1,6 +1,6 @@
 namespace App.Tasks.Year2015.Day21
 {
-    class Item
+    public class Item
     {
         public int Cost { get; set; }
         public int Damage { get; set; }

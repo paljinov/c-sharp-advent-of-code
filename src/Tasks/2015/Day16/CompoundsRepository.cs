@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace App.Tasks.Year2015.Day16
 {
-    class CompoundsRepository
+    public class CompoundsRepository
     {
         public readonly Compounds AuntSueCompounds = new Compounds
         {

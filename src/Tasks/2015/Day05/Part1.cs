@@ -27,7 +27,7 @@ using System.Linq;
 
 namespace App.Tasks.Year2015.Day5
 {
-    class Part1 : ITask<int>
+    public class Part1 : ITask<int>
     {
         private static readonly char[] vowels = { 'a', 'e', 'i', 'o', 'u' };
         private static readonly string[] forbiddenSubstrings = { "ab", "cd", "pq", "xy" };

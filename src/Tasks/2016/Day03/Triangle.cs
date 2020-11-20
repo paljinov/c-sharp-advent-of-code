@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace App.Tasks.Year2016.Day3
 {
-    class Triangle
+    public class Triangle
     {
         public int CountTriangles(List<Sides> designDocument)
         {

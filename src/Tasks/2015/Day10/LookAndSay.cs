@@ -2,7 +2,7 @@ using System.Text;
 
 namespace App.Tasks.Year2015.Day10
 {
-    class LookAndSay
+    public class LookAndSay
     {
         public static string GenerateSequence(string input)
         {

@@ -42,7 +42,7 @@ password be?
 
 namespace App.Tasks.Year2015.Day11
 {
-    class Part1 : ITask<string>
+    public class Part1 : ITask<string>
     {
         private readonly NextPassword nextPasswordFinder;
 

@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace App.Tasks.Year2015.Day11
 {
-    class NextPassword
+    public class NextPassword
     {
         public string Find(string input)
         {

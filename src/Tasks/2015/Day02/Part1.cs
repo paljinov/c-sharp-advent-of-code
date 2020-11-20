@@ -26,7 +26,7 @@ using System.Linq;
 
 namespace App.Tasks.Year2015.Day2
 {
-    class Part1 : ITask<int>
+    public class Part1 : ITask<int>
     {
         public int Solution(string input)
         {

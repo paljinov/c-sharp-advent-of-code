@@ -4,7 +4,7 @@ using System.Text;
 
 namespace App.Tasks.Year2016.Day4
 {
-    class RealRoom
+    public class RealRoom
     {
         public List<Room> FilterRealRooms(List<Room> possibleRooms)
         {

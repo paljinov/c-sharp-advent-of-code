@@ -1,6 +1,6 @@
 namespace App.Tasks
 {
-    interface ITask<T>
+    public interface ITask<T>
     {
         T Solution(string input);
     }

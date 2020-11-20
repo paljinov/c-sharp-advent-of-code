@@ -53,7 +53,7 @@ using System.Collections.Generic;
 
 namespace App.Tasks.Year2015.Day13
 {
-    class Part1 : ITask<int>
+    public class Part1 : ITask<int>
     {
         private readonly SittingHappinessRepository sittingHappinessRepository;
 

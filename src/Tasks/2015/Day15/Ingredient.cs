@@ -1,6 +1,6 @@
 namespace App.Tasks.Year2015.Day15
 {
-    class Ingredient
+    public class Ingredient
     {
         public int Capacity { get; set; }
         public int Durability { get; set; }

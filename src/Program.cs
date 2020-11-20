@@ -6,9 +6,9 @@ using App.Helpers;
 
 namespace App
 {
-    class Program
+    public class Program
     {
-        static void Main()
+        public static void Main()
         {
             int year;
             int day;

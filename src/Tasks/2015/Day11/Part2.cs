@@ -6,7 +6,7 @@ Santa's password expired again. What's the next one?
 
 namespace App.Tasks.Year2015.Day11
 {
-    class Part2 : ITask<string>
+    public class Part2 : ITask<string>
     {
         private readonly NextPassword nextPasswordFinder;
 

@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace App.Tasks.Year2015.Day19
 {
-    class Molecules
+    public class Molecules
     {
         public int CountCreatedDisctinctMolecules(string startingMolecule, List<(string, string)> replacements)
         {

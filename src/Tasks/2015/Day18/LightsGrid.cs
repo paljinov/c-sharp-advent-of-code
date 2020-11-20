@@ -1,6 +1,6 @@
 namespace App.Tasks.Year2015.Day18
 {
-    class LightsGrid
+    public class LightsGrid
     {
         public const int Steps = 100;
 

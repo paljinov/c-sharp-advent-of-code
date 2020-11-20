@@ -25,7 +25,7 @@ For example:
 
 namespace App.Tasks.Year2015.Day3
 {
-    class Part1 : ITask<int>
+    public class Part1 : ITask<int>
     {
         public int Solution(string moves)
         {

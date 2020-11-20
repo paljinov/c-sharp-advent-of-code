@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace App.Tasks.Year2015.Day9
 {
-    class PossibleRoutes
+    public class PossibleRoutes
     {
         public Dictionary<string, int> GetPossibleRoutes(string input)
         {

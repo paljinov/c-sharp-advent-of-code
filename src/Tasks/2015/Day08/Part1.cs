@@ -44,7 +44,7 @@ using System.Text.RegularExpressions;
 
 namespace App.Tasks.Year2015.Day8
 {
-    class Part1 : ITask<int>
+    public class Part1 : ITask<int>
     {
         public int Solution(string input)
         {

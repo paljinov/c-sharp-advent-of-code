@@ -4,7 +4,7 @@ using System.Text;
 
 namespace App.Tasks.Year2016.Day5
 {
-    class Password
+    public class Password
     {
         private const int PasswordLength = 8;
 

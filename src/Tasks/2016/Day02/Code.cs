@@ -2,7 +2,7 @@ using System.Text;
 
 namespace App.Tasks.Year2016.Day2
 {
-    class Code
+    public class Code
     {
         public const char NotExistingKey = 'X';
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace App.Tasks.Year2015.Day21
 {
-    class Fight
+    public class Fight
     {
         private const int PlayerHitPoints = 100;
 

@@ -15,7 +15,7 @@ using System.Collections.Generic;
 
 namespace App.Tasks.Year2016.Day1
 {
-    class Part2 : ITask<int>
+    public class Part2 : ITask<int>
     {
         private readonly InstructionsRepository instructionsRepository;
 

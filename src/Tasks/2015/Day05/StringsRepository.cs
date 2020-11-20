@@ -2,7 +2,7 @@ using System;
 
 namespace App.Tasks.Year2015.Day5
 {
-    class StringsRepository
+    public class StringsRepository
     {
         public static string[] GetStrings(string input)
         {

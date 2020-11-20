@@ -63,7 +63,7 @@ four corners always in the on state, how many lights are on after 100 steps?
 
 namespace App.Tasks.Year2015.Day18
 {
-    class Part2 : ITask<int>
+    public class Part2 : ITask<int>
     {
         private readonly InitialLightsConfigurationRepository initialLightsConfigurationRepository;
 

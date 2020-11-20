@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 
 namespace App.Tasks.Year2015.Day21
 {
-    class BossStatsRepository
+    public class BossStatsRepository
     {
         public FighterStats GetBossStats(string input)
         {

@@ -28,7 +28,7 @@ using System.Collections.Generic;
 
 namespace App.Tasks.Year2015.Day5
 {
-    class Part2 : ITask<int>
+    public class Part2 : ITask<int>
     {
         public int Solution(string input)
         {

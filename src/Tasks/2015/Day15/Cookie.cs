@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace App.Tasks.Year2015.Day15
 {
-    class Cookie
+    public class Cookie
     {
         private const int TotalTeaspoons = 100;
 

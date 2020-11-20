@@ -33,7 +33,7 @@ using System.Collections.Generic;
 
 namespace App.Tasks.Year2015.Day6
 {
-    class Part1 : ITask<int>
+    public class Part1 : ITask<int>
     {
         private readonly LightsSetupInstructionsRepository lightsSetupInstructionsRepository;
 

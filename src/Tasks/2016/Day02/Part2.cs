@@ -32,7 +32,7 @@ code?
 
 namespace App.Tasks.Year2016.Day2
 {
-    class Part2 : ITask<string>
+    public class Part2 : ITask<string>
     {
         private readonly char[,] keypad = new char[,] {
             { Code.NotExistingKey, Code.NotExistingKey, '1', Code.NotExistingKey, Code.NotExistingKey },

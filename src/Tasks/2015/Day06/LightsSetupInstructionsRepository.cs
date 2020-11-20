@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace App.Tasks.Year2015.Day6
 {
-    class LightsSetupInstructionsRepository
+    public class LightsSetupInstructionsRepository
     {
         public List<LightsRectangle> GetInstructions(string input)
         {

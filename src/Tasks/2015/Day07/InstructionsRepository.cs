@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace App.Tasks.Year2015.Day7
 {
-    class InstructionsRepository
+    public class InstructionsRepository
     {
         /// <summary>
         /// Returns instructions in dictionary where key represents line where

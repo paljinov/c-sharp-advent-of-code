@@ -1,10 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace App.Tasks.Year2016.Day1
 {
-    class CityStreetGrid
+    public class CityStreetGrid
     {
         public List<(int, int)> CalculateVisitedBlocksAfterMove(string[] instructions)
         {

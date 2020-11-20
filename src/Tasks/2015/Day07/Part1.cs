@@ -60,7 +60,7 @@ using System.Collections.Generic;
 
 namespace App.Tasks.Year2015.Day7
 {
-    class Part1 : ITask<ushort>
+    public class Part1 : ITask<ushort>
     {
         private readonly InstructionsRepository instructionsRepository;
 

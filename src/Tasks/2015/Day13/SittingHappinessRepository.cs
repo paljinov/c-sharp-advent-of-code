@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace App.Tasks.Year2015.Day13
 {
-    class SittingHappinessRepository
+    public class SittingHappinessRepository
     {
         /// <summary>
         /// Parse input string to sitting happiness.

@@ -14,7 +14,7 @@ using System;
 
 namespace App.Tasks.Year2015.Day20
 {
-    class Part2 : ITask<int>
+    public class Part2 : ITask<int>
     {
         private const int PresentsPerElf = 11;
 

@@ -2,7 +2,7 @@ using System.IO;
 
 namespace App.Helpers
 {
-    class ReadInputHelper
+    public class ReadInputHelper
     {
         public static string ReadTaskInput(int year, int day)
         {
