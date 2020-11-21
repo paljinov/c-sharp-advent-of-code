@@ -5,45 +5,44 @@ namespace Tests.Tasks.Year2015.Day1
 {
     public class Part1Tests
     {
-        [Fact]
-        public void Solution_ExampleInstructions_FloorZero()
-        {
-            Part1 task = new Part1();
-            int result = 0;
+        private readonly Part1 task;
 
-            Assert.Equal(result, task.Solution("(())"));
-            Assert.Equal(result, task.Solution("()()"));
+        public Part1Tests()
+        {
+            task = new Part1();
         }
 
-        [Fact]
-        public void Solution_ExampleInstructions_FloorThree()
+        [Theory]
+        [InlineData("(())")]
+        [InlineData("()()")]
+        public void Solution_ExampleInstructions_FloorZero(string parentheses)
         {
-            Part1 task = new Part1();
-            int result = 3;
-
-            Assert.Equal(result, task.Solution("((("));
-            Assert.Equal(result, task.Solution("(()(()("));
-            Assert.Equal(result, task.Solution("))((((("));
+            Assert.Equal(0, task.Solution(parentheses));
         }
 
-        [Fact]
-        public void Solution_ExampleInstructions_FloorMinusOne()
+        [Theory]
+        [InlineData("(((")]
+        [InlineData("(()(()(")]
+        [InlineData("))(((((")]
+        public void Solution_ExampleInstructions_FloorThree(string parentheses)
         {
-            Part1 task = new Part1();
-            int result = -1;
-
-            Assert.Equal(result, task.Solution("())"));
-            Assert.Equal(result, task.Solution("))("));
+            Assert.Equal(3, task.Solution(parentheses));
         }
 
-        [Fact]
-        public void Solution_ExampleInstructions_FloorMinusThree()
+        [Theory]
+        [InlineData("())")]
+        [InlineData("))(")]
+        public void Solution_ExampleInstructions_FloorMinusOne(string parentheses)
         {
-            Part1 task = new Part1();
-            int result = -3;
+            Assert.Equal(-1, task.Solution(parentheses));
+        }
 
-            Assert.Equal(result, task.Solution(")))"));
-            Assert.Equal(result, task.Solution(")())())"));
+        [Theory]
+        [InlineData(")))")]
+        [InlineData(")())())")]
+        public void Solution_ExampleInstructions_FloorMinusThree(string parentheses)
+        {
+            Assert.Equal(-3, task.Solution(parentheses));
         }
     }
 }

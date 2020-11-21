@@ -5,22 +5,23 @@ namespace Tests.Tasks.Year2015.Day1
 {
     public class Part2Tests
     {
+        private readonly Part2 task;
+
+        public Part2Tests()
+        {
+            task = new Part2();
+        }
+
         [Fact]
         public void Solution_ExampleInstructions_BasementAtCharacterPositionOne()
         {
-            Part2 task = new Part2();
-            int result = 1;
-
-            Assert.Equal(result, task.Solution(")"));
+            Assert.Equal(1, task.Solution(")"));
         }
 
         [Fact]
         public void Solution_ExampleInstructions_BasementAtCharacterPositionFive()
         {
-            Part2 task = new Part2();
-            int result = 5;
-
-            Assert.Equal(result, task.Solution("()())"));
+            Assert.Equal(5, task.Solution("()())"));
         }
     }
 }
