@@ -22,7 +22,7 @@ dotnet run
 ## Docker development:
 
 ### Run watcher, run source code on file change:
-1. Build and compose app container
+1. Build and compose project
     ```sh
     docker-compose -f docker-compose.yml -f docker-compose.watch.yml up -d --force-recreate --build
     ```
@@ -35,7 +35,7 @@ dotnet run
     dotnet watch run
     ```
 ### Debug configuration:
-1. Build and compose app container
+1. Build and compose project
     ```sh
     docker-compose -f docker-compose.yml -f docker-compose.debug.yml up -d --force-recreate --build
     ```
@@ -49,7 +49,7 @@ dotnet run
     ```
 
 ### Release configuration:
-1. Build and compose app container
+1. Build and compose project
     ```sh
     docker-compose up -d --force-recreate --build
     ```
@@ -68,4 +68,5 @@ docker-compose logs -ft app
 ```
 
 ## Docs:
+* [Unit tests](./docs/UnitTests.md)
 * [Visual Studio Code settings](./docs/VisualStudioCode.md)
