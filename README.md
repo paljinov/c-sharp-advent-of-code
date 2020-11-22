@@ -11,12 +11,12 @@ Copy `env.example` to `.env` file and set year, day and part for task you wish t
 
 ### Run watcher, runs source code on file change:
 ```sh
-dotnet watch run
+dotnet watch --project ./src/AdventOfCode.csproj run
 ```
 
 ### Run source code:
 ```sh
-dotnet run
+dotnet run --project ./src/AdventOfCode.csproj
 ```
 
 ## Docker development:
@@ -26,7 +26,7 @@ dotnet run
     ```sh
     docker-compose -f docker-compose.yml -f docker-compose.watch.yml up -d --force-recreate --build
     ```
-2. Get a bash shell in the container running container: 
+2. Get a bash shell in the app running container: 
     ```sh
     docker-compose exec app /bin/bash
     ```
@@ -39,7 +39,7 @@ dotnet run
     ```sh
     docker-compose -f docker-compose.yml -f docker-compose.debug.yml up -d --force-recreate --build
     ```
-2. Get a bash shell in the container running container: 
+2. Get a bash shell in the app running container: 
     ```sh
     docker-compose exec app /bin/bash
     ```
@@ -53,7 +53,7 @@ dotnet run
     ```sh
     docker-compose up -d --force-recreate --build
     ```
-2. Get a bash shell in the container running container: 
+2. Get a bash shell in the app running container: 
     ```sh
     docker-compose exec app /bin/bash
     ```
@@ -62,7 +62,7 @@ dotnet run
     dotnet AdventOfCode.dll
     ```
 
-### Check logs:
+### Check app container logs:
 ```sh
 docker-compose logs -ft app
 ```

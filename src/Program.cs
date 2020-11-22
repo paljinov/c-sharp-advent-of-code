@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using App.Helpers;
+using App.Repository;
 
 namespace App
 {
@@ -19,9 +20,10 @@ namespace App
 
             try
             {
-                string yearEnv = Environment.GetEnvironmentVariable("AOC_YEAR");
-                string dayEnv = Environment.GetEnvironmentVariable("AOC_DAY");
-                string partEnv = Environment.GetEnvironmentVariable("AOC_PART");
+                EnvironmentRepository environmentRepository = new EnvironmentRepository();
+                string yearEnv = environmentRepository.ReadYearInput();
+                string dayEnv = environmentRepository.ReadDayInput();
+                string partEnv = environmentRepository.ReadPartInput();
 
                 if (string.IsNullOrEmpty(yearEnv))
                 {
