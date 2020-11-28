@@ -12,9 +12,8 @@ namespace Tests.Tasks.Year2015.Day6
             task = new Part2();
         }
 
-
         [Fact]
-        public void Solution_FirstExampleInstructionsTotalBrightnessIncreaseEquals()
+        public void Solution_FirstExampleInstructions_TotalBrightnessIncreaseEquals()
         {
             Assert.Equal(1, task.Solution("turn on 0,0 through 0,0"));
         }
