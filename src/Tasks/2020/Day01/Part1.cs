@@ -46,29 +46,18 @@ namespace App.Tasks.Year2020.Day1
     {
         private readonly ExpenseReportRepository expenseReportRepository;
 
+        private readonly EntriesProduct entriesProduct;
+
         public Part1()
         {
             expenseReportRepository = new ExpenseReportRepository();
+            entriesProduct = new EntriesProduct();
         }
 
         public int Solution(string input)
         {
-            int product = 0;
-
             List<int> entries = expenseReportRepository.GetEntries(input);
-
-            for (int i = 0; i < entries.Count - 1; i++)
-            {
-                for (int j = i + 1; j < entries.Count; j++)
-                {
-                    int sum = entries[i] + entries[j];
-                    if (sum == 2020)
-                    {
-                        product = entries[i] * entries[j];
-                        break;
-                    }
-                }
-            }
+            int product = entriesProduct.FindProductOfEntriesWhichSumTo(entries, 2);
 
             return product;
         }
