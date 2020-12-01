@@ -7,10 +7,10 @@ namespace App.Tasks.Year2020.Day1
     {
         private const int SUM = 2020;
 
-        public int FindProductOfEntriesWhichSumTo(List<int> entries, int entriesCount)
+        public int FindProductOfEntriesWhichSumTo(List<int> expenseReportEntries, int entriesCount)
         {
             List<int> sumEntries = new List<int>();
-            FindEntriesWhichSumTo(entries, entriesCount, 0, sumEntries);
+            FindEntriesWhichSumTo(expenseReportEntries, entriesCount, 0, sumEntries);
 
             int product = 1;
             foreach (int sumEntry in sumEntries)
@@ -29,17 +29,17 @@ namespace App.Tasks.Year2020.Day1
         /// <param name="start"></param>
         /// <param name="sumEntries"></param>
         /// <returns>True if exact number of entries which give required sum is found, false otherwise.</returns>
-        private bool FindEntriesWhichSumTo(List<int> entries, int entriesCount, int start, List<int> sumEntries)
+        private bool FindEntriesWhichSumTo(List<int> expenseReportEntries, int entriesCount, int start, List<int> sumEntries)
         {
             entriesCount--;
 
-            for (int i = start; i < entries.Count - entriesCount; i++)
+            for (int i = start; i < expenseReportEntries.Count - entriesCount; i++)
             {
-                sumEntries.Add(entries[i]);
+                sumEntries.Add(expenseReportEntries[i]);
                 // If more entries needs to be added
                 if (entriesCount > 0)
                 {
-                    if (FindEntriesWhichSumTo(entries, entriesCount, i + 1, sumEntries))
+                    if (FindEntriesWhichSumTo(expenseReportEntries, entriesCount, i + 1, sumEntries))
                     {
                         return true;
                     }

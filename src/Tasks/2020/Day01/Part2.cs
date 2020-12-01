@@ -31,8 +31,8 @@ namespace App.Tasks.Year2020.Day1
 
         public int Solution(string input)
         {
-            List<int> entries = expenseReportRepository.GetEntries(input);
-            int product = entriesProduct.FindProductOfEntriesWhichSumTo(entries, 3);
+            List<int> expenseReportEntries = expenseReportRepository.GetEntries(input);
+            int product = entriesProduct.FindProductOfEntriesWhichSumTo(expenseReportEntries, 3);
 
             return product;
         }
