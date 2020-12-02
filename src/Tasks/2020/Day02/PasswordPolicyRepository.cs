@@ -20,9 +20,9 @@ namespace App.Tasks.Year2020.Day2
 
                 passwordPolicies.Add(new PasswordPolicy
                 {
-                    Min = int.Parse(groups[1].Value),
-                    Max = int.Parse(groups[2].Value),
-                    Letter = groups[3].Value,
+                    From = int.Parse(groups[1].Value),
+                    To = int.Parse(groups[2].Value),
+                    Letter = char.Parse(groups[3].Value),
                     Password = groups[4].Value
                 });
             }

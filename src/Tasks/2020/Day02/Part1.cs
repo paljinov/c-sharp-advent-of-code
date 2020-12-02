@@ -56,8 +56,8 @@ namespace App.Tasks.Year2020.Day2
 
             foreach (PasswordPolicy passwordPolicy in passwordPolicies)
             {
-                int count = passwordPolicy.Password.Split(passwordPolicy.Letter).Length - 1;
-                if (count >= passwordPolicy.Min && count <= passwordPolicy.Max)
+                int letterOccurrences = passwordPolicy.Password.Split(passwordPolicy.Letter).Length - 1;
+                if (letterOccurrences >= passwordPolicy.From && letterOccurrences <= passwordPolicy.To)
                 {
                     validPasswords++;
                 }

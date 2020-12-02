@@ -45,19 +45,9 @@ namespace App.Tasks.Year2020.Day2
 
             foreach (PasswordPolicy passwordPolicy in passwordPolicies)
             {
-                int count = 0;
-
-                if (passwordPolicy.Password[passwordPolicy.Min - 1].ToString() == passwordPolicy.Letter)
-                {
-                    count++;
-                }
-
-                if (passwordPolicy.Password[passwordPolicy.Max - 1].ToString() == passwordPolicy.Letter)
-                {
-                    count++;
-                }
-
-                if (count == 1)
+                // XOR operator (logical exclusive OR)
+                if (passwordPolicy.Password[passwordPolicy.From - 1] == passwordPolicy.Letter ^
+                    passwordPolicy.Password[passwordPolicy.To - 1] == passwordPolicy.Letter)
                 {
                     validPasswords++;
                 }
