@@ -71,8 +71,6 @@ Starting at the top-left corner of your map and following a slope of right 3 and
 down 1, how many trees would you encounter?
 */
 
-using System.Collections.Generic;
-
 namespace App.Tasks.Year2020.Day3
 {
     public class Part1 : ITask<int>
@@ -92,7 +90,7 @@ namespace App.Tasks.Year2020.Day3
             int right = 3;
             int down = 1;
 
-            List<int[]> areaMap = areaMapRepository.GetAreaMap(input, right, down);
+            bool[,] areaMap = areaMapRepository.GetAreaMap(input, right, down);
             int encounteredTrees = trees.CalculateEncounteredTrees(areaMap, right, down);
 
             return encounteredTrees;

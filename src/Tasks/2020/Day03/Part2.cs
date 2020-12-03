@@ -22,12 +22,19 @@ of the listed slopes?
 */
 
 using System;
-using System.Collections.Generic;
 
 namespace App.Tasks.Year2020.Day3
 {
     public class Part2 : ITask<long>
     {
+        private readonly int[,] slopes = new int[,] {
+            { 1, 1 },
+            { 3, 1 },
+            { 5, 1 },
+            { 7, 1 },
+            { 1, 2 }
+        };
+
         private readonly AreaMapRepository areaMapRepository;
 
         private readonly Trees trees;
@@ -42,26 +49,44 @@ namespace App.Tasks.Year2020.Day3
         {
             long encounteredTreesMultiplication = 1;
 
-            int slopesCount = 5;
-            int[,] slopes = new int[,] {
-                { 1, 1 },
-                { 3, 1 },
-                { 5, 1 },
-                { 7, 1 },
-                { 1, 2 }
-            };
+            int largestAreaMapIndex = GetLargestAreaMapIndex();
+            // Largest area map is enough for all calculations
+            bool[,] areaMap = areaMapRepository.GetAreaMap(
+                input,
+                slopes[largestAreaMapIndex, 0],
+                slopes[largestAreaMapIndex, 1]
+            );
 
-            for (int i = 0; i < slopesCount; i++)
+            for (int i = 0; i < slopes.GetLength(0); i++)
             {
                 int right = slopes[i, 0];
                 int down = slopes[i, 1];
 
-                List<int[]> areaMap = areaMapRepository.GetAreaMap(input, right, down);
                 int encounteredTrees = trees.CalculateEncounteredTrees(areaMap, right, down);
                 encounteredTreesMultiplication *= encounteredTrees;
             }
 
             return encounteredTreesMultiplication;
+        }
+
+        private int GetLargestAreaMapIndex()
+        {
+            double max = 0;
+            int maxIndex = 0;
+
+            for (int i = 0; i < slopes.GetLength(0); i++)
+            {
+                int right = slopes[i, 0];
+                int down = slopes[i, 1];
+
+                if (right / down > max)
+                {
+                    max = right / down;
+                    maxIndex = i;
+                }
+            }
+
+            return maxIndex;
         }
     }
 }

@@ -4,18 +4,16 @@ namespace App.Tasks.Year2020.Day3
 {
     public class Trees
     {
-        public int CalculateEncounteredTrees(List<int[]> areaMap, int right, int down)
+        public int CalculateEncounteredTrees(bool[,] areaMap, int right, int down)
         {
             int encounteredTrees = 0;
 
             int rightPosition = right;
             int downPosition = down;
 
-
-            while (downPosition < areaMap.Count)
+            while (downPosition < areaMap.GetLength(0))
             {
-                int[] row = areaMap[downPosition];
-                if (row[rightPosition] == 1)
+                if (areaMap[downPosition, rightPosition])
                 {
                     encounteredTrees++;
                 }

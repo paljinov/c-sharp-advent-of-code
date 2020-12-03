@@ -1,38 +1,34 @@
 using System;
-using System.Collections.Generic;
+using System.Linq;
 
 namespace App.Tasks.Year2020.Day3
 {
     public class AreaMapRepository
     {
-        public List<int[]> GetAreaMap(string input, int right, int down)
+        public bool[,] GetAreaMap(string input, int right, int down)
         {
-            List<int[]> areaMap = new List<int[]>();
-
             string[] areaMapString = input.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
-            int rowRepetitions = (int)Math.Ceiling((double)(areaMapString.Length / down)) * right;
+            int rows = areaMapString.Length;
+            int columns = areaMapString[0].Length;
 
-            foreach (string rowString in areaMapString)
+            int rowRepetitions = (int)Math.Ceiling((double)rows / (double)down) * right;
+
+            // Initializing areaMap with sufficient number of coordinates
+            bool[,] areaMap = new bool[rows, columns * rowRepetitions];
+
+            for (int i = 0; i < rows; i++)
             {
-                int rowLength = rowString.Length;
+                string rowString = areaMapString[i];
+                string rowStringAfterRepetitions = string.Concat(Enumerable.Repeat(rowString, rowRepetitions));
 
-                int[] row = new int[rowLength * rowRepetitions];
-
-                for (int i = 0; i < rowRepetitions; i++)
+                for (int j = 0; j < rowStringAfterRepetitions.Length; j++)
                 {
-                    for (int j = 0; j < rowLength; j++)
+                    // If it is tree
+                    if (rowStringAfterRepetitions[j] == '#')
                     {
-                        char character = rowString[j];
-
-                        // If it is tree
-                        if (character == '#')
-                        {
-                            row[i * rowLength + j] = 1;
-                        }
+                        areaMap[i, j] = true;
                     }
                 }
-
-                areaMap.Add(row);
             }
 
             return areaMap;
