@@ -75,6 +75,10 @@ namespace App.Tasks.Year2020.Day3
 {
     public class Part1 : ITask<int>
     {
+        private const int SLOPE_RIGHT_STEP = 3;
+
+        private const int SLOPE_DOWN_STEP = 1;
+
         private readonly AreaMapRepository areaMapRepository;
 
         private readonly Trees trees;
@@ -87,11 +91,8 @@ namespace App.Tasks.Year2020.Day3
 
         public int Solution(string input)
         {
-            int right = 3;
-            int down = 1;
-
-            bool[,] areaMap = areaMapRepository.GetAreaMap(input, right, down);
-            int encounteredTrees = trees.CalculateEncounteredTrees(areaMap, right, down);
+            bool[,] areaMap = areaMapRepository.GetAreaMap(input);
+            int encounteredTrees = trees.CalculateEncounteredTrees(areaMap, SLOPE_RIGHT_STEP, SLOPE_DOWN_STEP);
 
             return encounteredTrees;
         }

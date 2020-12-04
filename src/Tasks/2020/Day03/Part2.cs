@@ -49,44 +49,18 @@ namespace App.Tasks.Year2020.Day3
         {
             long encounteredTreesMultiplication = 1;
 
-            int largestAreaMapIndex = GetLargestAreaMapIndex();
-            // Largest area map is enough for all calculations
-            bool[,] areaMap = areaMapRepository.GetAreaMap(
-                input,
-                slopes[largestAreaMapIndex, 0],
-                slopes[largestAreaMapIndex, 1]
-            );
+            bool[,] areaMap = areaMapRepository.GetAreaMap(input);
 
             for (int i = 0; i < slopes.GetLength(0); i++)
             {
-                int right = slopes[i, 0];
-                int down = slopes[i, 1];
+                int rightStep = slopes[i, 0];
+                int downStep = slopes[i, 1];
 
-                int encounteredTrees = trees.CalculateEncounteredTrees(areaMap, right, down);
+                int encounteredTrees = trees.CalculateEncounteredTrees(areaMap, rightStep, downStep);
                 encounteredTreesMultiplication *= encounteredTrees;
             }
 
             return encounteredTreesMultiplication;
-        }
-
-        private int GetLargestAreaMapIndex()
-        {
-            double max = 0;
-            int maxIndex = 0;
-
-            for (int i = 0; i < slopes.GetLength(0); i++)
-            {
-                int right = slopes[i, 0];
-                int down = slopes[i, 1];
-
-                if (right / down > max)
-                {
-                    max = right / down;
-                    maxIndex = i;
-                }
-            }
-
-            return maxIndex;
         }
     }
 }
