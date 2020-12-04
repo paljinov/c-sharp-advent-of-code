@@ -82,13 +82,9 @@ namespace App.Tasks.Year2020.Day4
 
         public int Solution(string input)
         {
-            List<string> potentialPassports = passportsRepository.GetPotentialPassports(input);
-            string[] passportExpectedFields = passportsRepository.PassportExpectedFields;
+            List<Passport> potentialPassports = passportsRepository.GetPotentialPassports(input);
 
-            int validPassports = this.validPassports.GetValidPassportsWithExpectedFieldsAndValues(
-                potentialPassports,
-                passportExpectedFields
-            );
+            int validPassports = this.validPassports.GetValidPassportsWithExpectedFieldsAndValues(potentialPassports);
 
             return validPassports;
         }

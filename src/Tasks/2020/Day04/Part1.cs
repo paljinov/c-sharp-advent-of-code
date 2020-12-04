@@ -19,7 +19,7 @@ follows:
 
 byr (Birth Year)
 iyr (Issue Year)
-eyr (Expiration Year)
+eyr (ExpirationYear Year)
 hgt (Height)
 hcl (Hair Color)
 ecl (Eye Color)
@@ -82,13 +82,9 @@ namespace App.Tasks.Year2020.Day4
 
         public int Solution(string input)
         {
-            List<string> potentialPassports = passportsRepository.GetPotentialPassports(input);
-            string[] passportExpectedFields = passportsRepository.PassportExpectedFields;
+            List<Passport> potentialPassports = passportsRepository.GetPotentialPassports(input);
 
-            int validPassports = this.validPassports.GetValidPassportsWithExpectedFields(
-                potentialPassports,
-                passportExpectedFields
-            );
+            int validPassports = this.validPassports.GetValidPassportsWithExpectedFields(potentialPassports);
 
             return validPassports;
         }

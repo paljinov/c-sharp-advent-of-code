@@ -5,126 +5,120 @@ namespace App.Tasks.Year2020.Day4
 {
     public class ValidPassports
     {
-        public int GetValidPassportsWithExpectedFields(List<string> potentialPassports, string[] passportExpectedFields)
+        public int GetValidPassportsWithExpectedFields(List<Passport> potentialPassports)
         {
             int validPassport = 0;
 
-            foreach (var potentialPassport in potentialPassports)
+            foreach (Passport potentialPassport in potentialPassports)
             {
-                int expectedFields = passportExpectedFields.Length;
-
-                foreach (var passportExpectedField in passportExpectedFields)
+                if (string.IsNullOrEmpty(potentialPassport.BirthYear))
                 {
-                    if (potentialPassport.Contains(passportExpectedField))
-                    {
-                        expectedFields--;
-                    }
-                    else
-                    {
-                        break;
-                    }
+                    continue;
                 }
 
-                if (expectedFields == 0)
+                if (string.IsNullOrEmpty(potentialPassport.IssueYear))
                 {
-                    validPassport++;
+                    continue;
                 }
+
+                if (string.IsNullOrEmpty(potentialPassport.ExpirationYear))
+                {
+                    continue;
+                }
+
+                if (string.IsNullOrEmpty(potentialPassport.Height))
+                {
+                    continue;
+                }
+
+                if (string.IsNullOrEmpty(potentialPassport.HairColor))
+                {
+                    continue;
+                }
+
+                if (string.IsNullOrEmpty(potentialPassport.EyeColor))
+                {
+                    continue;
+                }
+
+                if (string.IsNullOrEmpty(potentialPassport.PassportId))
+                {
+                    continue;
+                }
+
+                validPassport++;
             }
 
             return validPassport;
         }
 
-        public int GetValidPassportsWithExpectedFieldsAndValues(List<string> potentialPassports, string[] passportExpectedFields)
+        public int GetValidPassportsWithExpectedFieldsAndValues(List<Passport> potentialPassports)
         {
             int validPassport = 0;
 
-            foreach (var potentialPassport in potentialPassports)
+            Regex birthYearRegex = new Regex(@"^19[2-8][0-9]|199[0-9]|200[0-2]$");
+            Regex issueYearRegex = new Regex(@"^201[0-9]|2020$");
+            Regex expirationYearRegex = new Regex(@"^202[0-9]|2030$");
+            Regex heightCmRegex = new Regex(@"^(1[5-8][0-9]|19[0-3])$");
+            Regex heightInRegex = new Regex(@"^(59|6[0-9]|7[0-6])$");
+            Regex hairColorRegex = new Regex(@"^#[0-9a-f]{6}$");
+            Regex eyeColorRegex = new Regex(@"^amb|blu|brn|gry|grn|hzl|oth$");
+            Regex passportIdRegex = new Regex(@"^[0-9]{9}$");
+
+            foreach (Passport potentialPassport in potentialPassports)
             {
-                int expectedFields = passportExpectedFields.Length;
-
-                foreach (var passportExpectedField in passportExpectedFields)
+                if (!birthYearRegex.Match(potentialPassport.BirthYear).Success)
                 {
-                    Regex passportRegex = new Regex($@"({passportExpectedField}):(\S+)");
-                    Match match = passportRegex.Match(potentialPassport);
-                    if (match.Success == false)
-                    {
-                        break;
-                    }
-
-                    GroupCollection groups = match.Groups;
-
-                    string field = groups[1].Value;
-                    string fieldValue = groups[2].Value;
-
-                    switch (field)
-                    {
-                        case "byr":
-                            if (int.Parse(fieldValue) >= 1920 && int.Parse(fieldValue) <= 2002)
-                            {
-                                expectedFields--;
-                            }
-                            break;
-                        case "iyr":
-                            if (int.Parse(fieldValue) >= 2010 && int.Parse(fieldValue) <= 2020)
-                            {
-                                expectedFields--;
-                            }
-                            break;
-                        case "eyr":
-                            if (int.Parse(fieldValue) >= 2020 && int.Parse(fieldValue) <= 2030)
-                            {
-                                expectedFields--;
-                            }
-                            break;
-                        case "hgt":
-                            if (fieldValue.Contains("cm"))
-                            {
-                                fieldValue = fieldValue.Replace("cm", "");
-                                if (int.Parse(fieldValue) >= 150 && int.Parse(fieldValue) <= 193)
-                                {
-                                    expectedFields--;
-                                }
-                            }
-                            else
-                            {
-                                fieldValue = fieldValue.Replace("in", "");
-                                if (int.Parse(fieldValue) >= 59 && int.Parse(fieldValue) <= 76)
-                                {
-                                    expectedFields--;
-                                }
-                            }
-                            break;
-                        case "hcl":
-                            Regex hairColorRegex = new Regex(@"^#[0-9a-f]{6}$");
-                            if (hairColorRegex.Match(fieldValue).Success)
-                            {
-                                expectedFields--;
-                            }
-                            break;
-                        case "ecl":
-                            if (fieldValue.Contains("amb") || fieldValue.Contains("blu") || fieldValue.Contains("brn")
-                                || fieldValue.Contains("gry") || fieldValue.Contains("grn")
-                                || fieldValue.Contains("hzl") || fieldValue.Contains("oth"))
-                            {
-                                expectedFields--;
-                            }
-                            break;
-                        case "pid":
-                            Regex passportIdRegex = new Regex(@"^[0-9]{9}$");
-                            if (passportIdRegex.Match(fieldValue).Success)
-                            {
-                                expectedFields--;
-                            }
-                            break;
-                        default:
-                            break;
-                    }
+                    continue;
                 }
 
-                if (expectedFields == 0)
+                if (!issueYearRegex.Match(potentialPassport.IssueYear).Success)
                 {
-                    validPassport++;
+                    continue;
                 }
+
+                if (!expirationYearRegex.Match(potentialPassport.ExpirationYear).Success)
+                {
+                    continue;
+                }
+
+                if (potentialPassport.Height.Contains("cm"))
+                {
+                    string height = potentialPassport.Height.Replace("cm", "");
+                    if (!heightCmRegex.Match(height).Success)
+                    {
+                        continue;
+                    }
+                }
+                else if (potentialPassport.Height.Contains("in"))
+                {
+                    string height = potentialPassport.Height.Replace("in", "");
+                    if (!heightInRegex.Match(height).Success)
+                    {
+                        continue;
+                    }
+                }
+                else
+                {
+                    continue;
+                }
+
+                if (!hairColorRegex.Match(potentialPassport.HairColor).Success)
+                {
+                    continue;
+                }
+
+                if (!eyeColorRegex.Match(potentialPassport.EyeColor).Success)
+                {
+                    continue;
+                }
+
+                if (!passportIdRegex.Match(potentialPassport.PassportId).Success)
+                {
+                    continue;
+                }
+
+                validPassport++;
             }
 
             return validPassport;
