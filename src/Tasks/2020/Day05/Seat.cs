@@ -10,27 +10,27 @@ namespace App.Tasks.Year2020.Day5
 
         private const int ROW_MULTIPLIER = 8;
 
-        public int[] GetSeatsIds(string[] seats)
+        public int[] GetSeatsIds(string[] boardingPasses)
         {
-            int[] seatsIds = new int[seats.Length];
+            int[] seatsIds = new int[boardingPasses.Length];
 
-            for (int i = 0; i < seats.Length; i++)
+            for (int i = 0; i < boardingPasses.Length; i++)
             {
-                string seat = seats[i];
+                string boardingPass = boardingPasses[i];
 
-                string rows = seat[0..^3];
-                string columns = seat[^3..];
+                string rows = boardingPass[0..^3];
+                string columns = boardingPass[^3..];
 
-                int row = GetRow(rows);
-                int column = GetColumn(columns);
+                int seatRow = GetSeatRow(rows);
+                int seatColumn = GetSeatColumn(columns);
 
-                seatsIds[i] = row * ROW_MULTIPLIER + column;
+                seatsIds[i] = seatRow * ROW_MULTIPLIER + seatColumn;
             }
 
             return seatsIds;
         }
 
-        private int GetRow(string rows)
+        private int GetSeatRow(string rows)
         {
             int start = 0;
             int end = TOTAL_ROWS - 1;
@@ -52,7 +52,7 @@ namespace App.Tasks.Year2020.Day5
             return start;
         }
 
-        private int GetColumn(string columns)
+        private int GetSeatColumn(string columns)
         {
             int start = 0;
             int end = TOTAL_COLUMNS - 1;

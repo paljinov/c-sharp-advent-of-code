@@ -20,20 +20,20 @@ namespace App.Tasks.Year2020.Day5
 {
     public class Part2 : ITask<int>
     {
-        private readonly SeatsRepository seatsRepository;
+        private readonly BoardingPassesRepository boardingPassesRepository;
 
         private readonly Seat seat;
 
         public Part2()
         {
-            seatsRepository = new SeatsRepository();
+            boardingPassesRepository = new BoardingPassesRepository();
             seat = new Seat();
         }
 
         public int Solution(string input)
         {
-            string[] seats = seatsRepository.GetSeats(input);
-            int[] seatsIds = seat.GetSeatsIds(seats);
+            string[] boardingPasses = boardingPassesRepository.GetBoardingPasses(input);
+            int[] seatsIds = seat.GetSeatsIds(boardingPasses);
 
             int highestSeatId = seatsIds.Max();
             int lowestSeatId = seatsIds.Min();
