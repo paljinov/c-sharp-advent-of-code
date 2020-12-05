@@ -1,8 +1,6 @@
-using System;
-
 namespace App.Tasks.Year2020.Day5
 {
-    public class Seat
+    public class Seats
     {
         private const int TOTAL_ROWS = 128;
 
