@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace App.Tasks.Year2020.Day3
 {
     public class Trees

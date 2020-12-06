@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 
 namespace App.Tasks.Year2020.Day3
 {

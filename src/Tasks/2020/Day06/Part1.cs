@@ -72,9 +72,9 @@ namespace App.Tasks.Year2020.Day6
         public int Solution(string input)
         {
             string[][] personsAnswers = personsAnswersRepository.GetPersonsAnswers(input);
-            int countsSum = answersCounter.CountAnyoneYesAnswers(personsAnswers);
+            int anyoneYesAnswers = answersCounter.CountAnyoneYesAnswers(personsAnswers);
 
-            return countsSum;
+            return anyoneYesAnswers;
         }
     }
 }
