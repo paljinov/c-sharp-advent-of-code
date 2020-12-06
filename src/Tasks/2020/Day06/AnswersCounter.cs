@@ -30,46 +30,17 @@ namespace App.Tasks.Year2020.Day6
 
         private int CountAnyoneYesAnswersForGroup(string[] groupAnswers)
         {
-            // Different answers for a group
-            Dictionary<char, int> differentAnswers = new Dictionary<char, int>();
+            Dictionary<char, int> yesAnswerOccurrences = CountYesAnswerOccurrencesForGroup(groupAnswers);
 
-            foreach (string personAnswers in groupAnswers)
-            {
-                foreach (char personAnswer in personAnswers)
-                {
-                    // If this is a new person answer
-                    if (!differentAnswers.ContainsKey(personAnswer))
-                    {
-                        differentAnswers.Add(personAnswer, 1);
-                    }
-                }
-            }
-
-            return differentAnswers.Count;
+            return yesAnswerOccurrences.Count;
         }
 
         private int CountEveryoneYesAnswersForGroup(string[] groupAnswers)
         {
-            // Each answer occurrences for a group
-            Dictionary<char, int> answerOccurrences = new Dictionary<char, int>();
-
-            foreach (string personAnswers in groupAnswers)
-            {
-                foreach (char personAnswer in personAnswers)
-                {
-                    if (answerOccurrences.ContainsKey(personAnswer))
-                    {
-                        answerOccurrences[personAnswer]++;
-                    }
-                    else
-                    {
-                        answerOccurrences.Add(personAnswer, 1);
-                    }
-                }
-            }
-
             int everyoneYesAnswers = 0;
-            foreach (KeyValuePair<char, int> answer in answerOccurrences)
+
+            Dictionary<char, int> yesAnswerOccurrences = CountYesAnswerOccurrencesForGroup(groupAnswers);
+            foreach (KeyValuePair<char, int> answer in yesAnswerOccurrences)
             {
                 // If everyone answered "yes" to this question
                 if (answer.Value == groupAnswers.Length)
@@ -79,6 +50,28 @@ namespace App.Tasks.Year2020.Day6
             }
 
             return everyoneYesAnswers;
+        }
+
+        private Dictionary<char, int> CountYesAnswerOccurrencesForGroup(string[] groupAnswers)
+        {
+            Dictionary<char, int> yesAnswerOccurrences = new Dictionary<char, int>();
+
+            foreach (string personAnswers in groupAnswers)
+            {
+                foreach (char personAnswer in personAnswers)
+                {
+                    if (yesAnswerOccurrences.ContainsKey(personAnswer))
+                    {
+                        yesAnswerOccurrences[personAnswer]++;
+                    }
+                    else
+                    {
+                        yesAnswerOccurrences.Add(personAnswer, 1);
+                    }
+                }
+            }
+
+            return yesAnswerOccurrences;
         }
     }
 }
