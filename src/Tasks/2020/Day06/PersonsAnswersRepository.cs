@@ -13,7 +13,7 @@ namespace App.Tasks.Year2020.Day6
             int groups = personsAnswersString.Length;
             string[][] personsAnswers = new string[groups][];
 
-            for (int i = 0; i < personsAnswersString.Length; i++)
+            for (int i = 0; i < groups; i++)
             {
                 string[] personsAnswersForGroup = personsAnswersString[i].Split(Environment.NewLine);
                 personsAnswers[i] = personsAnswersForGroup;
