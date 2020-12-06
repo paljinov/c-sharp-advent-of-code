@@ -8,7 +8,7 @@ namespace App.Tasks.Year2020.Day6
         {
             int anyoneYesAnswers = 0;
 
-            for (int i = 0; i < personsAnswers.GetLength(0); i++)
+            for (int i = 0; i < personsAnswers.Length; i++)
             {
                 anyoneYesAnswers += CountAnyoneYesAnswersForGroup(personsAnswers[i]);
             }
@@ -20,7 +20,7 @@ namespace App.Tasks.Year2020.Day6
         {
             int everyoneYesAnswers = 0;
 
-            for (int i = 0; i < personsAnswers.GetLength(0); i++)
+            for (int i = 0; i < personsAnswers.Length; i++)
             {
                 everyoneYesAnswers += CountEveryoneYesAnswersForGroup(personsAnswers[i]);
             }
@@ -30,24 +30,27 @@ namespace App.Tasks.Year2020.Day6
 
         private int CountAnyoneYesAnswersForGroup(string[] groupAnswers)
         {
-            List<char> anyoneYesAnswers = new List<char>();
+            // Different answers for a group
+            Dictionary<char, int> differentAnswers = new Dictionary<char, int>();
 
             foreach (string personAnswers in groupAnswers)
             {
                 foreach (char personAnswer in personAnswers)
                 {
-                    if (!anyoneYesAnswers.Contains(personAnswer))
+                    // If this is a new person answer
+                    if (!differentAnswers.ContainsKey(personAnswer))
                     {
-                        anyoneYesAnswers.Add(personAnswer);
+                        differentAnswers.Add(personAnswer, 1);
                     }
                 }
             }
 
-            return anyoneYesAnswers.Count;
+            return differentAnswers.Count;
         }
 
         private int CountEveryoneYesAnswersForGroup(string[] groupAnswers)
         {
+            // Each answer occurrences for a group
             Dictionary<char, int> answerOccurrences = new Dictionary<char, int>();
 
             foreach (string personAnswers in groupAnswers)
@@ -66,11 +69,10 @@ namespace App.Tasks.Year2020.Day6
             }
 
             int everyoneYesAnswers = 0;
-            int totalPersonsInGroup = groupAnswers.Length;
-
             foreach (KeyValuePair<char, int> answer in answerOccurrences)
             {
-                if (answer.Value == totalPersonsInGroup)
+                // If everyone answered "yes" to this question
+                if (answer.Value == groupAnswers.Length)
                 {
                     everyoneYesAnswers++;
                 }
