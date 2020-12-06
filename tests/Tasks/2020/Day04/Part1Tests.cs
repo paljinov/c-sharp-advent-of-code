@@ -14,7 +14,7 @@ namespace Tests.Tasks.Year2020.Day4
         }
 
         [Fact]
-        public void Solution_ExamplePotentialPassportsBatch_ValidPassportsEquals()
+        public void Solution_PotentialPassportsBatchExample_ValidPassportsEquals()
         {
             string passportsBatch = "ecl:gry pid:860033327 eyr:2020 hcl:#fffffd"
                 + $"{Environment.NewLine}byr:1937 iyr:2017 cid:147 hgt:183cm"

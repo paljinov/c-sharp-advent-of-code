@@ -14,7 +14,7 @@ namespace Tests.Tasks.Year2020.Day4
         }
 
         [Fact]
-        public void Solution_ExampleInvalidPassportsBatch_ValidPassportsEqualsZero()
+        public void Solution_InvalidPassportsBatchExample_ValidPassportsEqualsZero()
         {
             string passportsBatch = "eyr:1972 cid:100"
                 + $"{Environment.NewLine}hcl:#18171d ecl:amb hgt:170 pid:186cm iyr:2018 byr:1926"
@@ -34,7 +34,7 @@ namespace Tests.Tasks.Year2020.Day4
         }
 
         [Fact]
-        public void Solution_ExampleValidPassportsBatch_ValidPassportsEquals()
+        public void Solution_ValidPassportsBatchExample_ValidPassportsEquals()
         {
             string passportsBatch = "pid:087499704 hgt:74in ecl:grn iyr:2012 eyr:2030 byr:1980"
                 + $"{Environment.NewLine}hcl:#623a2f"
