@@ -10,38 +10,37 @@ namespace App.Tasks.Year2020.Day7
         {
             Dictionary<string, Dictionary<string, int>> bags = new Dictionary<string, Dictionary<string, int>>();
 
-            string[] bagsString = input.Split(Environment.NewLine);
+            string[] bagsRulesString = input.Split(Environment.NewLine);
 
-            Regex bagsRegex = new Regex(@"((.+?)\sbags?)+?");
-            Regex containsBagsRegex = new Regex(@"(?:contain)?\s(\d+)\s((.+?)\sbags?)");
+            Regex bagsRegex = new Regex(@"(.+?)\sbags?");
+            Regex containedBagsRegex = new Regex(@"(\d+)\s(.+)");
 
-            foreach (string bagString in bagsString)
+            foreach (string bagRuleString in bagsRulesString)
             {
-                MatchCollection bagMatches = bagsRegex.Matches(bagString);
-
+                MatchCollection bagMatches = bagsRegex.Matches(bagRuleString);
                 if (bagMatches.Count > 0)
                 {
-                    string bagType = bagMatches[0].Groups[2].Value;
-                    Dictionary<string, int> containsBags = new Dictionary<string, int>();
+                    string bagColor = bagMatches[0].Groups[1].Value;
+                    Dictionary<string, int> containedBags = new Dictionary<string, int>();
 
                     for (int i = 1; i < bagMatches.Count; i++)
                     {
-                        Match bagMatch = bagMatches[i];
+                        MatchCollection containedBagsMatches =
+                            containedBagsRegex.Matches(bagMatches[i].Groups[1].Value);
 
-                        MatchCollection containBagsMatches = containsBagsRegex.Matches(bagMatch.Groups[1].Value);
-                        if (containBagsMatches.Count > 0)
+                        if (containedBagsMatches.Count > 0)
                         {
-                            foreach (Match containBagsMatch in containBagsMatches)
+                            foreach (Match containedBagsMatch in containedBagsMatches)
                             {
-                                containsBags.Add(
-                                    containBagsMatch.Groups[3].Value,
-                                    int.Parse(containBagsMatch.Groups[1].Value)
-                                );
+                                string containedBagColor = containedBagsMatch.Groups[2].Value;
+                                int containedBagQuantity = int.Parse(containedBagsMatch.Groups[1].Value);
+
+                                containedBags.Add(containedBagColor, containedBagQuantity);
                             }
                         }
                     }
 
-                    bags.Add(bagType, containsBags);
+                    bags.Add(bagColor, containedBags);
                 }
             }
 

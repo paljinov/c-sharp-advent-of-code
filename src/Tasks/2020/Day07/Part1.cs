@@ -67,9 +67,9 @@ namespace App.Tasks.Year2020.Day7
         public int Solution(string input)
         {
             Dictionary<string, Dictionary<string, int>> bags = bagsRepository.GetBags(input);
-            int shinyBags = bagCounter.CountBagsWhichContainShinyGoldBag(bags);
+            int bagsWhichContainAtLeastOneShinyGoldBag = bagCounter.CountBagsWhichContainAtLeastOneShinyGoldBag(bags);
 
-            return shinyBags;
+            return bagsWhichContainAtLeastOneShinyGoldBag;
         }
     }
 }

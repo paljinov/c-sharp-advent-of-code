@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 
 namespace App.Tasks.Year2020.Day7
 {
@@ -7,43 +6,43 @@ namespace App.Tasks.Year2020.Day7
     {
         private const string SHINY_GOLD = "shiny gold";
 
-        public int CountBagsWhichContainShinyGoldBag(Dictionary<string, Dictionary<string, int>> bags)
+        public int CountBagsWhichContainAtLeastOneShinyGoldBag(Dictionary<string, Dictionary<string, int>> bags)
         {
-            int shinyBags = 0;
+            int bagsWhichContainAtLeastOneShinyGoldBag = 0;
 
             foreach (KeyValuePair<string, Dictionary<string, int>> bag in bags)
             {
-                if (ShinyBagCounter(bags, bag.Key))
+                if (IsBagContainingProvidedBag(bags, SHINY_GOLD, bag.Key))
                 {
-                    shinyBags++;
+                    bagsWhichContainAtLeastOneShinyGoldBag++;
                 }
             }
 
-            return shinyBags;
+            return bagsWhichContainAtLeastOneShinyGoldBag;
         }
 
-        public int CountShinyGoldBagContains(Dictionary<string, Dictionary<string, int>> bags)
+        public int CountBagsRequiredInsideSingleShinyGoldBag(Dictionary<string, Dictionary<string, int>> bags)
         {
-            int shinyGoldBagContains = 0;
+            int countBagsRequiredInsideSingleShinyGoldBag = 0;
+            CountBagsRequiredInsideBag(bags, SHINY_GOLD, 1, ref countBagsRequiredInsideSingleShinyGoldBag);
 
-            CountShinyGoldBagContainsCounter(bags, SHINY_GOLD, 1, ref shinyGoldBagContains);
-
-            return shinyGoldBagContains;
+            return countBagsRequiredInsideSingleShinyGoldBag;
         }
 
-        private bool ShinyBagCounter(
+        private bool IsBagContainingProvidedBag(
             Dictionary<string, Dictionary<string, int>> bags,
-            string currentBagType
+            string targetBagColor,
+            string currentBagColor
         )
         {
-            Dictionary<string, int> containedBags = bags[currentBagType];
+            Dictionary<string, int> containedBags = bags[currentBagColor];
             foreach (KeyValuePair<string, int> containedBag in containedBags)
             {
-                if (containedBag.Key == SHINY_GOLD)
+                if (containedBag.Key == targetBagColor)
                 {
                     return true;
                 }
-                else if (ShinyBagCounter(bags, containedBag.Key))
+                else if (IsBagContainingProvidedBag(bags, targetBagColor, containedBag.Key))
                 {
                     return true;
                 }
@@ -52,20 +51,20 @@ namespace App.Tasks.Year2020.Day7
             return false;
         }
 
-        private void CountShinyGoldBagContainsCounter(
+        private void CountBagsRequiredInsideBag(
             Dictionary<string, Dictionary<string, int>> bags,
-            string currentBagType,
-            int currentBagTypeCount,
-            ref int contains
+            string currentBagColor,
+            int currentBagQuantity,
+            ref int totalContainedBags
         )
         {
-            Dictionary<string, int> containedBags = bags[currentBagType];
+            Dictionary<string, int> containedBags = bags[currentBagColor];
             foreach (KeyValuePair<string, int> containedBag in containedBags)
             {
-                int bagCount = currentBagTypeCount * containedBag.Value;
-                contains += bagCount;
+                int containedBagQuantity = currentBagQuantity * containedBag.Value;
+                totalContainedBags += containedBagQuantity;
 
-                CountShinyGoldBagContainsCounter(bags, containedBag.Key, bagCount, ref contains);
+                CountBagsRequiredInsideBag(bags, containedBag.Key, containedBagQuantity, ref totalContainedBags);
             }
         }
     }
