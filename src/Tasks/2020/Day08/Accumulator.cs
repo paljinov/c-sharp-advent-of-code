@@ -4,7 +4,7 @@ namespace App.Tasks.Year2020.Day8
 {
     public class Accumulator
     {
-        public int AccumulatorValueBeforeAnyInstructionIsExecutedSecondTime(List<Instruction> instructions)
+        public int CalculateAccumulatorValueBeforeAnyInstructionIsExecutedSecondTime(List<Instruction> instructions)
         {
             int accumulatorValue = 0;
 
@@ -42,11 +42,11 @@ namespace App.Tasks.Year2020.Day8
             return accumulatorValue;
         }
 
-        public int AccumulatorValueAfterProgramTerminates(List<Instruction> instructions)
+        public int CalculateAccumulatorValueAfterProgramTerminates(List<Instruction> instructions)
         {
             int accumulatorValue = 0;
 
-            List<int> changedOperationJumpOrNop = new List<int>();
+            List<int> changedOperationsIndexes = new List<int>();
             bool terminatedNormally = false;
 
             while (!terminatedNormally)
@@ -73,22 +73,21 @@ namespace App.Tasks.Year2020.Day8
                             Argument = instructions[i].Argument
                         };
 
-                        // If operation wasn't already changed
-                        if (!operationJumpOrNopChanged && !changedOperationJumpOrNop.Contains(i))
+                        // If "Jump" or "No Operation" operation wasn't already changed
+                        if (!operationJumpOrNopChanged && !changedOperationsIndexes.Contains(i) &&
+                            (instruction.Operation == Operation.Jump || instruction.Operation == Operation.NoOperation))
                         {
                             if (instruction.Operation == Operation.Jump)
                             {
                                 instruction.Operation = Operation.NoOperation;
-                                operationJumpOrNopChanged = true;
-                                changedOperationJumpOrNop.Add(i);
-
                             }
                             else if (instruction.Operation == Operation.NoOperation)
                             {
                                 instruction.Operation = Operation.Jump;
-                                operationJumpOrNopChanged = true;
-                                changedOperationJumpOrNop.Add(i);
                             }
+
+                            operationJumpOrNopChanged = true;
+                            changedOperationsIndexes.Add(i);
                         }
 
                         switch (instruction.Operation)
@@ -106,6 +105,8 @@ namespace App.Tasks.Year2020.Day8
                         }
                     }
 
+                    // The program is supposed to terminate by attempting to execute an
+                    // instruction immediately after the last instruction in the file
                     if (i == instructions.Count)
                     {
                         terminatedNormally = true;

@@ -87,7 +87,8 @@ namespace App.Tasks.Year2020.Day8
         public int Solution(string input)
         {
             List<Instruction> instructions = instructionsRepository.GetInstructions(input);
-            int accumulatorValue = accumulator.AccumulatorValueBeforeAnyInstructionIsExecutedSecondTime(instructions);
+            int accumulatorValue =
+                accumulator.CalculateAccumulatorValueBeforeAnyInstructionIsExecutedSecondTime(instructions);
 
             return accumulatorValue;
         }
