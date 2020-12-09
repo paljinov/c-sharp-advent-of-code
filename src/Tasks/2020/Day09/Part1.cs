@@ -69,20 +69,20 @@ namespace App.Tasks.Year2020.Day9
     {
         private readonly NumbersRepository numbersRepository;
 
-        private readonly NumberFinder numberFinder;
+        private readonly NumbersFinder numbersFinder;
 
         public Part1()
         {
             numbersRepository = new NumbersRepository();
-            numberFinder = new NumberFinder();
+            numbersFinder = new NumbersFinder();
         }
 
         public long Solution(string input)
         {
             long[] numbers = numbersRepository.GetNumbers(input);
-            long number = numberFinder.FindFirstNumberWhichIsNotSumOfTwoPreambleNumbers(numbers);
+            long firstNumberNotFollowingRule = numbersFinder.FindFirstNumberWhichIsNotSumOfTwoPreambleNumbers(numbers);
 
-            return number;
+            return firstNumberNotFollowingRule;
         }
     }
 }

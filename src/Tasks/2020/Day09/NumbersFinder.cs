@@ -1,14 +1,14 @@
 namespace App.Tasks.Year2020.Day9
 {
-    public class NumberFinder
+    public class NumbersFinder
     {
-        private const int PREAMBLE = 25;
+        private readonly int preamble = 25;
 
         public long FindFirstNumberWhichIsNotSumOfTwoPreambleNumbers(long[] numbers)
         {
             long firstNumberNotFollowingRule = 0;
 
-            for (int i = PREAMBLE; i < numbers.Length; i++)
+            for (int i = preamble; i < numbers.Length; i++)
             {
                 if (!IsNumberFollowingRule(numbers, numbers[i], i))
                 {
@@ -20,10 +20,11 @@ namespace App.Tasks.Year2020.Day9
             return firstNumberNotFollowingRule;
         }
 
-        public long[] FindContiguousSetOfAtLeastTwoNumbersWhichSumToInvalidNumber(long[] numbers)
+        public long[] FindContiguousSetOfAtLeastTwoNumbersWhichSumToInvalidNumber(
+            long[] numbers,
+            long firstNumberNotFollowingRule
+        )
         {
-            long firstNumberNotFollowingRule = FindFirstNumberWhichIsNotSumOfTwoPreambleNumbers(numbers);
-
             int i = 0;
             int setStartIndex = 0;
             int setEndIndex = 0;
@@ -60,7 +61,7 @@ namespace App.Tasks.Year2020.Day9
 
         private bool IsNumberFollowingRule(long[] numbers, long number, int index)
         {
-            for (int i = index - PREAMBLE; i < index - 1; i++)
+            for (int i = index - preamble; i < index - 1; i++)
             {
                 for (int j = i + 1; j < index; j++)
                 {
