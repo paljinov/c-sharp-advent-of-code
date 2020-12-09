@@ -3,6 +3,7 @@
 ## Tasks solutions:
 * [2015](./src/Tasks/2015)
 * [2016](./src/Tasks/2016)
+* [2020](./src/Tasks/2020)
 
 ## Prerequisites for running project
 Copy `env.example` to `.env` file and set year, day and part for task you wish to debug or run.
