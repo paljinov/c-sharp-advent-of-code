@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 
 namespace App.Tasks.Year2020.Day10
 {
@@ -9,66 +8,77 @@ namespace App.Tasks.Year2020.Day10
     {
         private const int CHARGING_OUTLET_JOLTAGE = 0;
 
-        public int CalculateOneAndJoltDifferencesProduct(int[] adapters)
+        private const int MIN_JOLTAGE_DIFFERENCE = 1;
+
+        private const int MAX_JOLTAGE_DIFFERENCE = 3;
+
+        public int CalculateOneAndThreeJoltDifferencesProduct(int[] adapters)
         {
-            Array.Sort(adapters);
-            int highestAdapterJoltage = adapters[^1];
-
-            int i;
-            int adapterJoltage = CHARGING_OUTLET_JOLTAGE;
             int oneJoltDifferences = 0;
-            int threeJoltDifferences = 0;
+            // Your device's built-in adapter is always 3 higher than the highest adapter,
+            // so that is one three jolt difference
+            int threeJoltDifferences = 1;
 
-            while (adapterJoltage < highestAdapterJoltage)
+            adapters = adapters.Concat(new int[] { CHARGING_OUTLET_JOLTAGE }).ToArray();
+            Array.Sort(adapters);
+
+            int highestAdapterJoltage = adapters[^1];
+            int i = 0;
+            while (adapters[i] < highestAdapterJoltage)
             {
-                if (adapters.Contains(adapterJoltage + 1))
+                for (int j = i + 1; j < adapters.Length; j++)
                 {
-                    oneJoltDifferences++;
-                    i = Array.IndexOf(adapters, adapterJoltage + 1);
-                }
-                else if (adapters.Contains(adapterJoltage + 2))
-                {
-                    i = Array.IndexOf(adapters, adapterJoltage + 2);
-                }
-                else if (adapters.Contains(adapterJoltage + 3))
-                {
-                    threeJoltDifferences++;
-                    i = Array.IndexOf(adapters, adapterJoltage + 3);
-                }
-                else
-                {
-                    break;
-                }
+                    int joltageDifference = adapters[j] - adapters[i];
+                    // If joltage difference is in given limits
+                    if (joltageDifference <= MAX_JOLTAGE_DIFFERENCE)
+                    {
+                        if (joltageDifference == MIN_JOLTAGE_DIFFERENCE)
+                        {
+                            oneJoltDifferences++;
+                        }
+                        else if (joltageDifference == MAX_JOLTAGE_DIFFERENCE)
+                        {
+                            threeJoltDifferences++;
+                        }
 
-                adapterJoltage = adapters[i];
+                        i = j;
+                        break;
+                    }
+                }
             }
 
-            int product = oneJoltDifferences * (threeJoltDifferences + 1);
+            int product = oneJoltDifferences * threeJoltDifferences;
 
             return product;
         }
 
         public long CountDistinctAdaptersArrangements(int[] adapters)
         {
-            adapters = adapters.Concat(new int[] { 0 }).ToArray();
+            adapters = adapters.Concat(new int[] { CHARGING_OUTLET_JOLTAGE }).ToArray();
             Array.Sort(adapters);
 
-            Dictionary<int, long> cache = new Dictionary<int, long>
+            // Initializing different arrangments from adapter
+            Dictionary<int, long> distinctArrangements = new Dictionary<int, long>
             {
                 [adapters.Length - 1] = 1
             };
 
-            for (var i = adapters.Length - 2; i >= 0; i--)
+            for (int i = adapters.Length - 2; i >= 0; i--)
             {
-                long chainsCount = 0;
-                for (int chain = i + 1; chain < adapters.Length && adapters[chain] - adapters[i] <= 3; chain++)
+                long arrangments = 0;
+                for (int j = i + 1; j < adapters.Length; j++)
                 {
-                    chainsCount += cache[chain];
+                    // If joltage difference is in given limits
+                    if (adapters[j] - adapters[i] <= MAX_JOLTAGE_DIFFERENCE)
+                    {
+                        arrangments += distinctArrangements[j];
+                    }
                 }
-                cache[i] = chainsCount;
+
+                distinctArrangements.Add(i, arrangments);
             }
 
-            return cache[0];
+            return distinctArrangements[0];
         }
     }
 }

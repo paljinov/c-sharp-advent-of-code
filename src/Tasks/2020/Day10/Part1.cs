@@ -133,9 +133,9 @@ namespace App.Tasks.Year2020.Day10
         public int Solution(string input)
         {
             int[] adapters = adaptersRepository.GetAdapters(input);
-            int oneAndJoltDifferencesProduct = adaptersChain.CalculateOneAndJoltDifferencesProduct(adapters);
+            int oneAndThreeJoltDifferencesProduct = adaptersChain.CalculateOneAndThreeJoltDifferencesProduct(adapters);
 
-            return oneAndJoltDifferencesProduct;
+            return oneAndThreeJoltDifferencesProduct;
         }
     }
 }
