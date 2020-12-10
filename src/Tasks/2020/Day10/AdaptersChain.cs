@@ -22,9 +22,7 @@ namespace App.Tasks.Year2020.Day10
             adapters = adapters.Concat(new int[] { CHARGING_OUTLET_JOLTAGE }).ToArray();
             Array.Sort(adapters);
 
-            int highestAdapterJoltage = adapters[^1];
-            int i = 0;
-            while (adapters[i] < highestAdapterJoltage)
+            for (int i = 0; i < adapters.Length - 1; i++)
             {
                 int joltageDifference = adapters[i + 1] - adapters[i];
 
@@ -40,13 +38,15 @@ namespace App.Tasks.Year2020.Day10
                         threeJoltDifferences++;
                     }
                 }
-
-                i++;
+                else
+                {
+                    break;
+                }
             }
 
-            int product = oneJoltDifferences * threeJoltDifferences;
+            int oneAndThreeJoltDifferencesProduct = oneJoltDifferences * threeJoltDifferences;
 
-            return product;
+            return oneAndThreeJoltDifferencesProduct;
         }
 
         public long CountDistinctAdaptersArrangements(int[] adapters)
