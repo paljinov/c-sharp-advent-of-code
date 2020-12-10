@@ -26,25 +26,22 @@ namespace App.Tasks.Year2020.Day10
             int i = 0;
             while (adapters[i] < highestAdapterJoltage)
             {
-                for (int j = i + 1; j < adapters.Length; j++)
-                {
-                    int joltageDifference = adapters[j] - adapters[i];
-                    // If joltage difference is in given limits
-                    if (joltageDifference <= MAX_JOLTAGE_DIFFERENCE)
-                    {
-                        if (joltageDifference == MIN_JOLTAGE_DIFFERENCE)
-                        {
-                            oneJoltDifferences++;
-                        }
-                        else if (joltageDifference == MAX_JOLTAGE_DIFFERENCE)
-                        {
-                            threeJoltDifferences++;
-                        }
+                int joltageDifference = adapters[i + 1] - adapters[i];
 
-                        i = j;
-                        break;
+                // If joltage difference is in given limits
+                if (joltageDifference <= MAX_JOLTAGE_DIFFERENCE)
+                {
+                    if (joltageDifference == MIN_JOLTAGE_DIFFERENCE)
+                    {
+                        oneJoltDifferences++;
+                    }
+                    else if (joltageDifference == MAX_JOLTAGE_DIFFERENCE)
+                    {
+                        threeJoltDifferences++;
                     }
                 }
+
+                i++;
             }
 
             int product = oneJoltDifferences * threeJoltDifferences;
@@ -66,7 +63,10 @@ namespace App.Tasks.Year2020.Day10
             for (int i = adapters.Length - 2; i >= 0; i--)
             {
                 long arrangments = 0;
-                for (int j = i + 1; j < adapters.Length; j++)
+
+                // Only next 3 adapters can have allowed joltage difference
+                int max = Math.Min(i + 1 + MAX_JOLTAGE_DIFFERENCE, adapters.Length);
+                for (int j = i + 1; j < max; j++)
                 {
                     // If joltage difference is in given limits
                     if (adapters[j] - adapters[i] <= MAX_JOLTAGE_DIFFERENCE)
