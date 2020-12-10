@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using App.Helpers;
 using App.Repository;
@@ -59,13 +60,13 @@ namespace App
             }
 
             string input = ReadInputHelper.ReadTaskInput(year, day);
-            dynamic task = Activator.CreateInstance(taskType);
+            object task = Activator.CreateInstance(taskType);
+            MethodInfo solutionMethod = taskType.GetMethod("Solution");
 
             Stopwatch stopwatch = Stopwatch.StartNew();
-            var result = task.Solution(input);
+            var result = solutionMethod.Invoke(task, new object[] { input });
             stopwatch.Stop();
 
-            Console.WriteLine("====================================");
             Console.WriteLine($"Execution time: {stopwatch.ElapsedMilliseconds} miliseconds");
             Console.WriteLine($"Result: {result}");
         }
