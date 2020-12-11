@@ -135,18 +135,18 @@ namespace App.Tasks.Year2020.Day11
     {
         private readonly SeatsLayoutRepository seatsLayoutRepository;
 
-        private readonly Seats seats;
+        private readonly OccupiedSeatsCounter occupiedSeatsCounter;
 
         public Part2()
         {
             seatsLayoutRepository = new SeatsLayoutRepository();
-            seats = new Seats();
+            occupiedSeatsCounter = new OccupiedSeatsCounter();
         }
 
         public int Solution(string input)
         {
-            char[,] seatsLayout = seatsLayoutRepository.GetSeatsLayout(input);
-            int occupiedSeats = seats.CountOccupiedSeatsAfterNoSeatsChangeStateForFirstSeatPeopleSee(seatsLayout);
+            char[,] seats = seatsLayoutRepository.GetSeats(input);
+            int occupiedSeats = occupiedSeatsCounter.CountFinallyOccupiedSeatsForFirstSeenSeatsDecision(seats);
 
             return occupiedSeats;
         }

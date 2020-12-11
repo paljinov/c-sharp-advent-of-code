@@ -4,7 +4,7 @@ namespace App.Tasks.Year2020.Day11
 {
     public class SeatsLayoutRepository
     {
-        public char[,] GetSeatsLayout(string input)
+        public char[,] GetSeats(string input)
         {
             string[] seatsLayoutString = input.Split(Environment.NewLine);
 

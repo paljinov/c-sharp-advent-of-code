@@ -2,35 +2,42 @@ using System;
 
 namespace App.Tasks.Year2020.Day11
 {
-    public class Seats
+    public class OccupiedSeatsCounter
     {
         private const char EMPTY_SEAT = 'L';
 
         private const char OCCUPIED_SEAT = '#';
 
-        public int CountOccupiedSeatsAfterNoSeatsChangeState(char[,] seats)
-        {
-            int rows = seats.GetLength(0);
-            int columns = seats.GetLength(1);
+        private const int OCCUPIED_FOR_ADJACENT_EMPTY_TO_OCCUPIED_SEAT_CHANGE = 0;
 
+        private const int OCCUPIED_FOR_ADJACENT_OCCUPIED_TO_EMPTY_SEAT_CHANGE = 4;
+
+        private const int OCCUPIED_FOR_FIRST_SEEN_EMPTY_TO_OCCUPIED_SEAT_CHANGE = 0;
+
+        private const int OCCUPIED_FOR_FIRST_SEEN_OCCUPIED_TO_EMPTY_SEAT_CHANGE = 5;
+
+        public int CountFinallyOccupiedSeatsForAdjacentSeatsDecision(char[,] seats)
+        {
             bool changed = true;
             while (changed)
             {
                 changed = false;
 
                 char[,] seatsIteration = seats.Clone() as char[,];
-                for (int i = 0; i < rows; i++)
+                for (int i = 0; i < seats.GetLength(0); i++)
                 {
-                    for (int j = 0; j < columns; j++)
+                    for (int j = 0; j < seats.GetLength(1); j++)
                     {
-                        int occupiedNeighbours = CountOccupiedNeighbours(seats, i, j);
+                        int occupiedNeighbours = CountOccupiedAdjacentSeatsForPosition(seats, i, j);
 
-                        if (seats[i, j] == EMPTY_SEAT && occupiedNeighbours == 0)
+                        if (seats[i, j] == EMPTY_SEAT
+                            && occupiedNeighbours == OCCUPIED_FOR_ADJACENT_EMPTY_TO_OCCUPIED_SEAT_CHANGE)
                         {
                             seatsIteration[i, j] = OCCUPIED_SEAT;
                             changed = true;
                         }
-                        else if (seats[i, j] == OCCUPIED_SEAT && occupiedNeighbours >= 4)
+                        else if (seats[i, j] == OCCUPIED_SEAT
+                            && occupiedNeighbours >= OCCUPIED_FOR_ADJACENT_OCCUPIED_TO_EMPTY_SEAT_CHANGE)
                         {
                             seatsIteration[i, j] = EMPTY_SEAT;
                             changed = true;
@@ -46,30 +53,28 @@ namespace App.Tasks.Year2020.Day11
             return occupiedSeats;
         }
 
-
-        public int CountOccupiedSeatsAfterNoSeatsChangeStateForFirstSeatPeopleSee(char[,] seats)
+        public int CountFinallyOccupiedSeatsForFirstSeenSeatsDecision(char[,] seats)
         {
-            int rows = seats.GetLength(0);
-            int columns = seats.GetLength(1);
-
             bool changed = true;
             while (changed)
             {
                 changed = false;
 
                 char[,] seatsIteration = seats.Clone() as char[,];
-                for (int i = 0; i < rows; i++)
+                for (int i = 0; i < seats.GetLength(0); i++)
                 {
-                    for (int j = 0; j < columns; j++)
+                    for (int j = 0; j < seats.GetLength(1); j++)
                     {
-                        int occupiedNeighbours = CountSeatsPeopleSee(seats, i, j);
+                        int occupiedFirstSeen = CountFirstSeenSeatsFromPosition(seats, i, j);
 
-                        if (seats[i, j] == EMPTY_SEAT && occupiedNeighbours == 0)
+                        if (seats[i, j] == EMPTY_SEAT
+                            && occupiedFirstSeen == OCCUPIED_FOR_FIRST_SEEN_EMPTY_TO_OCCUPIED_SEAT_CHANGE)
                         {
                             seatsIteration[i, j] = OCCUPIED_SEAT;
                             changed = true;
                         }
-                        else if (seats[i, j] == OCCUPIED_SEAT && occupiedNeighbours >= 5)
+                        else if (seats[i, j] == OCCUPIED_SEAT
+                            && occupiedFirstSeen >= OCCUPIED_FOR_FIRST_SEEN_OCCUPIED_TO_EMPTY_SEAT_CHANGE)
                         {
                             seatsIteration[i, j] = EMPTY_SEAT;
                             changed = true;
@@ -85,7 +90,7 @@ namespace App.Tasks.Year2020.Day11
             return occupiedSeats;
         }
 
-        private int CountOccupiedNeighbours(char[,] seats, int i, int j)
+        private int CountOccupiedAdjacentSeatsForPosition(char[,] seats, int i, int j)
         {
             int occupiedNeighbours = 0;
 
@@ -111,9 +116,9 @@ namespace App.Tasks.Year2020.Day11
             return occupiedNeighbours;
         }
 
-        private int CountSeatsPeopleSee(char[,] seats, int i, int j)
+        private int CountFirstSeenSeatsFromPosition(char[,] seats, int i, int j)
         {
-            int occupiedNeighbours = 0;
+            int occupiedFirstSeen = 0;
 
             int rows = seats.GetLength(0);
             int columns = seats.GetLength(1);
@@ -125,7 +130,7 @@ namespace App.Tasks.Year2020.Day11
             {
                 if (seats[k, h] == OCCUPIED_SEAT)
                 {
-                    occupiedNeighbours++;
+                    occupiedFirstSeen++;
                     break;
                 }
                 else if (seats[k, h] == EMPTY_SEAT)
@@ -144,7 +149,7 @@ namespace App.Tasks.Year2020.Day11
             {
                 if (seats[k, h] == OCCUPIED_SEAT)
                 {
-                    occupiedNeighbours++;
+                    occupiedFirstSeen++;
                     break;
                 }
                 else if (seats[k, h] == EMPTY_SEAT)
@@ -162,7 +167,7 @@ namespace App.Tasks.Year2020.Day11
             {
                 if (seats[k, h] == OCCUPIED_SEAT)
                 {
-                    occupiedNeighbours++;
+                    occupiedFirstSeen++;
                     break;
                 }
                 else if (seats[k, h] == EMPTY_SEAT)
@@ -181,7 +186,7 @@ namespace App.Tasks.Year2020.Day11
             {
                 if (seats[k, h] == OCCUPIED_SEAT)
                 {
-                    occupiedNeighbours++;
+                    occupiedFirstSeen++;
                     break;
                 }
                 else if (seats[k, h] == EMPTY_SEAT)
@@ -199,7 +204,7 @@ namespace App.Tasks.Year2020.Day11
             {
                 if (seats[k, h] == OCCUPIED_SEAT)
                 {
-                    occupiedNeighbours++;
+                    occupiedFirstSeen++;
                     break;
                 }
                 else if (seats[k, h] == EMPTY_SEAT)
@@ -218,7 +223,7 @@ namespace App.Tasks.Year2020.Day11
             {
                 if (seats[k, h] == OCCUPIED_SEAT)
                 {
-                    occupiedNeighbours++;
+                    occupiedFirstSeen++;
                     break;
                 }
                 else if (seats[k, h] == EMPTY_SEAT)
@@ -236,7 +241,7 @@ namespace App.Tasks.Year2020.Day11
             {
                 if (seats[k, h] == OCCUPIED_SEAT)
                 {
-                    occupiedNeighbours++;
+                    occupiedFirstSeen++;
                     break;
                 }
                 else if (seats[k, h] == EMPTY_SEAT)
@@ -255,7 +260,7 @@ namespace App.Tasks.Year2020.Day11
             {
                 if (seats[k, h] == OCCUPIED_SEAT)
                 {
-                    occupiedNeighbours++;
+                    occupiedFirstSeen++;
                     break;
                 }
                 else if (seats[k, h] == EMPTY_SEAT)
@@ -266,7 +271,7 @@ namespace App.Tasks.Year2020.Day11
                 h--;
             }
 
-            return occupiedNeighbours;
+            return occupiedFirstSeen;
         }
 
         private int CountOccupiedSeats(char[,] seats)
