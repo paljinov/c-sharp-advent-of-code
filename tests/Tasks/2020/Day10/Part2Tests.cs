@@ -31,7 +31,6 @@ namespace Tests.Tasks.Year2020.Day10
             Assert.Equal(8, task.Solution(adapters));
         }
 
-
         [Fact]
         public void Solution_SecondAdaptersListExample_DistinctAdaptersArrangementsEquals()
         {
