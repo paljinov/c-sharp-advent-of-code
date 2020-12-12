@@ -2,20 +2,20 @@
 --- Part Two ---
 
 Before you can give the destination to the captain, you realize that the actual
-action meanings were printed on the back of the instructions the whole time.
+navigationInstruction meanings were printed on the back of the instructions the whole time.
 
-Almost all of the actions indicate how to move a waypoint which is relative to
+Almost all of the navigationInstructions indicate how to move a waypoint which is relative to
 the ship's position:
 
-- Action N means to move the waypoint north by the given value.
-- Action S means to move the waypoint south by the given value.
-- Action E means to move the waypoint east by the given value.
-- Action W means to move the waypoint west by the given value.
-- Action L means to rotate the waypoint around the ship left (counter-clockwise)
+- NavigationInstruction N means to move the waypoint north by the given value.
+- NavigationInstruction S means to move the waypoint south by the given value.
+- NavigationInstruction E means to move the waypoint east by the given value.
+- NavigationInstruction W means to move the waypoint west by the given value.
+- NavigationInstruction L means to rotate the waypoint around the ship left (counter-clockwise)
   the given number of degrees.
-- Action R means to rotate the waypoint around the ship right (clockwise) the
+- NavigationInstruction R means to rotate the waypoint around the ship right (clockwise) the
   given number of degrees.
-- Action F means to move forward to the waypoint a number of times equal to the
+- NavigationInstruction F means to move forward to the waypoint a number of times equal to the
   given value.
 
 The waypoint starts 10 units east and 1 unit north relative to the ship. The
@@ -52,20 +52,22 @@ namespace App.Tasks.Year2020.Day12
 {
     public class Part2 : ITask<int>
     {
-        private readonly ShipNavigationActionsRepository shipNavigationActionsRepository;
+        private readonly ShipNavigationInstructionsRepository shipNavigationInstructionsRepository;
 
         private readonly ManhattanDistance manhattanDistance;
 
         public Part2()
         {
-            shipNavigationActionsRepository = new ShipNavigationActionsRepository();
+            shipNavigationInstructionsRepository = new ShipNavigationInstructionsRepository();
             manhattanDistance = new ManhattanDistance();
         }
 
         public int Solution(string input)
         {
-            List<Action> actions = shipNavigationActionsRepository.GetActions(input);
-            int manhattanDistance = this.manhattanDistance.CalculateBetweenStartAndEndPositionByMovingWaypoint(actions);
+            List<NavigationInstruction> navigationInstructions =
+                shipNavigationInstructionsRepository.GetNavigationInstructions(input);
+            int manhattanDistance =
+                this.manhattanDistance.CalculateBetweenStartAndEndPositionByMovingWaypoint(navigationInstructions);
 
             return manhattanDistance;
         }

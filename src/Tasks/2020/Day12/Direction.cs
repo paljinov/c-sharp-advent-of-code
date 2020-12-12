@@ -1,13 +1,13 @@
 namespace App.Tasks.Year2020.Day12
 {
-    public enum Direction
+    public enum Action
     {
-        North,
-        South,
-        East,
-        West,
-        Left,
-        Right,
-        Forward
+        MoveNorth,
+        MoveSouth,
+        MoveEast,
+        MoveWest,
+        TurnLeft,
+        TurnRight,
+        MoveForward
     }
 }

@@ -4,55 +4,55 @@ using System.Text.RegularExpressions;
 
 namespace App.Tasks.Year2020.Day12
 {
-    public class ShipNavigationActionsRepository
+    public class ShipNavigationInstructionsRepository
     {
-        public List<Action> GetActions(string input)
+        public List<NavigationInstruction> GetNavigationInstructions(string input)
         {
-            List<Action> actions = new List<Action>();
+            List<NavigationInstruction> navigationInstructions = new List<NavigationInstruction>();
 
-            string[] actionsString = input.Split(Environment.NewLine);
+            string[] navigationInstructionsString = input.Split(Environment.NewLine);
 
-            Regex actionsRegex = new Regex(@"^([NSEWLRF])(\d+)$");
+            Regex navigationInstructionsRegex = new Regex(@"^([NSEWLRF])(\d+)$");
 
-            foreach (string actionString in actionsString)
+            foreach (string navigationInstructionString in navigationInstructionsString)
             {
-                Match match = actionsRegex.Match(actionString);
+                Match match = navigationInstructionsRegex.Match(navigationInstructionString);
                 GroupCollection groups = match.Groups;
 
-                char directionLetter = char.Parse(groups[1].Value);
+                char actionLetter = char.Parse(groups[1].Value);
                 int value = int.Parse(groups[2].Value);
 
-                Direction direction = Direction.Forward;
-                switch (directionLetter)
+                Action action = Action.MoveForward;
+                switch (actionLetter)
                 {
                     case 'N':
-                        direction = Direction.North;
+                        action = Action.MoveNorth;
                         break;
                     case 'S':
-                        direction = Direction.South;
+                        action = Action.MoveSouth;
                         break;
                     case 'E':
-                        direction = Direction.East;
+                        action = Action.MoveEast;
                         break;
                     case 'W':
-                        direction = Direction.West;
+                        action = Action.MoveWest;
                         break;
                     case 'L':
-                        direction = Direction.Left;
+                        action = Action.TurnLeft;
                         break;
                     case 'R':
-                        direction = Direction.Right;
+                        action = Action.TurnRight;
                         break;
                 }
 
-                actions.Add(new Action
+                navigationInstructions.Add(new NavigationInstruction
                 {
-                    Direction = direction,
+                    Action = action,
                     Value = value
                 });
             }
 
-            return actions;
+            return navigationInstructions;
         }
     }
 }

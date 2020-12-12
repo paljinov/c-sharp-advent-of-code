@@ -1,8 +1,8 @@
 namespace App.Tasks.Year2020.Day12
 {
-    public class Action
+    public class NavigationInstruction
     {
-        public Direction Direction { get; set; }
+        public Action Action { get; set; }
         public int Value { get; set; }
     }
 }

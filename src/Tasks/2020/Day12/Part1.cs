@@ -2,7 +2,7 @@
 --- Day 12: Rain Risk ---
 
 Your ferry made decent progress toward the island, but the storm came in faster
-than anyone expected. The ferry needs to take evasive actions!
+than anyone expected. The ferry needs to take evasive navigationInstructions!
 
 Unfortunately, the ship's navigation computer seems to be malfunctioning; rather
 than giving a route directly to safety, it produced extremely circuitous
@@ -10,22 +10,22 @@ instructions. When the captain uses the PA system to ask if anyone can help, you
 quickly volunteer.
 
 The navigation instructions (your puzzle input) consists of a sequence of
-single-character actions paired with integer input values. After staring at them
+single-character navigationInstructions paired with integer input values. After staring at them
 for a few minutes, you work out what they probably mean:
 
-- Action N means to move north by the given value.
-- Action S means to move south by the given value.
-- Action E means to move east by the given value.
-- Action W means to move west by the given value.
-- Action L means to turn left the given number of degrees.
-- Action R means to turn right the given number of degrees.
-- Action F means to move forward by the given value in the direction the ship is
+- NavigationInstruction N means to move north by the given value.
+- NavigationInstruction S means to move south by the given value.
+- NavigationInstruction E means to move east by the given value.
+- NavigationInstruction W means to move west by the given value.
+- NavigationInstruction L means to turn left the given number of degrees.
+- NavigationInstruction R means to turn right the given number of degrees.
+- NavigationInstruction F means to move forward by the given value in the action the ship is
   currently facing.
 
-The ship starts by facing east. Only the L and R actions change the direction
+The ship starts by facing east. Only the L and R navigationInstructions change the action
 the ship is facing. (That is, if the ship is facing east and the next
 instruction is N10, the ship would move north 10 units, but would still move
-east if the following action were F.)
+east if the following navigationInstruction were F.)
 
 For example:
 
@@ -60,20 +60,21 @@ namespace App.Tasks.Year2020.Day12
 {
     public class Part1 : ITask<int>
     {
-        private readonly ShipNavigationActionsRepository shipNavigationActionsRepository;
+        private readonly ShipNavigationInstructionsRepository shipNavigationInstructionsRepository;
 
         private readonly ManhattanDistance manhattanDistance;
 
         public Part1()
         {
-            shipNavigationActionsRepository = new ShipNavigationActionsRepository();
+            shipNavigationInstructionsRepository = new ShipNavigationInstructionsRepository();
             manhattanDistance = new ManhattanDistance();
         }
 
         public int Solution(string input)
         {
-            List<Action> actions = shipNavigationActionsRepository.GetActions(input);
-            int manhattanDistance = this.manhattanDistance.CalculateBetweenStartAndEndPosition(actions);
+            List<NavigationInstruction> navigationInstructions =
+                shipNavigationInstructionsRepository.GetNavigationInstructions(input);
+            int manhattanDistance = this.manhattanDistance.CalculateBetweenStartAndEndPosition(navigationInstructions);
 
             return manhattanDistance;
         }

@@ -7,55 +7,55 @@ namespace App.Tasks.Year2020.Day12
     {
         private const int SHIP_START_POSITION_X = 0;
         private const int SHIP_START_POSITION_Y = 0;
-        private const Direction SHIP_START_FACING_DIRECTION = Direction.East;
+        private const Action SHIP_START_FACING_DIRECTION = Action.MoveEast;
         private const int MIN_ROTATION_DEGREES = 90;
         private const int WAYPOINT_START_POSITION_X = 10;
         private const int WAYPOINT_START_POSITION_Y = 1;
 
-        public int CalculateBetweenStartAndEndPosition(List<Action> actions)
+        public int CalculateBetweenStartAndEndPosition(List<NavigationInstruction> navigationInstructions)
         {
             int x = SHIP_START_POSITION_X;
             int y = SHIP_START_POSITION_Y;
-            Direction facing = SHIP_START_FACING_DIRECTION;
+            Action facing = SHIP_START_FACING_DIRECTION;
 
-            foreach (Action action in actions)
+            foreach (NavigationInstruction navigationInstruction in navigationInstructions)
             {
-                switch (action.Direction)
+                switch (navigationInstruction.Action)
                 {
-                    case Direction.Forward:
+                    case Action.MoveForward:
                         switch (facing)
                         {
-                            case Direction.North:
-                                y += action.Value;
+                            case Action.MoveNorth:
+                                y += navigationInstruction.Value;
                                 break;
-                            case Direction.South:
-                                y -= action.Value;
+                            case Action.MoveSouth:
+                                y -= navigationInstruction.Value;
                                 break;
-                            case Direction.East:
-                                x += action.Value;
+                            case Action.MoveEast:
+                                x += navigationInstruction.Value;
                                 break;
-                            case Direction.West:
-                                x -= action.Value;
+                            case Action.MoveWest:
+                                x -= navigationInstruction.Value;
                                 break;
                         }
                         break;
-                    case Direction.North:
-                        y += action.Value;
+                    case Action.MoveNorth:
+                        y += navigationInstruction.Value;
                         break;
-                    case Direction.South:
-                        y -= action.Value;
+                    case Action.MoveSouth:
+                        y -= navigationInstruction.Value;
                         break;
-                    case Direction.East:
-                        x += action.Value;
+                    case Action.MoveEast:
+                        x += navigationInstruction.Value;
                         break;
-                    case Direction.West:
-                        x -= action.Value;
+                    case Action.MoveWest:
+                        x -= navigationInstruction.Value;
                         break;
-                    case Direction.Left:
-                        facing = GetFacingDirection(facing, action);
+                    case Action.TurnLeft:
+                        facing = GetFacingAction(facing, navigationInstruction);
                         break;
-                    case Direction.Right:
-                        facing = GetFacingDirection(facing, action);
+                    case Action.TurnRight:
+                        facing = GetFacingAction(facing, navigationInstruction);
                         break;
                 }
             }
@@ -63,7 +63,9 @@ namespace App.Tasks.Year2020.Day12
             return Math.Abs(x) + Math.Abs(y);
         }
 
-        public int CalculateBetweenStartAndEndPositionByMovingWaypoint(List<Action> actions)
+        public int CalculateBetweenStartAndEndPositionByMovingWaypoint(
+            List<NavigationInstruction> navigationInstructions
+        )
         {
             // Ship coordinates
             int x = SHIP_START_POSITION_X;
@@ -73,31 +75,31 @@ namespace App.Tasks.Year2020.Day12
             int wx = WAYPOINT_START_POSITION_X;
             int wy = WAYPOINT_START_POSITION_Y;
 
-            foreach (Action action in actions)
+            foreach (NavigationInstruction navigationInstruction in navigationInstructions)
             {
-                switch (action.Direction)
+                switch (navigationInstruction.Action)
                 {
-                    case Direction.Forward:
-                        x += wx * action.Value;
-                        y += wy * action.Value;
+                    case Action.MoveForward:
+                        x += wx * navigationInstruction.Value;
+                        y += wy * navigationInstruction.Value;
                         break;
-                    case Direction.North:
-                        wy += action.Value;
+                    case Action.MoveNorth:
+                        wy += navigationInstruction.Value;
                         break;
-                    case Direction.South:
-                        wy -= action.Value;
+                    case Action.MoveSouth:
+                        wy -= navigationInstruction.Value;
                         break;
-                    case Direction.East:
-                        wx += action.Value;
+                    case Action.MoveEast:
+                        wx += navigationInstruction.Value;
                         break;
-                    case Direction.West:
-                        wx -= action.Value;
+                    case Action.MoveWest:
+                        wx -= navigationInstruction.Value;
                         break;
-                    case Direction.Left:
-                        (wx, wy) = CalculateWaypointCoordinatesAfterRotation(wx, wy, action);
+                    case Action.TurnLeft:
+                        (wx, wy) = CalculateWaypointCoordinatesAfterRotation(wx, wy, navigationInstruction);
                         break;
-                    case Direction.Right:
-                        (wx, wy) = CalculateWaypointCoordinatesAfterRotation(wx, wy, action);
+                    case Action.TurnRight:
+                        (wx, wy) = CalculateWaypointCoordinatesAfterRotation(wx, wy, navigationInstruction);
                         break;
                 }
             }
@@ -105,44 +107,44 @@ namespace App.Tasks.Year2020.Day12
             return Math.Abs(x) + Math.Abs(y);
         }
 
-        private Direction GetFacingDirection(Direction facing, Action action)
+        private Action GetFacingAction(Action facing, NavigationInstruction navigationInstruction)
         {
-            int turns = action.Value / MIN_ROTATION_DEGREES;
+            int turns = navigationInstruction.Value / MIN_ROTATION_DEGREES;
             for (int i = 0; i < turns; i++)
             {
-                if (action.Direction == Direction.Left)
+                if (navigationInstruction.Action == Action.TurnLeft)
                 {
                     switch (facing)
                     {
-                        case Direction.North:
-                            facing = Direction.West;
+                        case Action.MoveNorth:
+                            facing = Action.MoveWest;
                             break;
-                        case Direction.South:
-                            facing = Direction.East;
+                        case Action.MoveSouth:
+                            facing = Action.MoveEast;
                             break;
-                        case Direction.East:
-                            facing = Direction.North;
+                        case Action.MoveEast:
+                            facing = Action.MoveNorth;
                             break;
-                        case Direction.West:
-                            facing = Direction.South;
+                        case Action.MoveWest:
+                            facing = Action.MoveSouth;
                             break;
                     }
                 }
-                else if (action.Direction == Direction.Right)
+                else if (navigationInstruction.Action == Action.TurnRight)
                 {
                     switch (facing)
                     {
-                        case Direction.North:
-                            facing = Direction.East;
+                        case Action.MoveNorth:
+                            facing = Action.MoveEast;
                             break;
-                        case Direction.South:
-                            facing = Direction.West;
+                        case Action.MoveSouth:
+                            facing = Action.MoveWest;
                             break;
-                        case Direction.East:
-                            facing = Direction.South;
+                        case Action.MoveEast:
+                            facing = Action.MoveSouth;
                             break;
-                        case Direction.West:
-                            facing = Direction.North;
+                        case Action.MoveWest:
+                            facing = Action.MoveNorth;
                             break;
                     }
                 }
@@ -151,22 +153,22 @@ namespace App.Tasks.Year2020.Day12
             return facing;
         }
 
-        private (int wx, int wy) CalculateWaypointCoordinatesAfterRotation(int wx, int wy, Action action)
+        private (int wx, int wy) CalculateWaypointCoordinatesAfterRotation(int wx, int wy, NavigationInstruction navigationInstruction)
         {
             int wxAfterRotation = 0;
             int wyAfterRotation = 0;
 
-            int rotations = action.Value / MIN_ROTATION_DEGREES;
+            int rotations = navigationInstruction.Value / MIN_ROTATION_DEGREES;
             for (int i = 0; i < rotations; i++)
             {
                 // Rotate counter-clockwise
-                if (action.Direction == Direction.Left)
+                if (navigationInstruction.Action == Action.TurnLeft)
                 {
                     wxAfterRotation = -wy;
                     wyAfterRotation = wx;
                 }
                 // Rotate clockwise
-                else if (action.Direction == Direction.Right)
+                else if (navigationInstruction.Action == Action.TurnRight)
                 {
                     wxAfterRotation = wy;
                     wyAfterRotation = -wx;
