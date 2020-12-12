@@ -8,6 +8,7 @@ namespace App.Tasks.Year2020.Day12
         private const int SHIP_START_POSITION_X = 0;
         private const int SHIP_START_POSITION_Y = 0;
         private const Direction SHIP_START_FACING_DIRECTION = Direction.East;
+        private const int MIN_ROTATION_DEGREES = 90;
         private const int WAYPOINT_START_POSITION_X = 10;
         private const int WAYPOINT_START_POSITION_Y = 1;
 
@@ -106,9 +107,8 @@ namespace App.Tasks.Year2020.Day12
 
         private Direction GetFacingDirection(Direction facing, Action action)
         {
-            int directionChanges = action.Value / 90;
-
-            for (int i = 0; i < directionChanges; i++)
+            int turns = action.Value / MIN_ROTATION_DEGREES;
+            for (int i = 0; i < turns; i++)
             {
                 if (action.Direction == Direction.Left)
                 {
@@ -156,9 +156,8 @@ namespace App.Tasks.Year2020.Day12
             int wxAfterRotation = 0;
             int wyAfterRotation = 0;
 
-            int directionChanges = action.Value / 90;
-
-            for (int i = 0; i < directionChanges; i++)
+            int rotations = action.Value / MIN_ROTATION_DEGREES;
+            for (int i = 0; i < rotations; i++)
             {
                 // Rotate counter-clockwise
                 if (action.Direction == Direction.Left)
