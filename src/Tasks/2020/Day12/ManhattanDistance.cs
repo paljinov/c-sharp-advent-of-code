@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace App.Tasks.Year2020.Day12
 {
-    public class ManhattanDistanceCalculator
+    public class ManhattanDistance
     {
         private const int SHIP_START_POSITION_X = 0;
         private const int SHIP_START_POSITION_Y = 0;
@@ -11,7 +11,7 @@ namespace App.Tasks.Year2020.Day12
         private const int WAYPOINT_START_POSITION_X = 10;
         private const int WAYPOINT_START_POSITION_Y = 1;
 
-        public int BetweenStartAndEndPosition(List<Action> actions)
+        public int CalculateBetweenStartAndEndPosition(List<Action> actions)
         {
             int x = SHIP_START_POSITION_X;
             int y = SHIP_START_POSITION_Y;
@@ -62,7 +62,7 @@ namespace App.Tasks.Year2020.Day12
             return Math.Abs(x) + Math.Abs(y);
         }
 
-        public int BetweenStartAndEndPositionByMovingWaypoint(List<Action> actions)
+        public int CalculateBetweenStartAndEndPositionByMovingWaypoint(List<Action> actions)
         {
             // Ship coordinates
             int x = SHIP_START_POSITION_X;

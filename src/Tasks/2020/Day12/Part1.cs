@@ -62,18 +62,18 @@ namespace App.Tasks.Year2020.Day12
     {
         private readonly ShipNavigationActionsRepository shipNavigationActionsRepository;
 
-        private readonly ManhattanDistanceCalculator manhattanDistanceCalculator;
+        private readonly ManhattanDistance manhattanDistance;
 
         public Part1()
         {
             shipNavigationActionsRepository = new ShipNavigationActionsRepository();
-            manhattanDistanceCalculator = new ManhattanDistanceCalculator();
+            manhattanDistance = new ManhattanDistance();
         }
 
         public int Solution(string input)
         {
             List<Action> actions = shipNavigationActionsRepository.GetActions(input);
-            int manhattanDistance = manhattanDistanceCalculator.BetweenStartAndEndPosition(actions);
+            int manhattanDistance = this.manhattanDistance.CalculateBetweenStartAndEndPosition(actions);
 
             return manhattanDistance;
         }
