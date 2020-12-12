@@ -7,7 +7,7 @@ namespace App.Tasks.Year2020.Day12
     {
         private const int SHIP_START_POSITION_X = 0;
         private const int SHIP_START_POSITION_Y = 0;
-        private const Action SHIP_START_FACING_DIRECTION = Action.MoveEast;
+        private const CardinalDirection SHIP_START_FACING_DIRECTION = CardinalDirection.East;
         private const int MIN_ROTATION_DEGREES = 90;
         private const int WAYPOINT_START_POSITION_X = 10;
         private const int WAYPOINT_START_POSITION_Y = 1;
@@ -16,7 +16,7 @@ namespace App.Tasks.Year2020.Day12
         {
             int x = SHIP_START_POSITION_X;
             int y = SHIP_START_POSITION_Y;
-            Action facing = SHIP_START_FACING_DIRECTION;
+            CardinalDirection facing = SHIP_START_FACING_DIRECTION;
 
             foreach (NavigationInstruction navigationInstruction in navigationInstructions)
             {
@@ -25,16 +25,16 @@ namespace App.Tasks.Year2020.Day12
                     case Action.MoveForward:
                         switch (facing)
                         {
-                            case Action.MoveNorth:
+                            case CardinalDirection.North:
                                 y += navigationInstruction.Value;
                                 break;
-                            case Action.MoveSouth:
+                            case CardinalDirection.South:
                                 y -= navigationInstruction.Value;
                                 break;
-                            case Action.MoveEast:
+                            case CardinalDirection.East:
                                 x += navigationInstruction.Value;
                                 break;
-                            case Action.MoveWest:
+                            case CardinalDirection.West:
                                 x -= navigationInstruction.Value;
                                 break;
                         }
@@ -52,10 +52,10 @@ namespace App.Tasks.Year2020.Day12
                         x -= navigationInstruction.Value;
                         break;
                     case Action.TurnLeft:
-                        facing = GetFacingAction(facing, navigationInstruction);
+                        facing = GetFacingDirectionAfterTurnAction(facing, navigationInstruction);
                         break;
                     case Action.TurnRight:
-                        facing = GetFacingAction(facing, navigationInstruction);
+                        facing = GetFacingDirectionAfterTurnAction(facing, navigationInstruction);
                         break;
                 }
             }
@@ -107,7 +107,10 @@ namespace App.Tasks.Year2020.Day12
             return Math.Abs(x) + Math.Abs(y);
         }
 
-        private Action GetFacingAction(Action facing, NavigationInstruction navigationInstruction)
+        private CardinalDirection GetFacingDirectionAfterTurnAction(
+            CardinalDirection facing,
+            NavigationInstruction navigationInstruction
+        )
         {
             int turns = navigationInstruction.Value / MIN_ROTATION_DEGREES;
             for (int i = 0; i < turns; i++)
@@ -116,17 +119,17 @@ namespace App.Tasks.Year2020.Day12
                 {
                     switch (facing)
                     {
-                        case Action.MoveNorth:
-                            facing = Action.MoveWest;
+                        case CardinalDirection.North:
+                            facing = CardinalDirection.West;
                             break;
-                        case Action.MoveSouth:
-                            facing = Action.MoveEast;
+                        case CardinalDirection.South:
+                            facing = CardinalDirection.East;
                             break;
-                        case Action.MoveEast:
-                            facing = Action.MoveNorth;
+                        case CardinalDirection.East:
+                            facing = CardinalDirection.North;
                             break;
-                        case Action.MoveWest:
-                            facing = Action.MoveSouth;
+                        case CardinalDirection.West:
+                            facing = CardinalDirection.South;
                             break;
                     }
                 }
@@ -134,17 +137,17 @@ namespace App.Tasks.Year2020.Day12
                 {
                     switch (facing)
                     {
-                        case Action.MoveNorth:
-                            facing = Action.MoveEast;
+                        case CardinalDirection.North:
+                            facing = CardinalDirection.East;
                             break;
-                        case Action.MoveSouth:
-                            facing = Action.MoveWest;
+                        case CardinalDirection.South:
+                            facing = CardinalDirection.West;
                             break;
-                        case Action.MoveEast:
-                            facing = Action.MoveSouth;
+                        case CardinalDirection.East:
+                            facing = CardinalDirection.South;
                             break;
-                        case Action.MoveWest:
-                            facing = Action.MoveNorth;
+                        case CardinalDirection.West:
+                            facing = CardinalDirection.North;
                             break;
                     }
                 }

@@ -14,15 +14,15 @@ namespace Tests.Tasks.Year2020.Day12
         }
 
         [Fact]
-        public void Solution_ShipNavigationActionsExample_ManhattanDistanceBetweenStartAndEndPositionEquals()
+        public void Solution_ShipNavigationInstructionsExample_ManhattanDistanceBetweenStartAndEndPositionEquals()
         {
-            string shipNavigationActions = "F10"
+            string shipNavigationInstructions = "F10"
                 + $"{Environment.NewLine}N3"
                 + $"{Environment.NewLine}F7"
                 + $"{Environment.NewLine}R90"
                 + $"{Environment.NewLine}F11";
 
-            Assert.Equal(25, task.Solution(shipNavigationActions));
+            Assert.Equal(25, task.Solution(shipNavigationInstructions));
         }
     }
 }
