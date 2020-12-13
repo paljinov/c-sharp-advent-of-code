@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,17 +5,24 @@ namespace App.Tasks.Year2020.Day13
 {
     public class DepartureBus
     {
+        private readonly ChineseReminderTheorem chineseReminderTheorem;
+
+        public DepartureBus()
+        {
+            chineseReminderTheorem = new ChineseReminderTheorem();
+        }
+
         public int CalculateProductOfEarliestBusIdAndMinutesWaiting(int earliestDepartureTimestamp, List<int> busIds)
         {
             int departureBus = 0;
             int minutesWaiting = 0;
 
-            List<int> workingBusIds = busIds.Where(busId => busId > 0).ToList();
+            int[] busesInService = busIds.Where(busId => busId > 0).ToArray();
 
             int timestamp = earliestDepartureTimestamp;
             while (departureBus == 0)
             {
-                foreach (int busId in workingBusIds)
+                foreach (int busId in busesInService)
                 {
                     if (timestamp % busId == 0)
                     {
@@ -34,31 +40,24 @@ namespace App.Tasks.Year2020.Day13
 
         public long CalculateEarliestTimestampForWhichAllBusesDepartAtOffsetsMatchingTheirPositions(List<int> busIds)
         {
-            bool wantedSequence = false;
+            int[] busesInService = busIds.Where(busId => busId > 0).ToArray();
+            int[] busIdAndOffsetDiffs = new int[busesInService.Length];
 
-            long timestamp = 0;
-            while (wantedSequence == false)
+            int j = 0;
+            for (int i = 0; i < busIds.Count; i++)
             {
-                int offset = 0;
-                wantedSequence = true;
-                foreach (int busId in busIds)
+                int busId = busIds[i];
+                if (busId > 0)
                 {
-                    if (busId != 0)
-                    {
-                        if ((timestamp + offset) % busId != 0)
-                        {
-                            wantedSequence = false;
-                        }
-                    }
-
-                    offset++;
-                }
-
-                if (!wantedSequence)
-                {
-                    timestamp++;
+                    busIdAndOffsetDiffs[j] = busId - i;
+                    j++;
                 }
             }
+
+            long timestamp = chineseReminderTheorem.Algorithm(
+                busesInService.Select(bus => (long)bus).ToArray(),
+                busIdAndOffsetDiffs.Select(diff => (long)diff).ToArray()
+            );
 
             return timestamp;
         }
