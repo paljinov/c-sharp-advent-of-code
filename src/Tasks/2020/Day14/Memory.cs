@@ -7,6 +7,12 @@ namespace App.Tasks.Year2020.Day14
 {
     public class Memory
     {
+        private const char BITMASK_BIT_ZERO = '0';
+
+        private const char BITMASK_BIT_ONE = '1';
+
+        private const char BITMASK_BIT_X = 'X';
+
         public long MemoryValuesSumForDecoderChipVersion1(List<ProgramSequence> initializationProgram)
         {
             Dictionary<int, long> memory = new Dictionary<int, long>();
@@ -57,29 +63,21 @@ namespace App.Tasks.Year2020.Day14
             int i = bitmask.Length - 1;
             for (int j = binary.Length - 1; j >= 0; j--)
             {
-                if (bitmask[i] == '0')
+                if (bitmask[i] == BITMASK_BIT_ZERO)
                 {
-                    binary[j] = '0';
+                    binary[j] = BITMASK_BIT_ZERO;
                 }
-                else if (bitmask[i] == '1')
+                else if (bitmask[i] == BITMASK_BIT_ONE)
                 {
-                    binary[j] = '1';
+                    binary[j] = BITMASK_BIT_ONE;
                 }
 
                 i--;
             }
 
-            int leadingOne = bitmask.IndexOf('1');
-            if (leadingOne != -1)
-            {
-                int prefixLength = bitmask.Length - leadingOne - binary.Length;
-                if (prefixLength > 0)
-                {
-                    string prefix = bitmask.Substring(leadingOne, prefixLength);
-                    binary.Insert(0, prefix);
-                    binary.Replace('X', '0');
-                }
-            }
+            string bitmaskPrefix = bitmask.Substring(0, bitmask.Length - binary.Length);
+            binary.Insert(0, bitmaskPrefix);
+            binary.Replace(BITMASK_BIT_X, BITMASK_BIT_ZERO);
 
             long value = Convert.ToInt64(binary.ToString(), 2);
 
@@ -93,20 +91,20 @@ namespace App.Tasks.Year2020.Day14
             int i = bitmask.Length - 1;
             for (int j = binary.Length - 1; j >= 0; j--)
             {
-                if (bitmask[i] == '1')
+                if (bitmask[i] == BITMASK_BIT_ONE)
                 {
-                    binary[j] = '1';
+                    binary[j] = BITMASK_BIT_ONE;
                 }
-                else if (bitmask[i] == 'X')
+                else if (bitmask[i] == BITMASK_BIT_X)
                 {
-                    binary[j] = 'X';
+                    binary[j] = BITMASK_BIT_X;
                 }
 
                 i--;
             }
 
-            string prefix = bitmask.Substring(0, bitmask.Length - binary.Length);
-            binary.Insert(0, prefix);
+            string bitmaskPrefix = bitmask.Substring(0, bitmask.Length - binary.Length);
+            binary.Insert(0, bitmaskPrefix);
 
             List<string> memoryAddressesPermutations = new List<string>();
             GetMemoryAddressesPermutations(binary.ToString().ToCharArray(), memoryAddressesPermutations);
@@ -122,10 +120,10 @@ namespace App.Tasks.Year2020.Day14
 
         private void GetMemoryAddressesPermutations(char[] binary, List<string> memoryAddressesPermutations)
         {
-            int floatingBitmaskIndex = Array.IndexOf(binary, 'X');
+            int floatingBitmaskIndex = Array.IndexOf(binary, BITMASK_BIT_X);
             if (floatingBitmaskIndex != -1)
             {
-                for (char c = '0'; c <= '1'; c++)
+                for (char c = BITMASK_BIT_ZERO; c <= BITMASK_BIT_ONE; c++)
                 {
                     binary[floatingBitmaskIndex] = c;
                     GetMemoryAddressesPermutations(binary.ToArray(), memoryAddressesPermutations);
