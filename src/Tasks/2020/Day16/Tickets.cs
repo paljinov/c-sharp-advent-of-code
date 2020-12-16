@@ -5,7 +5,7 @@ namespace App.Tasks.Year2020.Day16
 {
     public class Tickets
     {
-        private const string FIELD_STARTS_WITH = "departure";
+        private readonly string fieldStartsWith = "departure";
 
         public int GetTicketScanningErrorRate(List<Field> fields, List<List<int>> nearbyTickets)
         {
@@ -26,7 +26,7 @@ namespace App.Tasks.Year2020.Day16
             long product = 1;
             foreach (KeyValuePair<string, int> ticketFieldPosition in ticketFieldsPositions)
             {
-                if (ticketFieldPosition.Key.StartsWith(FIELD_STARTS_WITH))
+                if (ticketFieldPosition.Key.StartsWith(fieldStartsWith))
                 {
                     product *= ticket[ticketFieldPosition.Value];
                 }
