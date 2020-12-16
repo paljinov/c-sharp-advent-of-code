@@ -11,21 +11,22 @@ namespace App.Tasks.Year2020.Day16
         {
             Dictionary<int, int> invalidNearbyTickets = GetInvalidNearbyTickets(fields, nearbyTickets);
 
-            int ticketScanningErrorRate = invalidNearbyTickets.Sum(x => x.Value);
+            int ticketScanningErrorRate = invalidNearbyTickets.Sum(t => t.Value);
 
             return ticketScanningErrorRate;
         }
 
         public long GetTicketDepartureFieldsProduct(List<Field> fields, List<int> ticket, List<List<int>> nearbyTickets)
         {
-            Dictionary<int, int> invalidNearbyTickets = GetInvalidNearbyTickets(fields, nearbyTickets);
-            List<List<int>> validNearbyTickets = GetValidNearbyTickets(nearbyTickets, invalidNearbyTickets);
+            List<List<int>> validNearbyTickets = GetValidNearbyTickets(fields, nearbyTickets);
 
+            // Position of every field on the ticket
             Dictionary<string, int> ticketFieldsPositions = GetTicketFieldsPositions(fields, validNearbyTickets);
 
             long product = 1;
             foreach (KeyValuePair<string, int> ticketFieldPosition in ticketFieldsPositions)
             {
+                // Look fields on the ticket that start with the word "departure" and calculate product
                 if (ticketFieldPosition.Key.StartsWith(fieldStartsWith))
                 {
                     product *= ticket[ticketFieldPosition.Value];
@@ -35,6 +36,13 @@ namespace App.Tasks.Year2020.Day16
             return product;
         }
 
+
+        /// <summary>
+        /// Get invalid nearby tickets with values which aren't valid for any field.
+        /// </summary>
+        /// <param name="fields"></param>
+        /// <param name="nearbyTickets"></param>
+        /// <returns></returns>
         private Dictionary<int, int> GetInvalidNearbyTickets(List<Field> fields, List<List<int>> nearbyTickets)
         {
             Dictionary<int, int> invalidNearbyTickets = new Dictionary<int, int>();
@@ -65,11 +73,10 @@ namespace App.Tasks.Year2020.Day16
             return invalidNearbyTickets;
         }
 
-        private List<List<int>> GetValidNearbyTickets(
-            List<List<int>> nearbyTickets,
-            Dictionary<int, int> invalidNearbyTickets
-        )
+        private List<List<int>> GetValidNearbyTickets(List<Field> fields, List<List<int>> nearbyTickets)
         {
+            Dictionary<int, int> invalidNearbyTickets = GetInvalidNearbyTickets(fields, nearbyTickets);
+
             List<List<int>> validNearbyTickets = new List<List<int>>();
             for (int i = 0; i < nearbyTickets.Count; i++)
             {
@@ -100,7 +107,6 @@ namespace App.Tasks.Year2020.Day16
                     }
 
                     int position = -1;
-
                     for (int j = 0; j < positions; j++)
                     {
                         // If field is already found for this position
@@ -128,7 +134,7 @@ namespace App.Tasks.Year2020.Day16
                             {
                                 position = j;
                             }
-                            // If multiple positions are possible we cannot determine anything
+                            // If field can be on multiple positions we cannot determine anything
                             else
                             {
                                 position = -1;
@@ -137,6 +143,7 @@ namespace App.Tasks.Year2020.Day16
                         }
                     }
 
+                    // If field can be only on exact one position
                     if (position >= 0)
                     {
                         ticketFieldsPositions.Add(field.Name, position);
