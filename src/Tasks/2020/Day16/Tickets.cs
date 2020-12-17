@@ -143,7 +143,7 @@ namespace App.Tasks.Year2020.Day16
                         }
                     }
 
-                    // If field can be only on exact one position
+                    // If field can be only on exactly one position
                     if (position >= 0)
                     {
                         ticketFieldsPositions.Add(field.Name, position);
