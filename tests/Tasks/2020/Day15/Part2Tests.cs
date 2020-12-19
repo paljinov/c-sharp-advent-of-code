@@ -1,4 +1,3 @@
-using System;
 using App.Tasks.Year2020.Day15;
 using Xunit;
 
