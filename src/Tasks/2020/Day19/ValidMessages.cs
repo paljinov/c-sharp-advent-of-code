@@ -12,12 +12,19 @@ namespace App.Tasks.Year2020.Day19
 
         private const string RULE_ZERO = "0";
 
+        private const string RULE_FORTY_TWO = "42";
+
+        private const string RULE_THIRTY_ONE = "31";
+
         public int CountMessagesWhichMatchRuleZero(Dictionary<string, List<string>> rules, string[] receivedMessages)
         {
+            int followRuleZero;
+
             Dictionary<string, List<string>> letterRules = InitializeLetterRules(rules);
 
             while (!letterRules.ContainsKey(RULE_ZERO))
             {
+                int letterRulesCount = letterRules.Count;
                 foreach (KeyValuePair<string, List<string>> rule in rules)
                 {
                     if (!letterRules.ContainsKey(rule.Key))
@@ -25,9 +32,24 @@ namespace App.Tasks.Year2020.Day19
                         GetLettersRules(rules, rule.Key, letterRules);
                     }
                 }
+
+                // If new letter rules weren't discover loop happened
+                if (letterRulesCount == letterRules.Count)
+                {
+                    break;
+                }
             }
 
-            int followRuleZero = CountMessagesThatMatchRuleZero(letterRules[RULE_ZERO], receivedMessages);
+            // If there are no loops in the rules
+            if (rules.Count == letterRules.Count)
+            {
+                followRuleZero = CountMessagesThatMatchRuleZero(letterRules[RULE_ZERO], receivedMessages);
+            }
+            // If there are loops in the rules
+            else
+            {
+                followRuleZero = CountMessagesThatMatchRuleZeroForLoops(letterRules, receivedMessages);
+            }
 
             return followRuleZero;
         }
@@ -121,10 +143,10 @@ namespace App.Tasks.Year2020.Day19
             }
 
             IEnumerable<string> permutations = new List<string> { null };
-            foreach (var list in permutationsForKey)
+            foreach (List<string> list in permutationsForKey)
             {
-                // cross join the current result with each member of the next list
-                permutations = permutations.SelectMany(o => list.Select(s => o + s));
+                // Cross join the current result with each member of the next list
+                permutations = permutations.SelectMany(l => list.Select(p => l + p));
             }
 
             return permutations.Distinct().ToList();
@@ -132,17 +154,69 @@ namespace App.Tasks.Year2020.Day19
 
         private int CountMessagesThatMatchRuleZero(List<string> ruleZero, string[] receivedMessages)
         {
-            int followRule = 0;
+            int followRuleZero = 0;
 
             foreach (string receivedMessage in receivedMessages)
             {
                 if (ruleZero.Contains(receivedMessage))
                 {
-                    followRule++;
+                    followRuleZero++;
                 }
             }
 
-            return followRule;
+            return followRuleZero;
+        }
+
+        /// <summary>
+        /// Rule 8: 42 | 42 8 => 42 | 42 42 | 42 42 42 | ...
+        /// Rule 11: 42 31 | 42 11 31 => 42 31 | 42 42 31 31 | 42 42 42 31 31 31 | ...
+        /// Rule 0: 8 11 => 42{m} 31{n}, where m > n
+        /// </summary>
+        /// <param name="letterRules"></param>
+        /// <param name="receivedMessages"></param>
+        /// <returns></returns>
+        private int CountMessagesThatMatchRuleZeroForLoops(
+            Dictionary<string, List<string>> letterRules,
+            string[] receivedMessages
+        )
+        {
+            int followRuleZero = 0;
+            int ruleFortyTwoLength = letterRules[RULE_FORTY_TWO][0].Length;
+            int ruleThirtyOneLength = letterRules[RULE_THIRTY_ONE][0].Length;
+
+            for (int i = 0; i < receivedMessages.Length; i++)
+            {
+                string receivedMessage = receivedMessages[i];
+
+                int ruleThirtyOneCount = 0;
+                int ruleFortyTwoCount = 0;
+
+                while (receivedMessage.Length >= ruleThirtyOneLength
+                    && letterRules[RULE_THIRTY_ONE].Contains(receivedMessage[^ruleThirtyOneLength..]))
+                {
+                    receivedMessage = receivedMessage[..^ruleThirtyOneLength];
+                    ruleThirtyOneCount++;
+                }
+
+                // If rule "31" is satisfied
+                if (ruleThirtyOneCount > 0)
+                {
+                    while (receivedMessage.Length >= ruleFortyTwoLength
+                        && letterRules[RULE_FORTY_TWO].Contains(receivedMessage[..ruleFortyTwoLength]))
+                    {
+                        receivedMessage = receivedMessage[ruleFortyTwoLength..];
+                        ruleFortyTwoCount++;
+                    }
+
+                    // If rule "42" is satisfied and repeats more than rule "31", and whole received message matches
+                    if (ruleFortyTwoCount >= ruleThirtyOneCount + 1 && receivedMessage.Length == 0)
+                    {
+                        followRuleZero++;
+                    }
+                }
+            }
+
+            return followRuleZero;
         }
     }
 }
