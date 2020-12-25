@@ -105,6 +105,8 @@ namespace App.Tasks.Year2020.Day23
 {
     public class Part1 : ITask<string>
     {
+        private const int MOVES = 100;
+
         private readonly CupsRepository cupsRepository;
 
         private readonly Game game;
@@ -118,7 +120,7 @@ namespace App.Tasks.Year2020.Day23
         public string Solution(string input)
         {
             LinkedList<int> cups = cupsRepository.GetCups(input);
-            string cupsClockwiseFromOne = game.GetCupsAfterMovesClockwiseFromOne(cups);
+            string cupsClockwiseFromOne = game.GetCupsAfterMovesClockwiseFromOne(cups, MOVES);
 
             return cupsClockwiseFromOne;
         }
