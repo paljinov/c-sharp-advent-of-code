@@ -6,11 +6,11 @@ namespace Tests.Tasks.Year2020.Day20
 {
     public class Part2Tests
     {
-        private readonly Part1 task;
+        private readonly Part2 task;
 
         public Part2Tests()
         {
-            task = new Part1();
+            task = new Part2();
         }
 
         [Fact]
@@ -124,7 +124,7 @@ namespace Tests.Tasks.Year2020.Day20
                 + $"{Environment.NewLine}..#......."
                 + $"{Environment.NewLine}..#.###...";
 
-            Assert.Equal(20899048083289, task.Solution(tiles));
+            Assert.Equal(273, task.Solution(tiles));
         }
     }
 }
