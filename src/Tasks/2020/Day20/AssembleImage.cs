@@ -37,38 +37,21 @@ namespace App.Tasks.Year2020.Day20
             Dictionary<int, Dictionary<int, string>> tilesBorders = GetTilesBorders(tiles);
             Dictionary<int, List<SharedBorder>> tilesSharedBorders = GetTilesSharedBorders(tilesBorders);
 
-            int hashSignsWhichAreNotPartOfSeaMonster = 0;
-
             // Get all possible tiles positions and orientations
-            List<string[,][]> possibleTilesPositionsAndOrientations =
-                GetPossibleTilesPositionsAndOrientations(tilesSharedBorders, tiles);
+            Dictionary<int, List<string[,][]>> possibleTilesPositionsAndOrientations =
+               GetPossibleTilesPositionsAndOrientations(tilesSharedBorders, tiles);
 
-            // Iterating possible corners
-            foreach (string[,][] positionedTiles in possibleTilesPositionsAndOrientations)
+            List<string[]> images = GetPossibleImages(possibleTilesPositionsAndOrientations);
+
+            int hashSignsWhichAreNotPartOfSeaMonster = 0;
+            foreach (string[] image in images)
             {
-                string[,][] tilesWithRemovedBorders = GetTilesWithRemovedBorders(positionedTiles);
-                string[] image = AssembleActualImage(tilesWithRemovedBorders);
-
-                for (int i = 0; i < 4; i++)
+                int seaMonsters = SearchSeaMonsters(image);
+                if (seaMonsters > 0)
                 {
-                    List<string[]> images = new List<string[]>();
-
-                    images.Add(image);
-                    images.Add(FlipHorizontally(image));
-                    images.Add(FlipVertically(image));
-
-                    image = RotateTile(image);
-
-                    foreach (string[] img in images)
-                    {
-                        int seaMonsters = SearchSeaMonsters(img);
-                        if (seaMonsters > 0)
-                        {
-                            int totalHashes = CountTotalHashes(img);
-                            hashSignsWhichAreNotPartOfSeaMonster = totalHashes - seaMonsters * SEA_MONSTER_HASHES;
-                            break;
-                        }
-                    }
+                    int totalHashes = CountTotalHashes(image);
+                    hashSignsWhichAreNotPartOfSeaMonster = totalHashes - seaMonsters * SEA_MONSTER_HASHES;
+                    break;
                 }
             }
 
@@ -210,11 +193,12 @@ namespace App.Tasks.Year2020.Day20
             return corners;
         }
 
-        private List<string[,][]> GetPossibleTilesPositionsAndOrientations(
+        private Dictionary<int, List<string[,][]>> GetPossibleTilesPositionsAndOrientations(
             Dictionary<int, List<SharedBorder>> tilesSharedBorders,
             Dictionary<int, string[]> tiles)
         {
-            List<string[,][]> possibleTilesPositionsAndOrientations = new List<string[,][]>();
+            Dictionary<int, List<string[,][]>> possibleTilesPositionsAndOrientations =
+                new Dictionary<int, List<string[,][]>>();
 
             // Each of these corners can be top left tile
             int[] corners = GetCorners(tilesSharedBorders);
@@ -222,19 +206,14 @@ namespace App.Tasks.Year2020.Day20
             // Iterating possible corners
             foreach (int cornerTileId in corners)
             {
-                // Each corner can be oriented in 2 possible ways
-                foreach (SharedBorder sharedBorder in tilesSharedBorders[cornerTileId])
-                {
-                    List<string[,][]> positionedAndOrientedTilesForTopLeftTile =
-                        GetPositionedAndOrientedTilesForTopLeftTile(
-                            tilesSharedBorders,
-                            tiles,
-                            sharedBorder.FirstTileId
-                        );
+                List<string[,][]> positionedAndOrientedTilesForTopLeftTile =
+                    GetPositionedAndOrientedTilesForTopLeftTile(
+                        tilesSharedBorders,
+                        tiles,
+                        cornerTileId
+                    );
 
-                    possibleTilesPositionsAndOrientations =
-                        possibleTilesPositionsAndOrientations.Concat(positionedAndOrientedTilesForTopLeftTile).ToList();
-                }
+                possibleTilesPositionsAndOrientations[cornerTileId] = positionedAndOrientedTilesForTopLeftTile;
             }
 
             return possibleTilesPositionsAndOrientations;
@@ -247,7 +226,6 @@ namespace App.Tasks.Year2020.Day20
         )
         {
             List<string[,][]> possibleTilesPositionsAndOrientations = new List<string[,][]>();
-
 
             string[] topLeftTile = tiles[cornerTileId];
 
@@ -410,6 +388,34 @@ namespace App.Tasks.Year2020.Day20
 
 
             return positionedTiles;
+        }
+
+        private List<string[]> GetPossibleImages(
+            Dictionary<int, List<string[,][]>> possibleTilesPositionsAndOrientations
+        )
+        {
+            List<string[]> images = new List<string[]>();
+
+            // Iterating possible tiles positions and orientations
+            foreach (KeyValuePair<int, List<string[,][]>> forTopLeftTile in possibleTilesPositionsAndOrientations)
+            {
+                foreach (string[,][] positionedTiles in forTopLeftTile.Value)
+                {
+                    string[,][] tilesWithRemovedBorders = GetTilesWithRemovedBorders(positionedTiles);
+                    string[] image = AssembleActualImage(tilesWithRemovedBorders);
+
+                    for (int i = 0; i < 4; i++)
+                    {
+                        images.Add(image);
+                        images.Add(FlipHorizontally(image));
+                        images.Add(FlipVertically(image));
+
+                        image = RotateTile(image);
+                    }
+                }
+            }
+
+            return images;
         }
 
         private string[] RotateTile(string[] tile)
