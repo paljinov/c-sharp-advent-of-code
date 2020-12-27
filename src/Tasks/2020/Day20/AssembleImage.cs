@@ -227,10 +227,10 @@ namespace App.Tasks.Year2020.Day20
         {
             List<string[,][]> possibleTilesPositionsAndOrientations = new List<string[,][]>();
 
+            List<string[]> possibleTopLeftOrientations = new List<string[]>();
             string[] topLeftTile = tiles[cornerTileId];
 
-            List<string[]> possibleTopLeftOrientations = new List<string[]>();
-            for (int t = 0; t < 4; t++)
+            for (int i = 0; i < 4; i++)
             {
                 possibleTopLeftOrientations.Add(topLeftTile);
                 possibleTopLeftOrientations.Add(FlipHorizontally(topLeftTile));
@@ -309,6 +309,7 @@ namespace App.Tasks.Year2020.Day20
                         List<SharedBorder> leftTileSharedBorders = tilesSharedBorders[leftTileId];
                         foreach (SharedBorder leftTileSharedBorder in leftTileSharedBorders)
                         {
+                            // This tile must be left oriented
                             if (leftTileSharedBorder.SecondBorder == rightBorder
                                 || ReverseString(leftTileSharedBorder.SecondBorder) == rightBorder)
                             {
@@ -346,7 +347,8 @@ namespace App.Tasks.Year2020.Day20
                         foreach (SharedBorder topTileSharedBorder in topTileSharedBorders)
                         {
                             // This tile must be top oriented
-                            if (topTileSharedBorder.SecondBorder == bottomBorder)
+                            if (topTileSharedBorder.SecondBorder == bottomBorder
+                              || ReverseString(topTileSharedBorder.SecondBorder) == bottomBorder)
                             {
                                 tilesPositions[i, j] = topTileSharedBorder.SecondTileId;
                                 positionedTile = tiles[tilesPositions[i, j]];
@@ -548,21 +550,25 @@ namespace App.Tasks.Year2020.Day20
 
         private int SearchSeaMonsters(string[] image)
         {
-            // Sea monster pattern
-            //                   #
-            // #    ##    ##    ###
-            //  #  #  #  #  #  #
+            /*
+            Sea monster pattern:
+                              #
+            #    ##    ##    ###
+             #  #  #  #  #  #
+            */
 
             int seaMonsters = 0;
 
             for (int i = 0; i < image.Length; i++)
             {
-                string row = image[i];
-                for (int j = 0; j < row.Length; j++)
+                for (int j = 0; j < image[i].Length; j++)
                 {
+                    // Last sea monster pattern row
+                    string row = image[i];
                     if (j + 15 < row.Length && row[j] == '#' && row[j + 3] == '#' && row[j + 6] == '#'
                         && row[j + 9] == '#' && row[j + 12] == '#' && row[j + 15] == '#')
                     {
+                        // Middle sea monster pattern row
                         if (i - 1 >= 0)
                         {
                             row = image[i - 1];
@@ -570,6 +576,7 @@ namespace App.Tasks.Year2020.Day20
                                 && row[j + 5] == '#' && row[j + 10] == '#' && row[j + 11] == '#'
                                 && row[j + 16] == '#' && row[j + 17] == '#' && row[j + 18] == '#')
                             {
+                                // First sea monster pattern row
                                 if (i - 2 >= 0)
                                 {
                                     row = image[i - 2];
