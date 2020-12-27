@@ -36,45 +36,37 @@ namespace App.Tasks.Year2020.Day20
         {
             Dictionary<int, Dictionary<int, string>> tilesBorders = GetTilesBorders(tiles);
             Dictionary<int, List<SharedBorder>> tilesSharedBorders = GetTilesSharedBorders(tilesBorders);
-            // Each of these corners can be top left tile
-            int[] corners = GetCorners(tilesSharedBorders);
 
             int hashSignsWhichAreNotPartOfSeaMonster = 0;
 
+            // Get all possible tiles positions and orientations
+            List<string[,][]> possibleTilesPositionsAndOrientations =
+                GetPossibleTilesPositionsAndOrientations(tilesSharedBorders, tiles);
+
             // Iterating possible corners
-            foreach (int cornerTileId in corners)
+            foreach (string[,][] positionedTiles in possibleTilesPositionsAndOrientations)
             {
-                // Each corner can be oriented in 2 possible ways
-                foreach (SharedBorder sharedBorder in tilesSharedBorders[cornerTileId])
+                string[,][] tilesWithRemovedBorders = GetTilesWithRemovedBorders(positionedTiles);
+                string[] image = AssembleActualImage(tilesWithRemovedBorders);
+
+                for (int i = 0; i < 4; i++)
                 {
-                    string[,][] positionedTiles = GetPositionedTiles(tilesSharedBorders, tiles, sharedBorder);
-                    if (positionedTiles == null)
+                    List<string[]> images = new List<string[]>();
+
+                    images.Add(image);
+                    images.Add(FlipHorizontally(image));
+                    images.Add(FlipVertically(image));
+
+                    image = RotateTile(image);
+
+                    foreach (string[] img in images)
                     {
-                        continue;
-                    }
-
-                    string[,][] tilesWithRemovedBorders = GetTilesWithRemovedBorders(positionedTiles);
-                    string[] image = AssembleActualImage(tilesWithRemovedBorders);
-
-                    for (int i = 0; i < 4; i++)
-                    {
-                        List<string[]> images = new List<string[]>();
-
-                        images.Add(image);
-                        images.Add(FlipHorizontally(image));
-                        images.Add(FlipVertically(image));
-
-                        image = RotateTile(image);
-
-                        foreach (string[] img in images)
+                        int seaMonsters = SearchSeaMonsters(img);
+                        if (seaMonsters > 0)
                         {
-                            int seaMonsters = SearchSeaMonsters(img);
-                            if (seaMonsters > 0)
-                            {
-                                int totalHashes = CountTotalHashes(img);
-                                hashSignsWhichAreNotPartOfSeaMonster = totalHashes - seaMonsters * SEA_MONSTER_HASHES;
-                                break;
-                            }
+                            int totalHashes = CountTotalHashes(img);
+                            hashSignsWhichAreNotPartOfSeaMonster = totalHashes - seaMonsters * SEA_MONSTER_HASHES;
+                            break;
                         }
                     }
                 }
@@ -218,23 +210,46 @@ namespace App.Tasks.Year2020.Day20
             return corners;
         }
 
-        private string[,][] GetPositionedTiles(
+        private List<string[,][]> GetPossibleTilesPositionsAndOrientations(
+            Dictionary<int, List<SharedBorder>> tilesSharedBorders,
+            Dictionary<int, string[]> tiles)
+        {
+            List<string[,][]> possibleTilesPositionsAndOrientations = new List<string[,][]>();
+
+            // Each of these corners can be top left tile
+            int[] corners = GetCorners(tilesSharedBorders);
+
+            // Iterating possible corners
+            foreach (int cornerTileId in corners)
+            {
+                // Each corner can be oriented in 2 possible ways
+                foreach (SharedBorder sharedBorder in tilesSharedBorders[cornerTileId])
+                {
+                    List<string[,][]> positionedAndOrientedTilesForTopLeftTile =
+                        GetPositionedAndOrientedTilesForTopLeftTile(
+                            tilesSharedBorders,
+                            tiles,
+                            sharedBorder.FirstTileId
+                        );
+
+                    possibleTilesPositionsAndOrientations =
+                        possibleTilesPositionsAndOrientations.Concat(positionedAndOrientedTilesForTopLeftTile).ToList();
+                }
+            }
+
+            return possibleTilesPositionsAndOrientations;
+        }
+
+        private List<string[,][]> GetPositionedAndOrientedTilesForTopLeftTile(
             Dictionary<int, List<SharedBorder>> tilesSharedBorders,
             Dictionary<int, string[]> tiles,
-            SharedBorder sharedBorder
+            int cornerTileId
         )
         {
-            int tilesPerSquareSide = (int)Math.Sqrt(tilesSharedBorders.Count);
+            List<string[,][]> possibleTilesPositionsAndOrientations = new List<string[,][]>();
 
-            int cornerTileId = sharedBorder.FirstTileId;
-
-            int[,] tilesPositions = new int[tilesPerSquareSide, tilesPerSquareSide];
-            tilesPositions[0, 0] = sharedBorder.FirstTileId;
-
-            string[,][] positionedTiles;
 
             string[] topLeftTile = tiles[cornerTileId];
-
 
             List<string[]> possibleTopLeftOrientations = new List<string[]>();
             for (int t = 0; t < 4; t++)
@@ -248,115 +263,17 @@ namespace App.Tasks.Year2020.Day20
 
             foreach (string[] positionedTopLeftTile in possibleTopLeftOrientations)
             {
-                string[] positionedTile = positionedTopLeftTile;
-
-                positionedTiles = new string[tilesPerSquareSide, tilesPerSquareSide][];
-                positionedTiles[0, 0] = positionedTopLeftTile;
-
-                // Determine position of other tiles starting from top left
-                for (int i = 0; i < tilesPerSquareSide; i++)
-                {
-                    bool invalidCombination = false;
-
-                    for (int j = 0; j < tilesPerSquareSide; j++)
-                    {
-                        // Top left is already determined
-                        if (i == 0 && j == 0)
-                        {
-                            continue;
-                        }
-
-                        // If left tile is already determined
-                        if (j > 0)
-                        {
-                            int leftTileId = tilesPositions[i, j - 1];
-                            string rightBorder = GetBorder(positionedTiles[i, j - 1], RIGHT_BORDER);
-
-                            List<SharedBorder> leftTileSharedBorders = tilesSharedBorders[leftTileId];
-                            foreach (SharedBorder leftTileSharedBorder in leftTileSharedBorders)
-                            {
-                                if (leftTileSharedBorder.SecondBorder == rightBorder
-                                    || ReverseString(leftTileSharedBorder.SecondBorder) == rightBorder)
-                                {
-                                    tilesPositions[i, j] = leftTileSharedBorder.SecondTileId;
-                                    positionedTile = tiles[tilesPositions[i, j]];
-                                    while (GetBorder(positionedTile, LEFT_BORDER) != rightBorder)
-                                    {
-                                        if (GetBorder(FlipVertically(positionedTile), LEFT_BORDER) == rightBorder)
-                                        {
-                                            positionedTile = FlipVertically(positionedTile);
-                                            break;
-                                        }
-                                        else if (GetBorder(FlipHorizontally(positionedTile), LEFT_BORDER) == rightBorder)
-                                        {
-                                            positionedTile = FlipHorizontally(positionedTile);
-                                            break;
-                                        }
-                                        else
-                                        {
-                                            positionedTile = RotateTile(positionedTile);
-                                        }
-                                    }
-                                }
-                            }
-
-                            positionedTiles[i, j] = positionedTile;
-                        }
-                        // If top bar is already defined
-                        else if (i > 0)
-                        {
-                            int topTileId = tilesPositions[i - 1, j];
-                            string bottomBorder = GetBorder(positionedTiles[i - 1, j], BOTTOM_BORDER);
-
-                            List<SharedBorder> topTileSharedBorders = tilesSharedBorders[topTileId];
-                            foreach (SharedBorder topTileSharedBorder in topTileSharedBorders)
-                            {
-                                // This tile must be top oriented
-                                if (topTileSharedBorder.SecondBorder == bottomBorder)
-                                {
-                                    tilesPositions[i, j] = topTileSharedBorder.SecondTileId;
-                                    positionedTile = tiles[tilesPositions[i, j]];
-                                    while (GetBorder(positionedTile, TOP_BORDER) != bottomBorder)
-                                    {
-                                        if (GetBorder(FlipVertically(positionedTile), TOP_BORDER) == bottomBorder)
-                                        {
-                                            positionedTile = FlipVertically(positionedTile);
-                                            break;
-                                        }
-                                        else if (GetBorder(FlipHorizontally(positionedTile), TOP_BORDER) == bottomBorder)
-                                        {
-                                            positionedTile = FlipHorizontally(positionedTile);
-                                            break;
-                                        }
-                                        else
-                                        {
-                                            positionedTile = RotateTile(positionedTile);
-                                        }
-                                    }
-                                }
-                            }
-
-                            positionedTiles[i, j] = positionedTile;
-                        }
-
-                        if (tilesPositions[i, j] == 0)
-                        {
-                            invalidCombination = true;
-                            break;
-                        }
-                    }
-
-                    if (invalidCombination)
-                    {
-                        break;
-                    }
-                }
-
+                string[,][] positionedTiles = GetPositionedTilesForTopLeftOrientation(
+                    tilesSharedBorders,
+                    tiles,
+                    cornerTileId,
+                    positionedTopLeftTile
+                );
 
                 bool allValid = true;
-                for (int i = 0; i < tilesPerSquareSide; i++)
+                for (int i = 0; i < positionedTiles.GetLength(0); i++)
                 {
-                    for (int j = 0; j < tilesPerSquareSide; j++)
+                    for (int j = 0; j < positionedTiles.GetLength(1); j++)
                     {
                         if (positionedTiles[i, j] == null)
                         {
@@ -367,11 +284,132 @@ namespace App.Tasks.Year2020.Day20
 
                 if (allValid)
                 {
-                    return positionedTiles;
+                    possibleTilesPositionsAndOrientations.Add(positionedTiles);
                 }
             }
 
-            return null;
+            return possibleTilesPositionsAndOrientations;
+        }
+
+        private string[,][] GetPositionedTilesForTopLeftOrientation(
+            Dictionary<int, List<SharedBorder>> tilesSharedBorders,
+            Dictionary<int, string[]> tiles,
+            int topLeftTileId,
+            string[] positionedTopLeftTile
+        )
+        {
+            int tilesPerSquareSide = (int)Math.Sqrt(tilesSharedBorders.Count);
+
+            int[,] tilesPositions = new int[tilesPerSquareSide, tilesPerSquareSide];
+            tilesPositions[0, 0] = topLeftTileId;
+
+            string[] positionedTile = positionedTopLeftTile;
+
+            string[,][] positionedTiles;
+            positionedTiles = new string[tilesPerSquareSide, tilesPerSquareSide][];
+            positionedTiles[0, 0] = positionedTopLeftTile;
+
+            // Determine position of other tiles starting from top left
+            for (int i = 0; i < tilesPerSquareSide; i++)
+            {
+                bool invalidCombination = false;
+
+                for (int j = 0; j < tilesPerSquareSide; j++)
+                {
+                    // Top left is already determined
+                    if (i == 0 && j == 0)
+                    {
+                        continue;
+                    }
+
+                    // If left tile is already determined
+                    if (j > 0)
+                    {
+                        int leftTileId = tilesPositions[i, j - 1];
+                        string rightBorder = GetBorder(positionedTiles[i, j - 1], RIGHT_BORDER);
+
+                        List<SharedBorder> leftTileSharedBorders = tilesSharedBorders[leftTileId];
+                        foreach (SharedBorder leftTileSharedBorder in leftTileSharedBorders)
+                        {
+                            if (leftTileSharedBorder.SecondBorder == rightBorder
+                                || ReverseString(leftTileSharedBorder.SecondBorder) == rightBorder)
+                            {
+                                tilesPositions[i, j] = leftTileSharedBorder.SecondTileId;
+                                positionedTile = tiles[tilesPositions[i, j]];
+                                while (GetBorder(positionedTile, LEFT_BORDER) != rightBorder)
+                                {
+                                    if (GetBorder(FlipVertically(positionedTile), LEFT_BORDER) == rightBorder)
+                                    {
+                                        positionedTile = FlipVertically(positionedTile);
+                                        break;
+                                    }
+                                    else if (GetBorder(FlipHorizontally(positionedTile), LEFT_BORDER) == rightBorder)
+                                    {
+                                        positionedTile = FlipHorizontally(positionedTile);
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        positionedTile = RotateTile(positionedTile);
+                                    }
+                                }
+                            }
+                        }
+
+                        positionedTiles[i, j] = positionedTile;
+                    }
+                    // If top bar is already defined
+                    else if (i > 0)
+                    {
+                        int topTileId = tilesPositions[i - 1, j];
+                        string bottomBorder = GetBorder(positionedTiles[i - 1, j], BOTTOM_BORDER);
+
+                        List<SharedBorder> topTileSharedBorders = tilesSharedBorders[topTileId];
+                        foreach (SharedBorder topTileSharedBorder in topTileSharedBorders)
+                        {
+                            // This tile must be top oriented
+                            if (topTileSharedBorder.SecondBorder == bottomBorder)
+                            {
+                                tilesPositions[i, j] = topTileSharedBorder.SecondTileId;
+                                positionedTile = tiles[tilesPositions[i, j]];
+                                while (GetBorder(positionedTile, TOP_BORDER) != bottomBorder)
+                                {
+                                    if (GetBorder(FlipVertically(positionedTile), TOP_BORDER) == bottomBorder)
+                                    {
+                                        positionedTile = FlipVertically(positionedTile);
+                                        break;
+                                    }
+                                    else if (GetBorder(FlipHorizontally(positionedTile), TOP_BORDER) == bottomBorder)
+                                    {
+                                        positionedTile = FlipHorizontally(positionedTile);
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        positionedTile = RotateTile(positionedTile);
+                                    }
+                                }
+                            }
+                        }
+
+                        positionedTiles[i, j] = positionedTile;
+                    }
+
+                    if (tilesPositions[i, j] == 0)
+                    {
+                        invalidCombination = true;
+                        break;
+                    }
+                }
+
+                if (invalidCombination)
+                {
+                    break;
+                }
+            }
+
+
+            return positionedTiles;
         }
 
         private string[] RotateTile(string[] tile)
@@ -504,11 +542,10 @@ namespace App.Tasks.Year2020.Day20
 
         private int SearchSeaMonsters(string[] image)
         {
-            /*
-            "??????????????????#?",
-            "#????##????##????###",
-            "?#??#??#??#??#??#???"
-            */
+            // Sea monster pattern
+            //                   #
+            // #    ##    ##    ###
+            //  #  #  #  #  #  #
 
             int seaMonsters = 0;
 
@@ -523,9 +560,9 @@ namespace App.Tasks.Year2020.Day20
                         if (i - 1 >= 0)
                         {
                             row = image[i - 1];
-                            if (j > 0 && j + 18 < row.Length && row[(j - 1)] == '#' && row[(j - 1) + 5] == '#'
-                                && row[(j - 1) + 6] == '#' && row[(j - 1) + 11] == '#' && row[(j - 1) + 12] == '#'
-                                && row[(j - 1) + 17] == '#' && row[(j - 1) + 18] == '#' && row[(j - 1) + 19] == '#')
+                            if (j > 0 && j + 18 < row.Length && row[j - 1] == '#' && row[j + 4] == '#'
+                                && row[j + 5] == '#' && row[j + 10] == '#' && row[j + 11] == '#'
+                                && row[j + 16] == '#' && row[j + 17] == '#' && row[j + 18] == '#')
                             {
                                 if (i - 2 >= 0)
                                 {
@@ -585,7 +622,7 @@ namespace App.Tasks.Year2020.Day20
             int totalHashes = 0;
             foreach (string row in image)
             {
-                totalHashes += row.Count(r => r == '#');
+                totalHashes += row.Count(c => c == '#');
             }
 
             return totalHashes;
