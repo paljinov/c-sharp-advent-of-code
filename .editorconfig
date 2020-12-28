@@ -235,6 +235,9 @@ dotnet_diagnostic.IDE0059.severity = warning
 # IDE0060: Remove unused parameter
 dotnet_diagnostic.IDE0060.severity = warning
 
+# IDE0090: Simplify new expression
+dotnet_diagnostic.IDE0090.severity = none
+
 # CA1822: Make member static
 dotnet_diagnostic.CA1822.severity = none
 
