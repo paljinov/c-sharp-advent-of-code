@@ -4,7 +4,7 @@ namespace App.Tasks.Year2020.Day20
     {
         public int FirstTileId { get; set; }
 
-        public int FirstBorderSide { get; set; }
+        public Border FirstBorderSide { get; set; }
 
         public string FirstBorder { get; set; }
 
@@ -12,7 +12,7 @@ namespace App.Tasks.Year2020.Day20
 
         public int SecondTileId { get; set; }
 
-        public int SecondBorderSide { get; set; }
+        public Border SecondBorderSide { get; set; }
 
         public string SecondBorder { get; set; }
 

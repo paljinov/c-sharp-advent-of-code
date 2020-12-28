@@ -7,19 +7,11 @@ namespace App.Tasks.Year2020.Day20
 {
     public class AssembleImage
     {
-        private const int TOP_BORDER = 0;
-
-        private const int RIGHT_BORDER = 90;
-
-        private const int BOTTOM_BORDER = 180;
-
-        private const int LEFT_BORDER = 270;
-
         private const int SEA_MONSTER_HASHES = 15;
 
         public long CalculateCornerTilesIdsProduct(Dictionary<int, string[]> tiles)
         {
-            Dictionary<int, Dictionary<int, string>> tilesBorders = GetTilesBorders(tiles);
+            Dictionary<int, Dictionary<Border, string>> tilesBorders = GetTilesBorders(tiles);
             Dictionary<int, List<SharedBorder>> tilesSharedBorders = GetTilesSharedBorders(tilesBorders);
             int[] corners = GetCorners(tilesSharedBorders);
 
@@ -34,7 +26,7 @@ namespace App.Tasks.Year2020.Day20
 
         public int CountHashSignsWhichAreNotPartOfSeaMonster(Dictionary<int, string[]> tiles)
         {
-            Dictionary<int, Dictionary<int, string>> tilesBorders = GetTilesBorders(tiles);
+            Dictionary<int, Dictionary<Border, string>> tilesBorders = GetTilesBorders(tiles);
             Dictionary<int, List<SharedBorder>> tilesSharedBorders = GetTilesSharedBorders(tilesBorders);
 
             // Get all possible tiles positions and orientations
@@ -58,16 +50,16 @@ namespace App.Tasks.Year2020.Day20
             return hashSignsWhichAreNotPartOfSeaMonster;
         }
 
-        private Dictionary<int, Dictionary<int, string>> GetTilesBorders(Dictionary<int, string[]> tiles)
+        private Dictionary<int, Dictionary<Border, string>> GetTilesBorders(Dictionary<int, string[]> tiles)
         {
-            Dictionary<int, Dictionary<int, string>> tilesBorders = new Dictionary<int, Dictionary<int, string>>();
+            Dictionary<int, Dictionary<Border, string>> tilesBorders = new Dictionary<int, Dictionary<Border, string>>();
 
             foreach (KeyValuePair<int, string[]> tile in tiles)
             {
-                Dictionary<int, string> tileBorders = new Dictionary<int, string>
+                Dictionary<Border, string> tileBorders = new Dictionary<Border, string>
                 {
-                    [TOP_BORDER] = tile.Value[0],
-                    [BOTTOM_BORDER] = tile.Value[^1]
+                    [Border.Top] = tile.Value[0],
+                    [Border.Bottom] = tile.Value[^1]
                 };
 
                 StringBuilder left = new StringBuilder();
@@ -78,8 +70,8 @@ namespace App.Tasks.Year2020.Day20
                     right.Append(row[^1]);
                 }
 
-                tileBorders[LEFT_BORDER] = left.ToString();
-                tileBorders[RIGHT_BORDER] = right.ToString();
+                tileBorders[Border.Left] = left.ToString();
+                tileBorders[Border.Right] = right.ToString();
 
                 tilesBorders.Add(tile.Key, tileBorders);
             }
@@ -88,16 +80,16 @@ namespace App.Tasks.Year2020.Day20
         }
 
         private Dictionary<int, List<SharedBorder>> GetTilesSharedBorders(
-            Dictionary<int, Dictionary<int, string>> tilesBorders
+            Dictionary<int, Dictionary<Border, string>> tilesBorders
         )
         {
             Dictionary<int, List<SharedBorder>> tilesSharedBorders = new Dictionary<int, List<SharedBorder>>();
 
-            foreach (KeyValuePair<int, Dictionary<int, string>> tileBorders in tilesBorders)
+            foreach (KeyValuePair<int, Dictionary<Border, string>> tileBorders in tilesBorders)
             {
                 List<SharedBorder> sharedBorders = new List<SharedBorder>();
 
-                foreach (KeyValuePair<int, string> tileBorder in tileBorders.Value)
+                foreach (KeyValuePair<Border, string> tileBorder in tileBorders.Value)
                 {
                     SharedBorder sharedBorder = GetSharedBorder(tileBorders.Key, tileBorder.Key, tileBorder.Value, tilesBorders);
                     if (sharedBorder != null)
@@ -114,9 +106,9 @@ namespace App.Tasks.Year2020.Day20
 
         private SharedBorder GetSharedBorder(
             int tileId,
-            int tileSide,
+            Border tileSide,
             string tileBorderString,
-            Dictionary<int, Dictionary<int, string>> tilesBorders
+            Dictionary<int, Dictionary<Border, string>> tilesBorders
         )
         {
             SharedBorder sharedBorder = new SharedBorder
@@ -127,11 +119,11 @@ namespace App.Tasks.Year2020.Day20
 
             string tileBorderStringReverse = ReverseString(tileBorderString);
 
-            foreach (KeyValuePair<int, Dictionary<int, string>> tileBorders in tilesBorders)
+            foreach (KeyValuePair<int, Dictionary<Border, string>> tileBorders in tilesBorders)
             {
                 if (tileId != tileBorders.Key)
                 {
-                    foreach (KeyValuePair<int, string> tileBorder in tileBorders.Value)
+                    foreach (KeyValuePair<Border, string> tileBorder in tileBorders.Value)
                     {
                         sharedBorder.SecondTileId = tileBorders.Key;
                         sharedBorder.SecondBorderSide = tileBorder.Key;
@@ -305,8 +297,8 @@ namespace App.Tasks.Year2020.Day20
                     {
                         (nextTileId, nextTile) = GetNextTileAlignedByBorder(
                             tilesPositions[i, j - 1],
-                            GetBorder(positionedTiles[i, j - 1], RIGHT_BORDER),
-                            LEFT_BORDER,
+                            GetBorder(positionedTiles[i, j - 1], Border.Right),
+                            Border.Left,
                             tilesSharedBorders,
                             tiles
                         );
@@ -316,8 +308,8 @@ namespace App.Tasks.Year2020.Day20
                     {
                         (nextTileId, nextTile) = GetNextTileAlignedByBorder(
                             tilesPositions[i - 1, j],
-                            GetBorder(positionedTiles[i - 1, j], BOTTOM_BORDER),
-                            TOP_BORDER,
+                            GetBorder(positionedTiles[i - 1, j], Border.Bottom),
+                            Border.Top,
                             tilesSharedBorders,
                             tiles
                          );
@@ -345,7 +337,7 @@ namespace App.Tasks.Year2020.Day20
         private (int nextTileId, string[] orientedNextTile) GetNextTileAlignedByBorder(
             int alignByTileId,
             string alignByBorder,
-            int checkBorder,
+            Border checkBorder,
             Dictionary<int, List<SharedBorder>> tilesSharedBorders,
             Dictionary<int, string[]> tiles
         )
@@ -588,33 +580,38 @@ namespace App.Tasks.Year2020.Day20
             return seaMonsters;
         }
 
-        private string GetBorder(string[] tile, int borderOrientation)
+        private string GetBorder(string[] tile, Border borderType)
         {
+            string border = null;
             StringBuilder sb = new StringBuilder();
 
-            switch (borderOrientation)
+            switch (borderType)
             {
-                case TOP_BORDER:
-                    return tile[0];
-                case RIGHT_BORDER:
+                case Border.Top:
+                    border = tile[0];
+                    break;
+                case Border.Right:
                     sb = new StringBuilder();
                     foreach (string row in tile)
                     {
                         sb.Append(row[^1]);
                     }
-                    return sb.ToString();
-                case BOTTOM_BORDER:
-                    return tile[^1];
-                case LEFT_BORDER:
+                    border = sb.ToString();
+                    break;
+                case Border.Bottom:
+                    border = tile[^1];
+                    break;
+                case Border.Left:
                     sb = new StringBuilder();
                     foreach (string row in tile)
                     {
                         sb.Append(row[0]);
                     }
-                    return sb.ToString();
+                    border = sb.ToString();
+                    break;
             }
 
-            return null;
+            return border;
         }
 
         private string ReverseString(string s)
