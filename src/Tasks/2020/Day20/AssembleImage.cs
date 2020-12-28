@@ -7,6 +7,8 @@ namespace App.Tasks.Year2020.Day20
 {
     public class AssembleImage
     {
+        private const int ROTATIONS = 4;
+
         private const int SEA_MONSTER_HASHES = 15;
 
         public long CalculateCornerTilesIdsProduct(Dictionary<int, string[]> tiles)
@@ -29,20 +31,27 @@ namespace App.Tasks.Year2020.Day20
             Dictionary<int, Dictionary<Border, string>> tilesBorders = GetTilesBorders(tiles);
             Dictionary<int, List<SharedBorder>> tilesSharedBorders = GetTilesSharedBorders(tilesBorders);
 
-            // Get all possible tiles positions and orientations
-            Dictionary<int, List<string[,][]>> possibleTilesPositionsAndOrientations =
-               GetPossibleTilesPositionsAndOrientations(tilesSharedBorders, tiles);
-
-            List<string[]> images = GetPossibleImages(possibleTilesPositionsAndOrientations);
+            // Get all possible tiles position and orientation permutations
+            List<Dictionary<(int, int), AlignedTile>> tilesAlignmentPermutations =
+                GetTilesAlignmentPermutations(tilesSharedBorders, tiles);
 
             int hashSignsWhichAreNotPartOfSeaMonster = 0;
-            foreach (string[] image in images)
+            foreach (Dictionary<(int, int), AlignedTile> alignedTiles in tilesAlignmentPermutations)
             {
-                int seaMonsters = SearchSeaMonsters(image);
-                if (seaMonsters > 0)
+                List<string[]> images = GetImagePermutationsForAlignedTiles(alignedTiles);
+                foreach (string[] image in images)
                 {
-                    int totalHashes = CountTotalHashes(image);
-                    hashSignsWhichAreNotPartOfSeaMonster = totalHashes - seaMonsters * SEA_MONSTER_HASHES;
+                    int seaMonsters = SearchSeaMonsters(image);
+                    if (seaMonsters > 0)
+                    {
+                        int totalHashes = CountTotalHashes(image);
+                        hashSignsWhichAreNotPartOfSeaMonster = totalHashes - seaMonsters * SEA_MONSTER_HASHES;
+                        break;
+                    }
+                }
+
+                if (hashSignsWhichAreNotPartOfSeaMonster > 0)
+                {
                     break;
                 }
             }
@@ -52,7 +61,8 @@ namespace App.Tasks.Year2020.Day20
 
         private Dictionary<int, Dictionary<Border, string>> GetTilesBorders(Dictionary<int, string[]> tiles)
         {
-            Dictionary<int, Dictionary<Border, string>> tilesBorders = new Dictionary<int, Dictionary<Border, string>>();
+            Dictionary<int, Dictionary<Border, string>> tilesBorders =
+                new Dictionary<int, Dictionary<Border, string>>();
 
             foreach (KeyValuePair<int, string[]> tile in tiles)
             {
@@ -185,12 +195,12 @@ namespace App.Tasks.Year2020.Day20
             return corners;
         }
 
-        private Dictionary<int, List<string[,][]>> GetPossibleTilesPositionsAndOrientations(
+        private List<Dictionary<(int, int), AlignedTile>> GetTilesAlignmentPermutations(
             Dictionary<int, List<SharedBorder>> tilesSharedBorders,
             Dictionary<int, string[]> tiles)
         {
-            Dictionary<int, List<string[,][]>> possibleTilesPositionsAndOrientations =
-                new Dictionary<int, List<string[,][]>>();
+            List<Dictionary<(int, int), AlignedTile>> tilesAlignmentPermutations =
+                new List<Dictionary<(int, int), AlignedTile>>();
 
             // Each of these corners can be top left tile
             int[] corners = GetCorners(tilesSharedBorders);
@@ -198,89 +208,63 @@ namespace App.Tasks.Year2020.Day20
             // Iterating possible corners
             foreach (int cornerTileId in corners)
             {
-                List<string[,][]> positionedAndOrientedTilesForTopLeftTile =
-                    GetPositionedAndOrientedTilesForTopLeftTile(
+                string[] tile = tiles[cornerTileId];
+                List<string[]> cornerTilePermutations = new List<string[]>();
+
+                for (int i = 0; i < ROTATIONS; i++)
+                {
+                    cornerTilePermutations.Add(tile);
+                    cornerTilePermutations.Add(FlipHorizontally(tile));
+                    cornerTilePermutations.Add(FlipVertically(tile));
+
+                    tile = RotateTile(tile);
+                }
+
+                foreach (string[] cornerTile in cornerTilePermutations)
+                {
+                    Dictionary<(int, int), AlignedTile> alignedTiles = GetTilesAlignmentForTopLeftTileOrientation(
                         tilesSharedBorders,
                         tiles,
-                        cornerTileId
+                        cornerTileId,
+                        cornerTile
                     );
 
-                possibleTilesPositionsAndOrientations[cornerTileId] = positionedAndOrientedTilesForTopLeftTile;
-            }
-
-            return possibleTilesPositionsAndOrientations;
-        }
-
-        private List<string[,][]> GetPositionedAndOrientedTilesForTopLeftTile(
-            Dictionary<int, List<SharedBorder>> tilesSharedBorders,
-            Dictionary<int, string[]> tiles,
-            int cornerTileId
-        )
-        {
-            List<string[,][]> possibleTilesPositionsAndOrientations = new List<string[,][]>();
-
-            List<string[]> possibleTopLeftOrientations = new List<string[]>();
-            string[] topLeftTile = tiles[cornerTileId];
-
-            for (int i = 0; i < 4; i++)
-            {
-                possibleTopLeftOrientations.Add(topLeftTile);
-                possibleTopLeftOrientations.Add(FlipHorizontally(topLeftTile));
-                possibleTopLeftOrientations.Add(FlipVertically(topLeftTile));
-
-                topLeftTile = RotateTile(topLeftTile);
-            }
-
-            foreach (string[] positionedTopLeftTile in possibleTopLeftOrientations)
-            {
-                string[,][] positionedTiles = GetPositionedTilesForTopLeftOrientation(
-                    tilesSharedBorders,
-                    tiles,
-                    cornerTileId,
-                    positionedTopLeftTile
-                );
-
-                bool allValid = true;
-                for (int i = 0; i < positionedTiles.GetLength(0); i++)
-                {
-                    for (int j = 0; j < positionedTiles.GetLength(1); j++)
+                    // If image assemblement for this permutation is possible
+                    if (alignedTiles != null)
                     {
-                        if (positionedTiles[i, j] == null)
-                        {
-                            allValid = false;
-                        }
+                        tilesAlignmentPermutations.Add(alignedTiles);
                     }
                 }
-
-                if (allValid)
-                {
-                    possibleTilesPositionsAndOrientations.Add(positionedTiles);
-                }
             }
 
-            return possibleTilesPositionsAndOrientations;
+            return tilesAlignmentPermutations;
         }
 
-        private string[,][] GetPositionedTilesForTopLeftOrientation(
+        private Dictionary<(int, int), AlignedTile> GetTilesAlignmentForTopLeftTileOrientation(
             Dictionary<int, List<SharedBorder>> tilesSharedBorders,
             Dictionary<int, string[]> tiles,
             int topLeftTileId,
-            string[] positionedTopLeftTile
+            string[] topLeftTileOrientation
         )
         {
             int tilesPerSquareSide = (int)Math.Sqrt(tilesSharedBorders.Count);
 
-            int[,] tilesPositions = new int[tilesPerSquareSide, tilesPerSquareSide];
-            tilesPositions[0, 0] = topLeftTileId;
-
-            string[,][] positionedTiles;
-            positionedTiles = new string[tilesPerSquareSide, tilesPerSquareSide][];
-            positionedTiles[0, 0] = positionedTopLeftTile;
+            Dictionary<(int, int), AlignedTile> alignedTiles = new Dictionary<(int, int), AlignedTile>
+            {
+                {
+                    (0, 0),
+                    new AlignedTile
+                    {
+                        Id = topLeftTileId,
+                        Position = (0, 0),
+                        Orientation = topLeftTileOrientation
+                    }
+                }
+            };
 
             // Determine position of other tiles starting from top left
             for (int i = 0; i < tilesPerSquareSide; i++)
             {
-                bool tilesCannotBeAligned = false;
                 for (int j = 0; j < tilesPerSquareSide; j++)
                 {
                     // Top left is already determined
@@ -296,8 +280,8 @@ namespace App.Tasks.Year2020.Day20
                     if (j > 0)
                     {
                         (nextTileId, nextTile) = GetNextTileAlignedByBorder(
-                            tilesPositions[i, j - 1],
-                            GetBorder(positionedTiles[i, j - 1], Border.Right),
+                            alignedTiles[(i, j - 1)].Id,
+                            GetBorder(alignedTiles[(i, j - 1)].Orientation, Border.Right),
                             Border.Left,
                             tilesSharedBorders,
                             tiles
@@ -307,8 +291,8 @@ namespace App.Tasks.Year2020.Day20
                     else if (i > 0)
                     {
                         (nextTileId, nextTile) = GetNextTileAlignedByBorder(
-                            tilesPositions[i - 1, j],
-                            GetBorder(positionedTiles[i - 1, j], Border.Bottom),
+                            alignedTiles[(i - 1, j)].Id,
+                            GetBorder(alignedTiles[(i - 1, j)].Orientation, Border.Bottom),
                             Border.Top,
                             tilesSharedBorders,
                             tiles
@@ -317,21 +301,19 @@ namespace App.Tasks.Year2020.Day20
 
                     if (nextTile == null)
                     {
-                        tilesCannotBeAligned = true;
-                        break;
+                        return null;
                     }
 
-                    tilesPositions[i, j] = nextTileId;
-                    positionedTiles[i, j] = nextTile;
-                }
-
-                if (tilesCannotBeAligned)
-                {
-                    break;
+                    alignedTiles.Add((i, j), new AlignedTile
+                    {
+                        Id = nextTileId,
+                        Position = (i, j),
+                        Orientation = nextTile
+                    });
                 }
             }
 
-            return positionedTiles;
+            return alignedTiles;
         }
 
         private (int nextTileId, string[] orientedNextTile) GetNextTileAlignedByBorder(
@@ -378,29 +360,20 @@ namespace App.Tasks.Year2020.Day20
             return (0, null);
         }
 
-        private List<string[]> GetPossibleImages(
-            Dictionary<int, List<string[,][]>> possibleTilesPositionsAndOrientations
-        )
+        private List<string[]> GetImagePermutationsForAlignedTiles(Dictionary<(int, int), AlignedTile> alignedTiles)
         {
             List<string[]> images = new List<string[]>();
 
-            // Iterating possible tiles positions and orientations
-            foreach (KeyValuePair<int, List<string[,][]>> forTopLeftTile in possibleTilesPositionsAndOrientations)
+            string[,][] tilesWithRemovedBorders = GetTilesWithRemovedBorders(alignedTiles);
+            string[] image = AssembleActualImage(tilesWithRemovedBorders);
+
+            for (int i = 0; i < ROTATIONS; i++)
             {
-                foreach (string[,][] positionedTiles in forTopLeftTile.Value)
-                {
-                    string[,][] tilesWithRemovedBorders = GetTilesWithRemovedBorders(positionedTiles);
-                    string[] image = AssembleActualImage(tilesWithRemovedBorders);
+                images.Add(image);
+                images.Add(FlipHorizontally(image));
+                images.Add(FlipVertically(image));
 
-                    for (int i = 0; i < 4; i++)
-                    {
-                        images.Add(image);
-                        images.Add(FlipHorizontally(image));
-                        images.Add(FlipVertically(image));
-
-                        image = RotateTile(image);
-                    }
-                }
+                image = RotateTile(image);
             }
 
             return images;
@@ -476,27 +449,26 @@ namespace App.Tasks.Year2020.Day20
             return flippedTile;
         }
 
-        private string[,][] GetTilesWithRemovedBorders(string[,][] positionedTiles)
+        private string[,][] GetTilesWithRemovedBorders(Dictionary<(int, int), AlignedTile> alignedTiles)
         {
-            string[,][] tilesWithRemovedBorders =
-                new string[positionedTiles.GetLength(0), positionedTiles.GetLength(1)][];
+            int tilesPerSquareSide = (int)Math.Sqrt(alignedTiles.Count);
+            string[,][] tilesWithRemovedBorders = new string[tilesPerSquareSide, tilesPerSquareSide][];
 
-            for (int i = 0; i < positionedTiles.GetLength(0); i++)
+            foreach (KeyValuePair<(int, int), AlignedTile> alignedTile in alignedTiles)
             {
-                for (int j = 0; j < positionedTiles.GetLength(1); j++)
+                (int i, int j) = alignedTile.Key;
+                string[] tile = alignedTile.Value.Orientation;
+
+                string[] tileWithRemovedBorders = new string[tile.Length - 2];
+
+                // Top and bottom border is removed
+                for (int k = 1; k < tile.Length - 1; k++)
                 {
-                    string[] tileWithRemovedBorders = new string[positionedTiles[i, j].Length - 2];
-
-                    // Top and bottom border is removed
-                    for (int k = 1; k < positionedTiles[i, j].Length - 1; k++)
-                    {
-                        // Left and right border is removed
-                        string tileRow = positionedTiles[i, j][k];
-                        tileWithRemovedBorders[k - 1] = tileRow[1..^1];
-                    }
-
-                    tilesWithRemovedBorders[i, j] = tileWithRemovedBorders;
+                    // Left and right border is removed
+                    tileWithRemovedBorders[k - 1] = tile[k][1..^1];
                 }
+
+                tilesWithRemovedBorders[i, j] = tileWithRemovedBorders;
             }
 
             return tilesWithRemovedBorders;
