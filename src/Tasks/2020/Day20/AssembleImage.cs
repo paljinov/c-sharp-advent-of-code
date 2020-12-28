@@ -14,7 +14,7 @@ namespace App.Tasks.Year2020.Day20
         public long CalculateCornerTilesIdsProduct(Dictionary<int, string[]> tiles)
         {
             Dictionary<int, Dictionary<Border, string>> tilesBorders = GetTilesBorders(tiles);
-            Dictionary<int, List<SharedBorder>> tilesSharedBorders = GetTilesSharedBorders(tilesBorders);
+            Dictionary<int, List<(int, string)>> tilesSharedBorders = GetTilesSharedBorders(tilesBorders);
             int[] corners = GetCorners(tilesSharedBorders);
 
             long cornerTilesIdsProduct = 1;
@@ -29,7 +29,7 @@ namespace App.Tasks.Year2020.Day20
         public int CountHashSignsWhichAreNotPartOfSeaMonster(Dictionary<int, string[]> tiles)
         {
             Dictionary<int, Dictionary<Border, string>> tilesBorders = GetTilesBorders(tiles);
-            Dictionary<int, List<SharedBorder>> tilesSharedBorders = GetTilesSharedBorders(tilesBorders);
+            Dictionary<int, List<(int, string)>> tilesSharedBorders = GetTilesSharedBorders(tilesBorders);
 
             // Get all possible tiles position and orientation permutations
             List<Dictionary<(int, int), AlignedTile>> tilesAlignmentPermutations =
@@ -89,100 +89,48 @@ namespace App.Tasks.Year2020.Day20
             return tilesBorders;
         }
 
-        private Dictionary<int, List<SharedBorder>> GetTilesSharedBorders(
+        private Dictionary<int, List<(int, string)>> GetTilesSharedBorders(
             Dictionary<int, Dictionary<Border, string>> tilesBorders
         )
         {
-            Dictionary<int, List<SharedBorder>> tilesSharedBorders = new Dictionary<int, List<SharedBorder>>();
+            Dictionary<int, List<(int, string)>> tilesSharedBorders = new Dictionary<int, List<(int, string)>>();
 
-            foreach (KeyValuePair<int, Dictionary<Border, string>> tileBorders in tilesBorders)
+            foreach (KeyValuePair<int, Dictionary<Border, string>> firstTileBorders in tilesBorders)
             {
-                List<SharedBorder> sharedBorders = new List<SharedBorder>();
+                List<(int, string)> firstTileSharedBorders = new List<(int, string)>();
 
-                foreach (KeyValuePair<Border, string> tileBorder in tileBorders.Value)
+                foreach (KeyValuePair<Border, string> firstTileBorder in firstTileBorders.Value)
                 {
-                    SharedBorder sharedBorder = GetSharedBorder(tileBorders.Key, tileBorder.Key, tileBorder.Value, tilesBorders);
-                    if (sharedBorder != null)
+                    foreach (KeyValuePair<int, Dictionary<Border, string>> secondTileBorders in tilesBorders)
                     {
-                        sharedBorders.Add(sharedBorder);
+                        // If it is not the same tile
+                        if (firstTileBorders.Key != secondTileBorders.Key)
+                        {
+                            foreach (KeyValuePair<Border, string> secondTileBorder in secondTileBorders.Value)
+                            {
+                                if (firstTileBorder.Value.Equals(secondTileBorder.Value)
+                                    || firstTileBorder.Value.Equals(ReverseString(secondTileBorder.Value)))
+                                {
+                                    firstTileSharedBorders.Add((secondTileBorders.Key, secondTileBorder.Value));
+                                }
+                            }
+                        }
                     }
+
                 }
 
-                tilesSharedBorders.Add(tileBorders.Key, sharedBorders);
+                tilesSharedBorders.Add(firstTileBorders.Key, firstTileSharedBorders);
             }
 
             return tilesSharedBorders;
         }
 
-        private SharedBorder GetSharedBorder(
-            int tileId,
-            Border tileSide,
-            string tileBorderString,
-            Dictionary<int, Dictionary<Border, string>> tilesBorders
-        )
-        {
-            SharedBorder sharedBorder = new SharedBorder
-            {
-                FirstTileId = tileId,
-                FirstBorderSide = tileSide
-            };
-
-            string tileBorderStringReverse = ReverseString(tileBorderString);
-
-            foreach (KeyValuePair<int, Dictionary<Border, string>> tileBorders in tilesBorders)
-            {
-                if (tileId != tileBorders.Key)
-                {
-                    foreach (KeyValuePair<Border, string> tileBorder in tileBorders.Value)
-                    {
-                        sharedBorder.SecondTileId = tileBorders.Key;
-                        sharedBorder.SecondBorderSide = tileBorder.Key;
-
-                        if (tileBorderString.Equals(tileBorder.Value))
-                        {
-                            sharedBorder.FirstBorder = tileBorderString;
-                            sharedBorder.FirstIsReverse = false;
-                            sharedBorder.SecondBorder = tileBorder.Value;
-                            sharedBorder.SecondIsReverse = false;
-                            return sharedBorder;
-                        }
-                        else if (tileBorderString.Equals(ReverseString(tileBorder.Value)))
-                        {
-                            sharedBorder.FirstBorder = tileBorderString;
-                            sharedBorder.FirstIsReverse = false;
-                            sharedBorder.SecondBorder = ReverseString(tileBorder.Value);
-                            sharedBorder.SecondIsReverse = true;
-                            return sharedBorder;
-                        }
-                        else if (tileBorderStringReverse.Equals(tileBorder.Value))
-                        {
-                            sharedBorder.FirstBorder = tileBorderStringReverse;
-                            sharedBorder.FirstIsReverse = true;
-                            sharedBorder.SecondBorder = tileBorder.Value;
-                            sharedBorder.SecondIsReverse = false;
-                            return sharedBorder;
-                        }
-                        else if (tileBorderStringReverse.Equals(ReverseString(tileBorder.Value)))
-                        {
-                            sharedBorder.FirstBorder = tileBorderStringReverse;
-                            sharedBorder.FirstIsReverse = true;
-                            sharedBorder.SecondBorder = ReverseString(tileBorder.Value);
-                            sharedBorder.SecondIsReverse = true;
-                            return sharedBorder;
-                        }
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        private int[] GetCorners(Dictionary<int, List<SharedBorder>> tilesSharedBorders)
+        private int[] GetCorners(Dictionary<int, List<(int, string)>> tilesSharedBorders)
         {
             int[] corners = new int[4];
 
             int i = 0;
-            foreach (KeyValuePair<int, List<SharedBorder>> tileSharedBorders in tilesSharedBorders)
+            foreach (KeyValuePair<int, List<(int, string)>> tileSharedBorders in tilesSharedBorders)
             {
                 // Corner tiles have only 2 shared borders
                 if (tileSharedBorders.Value.Count == 2)
@@ -196,7 +144,7 @@ namespace App.Tasks.Year2020.Day20
         }
 
         private List<Dictionary<(int, int), AlignedTile>> GetTilesAlignmentPermutations(
-            Dictionary<int, List<SharedBorder>> tilesSharedBorders,
+            Dictionary<int, List<(int, string)>> tilesSharedBorders,
             Dictionary<int, string[]> tiles)
         {
             List<Dictionary<(int, int), AlignedTile>> tilesAlignmentPermutations =
@@ -241,7 +189,7 @@ namespace App.Tasks.Year2020.Day20
         }
 
         private Dictionary<(int, int), AlignedTile> GetTilesAlignmentForTopLeftTileOrientation(
-            Dictionary<int, List<SharedBorder>> tilesSharedBorders,
+            Dictionary<int, List<(int, string)>> tilesSharedBorders,
             Dictionary<int, string[]> tiles,
             int topLeftTileId,
             string[] topLeftTileOrientation
@@ -320,18 +268,17 @@ namespace App.Tasks.Year2020.Day20
             int alignByTileId,
             string alignByBorder,
             Border checkBorder,
-            Dictionary<int, List<SharedBorder>> tilesSharedBorders,
+            Dictionary<int, List<(int, string)>> tilesSharedBorders,
             Dictionary<int, string[]> tiles
         )
         {
-            List<SharedBorder> sharedBorders = tilesSharedBorders[alignByTileId];
-            foreach (SharedBorder sharedBorder in sharedBorders)
+            List<(int, string)> tileSharedBorders = tilesSharedBorders[alignByTileId];
+            foreach ((int tileId, string tileSharedBorder) in tileSharedBorders)
             {
                 // This tile must be top oriented
-                if (sharedBorder.SecondBorder == alignByBorder
-                    || ReverseString(sharedBorder.SecondBorder) == alignByBorder)
+                if (tileSharedBorder == alignByBorder || ReverseString(tileSharedBorder) == alignByBorder)
                 {
-                    string[] nextTile = tiles[sharedBorder.SecondTileId];
+                    string[] nextTile = tiles[tileId];
                     string[] nextTileFlipped;
 
                     while (GetBorder(nextTile, checkBorder) != alignByBorder)
@@ -353,7 +300,7 @@ namespace App.Tasks.Year2020.Day20
                         nextTile = RotateTile(nextTile);
                     }
 
-                    return (sharedBorder.SecondTileId, nextTile);
+                    return (tileId, nextTile);
                 }
             }
 
