@@ -66,27 +66,50 @@ namespace App.Tasks.Year2020.Day20
 
             foreach (KeyValuePair<int, string[]> tile in tiles)
             {
-                Dictionary<Border, string> tileBorders = new Dictionary<Border, string>
+                tilesBorders.Add(tile.Key, new Dictionary<Border, string>
                 {
-                    [Border.Top] = tile.Value[0],
-                    [Border.Bottom] = tile.Value[^1]
-                };
-
-                StringBuilder left = new StringBuilder();
-                StringBuilder right = new StringBuilder();
-                foreach (string row in tile.Value)
-                {
-                    left.Append(row[0]);
-                    right.Append(row[^1]);
-                }
-
-                tileBorders[Border.Left] = left.ToString();
-                tileBorders[Border.Right] = right.ToString();
-
-                tilesBorders.Add(tile.Key, tileBorders);
+                    [Border.Top] = GetTileBorder(tile.Value, Border.Top),
+                    [Border.Bottom] = GetTileBorder(tile.Value, Border.Bottom),
+                    [Border.Left] = GetTileBorder(tile.Value, Border.Left),
+                    [Border.Right] = GetTileBorder(tile.Value, Border.Right)
+                });
             }
 
             return tilesBorders;
+        }
+
+        private string GetTileBorder(string[] tile, Border borderType)
+        {
+            string border = null;
+            StringBuilder sb = new StringBuilder();
+
+            switch (borderType)
+            {
+                case Border.Top:
+                    border = tile[0];
+                    break;
+                case Border.Right:
+                    sb = new StringBuilder();
+                    foreach (string row in tile)
+                    {
+                        sb.Append(row[^1]);
+                    }
+                    border = sb.ToString();
+                    break;
+                case Border.Bottom:
+                    border = tile[^1];
+                    break;
+                case Border.Left:
+                    sb = new StringBuilder();
+                    foreach (string row in tile)
+                    {
+                        sb.Append(row[0]);
+                    }
+                    border = sb.ToString();
+                    break;
+            }
+
+            return border;
         }
 
         private Dictionary<int, List<(int, string)>> GetTilesSharedBorders(
@@ -229,7 +252,7 @@ namespace App.Tasks.Year2020.Day20
                     {
                         (nextTileId, nextTile) = GetNextTileAlignedByBorder(
                             alignedTiles[(i, j - 1)].Id,
-                            GetBorder(alignedTiles[(i, j - 1)].Orientation, Border.Right),
+                            GetTileBorder(alignedTiles[(i, j - 1)].Orientation, Border.Right),
                             Border.Left,
                             tilesSharedBorders,
                             tiles
@@ -240,7 +263,7 @@ namespace App.Tasks.Year2020.Day20
                     {
                         (nextTileId, nextTile) = GetNextTileAlignedByBorder(
                             alignedTiles[(i - 1, j)].Id,
-                            GetBorder(alignedTiles[(i - 1, j)].Orientation, Border.Bottom),
+                            GetTileBorder(alignedTiles[(i - 1, j)].Orientation, Border.Bottom),
                             Border.Top,
                             tilesSharedBorders,
                             tiles
@@ -281,17 +304,17 @@ namespace App.Tasks.Year2020.Day20
                     string[] nextTile = tiles[tileId];
                     string[] nextTileFlipped;
 
-                    while (GetBorder(nextTile, checkBorder) != alignByBorder)
+                    while (GetTileBorder(nextTile, checkBorder) != alignByBorder)
                     {
                         nextTileFlipped = FlipVertically(nextTile);
-                        if (GetBorder(nextTileFlipped, checkBorder) == alignByBorder)
+                        if (GetTileBorder(nextTileFlipped, checkBorder) == alignByBorder)
                         {
                             nextTile = nextTileFlipped;
                             break;
                         }
 
                         nextTileFlipped = FlipHorizontally(nextTile);
-                        if (GetBorder(nextTileFlipped, checkBorder) == alignByBorder)
+                        if (GetTileBorder(nextTileFlipped, checkBorder) == alignByBorder)
                         {
                             nextTile = nextTileFlipped;
                             break;
@@ -324,76 +347,6 @@ namespace App.Tasks.Year2020.Day20
             }
 
             return images;
-        }
-
-        private string[] RotateTile(string[] tile)
-        {
-            int n = tile.Length;
-
-            char[,] tile2d = new char[n, n];
-            for (int i = 0; i < n; i++)
-            {
-                for (int j = 0; j < n; j++)
-                {
-                    tile2d[i, j] = tile[i][j];
-                }
-            }
-
-            string[] rotatedTile = new string[n];
-
-            for (int i = 0; i < n; i++)
-            {
-                StringBuilder sb = new StringBuilder();
-                for (int j = 0; j < n; j++)
-                {
-                    sb.Append(tile2d[n - j - 1, i]);
-                }
-
-                rotatedTile[i] = sb.ToString();
-            }
-
-            return rotatedTile;
-        }
-
-        private string[] FlipHorizontally(string[] tile)
-        {
-            string[] flippedTile = new string[tile.Length];
-
-            for (int i = 0; i < tile.Length; i++)
-            {
-                flippedTile[i] = ReverseString(tile[i]);
-            }
-
-            return flippedTile;
-        }
-
-        private string[] FlipVertically(string[] tile)
-        {
-            char[,] flippedTileCharArray = new char[tile.Length, tile.Length];
-
-            for (int i = 0; i < tile.Length / 2; i++)
-            {
-                int n = tile[i].Length;
-                for (int j = 0; j < n; j++)
-                {
-                    flippedTileCharArray[i, j] = tile[n - 1 - i][j];
-                    flippedTileCharArray[n - 1 - i, j] = tile[i][j];
-                }
-            }
-
-            string[] flippedTile = new string[tile.Length];
-            for (int i = 0; i < flippedTileCharArray.GetLength(0); i++)
-            {
-                StringBuilder sb = new StringBuilder();
-                for (int j = 0; j < flippedTileCharArray.GetLength(1); j++)
-                {
-                    sb.Append(flippedTileCharArray[i, j]);
-                }
-
-                flippedTile[i] = sb.ToString();
-            }
-
-            return flippedTile;
         }
 
         private string[,][] GetTilesWithRemovedBorders(Dictionary<(int, int), AlignedTile> alignedTiles)
@@ -461,7 +414,6 @@ namespace App.Tasks.Year2020.Day20
             #    ##    ##    ###
              #  #  #  #  #  #
             */
-
             int seaMonsters = 0;
 
             for (int i = 0; i < image.Length; i++)
@@ -499,38 +451,71 @@ namespace App.Tasks.Year2020.Day20
             return seaMonsters;
         }
 
-        private string GetBorder(string[] tile, Border borderType)
+        private string[] RotateTile(string[] tile)
         {
-            string border = null;
-            StringBuilder sb = new StringBuilder();
+            int n = tile.Length;
 
-            switch (borderType)
+            char[,] tileCharArray = new char[n, n];
+            for (int i = 0; i < n; i++)
             {
-                case Border.Top:
-                    border = tile[0];
-                    break;
-                case Border.Right:
-                    sb = new StringBuilder();
-                    foreach (string row in tile)
-                    {
-                        sb.Append(row[^1]);
-                    }
-                    border = sb.ToString();
-                    break;
-                case Border.Bottom:
-                    border = tile[^1];
-                    break;
-                case Border.Left:
-                    sb = new StringBuilder();
-                    foreach (string row in tile)
-                    {
-                        sb.Append(row[0]);
-                    }
-                    border = sb.ToString();
-                    break;
+                for (int j = 0; j < n; j++)
+                {
+                    tileCharArray[i, j] = tile[i][j];
+                }
             }
 
-            return border;
+            string[] rotatedTile = new string[n];
+            for (int i = 0; i < n; i++)
+            {
+                StringBuilder sb = new StringBuilder();
+                for (int j = 0; j < n; j++)
+                {
+                    sb.Append(tileCharArray[n - j - 1, i]);
+                }
+                rotatedTile[i] = sb.ToString();
+            }
+
+            return rotatedTile;
+        }
+
+        private string[] FlipHorizontally(string[] tile)
+        {
+            string[] flippedTile = new string[tile.Length];
+            for (int i = 0; i < tile.Length; i++)
+            {
+                flippedTile[i] = ReverseString(tile[i]);
+            }
+
+            return flippedTile;
+        }
+
+        private string[] FlipVertically(string[] tile)
+        {
+            char[,] flippedTileCharArray = new char[tile.Length, tile.Length];
+            int n = tile.Length;
+
+            for (int i = 0; i < n / 2; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    flippedTileCharArray[i, j] = tile[n - 1 - i][j];
+                    flippedTileCharArray[n - 1 - i, j] = tile[i][j];
+                }
+            }
+
+            string[] flippedTile = new string[tile.Length];
+            for (int i = 0; i < n; i++)
+            {
+                StringBuilder sb = new StringBuilder();
+                for (int j = 0; j < n; j++)
+                {
+                    sb.Append(flippedTileCharArray[i, j]);
+                }
+
+                flippedTile[i] = sb.ToString();
+            }
+
+            return flippedTile;
         }
 
         private string ReverseString(string s)
