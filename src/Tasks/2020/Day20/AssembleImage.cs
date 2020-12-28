@@ -64,10 +64,11 @@ namespace App.Tasks.Year2020.Day20
 
             foreach (KeyValuePair<int, string[]> tile in tiles)
             {
-                Dictionary<int, string> tileBorders = new Dictionary<int, string>();
-
-                tileBorders[TOP_BORDER] = tile.Value[0];
-                tileBorders[BOTTOM_BORDER] = tile.Value[^1];
+                Dictionary<int, string> tileBorders = new Dictionary<int, string>
+                {
+                    [TOP_BORDER] = tile.Value[0],
+                    [BOTTOM_BORDER] = tile.Value[^1]
+                };
 
                 StringBuilder left = new StringBuilder();
                 StringBuilder right = new StringBuilder();
@@ -90,8 +91,7 @@ namespace App.Tasks.Year2020.Day20
             Dictionary<int, Dictionary<int, string>> tilesBorders
         )
         {
-            Dictionary<int, List<SharedBorder>> tilesSharedBorders =
-                new Dictionary<int, List<SharedBorder>>();
+            Dictionary<int, List<SharedBorder>> tilesSharedBorders = new Dictionary<int, List<SharedBorder>>();
 
             foreach (KeyValuePair<int, Dictionary<int, string>> tileBorders in tilesBorders)
             {
@@ -281,8 +281,6 @@ namespace App.Tasks.Year2020.Day20
             int[,] tilesPositions = new int[tilesPerSquareSide, tilesPerSquareSide];
             tilesPositions[0, 0] = topLeftTileId;
 
-            string[] positionedTile = positionedTopLeftTile;
-
             string[,][] positionedTiles;
             positionedTiles = new string[tilesPerSquareSide, tilesPerSquareSide][];
             positionedTiles[0, 0] = positionedTopLeftTile;
@@ -290,8 +288,7 @@ namespace App.Tasks.Year2020.Day20
             // Determine position of other tiles starting from top left
             for (int i = 0; i < tilesPerSquareSide; i++)
             {
-                bool invalidCombination = false;
-
+                bool tilesCannotBeAligned = false;
                 for (int j = 0; j < tilesPerSquareSide; j++)
                 {
                     // Top left is already determined
@@ -300,96 +297,93 @@ namespace App.Tasks.Year2020.Day20
                         continue;
                     }
 
+                    int nextTileId = 0;
+                    string[] nextTile = null;
+
                     // If left tile is already determined
                     if (j > 0)
                     {
-                        int leftTileId = tilesPositions[i, j - 1];
-                        string rightBorder = GetBorder(positionedTiles[i, j - 1], RIGHT_BORDER);
-
-                        List<SharedBorder> leftTileSharedBorders = tilesSharedBorders[leftTileId];
-                        foreach (SharedBorder leftTileSharedBorder in leftTileSharedBorders)
-                        {
-                            // This tile must be left oriented
-                            if (leftTileSharedBorder.SecondBorder == rightBorder
-                                || ReverseString(leftTileSharedBorder.SecondBorder) == rightBorder)
-                            {
-                                tilesPositions[i, j] = leftTileSharedBorder.SecondTileId;
-                                positionedTile = tiles[tilesPositions[i, j]];
-                                while (GetBorder(positionedTile, LEFT_BORDER) != rightBorder)
-                                {
-                                    if (GetBorder(FlipVertically(positionedTile), LEFT_BORDER) == rightBorder)
-                                    {
-                                        positionedTile = FlipVertically(positionedTile);
-                                        break;
-                                    }
-                                    else if (GetBorder(FlipHorizontally(positionedTile), LEFT_BORDER) == rightBorder)
-                                    {
-                                        positionedTile = FlipHorizontally(positionedTile);
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        positionedTile = RotateTile(positionedTile);
-                                    }
-                                }
-                            }
-                        }
-
-                        positionedTiles[i, j] = positionedTile;
+                        (nextTileId, nextTile) = GetNextTileAlignedByBorder(
+                            tilesPositions[i, j - 1],
+                            GetBorder(positionedTiles[i, j - 1], RIGHT_BORDER),
+                            LEFT_BORDER,
+                            tilesSharedBorders,
+                            tiles
+                        );
                     }
                     // If top bar is already defined
                     else if (i > 0)
                     {
-                        int topTileId = tilesPositions[i - 1, j];
-                        string bottomBorder = GetBorder(positionedTiles[i - 1, j], BOTTOM_BORDER);
-
-                        List<SharedBorder> topTileSharedBorders = tilesSharedBorders[topTileId];
-                        foreach (SharedBorder topTileSharedBorder in topTileSharedBorders)
-                        {
-                            // This tile must be top oriented
-                            if (topTileSharedBorder.SecondBorder == bottomBorder
-                              || ReverseString(topTileSharedBorder.SecondBorder) == bottomBorder)
-                            {
-                                tilesPositions[i, j] = topTileSharedBorder.SecondTileId;
-                                positionedTile = tiles[tilesPositions[i, j]];
-                                while (GetBorder(positionedTile, TOP_BORDER) != bottomBorder)
-                                {
-                                    if (GetBorder(FlipVertically(positionedTile), TOP_BORDER) == bottomBorder)
-                                    {
-                                        positionedTile = FlipVertically(positionedTile);
-                                        break;
-                                    }
-                                    else if (GetBorder(FlipHorizontally(positionedTile), TOP_BORDER) == bottomBorder)
-                                    {
-                                        positionedTile = FlipHorizontally(positionedTile);
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        positionedTile = RotateTile(positionedTile);
-                                    }
-                                }
-                            }
-                        }
-
-                        positionedTiles[i, j] = positionedTile;
+                        (nextTileId, nextTile) = GetNextTileAlignedByBorder(
+                            tilesPositions[i - 1, j],
+                            GetBorder(positionedTiles[i - 1, j], BOTTOM_BORDER),
+                            TOP_BORDER,
+                            tilesSharedBorders,
+                            tiles
+                         );
                     }
 
-                    if (tilesPositions[i, j] == 0)
+                    if (nextTile == null)
                     {
-                        invalidCombination = true;
+                        tilesCannotBeAligned = true;
                         break;
                     }
+
+                    tilesPositions[i, j] = nextTileId;
+                    positionedTiles[i, j] = nextTile;
                 }
 
-                if (invalidCombination)
+                if (tilesCannotBeAligned)
                 {
                     break;
                 }
             }
 
-
             return positionedTiles;
+        }
+
+        private (int nextTileId, string[] orientedNextTile) GetNextTileAlignedByBorder(
+            int alignByTileId,
+            string alignByBorder,
+            int checkBorder,
+            Dictionary<int, List<SharedBorder>> tilesSharedBorders,
+            Dictionary<int, string[]> tiles
+        )
+        {
+            List<SharedBorder> sharedBorders = tilesSharedBorders[alignByTileId];
+            foreach (SharedBorder sharedBorder in sharedBorders)
+            {
+                // This tile must be top oriented
+                if (sharedBorder.SecondBorder == alignByBorder
+                    || ReverseString(sharedBorder.SecondBorder) == alignByBorder)
+                {
+                    string[] nextTile = tiles[sharedBorder.SecondTileId];
+                    string[] nextTileFlipped;
+
+                    while (GetBorder(nextTile, checkBorder) != alignByBorder)
+                    {
+                        nextTileFlipped = FlipVertically(nextTile);
+                        if (GetBorder(nextTileFlipped, checkBorder) == alignByBorder)
+                        {
+                            nextTile = nextTileFlipped;
+                            break;
+                        }
+
+                        nextTileFlipped = FlipHorizontally(nextTile);
+                        if (GetBorder(nextTileFlipped, checkBorder) == alignByBorder)
+                        {
+                            nextTile = nextTileFlipped;
+                            break;
+                        }
+
+                        nextTile = RotateTile(nextTile);
+                    }
+
+                    return (sharedBorder.SecondTileId, nextTile);
+                }
+            }
+
+            return (0, null);
         }
 
         private List<string[]> GetPossibleImages(
