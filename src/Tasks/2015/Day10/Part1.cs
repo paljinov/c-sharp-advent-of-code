@@ -27,15 +27,20 @@ namespace App.Tasks.Year2015.Day10
 {
     public class Part1 : ITask<int>
     {
+        private const int REPETITIONS = 40;
+
+        private readonly LookAndSay lookAndSay;
+
+        public Part1()
+        {
+            lookAndSay = new LookAndSay();
+        }
+
         public int Solution(string input)
         {
-            string resultSequence = input;
-            for (int i = 0; i < 40; i++)
-            {
-                resultSequence = LookAndSay.GenerateSequence(resultSequence);
-            }
+            int resultSequenceLength = lookAndSay.ResultSequenceLength(input, REPETITIONS);
 
-            return resultSequence.Length;
+            return resultSequenceLength;
         }
     }
 }

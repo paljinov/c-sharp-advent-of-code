@@ -4,7 +4,18 @@ namespace App.Tasks.Year2015.Day10
 {
     public class LookAndSay
     {
-        public static string GenerateSequence(string input)
+        public int ResultSequenceLength(string input, int repetitions)
+        {
+            string resultSequence = input;
+            for (int i = 0; i < repetitions; i++)
+            {
+                resultSequence = GenerateSequence(resultSequence);
+            }
+
+            return resultSequence.Length;
+        }
+
+        private string GenerateSequence(string input)
         {
             StringBuilder sb = new StringBuilder();
 
