@@ -6,40 +6,51 @@ namespace App.Tasks.Year2020.Day15
     {
         public int FindNumberSpokenAtPosition(int[] startingNumbers, int spokenAtPosition)
         {
-            int spokenNumber = 0;
-            int lastSpokenNumber = 0;
+            Dictionary<int, (int, int)> spokenNumbers = GetStartingSpokenNumbers(startingNumbers);
+            spokenNumbers.EnsureCapacity(spokenAtPosition);
+            int spokenNumber = DoFindNumberSpokenAtPosition(spokenNumbers, spokenAtPosition);
 
-            // Dictionary key is number, tuple represents last 2 turns number was last spoken
-            Dictionary<int, (int, int)> numbers = new Dictionary<int, (int, int)>();
+            return spokenNumber;
+        }
+
+
+        /// <summary>
+        /// Dictionary key is spoken number, tuple represents last two turns when number was spoken.
+        /// </summary>
+        /// <param name="startingNumbers"></param>
+        /// <returns></returns>
+        private Dictionary<int, (int, int)> GetStartingSpokenNumbers(int[] startingNumbers)
+        {
+            Dictionary<int, (int, int)> spokenNumbers = new Dictionary<int, (int, int)>();
             for (int turn = 1; turn <= startingNumbers.Length; turn++)
             {
-                numbers.Add(startingNumbers[turn - 1], (turn, 0));
-                if (turn == startingNumbers.Length)
-                {
-                    lastSpokenNumber = startingNumbers[turn - 1];
-                }
+                spokenNumbers.Add(startingNumbers[turn - 1], (turn, 0));
             }
 
-            for (int turn = startingNumbers.Length + 1; turn <= spokenAtPosition; turn++)
+            return spokenNumbers;
+        }
+
+        private int DoFindNumberSpokenAtPosition(
+            Dictionary<int, (int, int)> spokenNumbers,
+            int spokenAtPosition
+        )
+        {
+            int spokenNumber = 0;
+            int nextSpokenNumber = 0;
+
+            for (int turn = spokenNumbers.Count + 1; turn <= spokenAtPosition; turn++)
             {
-                (int lastSpokenTurn, int lastSpokenTurnBeforeThen) = numbers[lastSpokenNumber];
+                spokenNumber = nextSpokenNumber;
 
-                spokenNumber = 0;
-                if (lastSpokenTurnBeforeThen > 0)
+                int lastSpokenTurn = 0;
+                nextSpokenNumber = 0;
+                if (spokenNumbers.ContainsKey(spokenNumber))
                 {
-                    spokenNumber = lastSpokenTurn - lastSpokenTurnBeforeThen;
+                    lastSpokenTurn = spokenNumbers[spokenNumber].Item1;
+                    nextSpokenNumber = turn - lastSpokenTurn;
                 }
 
-                if (numbers.ContainsKey(spokenNumber))
-                {
-                    numbers[spokenNumber] = (turn, numbers[spokenNumber].Item1);
-                }
-                else
-                {
-                    numbers.Add(spokenNumber, (turn, 0));
-                }
-
-                lastSpokenNumber = spokenNumber;
+                spokenNumbers[spokenNumber] = (turn, lastSpokenTurn);
             }
 
             return spokenNumber;
