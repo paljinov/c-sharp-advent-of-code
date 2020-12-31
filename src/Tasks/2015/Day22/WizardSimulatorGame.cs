@@ -6,9 +6,9 @@ namespace App.Tasks.Year2015.Day22
 {
     public class WizardSimulatorGame
     {
-        private const int PLAYER_HIT_POINTS = 50;
+        private readonly int playerHitPoints = 50;
 
-        private const int PLAYER_MANA_POINTS = 500;
+        private readonly int playerManaPoints = 500;
 
         public int CalculateLeastAmountOfManaSpentWhenWinning(
             Dictionary<string, Effect> effects,
@@ -18,9 +18,9 @@ namespace App.Tasks.Year2015.Day22
         {
             FighterStats playerStats = new FighterStats
             {
-                HitPoints = PLAYER_HIT_POINTS,
+                HitPoints = playerHitPoints,
                 Damage = 0,
-                ManaPoints = PLAYER_MANA_POINTS
+                ManaPoints = playerManaPoints
             };
 
             int leastAmountOfManaSpentWhenWinning = int.MaxValue;
