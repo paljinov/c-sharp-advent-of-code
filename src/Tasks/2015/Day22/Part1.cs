@@ -163,7 +163,8 @@ namespace App.Tasks.Year2015.Day22
 
             int leastAmountOfMana = wizardSimulatorGame.CalculateLeastAmountOfManaSpentWhenWinning(
                 effects,
-                bossStats
+                bossStats,
+                false
             );
 
             return leastAmountOfMana;

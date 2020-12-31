@@ -12,7 +12,8 @@ namespace App.Tasks.Year2015.Day22
 
         public int CalculateLeastAmountOfManaSpentWhenWinning(
             Dictionary<string, Effect> effects,
-            FighterStats bossStats
+            FighterStats bossStats,
+            bool hardDifficulty
         )
         {
             FighterStats playerStats = new FighterStats
@@ -31,6 +32,7 @@ namespace App.Tasks.Year2015.Day22
                 new Dictionary<string, Effect>(),
                 true,
                 0,
+                hardDifficulty,
                 ref leastAmountOfManaSpentWhenWinning
             );
 
@@ -44,9 +46,20 @@ namespace App.Tasks.Year2015.Day22
             Dictionary<string, Effect> activeEffects,
             bool playerTurn,
             int manaSpent,
+            bool hardDifficulty,
             ref int leastAmountOfManaSpentWhenWinning
         )
         {
+            // If playing on hard difficulty
+            if (hardDifficulty)
+            {
+                playerStats.HitPoints -= 1;
+                if (playerStats.HitPoints <= 0)
+                {
+                    return;
+                }
+            }
+
             int playerArmor = 0;
             foreach (KeyValuePair<string, Effect> activeEffect in activeEffects)
             {
@@ -111,6 +124,7 @@ namespace App.Tasks.Year2015.Day22
                                     newActiveEffects,
                                     false,
                                     manaSpent + effect.Value.ManaCost,
+                                    hardDifficulty,
                                     ref leastAmountOfManaSpentWhenWinning
                                 );
                             }
@@ -135,6 +149,7 @@ namespace App.Tasks.Year2015.Day22
                     new Dictionary<string, Effect>(activeEffects),
                     true,
                     manaSpent,
+                    hardDifficulty,
                     ref leastAmountOfManaSpentWhenWinning
                 );
             }
