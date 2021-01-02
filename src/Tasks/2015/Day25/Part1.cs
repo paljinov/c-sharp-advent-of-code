@@ -75,19 +75,19 @@ namespace App.Tasks.Year2015.Day25
 {
     public class Part1 : ITask<long>
     {
-        private readonly CodeRepository codeRepository;
+        private readonly MachineCodeRepository machineCodeRepository;
 
         private readonly MachineCode machineCode;
 
         public Part1()
         {
-            codeRepository = new CodeRepository();
+            machineCodeRepository = new MachineCodeRepository();
             machineCode = new MachineCode();
         }
 
         public long Solution(string input)
         {
-            (int row, int column) = codeRepository.GetCodeRowAndColumn(input);
+            (int row, int column) = machineCodeRepository.GetCodeRowAndColumn(input);
             long code = machineCode.GetCode(row, column);
 
             return code;

@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 
 namespace App.Tasks.Year2015.Day25
 {
-    public class CodeRepository
+    public class MachineCodeRepository
     {
         public (int row, int column) GetCodeRowAndColumn(string input)
         {
