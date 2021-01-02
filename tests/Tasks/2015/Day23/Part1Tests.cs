@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 using App.Tasks.Year2015.Day23;
 using Xunit;
 
