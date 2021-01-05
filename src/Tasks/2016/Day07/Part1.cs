@@ -32,18 +32,18 @@ namespace App.Tasks.Year2016.Day7
     {
         private readonly IpAddressesRepository ipAddressesRepository;
 
-        private readonly Tls tls;
+        private readonly SecurityLayer securityLayer;
 
         public Part1()
         {
             ipAddressesRepository = new IpAddressesRepository();
-            tls = new Tls();
+            securityLayer = new SecurityLayer();
         }
 
         public int Solution(string input)
         {
             List<IpAddress> ipAddresses = ipAddressesRepository.GetIpAddresses(input);
-            int ipAddressesWhichSupportTls = tls.CountIpAddressesWhichSupportTls(ipAddresses);
+            int ipAddressesWhichSupportTls = securityLayer.CountIpAddressesWhichSupportTls(ipAddresses);
 
             return ipAddressesWhichSupportTls;
         }

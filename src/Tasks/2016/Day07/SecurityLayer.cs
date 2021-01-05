@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace App.Tasks.Year2016.Day7
 {
-    public class Tls
+    public class SecurityLayer
     {
         public int CountIpAddressesWhichSupportTls(List<IpAddress> ipAddresses)
         {
