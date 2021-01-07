@@ -43,19 +43,19 @@ namespace App.Tasks.Year2015.Day12
             switch (jsonElement.ValueKind)
             {
                 case JsonValueKind.Object:
-                    foreach (JsonProperty property in jsonElement.EnumerateObject())
+                    if (!IsJsonObjectElementAndContainsRed(jsonElement))
                     {
-                        JsonElement element = property.Value;
-                        if (!IsJsonObjectElementAndContainsRed(element))
+                        foreach (JsonProperty property in jsonElement.EnumerateObject())
                         {
+                            JsonElement element = property.Value;
                             IterateJsonElement(element, ref sum);
                         }
                     }
                     break;
                 case JsonValueKind.Array:
-                    foreach (JsonElement element in jsonElement.EnumerateArray())
+                    if (!IsJsonObjectElementAndContainsRed(jsonElement))
                     {
-                        if (!IsJsonObjectElementAndContainsRed(element))
+                        foreach (JsonElement element in jsonElement.EnumerateArray())
                         {
                             IterateJsonElement(element, ref sum);
                         }
