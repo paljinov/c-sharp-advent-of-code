@@ -9,7 +9,7 @@ namespace App.Tasks.Year2015.Day14
         /// <summary>
         /// Flight duration in seconds.
         /// </summary>
-        public const int FlightDurationLimit = 2503;
+        private readonly int flightDurationLimit = 2503;
 
         /// <summary>
         /// Get reindeers flight data, key is reindeer name.
@@ -63,7 +63,7 @@ namespace App.Tasks.Year2015.Day14
             Dictionary<int, Dictionary<string, int>> traveledDistancesAfterEachSecond =
                 new Dictionary<int, Dictionary<string, int>>();
             // Initialize reindeers traveled distances after each second
-            for (int sec = 1; sec <= FlightDurationLimit; sec++)
+            for (int sec = 1; sec <= flightDurationLimit; sec++)
             {
                 traveledDistancesAfterEachSecond.Add(sec, new Dictionary<string, int>());
             }
@@ -76,7 +76,7 @@ namespace App.Tasks.Year2015.Day14
                 int flightTime = reindeerFlight.FlightTime;
                 int restTime = reindeerFlight.RestTime;
 
-                for (int sec = 1; sec <= FlightDurationLimit; sec++)
+                for (int sec = 1; sec <= flightDurationLimit; sec++)
                 {
                     // If there is still flight time left
                     if (flightTime > 0)

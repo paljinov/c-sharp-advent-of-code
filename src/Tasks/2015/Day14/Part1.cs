@@ -48,8 +48,7 @@ namespace App.Tasks.Year2015.Day14
             Dictionary<int, Dictionary<string, int>> traveledDistancesAfterEachSecond =
                 this.reindeersFlightData.CalculateReindeersTraveledDistancesAfterEachSecond(reindeersFlightData);
 
-            Dictionary<string, int> finalTraveledDistances =
-                traveledDistancesAfterEachSecond[ReindeersFlightData.FlightDurationLimit];
+            Dictionary<string, int> finalTraveledDistances = traveledDistancesAfterEachSecond.Values.Last();
 
             int winningReindeerTraveledDistance = finalTraveledDistances.Values.Max();
 

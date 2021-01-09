@@ -14,7 +14,6 @@ namespace Tests.Tasks.Year2015.Day22
             task = new Part1();
 
             WizardSimulatorGame wizardSimulatorGame = new WizardSimulatorGame();
-            // Preamble of 5 numbers
             wizardSimulatorGame.GetType()
                 .GetField("playerHitPoints", BindingFlags.Instance | BindingFlags.NonPublic)
                 .SetValue(wizardSimulatorGame, 10);
