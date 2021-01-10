@@ -12,35 +12,6 @@ namespace App.Tasks.Year2015.Day14
         private readonly int flightDurationLimit = 2503;
 
         /// <summary>
-        /// Get reindeers flight data, key is reindeer name.
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        public Dictionary<string, ReindeerFlight> ParseInput(string input)
-        {
-            Dictionary<string, ReindeerFlight> reindeersFlightData = new Dictionary<string, ReindeerFlight>();
-
-            Regex reindeerFlightDataRegex = new Regex(@"^(\w+).+?(\d+).+?(\d+).+?(\d+).+?$");
-
-            string[] reindeersFlightDataString =
-                input.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
-            foreach (string reindeerFlightDataString in reindeersFlightDataString)
-            {
-                Match match = reindeerFlightDataRegex.Match(reindeerFlightDataString);
-                GroupCollection groups = match.Groups;
-
-                reindeersFlightData.Add(groups[1].Value, new ReindeerFlight
-                {
-                    FlightSpeed = int.Parse(groups[2].Value),
-                    FlightTime = int.Parse(groups[3].Value),
-                    RestTime = int.Parse(groups[4].Value)
-                });
-            }
-
-            return reindeersFlightData;
-        }
-
-        /// <summary>
         /// Calculate reindeers traveled distances after each second.
         /// </summary>
         /// <param name="reindeersFlightData"></param>
