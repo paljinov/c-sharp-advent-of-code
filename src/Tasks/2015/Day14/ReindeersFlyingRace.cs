@@ -1,10 +1,8 @@
-using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 
 namespace App.Tasks.Year2015.Day14
 {
-    public class ReindeersFlightData
+    public class ReindeersFlyingRace
     {
         /// <summary>
         /// Flight duration in seconds.
@@ -14,7 +12,7 @@ namespace App.Tasks.Year2015.Day14
         /// <summary>
         /// Calculate reindeers traveled distances after each second.
         /// </summary>
-        /// <param name="reindeersFlightData"></param>
+        /// <param name="reindeersDescriptions"></param>
         /// <returns>
         /// Structure format:
         /// [
@@ -28,7 +26,7 @@ namespace App.Tasks.Year2015.Day14
         /// ]
         /// </returns>
         public Dictionary<int, Dictionary<string, int>> CalculateReindeersTraveledDistancesAfterEachSecond(
-            Dictionary<string, ReindeerFlight> reindeersFlightData
+            Dictionary<string, ReindeerDescription> reindeersDescriptions
         )
         {
             Dictionary<int, Dictionary<string, int>> traveledDistancesAfterEachSecond =
@@ -39,20 +37,18 @@ namespace App.Tasks.Year2015.Day14
                 traveledDistancesAfterEachSecond.Add(sec, new Dictionary<string, int>());
             }
 
-            foreach (KeyValuePair<string, ReindeerFlight> reindeerFlightData in reindeersFlightData)
+            foreach (KeyValuePair<string, ReindeerDescription> reindeerDescription in reindeersDescriptions)
             {
-                ReindeerFlight reindeerFlight = reindeerFlightData.Value;
-
                 int traveledDistance = 0;
-                int flightTime = reindeerFlight.FlightTime;
-                int restTime = reindeerFlight.RestTime;
+                int flightTime = reindeerDescription.Value.FlightTime;
+                int restTime = reindeerDescription.Value.RestTime;
 
                 for (int sec = 1; sec <= flightDurationLimit; sec++)
                 {
                     // If there is still flight time left
                     if (flightTime > 0)
                     {
-                        traveledDistance += reindeerFlight.FlightSpeed;
+                        traveledDistance += reindeerDescription.Value.FlightSpeed;
                         flightTime--;
                     }
                     // If there is still rest time left
@@ -64,13 +60,13 @@ namespace App.Tasks.Year2015.Day14
                     // If both flight and rest time are zero, the cycle repeats
                     if (flightTime == 0 && restTime == 0)
                     {
-                        flightTime = reindeerFlight.FlightTime;
-                        restTime = reindeerFlight.RestTime;
+                        flightTime = reindeerDescription.Value.FlightTime;
+                        restTime = reindeerDescription.Value.RestTime;
                     }
 
                     Dictionary<string, int> reindeersTraveledDistancesAfterSeconds =
                         traveledDistancesAfterEachSecond[sec];
-                    reindeersTraveledDistancesAfterSeconds.Add(reindeerFlightData.Key, traveledDistance);
+                    reindeersTraveledDistancesAfterSeconds.Add(reindeerDescription.Key, traveledDistance);
                     traveledDistancesAfterEachSecond[sec] = reindeersTraveledDistancesAfterSeconds;
                 }
             }

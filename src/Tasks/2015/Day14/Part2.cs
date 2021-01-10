@@ -32,20 +32,20 @@ namespace App.Tasks.Year2015.Day14
     {
         private readonly ReindeersDescriptionsRepository reindeersDescriptionsRepository;
 
-        private readonly ReindeersFlightData reindeersFlightData;
+        private readonly ReindeersFlyingRace reindeersFlyingRace;
 
         public Part2()
         {
             reindeersDescriptionsRepository = new ReindeersDescriptionsRepository();
-            reindeersFlightData = new ReindeersFlightData();
+            reindeersFlyingRace = new ReindeersFlyingRace();
         }
 
         public int Solution(string input)
         {
-            Dictionary<string, ReindeerFlight> reindeersDescriptions =
+            Dictionary<string, ReindeerDescription> reindeersDescriptions =
                 reindeersDescriptionsRepository.GetReindeersDescriptions(input);
             Dictionary<int, Dictionary<string, int>> traveledDistancesAfterEachSecond =
-                reindeersFlightData.CalculateReindeersTraveledDistancesAfterEachSecond(reindeersDescriptions);
+                reindeersFlyingRace.CalculateReindeersTraveledDistancesAfterEachSecond(reindeersDescriptions);
 
             Dictionary<string, int> reindeersPoints = new Dictionary<string, int>();
             // Initialize reindeers points
