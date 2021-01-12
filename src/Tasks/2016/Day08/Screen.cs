@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Linq;
+using System.Text;
 
 namespace App.Tasks.Year2016.Day8
 {
@@ -9,7 +9,53 @@ namespace App.Tasks.Year2016.Day8
 
         private const int SCREEN_HEIGHT = 6;
 
+        private const char OFF_PIXEL = ' ';
+
+        private const char LIT_PIXEL = '#';
+
         public int CountLitPixels(List<RectangleInstructions> instructions)
+        {
+            int litPixels = 0;
+
+            bool[,] screen = GetScreenPixels(instructions);
+            for (int i = 0; i < screen.GetLength(0); i++)
+            {
+                for (int j = 0; j < screen.GetLength(1); j++)
+                {
+                    if (screen[i, j])
+                    {
+                        litPixels++;
+                    }
+                }
+            }
+
+            return litPixels;
+        }
+
+        public string GetScreenCode(List<RectangleInstructions> instructions)
+        {
+            StringBuilder screenCode = new StringBuilder();
+
+            bool[,] screen = GetScreenPixels(instructions);
+            for (int i = 0; i < screen.GetLength(0); i++)
+            {
+                screenCode.AppendLine();
+                for (int j = 0; j < screen.GetLength(1); j++)
+                {
+                    char pixel = OFF_PIXEL;
+                    if (screen[i, j])
+                    {
+                        pixel = LIT_PIXEL;
+                    }
+
+                    screenCode.Append(pixel);
+                }
+            }
+
+            return screenCode.ToString();
+        }
+
+        private bool[,] GetScreenPixels(List<RectangleInstructions> instructions)
         {
             bool[,] screen = new bool[SCREEN_HEIGHT, SCREEN_WIDTH];
 
@@ -29,9 +75,7 @@ namespace App.Tasks.Year2016.Day8
                 }
             }
 
-            int litPixels = DoCountLitPixels(screen);
-
-            return litPixels;
+            return screen;
         }
 
         private bool[,] CreateRectangle(Rectangle rectangle, bool[,] screen)
@@ -97,24 +141,6 @@ namespace App.Tasks.Year2016.Day8
             }
 
             return rotatedAxis;
-        }
-
-        private int DoCountLitPixels(bool[,] screen)
-        {
-            int litPixels = 0;
-
-            for (int i = 0; i < screen.GetLength(0); i++)
-            {
-                for (int j = 0; j < screen.GetLength(1); j++)
-                {
-                    if (screen[i, j])
-                    {
-                        litPixels++;
-                    }
-                }
-            }
-
-            return litPixels;
         }
     }
 }
