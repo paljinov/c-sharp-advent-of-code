@@ -13,8 +13,6 @@ In the example above, the minimum number of containers was two. There were three
 ways to use that many containers, and so the answer there would be 3.
 */
 
-using System.Collections.Generic;
-
 namespace App.Tasks.Year2015.Day17
 {
     public class Part2 : ITask<int>
@@ -33,30 +31,8 @@ namespace App.Tasks.Year2015.Day17
         {
             int[] containers = containersRepository.ParseInput(input);
 
-            List<List<int>> combinations = new List<List<int>>();
-            List<int> currentCombination = new List<int>();
-            containersCombinations.CalculateContainersCombinations(
-                containers,
-                ContainersCombinations.EggnogLiters,
-                currentCombination,
-                combinations
-            );
-
-            int minUsedContainers = int.MaxValue;
-            int minUsedContainersDifferentWays = 0;
-
-            foreach (List<int> combination in combinations)
-            {
-                if (combination.Count < minUsedContainers)
-                {
-                    minUsedContainers = combination.Count;
-                    minUsedContainersDifferentWays = 1;
-                }
-                else if (combination.Count == minUsedContainers)
-                {
-                    minUsedContainersDifferentWays++;
-                }
-            }
+            int minUsedContainersDifferentWays =
+                containersCombinations.CountDifferentContainersCombinationsWhenMinNumberOfContainersIsUsed(containers);
 
             return minUsedContainersDifferentWays;
         }

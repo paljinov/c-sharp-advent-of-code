@@ -17,8 +17,6 @@ Filling all containers entirely, how many different combinations of containers
 can exactly fit all 150 liters of eggnog?
 */
 
-using System.Collections.Generic;
-
 namespace App.Tasks.Year2015.Day17
 {
     public class Part1 : ITask<int>
@@ -37,16 +35,8 @@ namespace App.Tasks.Year2015.Day17
         {
             int[] containers = containersRepository.ParseInput(input);
 
-            List<List<int>> combinations = new List<List<int>>();
-            List<int> currentCombination = new List<int>();
-            containersCombinations.CalculateContainersCombinations(
-                containers,
-                ContainersCombinations.EggnogLiters,
-                currentCombination,
-                combinations
-            );
-
-            int differentCombinations = combinations.Count;
+            int differentCombinations =
+                containersCombinations.CountDifferentContainersCombinations(containers);
 
             return differentCombinations;
         }

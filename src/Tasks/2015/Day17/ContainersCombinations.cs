@@ -5,7 +5,52 @@ namespace App.Tasks.Year2015.Day17
 {
     public class ContainersCombinations
     {
-        public const int EggnogLiters = 150;
+        private readonly int eggnogLiters = 150;
+
+        public int CountDifferentContainersCombinations(int[] containers)
+        {
+            List<List<int>> combinations = new List<List<int>>();
+            List<int> currentCombination = new List<int>();
+
+            CalculateContainersCombinations(
+                containers,
+                eggnogLiters,
+                currentCombination,
+                combinations
+            );
+
+            return combinations.Count;
+        }
+
+        public int CountDifferentContainersCombinationsWhenMinNumberOfContainersIsUsed(int[] containers)
+        {
+            List<List<int>> combinations = new List<List<int>>();
+            List<int> currentCombination = new List<int>();
+            CalculateContainersCombinations(
+                containers,
+                eggnogLiters,
+                currentCombination,
+                combinations
+            );
+
+            int minUsedContainers = int.MaxValue;
+            int minUsedContainersDifferentWays = 0;
+
+            foreach (List<int> combination in combinations)
+            {
+                if (combination.Count < minUsedContainers)
+                {
+                    minUsedContainers = combination.Count;
+                    minUsedContainersDifferentWays = 1;
+                }
+                else if (combination.Count == minUsedContainers)
+                {
+                    minUsedContainersDifferentWays++;
+                }
+            }
+
+            return minUsedContainersDifferentWays;
+        }
 
         public void CalculateContainersCombinations(
             int[] containers,
