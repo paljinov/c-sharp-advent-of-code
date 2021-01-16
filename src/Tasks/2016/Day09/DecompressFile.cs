@@ -1,5 +1,4 @@
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace App.Tasks.Year2016.Day9
@@ -8,75 +7,55 @@ namespace App.Tasks.Year2016.Day9
     {
         private const string MARKER_PATTERN = @"(\(\d+x\d+\))";
 
-        public int GetDecompressedFileLength(string file)
+        public int GetVersionOneDecompressedFileLength(string file)
         {
-            string[] fileParts = ParseFile(file);
+            int decompressedFileLength = 0;
 
-            StringBuilder decompressedFile = new StringBuilder();
-            int skipLength = 0;
+            string[] fileParts = GetFileParts(file);
+            int sequenceLength = 0;
 
             for (int i = 0; i < fileParts.Length; i++)
             {
-                string part = fileParts[i];
+                string subsequence = fileParts[i];
 
-                if (skipLength > 0)
+                // If whole or part of subsequence is already decompressed
+                if (sequenceLength > 0)
                 {
-                    if (skipLength - part.Length >= 0)
+                    // If whole subsequence is already decompressed we skip it
+                    if (sequenceLength - subsequence.Length >= 0)
                     {
-                        skipLength -= part.Length;
+                        sequenceLength -= subsequence.Length;
                         continue;
                     }
-                    else if (skipLength > 0)
+                    // If part of subsequence is already decompressed
+                    else
                     {
-                        part = part[skipLength..];
-                        skipLength = 0;
+                        subsequence = subsequence[sequenceLength..];
+                        sequenceLength = 0;
                     }
                 }
 
-                Match markerMatch = Regex.Match(part, MARKER_PATTERN);
-
+                Match markerMatch = Regex.Match(subsequence, MARKER_PATTERN);
+                // If subsequence is marker
                 if (markerMatch.Success)
                 {
-                    string[] markerParts = part[1..^1].Split('x');
-                    int sequenceLength = int.Parse(markerParts[0]);
+                    string[] markerParts = subsequence[1..^1].Split('x');
+                    sequenceLength = int.Parse(markerParts[0]);
                     int repeat = int.Parse(markerParts[1]);
 
-                    skipLength = sequenceLength;
-
-                    for (int j = 0; j < repeat; j++)
-                    {
-                        sequenceLength = skipLength;
-                        for (int k = i + 1; k < fileParts.Length; k++)
-                        {
-                            if (sequenceLength - fileParts[k].Length >= 0)
-                            {
-                                sequenceLength -= fileParts[k].Length;
-                                decompressedFile.Append(fileParts[k]);
-                                continue;
-                            }
-                            else if (sequenceLength > 0)
-                            {
-                                decompressedFile.Append(fileParts[k][..sequenceLength]);
-                                sequenceLength = 0;
-                            }
-
-                            if (skipLength == 0)
-                            {
-                                break;
-                            }
-                        }
-                    }
+                    decompressedFileLength += sequenceLength * repeat;
                 }
+                // If subsequence is normal data
                 else
                 {
-                    decompressedFile.Append(part);
+                    decompressedFileLength += subsequence.Length;
                 }
+
             }
 
-            return decompressedFile.ToString().Length;
+            return decompressedFileLength;
         }
-
-        private string[] ParseFile(string file)
+        private string[] GetFileParts(string file)
         {
             string[] fileParts = Regex.Split(file, MARKER_PATTERN).Where(s => s != string.Empty).ToArray();
             return fileParts;
