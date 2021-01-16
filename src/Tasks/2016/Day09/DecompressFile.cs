@@ -4,11 +4,11 @@ using System.Text.RegularExpressions;
 
 namespace App.Tasks.Year2016.Day9
 {
-    public class File
+    public class DecompressFile
     {
         private const string MARKER_PATTERN = @"(\(\d+x\d+\))";
 
-        public int GetDecompressedLength(string file)
+        public int GetDecompressedFileLength(string file)
         {
             string[] fileParts = ParseFile(file);
 

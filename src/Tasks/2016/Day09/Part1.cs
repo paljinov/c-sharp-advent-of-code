@@ -40,16 +40,16 @@ namespace App.Tasks.Year2016.Day9
 {
     public class Part1 : ITask<int>
     {
-        private readonly File file;
+        private readonly DecompressFile decompressFile;
 
         public Part1()
         {
-            file = new File();
+            decompressFile = new DecompressFile();
         }
 
         public int Solution(string input)
         {
-            int fileDecompressedLength = file.GetDecompressedLength(input);
+            int fileDecompressedLength = decompressFile.GetDecompressedFileLength(input);
             return fileDecompressedLength;
         }
     }
