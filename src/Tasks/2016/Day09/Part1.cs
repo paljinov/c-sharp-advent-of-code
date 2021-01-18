@@ -49,7 +49,10 @@ namespace App.Tasks.Year2016.Day9
 
         public int Solution(string input)
         {
-            int fileDecompressedLength = decompressFile.GetVersionOneDecompressedFileLength(input);
+            int fileDecompressedLength = (int)decompressFile.GetDecompressedFileLength(
+                input, FileCompressionFormat.VersionOne
+            );
+
             return fileDecompressedLength;
         }
     }

@@ -40,7 +40,10 @@ namespace App.Tasks.Year2016.Day9
 
         public long Solution(string input)
         {
-            long fileDecompressedLength = decompressFile.GetVersionTwoDecompressedFileLength(input);
+            long fileDecompressedLength = decompressFile.GetDecompressedFileLength(
+                input, FileCompressionFormat.VersionTwo
+            );
+
             return fileDecompressedLength;
         }
     }
