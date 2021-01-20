@@ -2,7 +2,7 @@ namespace App.Tasks.Year2015.Day18
 {
     public class LightsGrid
     {
-        public const int Steps = 100;
+        private readonly int steps = 100;
 
         public int CalculateLightsOnAfterAnimation(bool[,] lightsGrid, bool cornerLightsStuckOn = false)
         {
@@ -28,7 +28,7 @@ namespace App.Tasks.Year2015.Day18
 
         private bool[,] Animate(bool[,] lightsGrid, bool cornerLightsStuckOn)
         {
-            for (int i = 0; i < Steps; i++)
+            for (int i = 0; i < steps; i++)
             {
                 lightsGrid = MakeAnimationStep(lightsGrid, cornerLightsStuckOn);
             }
