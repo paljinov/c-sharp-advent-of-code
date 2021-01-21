@@ -35,7 +35,7 @@ namespace App.Tasks.Year2015.Day19
 {
     public class Part2 : ITask<int>
     {
-        private const string SingleElectron = "e";
+        private const string SINGLE_ELECTRON = "e";
 
         private readonly InputRepository inputRepository;
 
@@ -55,7 +55,7 @@ namespace App.Tasks.Year2015.Day19
             int fewestNumberOfSteps = molecules.DecomposeMoleculeToSingleElectron(
                 startingMolecule,
                 replacements,
-                SingleElectron
+                SINGLE_ELECTRON
             );
 
             return fewestNumberOfSteps;

@@ -52,8 +52,21 @@ namespace App.Tasks.Year2015.Day19
                 // Replace in opposite direction to single electron
                 foreach ((string replacement, string original) in replacements)
                 {
-                    var regex = new Regex(original);
-                    if (regex.Match(molecule).Success)
+                    Regex regex = new Regex(original);
+
+                    // If replacement is single electron
+                    if (replacement == singleElectron)
+                    {
+                        // Single electron needs to replace whole reminder of the molecule
+                        if (original == molecule)
+                        {
+                            molecule = regex.Replace(molecule, replacement, 1);
+                            steps++;
+                            break;
+                        }
+                    }
+                    // If replacement is not single electron
+                    else if (regex.Match(molecule).Success)
                     {
                         // Replace only one occurence
                         molecule = regex.Replace(molecule, replacement, 1);
