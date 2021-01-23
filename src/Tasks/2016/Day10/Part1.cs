@@ -67,13 +67,13 @@ namespace App.Tasks.Year2016.Day10
         public int Solution(string input)
         {
             List<IBotInstruction> botsInstructions = botsInstructionsRepository.GetBotsInstructions(input);
-            int botNumberWhichComparesChips = handChips.NumberOfBotWhichComparesChips(
+            int numberOfBotWhichComparesChips = handChips.NumberOfBotWhichComparesChips(
                 botsInstructions,
                 lowerValueChip,
                 higherValueChip
             );
 
-            return botNumberWhichComparesChips;
+            return numberOfBotWhichComparesChips;
         }
     }
 }

@@ -16,7 +16,7 @@ namespace App.Tasks.Year2016.Day10
         {
             int numberOfBotWhichComparesChips = UNDEFINED_BOT;
 
-            (Dictionary<int, Bot> bots, _) = HandChipsByInstructions(botsInstructions);
+            (Dictionary<int, Bot> bots, _) = HandChipsByBotsInstructions(botsInstructions);
 
             foreach (KeyValuePair<int, Bot> bot in bots)
             {
@@ -32,7 +32,7 @@ namespace App.Tasks.Year2016.Day10
 
         public int FirstThreeOutputsProduct(List<IBotInstruction> botsInstructions)
         {
-            (_, Dictionary<int, int> outputs) = HandChipsByInstructions(botsInstructions);
+            (_, Dictionary<int, int> outputs) = HandChipsByBotsInstructions(botsInstructions);
 
             int product = 1;
             for (int i = 0; i < 3; i++)
@@ -43,7 +43,7 @@ namespace App.Tasks.Year2016.Day10
             return product;
         }
 
-        private (Dictionary<int, Bot>, Dictionary<int, int>) HandChipsByInstructions(
+        private (Dictionary<int, Bot>, Dictionary<int, int>) HandChipsByBotsInstructions(
             List<IBotInstruction> botsInstructions
         )
         {
