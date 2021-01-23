@@ -67,7 +67,7 @@ namespace App.Tasks.Year2016.Day10
         public int Solution(string input)
         {
             List<IBotInstruction> botsInstructions = botsInstructionsRepository.GetBotsInstructions(input);
-            int botNumberWhichComparesChips = handChips.BotNumberWhichComparesChips(
+            int botNumberWhichComparesChips = handChips.NumberOfBotWhichComparesChips(
                 botsInstructions,
                 lowerValueChip,
                 higherValueChip
