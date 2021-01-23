@@ -4,6 +4,8 @@ namespace App.Tasks.Year2016.Day10
 {
     public class HandChips
     {
+        private const int UNDEFINED_BOT = -1;
+
         private const int UNDEFINED_CHIP_VALUE = -1;
 
         public int BotNumberWhichComparesChips(
@@ -19,14 +21,16 @@ namespace App.Tasks.Year2016.Day10
             {
                 foreach (IBotInstruction botInstruction in new List<IBotInstruction>(botsInstructions))
                 {
-                    int botNumber = -1;
-
                     if (botInstruction is TakeChipInstruction takeChipInstruction)
                     {
                         TakeChipInstruction(bots, takeChipInstruction);
-                        botNumber = takeChipInstruction.BotNumber;
-
                         botsInstructions.Remove(botInstruction);
+
+                        Bot bot = bots[takeChipInstruction.BotNumber];
+                        if (IsBotWhichComparesChips(bot, lowerValueChip, higherValueChip))
+                        {
+                            return takeChipInstruction.BotNumber;
+                        }
                     }
                     else if (botInstruction is GiveChipsInstruction giveChipsInstruction)
                     {
@@ -34,25 +38,20 @@ namespace App.Tasks.Year2016.Day10
                         if (bots.ContainsKey(giveChipsInstruction.BotNumber)
                             && bots[giveChipsInstruction.BotNumber].LowerValueChip != UNDEFINED_CHIP_VALUE)
                         {
+                            Bot bot = bots[giveChipsInstruction.BotNumber];
+                            if (IsBotWhichComparesChips(bot, lowerValueChip, higherValueChip))
+                            {
+                                return giveChipsInstruction.BotNumber;
+                            }
+
                             GiveChipsInstruction(bots, output, giveChipsInstruction);
-                            botNumber = giveChipsInstruction.BotNumber;
-
                             botsInstructions.Remove(botInstruction);
-                        }
-                    }
-
-                    if (bots.ContainsKey(botNumber))
-                    {
-                        Bot bot = bots[botNumber];
-                        if (bot.LowerValueChip == lowerValueChip && bot.HigherValueChip == higherValueChip)
-                        {
-                            return botNumber;
                         }
                     }
                 }
             }
 
-            return 0;
+            return UNDEFINED_BOT;
         }
 
         private void TakeChipInstruction(Dictionary<int, Bot> bots, TakeChipInstruction takeChipInstruction)
@@ -111,6 +110,16 @@ namespace App.Tasks.Year2016.Day10
                     bots[botNumber].HigherValueChip = chipValue;
                 }
             }
+        }
+
+        private bool IsBotWhichComparesChips(Bot bot, int lowerValueChip, int higherValueChip)
+        {
+            if (bot.LowerValueChip == lowerValueChip && bot.HigherValueChip == higherValueChip)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

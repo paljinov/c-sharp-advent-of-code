@@ -50,9 +50,9 @@ namespace App.Tasks.Year2016.Day10
 {
     public class Part1 : ITask<int>
     {
-        private readonly int lowerValueChip = 2;
+        private readonly int lowerValueChip = 17;
 
-        private readonly int higherValueChip = 5;
+        private readonly int higherValueChip = 61;
 
         private readonly BotsInstructionsRepository botsInstructionsRepository;
 
