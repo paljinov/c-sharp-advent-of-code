@@ -27,7 +27,6 @@ namespace App.Tasks.Year2015.Day20
             int lowestHouseNumber = maxHouseNumber;
 
             int[] houses = new int[maxHouseNumber + 1];
-            Console.WriteLine(houses.Length - 1);
 
             // Iterating elves
             for (var i = 1; i <= maxHouseNumber; i++)
