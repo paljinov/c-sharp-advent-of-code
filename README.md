@@ -3,6 +3,7 @@
 ## Tasks solutions:
 * [2015](./src/Tasks/2015)
 * [2016](./src/Tasks/2016)
+* [2017](./src/Tasks/2017)
 * [2020](./src/Tasks/2020)
 
 ## Prerequisites for running project
