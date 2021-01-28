@@ -12,28 +12,17 @@ namespace Tests.Tasks.Year2015.Day8
             task = new Part1();
         }
 
-        [Fact]
-        public void Solution_FirstCodeCharactersExample_StringLiteralsMinusStringMemoryEquals()
+        [Theory]
+        [InlineData("\"\"", 2)]
+        [InlineData("\"abc\"", 2)]
+        [InlineData("\"aaa\\\"aaa\"", 3)]
+        [InlineData("\"\\x27\"", 5)]
+        public void Solution_CodeCharactersExample_StringLiteralsMinusStringMemoryEquals(
+            string codeCharacters,
+            int stringLiteralsMinusStringMemory
+        )
         {
-            Assert.Equal(2, task.Solution("\"\""));
-        }
-
-        [Fact]
-        public void Solution_SecondCodeCharactersExample_StringLiteralsMinusStringMemoryEquals()
-        {
-            Assert.Equal(2, task.Solution("\"abc\""));
-        }
-
-        [Fact]
-        public void Solution_ThirdCodeCharactersExample_StringLiteralsMinusStringMemoryEquals()
-        {
-            Assert.Equal(3, task.Solution("\"aaa\\\"aaa\""));
-        }
-
-        [Fact]
-        public void Solution_FourthCodeCharactersExample_StringLiteralsMinusStringMemoryEquals()
-        {
-            Assert.Equal(5, task.Solution("\"\\x27\""));
+            Assert.Equal(stringLiteralsMinusStringMemory, task.Solution(codeCharacters));
         }
     }
 }

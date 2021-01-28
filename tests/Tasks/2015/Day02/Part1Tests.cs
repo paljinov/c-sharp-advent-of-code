@@ -12,16 +12,15 @@ namespace Tests.Tasks.Year2015.Day2
             task = new Part1();
         }
 
-        [Fact]
-        public void Solution_FirstExampleDimensions_WrappingPaperSquareFeetCorrectCalculation()
+        [Theory]
+        [InlineData("2x3x4", 58)]
+        [InlineData("1x1x10", 43)]
+        public void Solution_DimensionsExample_WrappingPaperSquareFeetEquals(
+            string dimensions,
+            int wrappingPaperSquareFeet
+        )
         {
-            Assert.Equal(58, task.Solution("2x3x4"));
-        }
-
-        [Fact]
-        public void Solution_SecondExampleDimensions_WrappingPaperSquareFeetCorrectCalculation()
-        {
-            Assert.Equal(43, task.Solution("1x1x10"));
+            Assert.Equal(wrappingPaperSquareFeet, task.Solution(dimensions));
         }
     }
 }

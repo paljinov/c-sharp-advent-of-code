@@ -12,16 +12,15 @@ namespace Tests.Tasks.Year2015.Day4
             task = new Part1();
         }
 
-        [Fact]
-        public void Solution_FirstExampleSecretKey_CorrectAnswer()
+        [Theory]
+        [InlineData("abcdef", 609043)]
+        [InlineData("pqrstuv", 1048970)]
+        public void Solution_SecretKeyExample_IntegerWhichGivesMd5HashWithFiveZerosPrefixEquals(
+            string secretKey,
+            int integer
+        )
         {
-            Assert.Equal(609043, task.Solution("abcdef"));
-        }
-
-        [Fact]
-        public void Solution_SecondExampleSecretKey_CorrectAnswer()
-        {
-            Assert.Equal(1048970, task.Solution("pqrstuv"));
+            Assert.Equal(integer, task.Solution(secretKey));
         }
     }
 }

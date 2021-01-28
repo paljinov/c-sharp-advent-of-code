@@ -12,16 +12,12 @@ namespace Tests.Tasks.Year2015.Day2
             task = new Part2();
         }
 
-        [Fact]
-        public void Solution_FirstExampleDimensions_FeetOfRibbonCorrectCalculation()
+        [Theory]
+        [InlineData("2x3x4", 34)]
+        [InlineData("1x1x10", 14)]
+        public void Solution_DimensionsExample_FeetOfRibbonEquals(string dimensions, int wrappingPaperSquareFeet)
         {
-            Assert.Equal(34, task.Solution("2x3x4"));
-        }
-
-        [Fact]
-        public void Solution_SecondExampleDimensions_FeetOfRibbonCorrectCalculation()
-        {
-            Assert.Equal(14, task.Solution("1x1x10"));
+            Assert.Equal(wrappingPaperSquareFeet, task.Solution(dimensions));
         }
     }
 }

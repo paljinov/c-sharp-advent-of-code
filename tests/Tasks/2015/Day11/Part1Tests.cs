@@ -12,16 +12,12 @@ namespace Tests.Tasks.Year2015.Day11
             task = new Part1();
         }
 
-        [Fact]
-        public void Solution_FirstCurrentPasswordExample_NextPasswordEquals()
+        [Theory]
+        [InlineData("abcdefgh", "abcdffaa")]
+        [InlineData("ghijklmn", "ghjaabcc")]
+        public void Solution_CurrentPasswordExample_NextPasswordEquals(string currentPassword, string nextPassword)
         {
-            Assert.Equal("abcdffaa", task.Solution("abcdefgh"));
-        }
-
-        [Fact]
-        public void Solution_SecondCurrentPasswordExample_NextPasswordEquals()
-        {
-            Assert.Equal("ghjaabcc", task.Solution("ghijklmn"));
+            Assert.Equal(nextPassword, task.Solution(currentPassword));
         }
     }
 }

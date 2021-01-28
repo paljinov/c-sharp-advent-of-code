@@ -12,28 +12,14 @@ namespace Tests.Tasks.Year2015.Day12
             task = new Part2();
         }
 
-        [Fact]
-        public void Solution_FirstJsonDocumentExample_AllNumbersSumEquals()
+        [Theory]
+        [InlineData("[1,2,3]", 6)]
+        [InlineData("[1,{\"c\":\"red\",\"b\":2},3]", 4)]
+        [InlineData("{\"d\":\"red\",\"e\":[1,2,3,4],\"f\":5}", 0)]
+        [InlineData("[1,\"red\",5]", 6)]
+        public void Solution_JsonDocumentExample_AllNumbersSumEquals(string jsonDocument, int sum)
         {
-            Assert.Equal(6, task.Solution("[1,2,3]"));
-        }
-
-        [Fact]
-        public void Solution_SecondJsonDocumentExample_AllNumbersSumEquals()
-        {
-            Assert.Equal(4, task.Solution("[1,{\"c\":\"red\",\"b\":2},3]"));
-        }
-
-        [Fact]
-        public void Solution_ThirdJsonDocumentExample_AllNumbersSumEquals()
-        {
-            Assert.Equal(0, task.Solution("{\"d\":\"red\",\"e\":[1,2,3,4],\"f\":5}"));
-        }
-
-        [Fact]
-        public void Solution_FourthJsonDocumentExample_AllNumbersSumEquals()
-        {
-            Assert.Equal(6, task.Solution("[1,\"red\",5]"));
+            Assert.Equal(sum, task.Solution(jsonDocument));
         }
     }
 }
