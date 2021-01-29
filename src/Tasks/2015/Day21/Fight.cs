@@ -5,7 +5,7 @@ namespace App.Tasks.Year2015.Day21
 {
     public class Fight
     {
-        private const int PlayerHitPoints = 100;
+        private readonly int playerHitPoints = 100;
 
         public int CalculateLeastAmountOfGoldSpentWhenWinning(
             Dictionary<string, Item> weapons,
@@ -90,7 +90,7 @@ namespace App.Tasks.Year2015.Day21
 
                                 FighterStats player = new FighterStats
                                 {
-                                    HitPoints = PlayerHitPoints,
+                                    HitPoints = playerHitPoints,
                                     Damage = weapon.Value.Damage
                                         + leftHandRing.Value.Damage + rightHandRing.Value.Damage,
                                     Armor = armor.Value.Armor
