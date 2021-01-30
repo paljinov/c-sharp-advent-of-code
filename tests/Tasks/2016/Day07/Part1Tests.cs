@@ -13,28 +13,20 @@ namespace Tests.Tasks.Year2016.Day7
             task = new Part1();
         }
 
-        [Fact]
-        public void Solution_FirstIpAddressExample_IpAddressSupportsTlsTrue()
+        [Theory]
+        [InlineData("abba[mnop]qrst")]
+        [InlineData("ioxxoj[asdfgh]zxcvbn")]
+        public void Solution_IpAddressExample_IpAddressSupportsTlsTrue(string ipAddress)
         {
-            Assert.True(Convert.ToBoolean(task.Solution("abba[mnop]qrst")));
+            Assert.True(Convert.ToBoolean(task.Solution(ipAddress)));
         }
 
-        [Fact]
-        public void Solution_SecondIpAddressExample_IpAddressSupportsTlsFalse()
+        [Theory]
+        [InlineData("abcd[bddb]xyyx")]
+        [InlineData("aaaa[qwer]tyui")]
+        public void Solution_IpAddressExample_IpAddressSupportsTlsFalse(string ipAddress)
         {
-            Assert.False(Convert.ToBoolean(task.Solution("abcd[bddb]xyyx")));
-        }
-
-        [Fact]
-        public void Solution_ThirdIpAddressExample_IpAddressSupportsTlsFalse()
-        {
-            Assert.False(Convert.ToBoolean(task.Solution("aaaa[qwer]tyui")));
-        }
-
-        [Fact]
-        public void Solution_FourthIpAddressExample_IpAddressSupportsTlsTrue()
-        {
-            Assert.True(Convert.ToBoolean(task.Solution("ioxxoj[asdfgh]zxcvbn")));
+            Assert.False(Convert.ToBoolean(task.Solution(ipAddress)));
         }
     }
 }

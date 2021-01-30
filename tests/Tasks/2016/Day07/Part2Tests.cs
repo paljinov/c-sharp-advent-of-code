@@ -13,28 +13,20 @@ namespace Tests.Tasks.Year2016.Day7
             task = new Part2();
         }
 
-        [Fact]
-        public void Solution_FirstIpAddressExample_IpAddressSupportsSslTrue()
+        [Theory]
+        [InlineData("aba[bab]xyz")]
+        [InlineData("aaa[kek]eke")]
+        [InlineData("zazbz[bzb]cdb")]
+        public void Solution_IpAddressExample_IpAddressSupportsSslTrue(string ipAddress)
         {
-            Assert.True(Convert.ToBoolean(task.Solution("aba[bab]xyz")));
+            Assert.True(Convert.ToBoolean(task.Solution(ipAddress)));
         }
 
-        [Fact]
-        public void Solution_SecondIpAddressExample_IpAddressSupportsSslFalse()
+        [Theory]
+        [InlineData("xyx[xyx]xyx")]
+        public void Solution_IpAddressExample_IpAddressSupportsSslFalse(string ipAddress)
         {
-            Assert.False(Convert.ToBoolean(task.Solution("xyx[xyx]xyx")));
-        }
-
-        [Fact]
-        public void Solution_ThirdIpAddressExample_IpAddressSupportsSslTrue()
-        {
-            Assert.True(Convert.ToBoolean(task.Solution("aaa[kek]eke")));
-        }
-
-        [Fact]
-        public void Solution_FourthIpAddressExample_IpAddressSupportsSslTrue()
-        {
-            Assert.True(Convert.ToBoolean(task.Solution("zazbz[bzb]cdb")));
+            Assert.False(Convert.ToBoolean(task.Solution(ipAddress)));
         }
     }
 }
