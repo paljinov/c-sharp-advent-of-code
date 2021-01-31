@@ -46,7 +46,7 @@ namespace App.Tasks.Year2017.Day2
         public int Solution(string input)
         {
             int[][] spreadsheetNumbers = spreadsheetRepository.GetSpreadsheetNumbers(input);
-            int spreadsheetChecksum = checksum.CalculateSpreadsheetChecksum(spreadsheetNumbers);
+            int spreadsheetChecksum = checksum.CalculateMaxMinSpreadsheetChecksum(spreadsheetNumbers);
 
             return spreadsheetChecksum;
         }
