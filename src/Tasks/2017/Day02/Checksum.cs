@@ -17,7 +17,7 @@ namespace App.Tasks.Year2017.Day2
             return checksum;
         }
 
-        public int CalculateWholeNumberDivisionSpreadsheetChecksum(int[][] spreadsheetNumbers)
+        public int CalculateEvenlyDivisibleQuotientSpreadsheetChecksum(int[][] spreadsheetNumbers)
         {
             int checksum = 0;
 
