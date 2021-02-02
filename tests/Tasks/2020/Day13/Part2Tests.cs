@@ -13,58 +13,20 @@ namespace Tests.Tasks.Year2020.Day13
             task = new Part2();
         }
 
-        [Fact]
-        public void Solution_FirstNotesExample_EarliestTimestampForWhichAllBusesDepartAtOffsetsMatchingTheirPositionsEquals()
+        [Theory]
+        [InlineData("7,13,x,x,59,x,31,19", 1068781)]
+        [InlineData("17,x,13,19", 3417)]
+        [InlineData("67,7,59,61", 754018)]
+        [InlineData("67,x,7,59,61", 779210)]
+        [InlineData("67,7,x,59,61", 1261476)]
+        [InlineData("1789,37,47,1889", 1202161486)]
+        public void Solution_NotesExample_EarliestTimestampForWhichAllBusesDepartAtOffsetsMatchingTheirPositionsEquals(
+            string notes,
+            int earliestTimestampForWhichAllBusesDepartAtOffsetsMatchingTheirPositions
+        )
         {
-            string notes = "0"
-                + $"{Environment.NewLine}7,13,x,x,59,x,31,19";
-
-            Assert.Equal(1068781, task.Solution(notes));
-        }
-
-        [Fact]
-        public void Solution_SecondNotesExample_EarliestTimestampForWhichAllBusesDepartAtOffsetsMatchingTheirPositionsEquals()
-        {
-            string notes = "0"
-                + $"{Environment.NewLine}17,x,13,19";
-
-            Assert.Equal(3417, task.Solution(notes));
-        }
-
-        [Fact]
-        public void Solution_ThirdNotesExample_EarliestTimestampForWhichAllBusesDepartAtOffsetsMatchingTheirPositionsEquals()
-        {
-            string notes = "0"
-                + $"{Environment.NewLine}67,7,59,61";
-
-            Assert.Equal(754018, task.Solution(notes));
-        }
-
-        [Fact]
-        public void Solution_FourthNotesExample_EarliestTimestampForWhichAllBusesDepartAtOffsetsMatchingTheirPositionsEquals()
-        {
-            string notes = "0"
-                + $"{Environment.NewLine}67,x,7,59,61";
-
-            Assert.Equal(779210, task.Solution(notes));
-        }
-
-        [Fact]
-        public void Solution_FifthNotesExample_EarliestTimestampForWhichAllBusesDepartAtOffsetsMatchingTheirPositionsEquals()
-        {
-            string notes = "0"
-                + $"{Environment.NewLine}67,7,x,59,61";
-
-            Assert.Equal(1261476, task.Solution(notes));
-        }
-
-        [Fact]
-        public void Solution_SixthNotesExample_EarliestTimestampForWhichAllBusesDepartAtOffsetsMatchingTheirPositionsEquals()
-        {
-            string notes = "0"
-                + $"{Environment.NewLine}1789,37,47,1889";
-
-            Assert.Equal(1202161486, task.Solution(notes));
+            notes = $"0{Environment.NewLine}{notes}";
+            Assert.Equal(earliestTimestampForWhichAllBusesDepartAtOffsetsMatchingTheirPositions, task.Solution(notes));
         }
     }
 }

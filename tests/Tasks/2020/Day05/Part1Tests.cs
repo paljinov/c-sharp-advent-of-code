@@ -13,28 +13,14 @@ namespace Tests.Tasks.Year2020.Day5
             task = new Part1();
         }
 
-        [Fact]
-        public void Solution_FirstBoardingPassExample_SeatIdEquals()
+        [Theory]
+        [InlineData("FBFBBFFRLR", 357)]
+        [InlineData("BFFFBBFRRR", 567)]
+        [InlineData("FFFBBBFRRR", 119)]
+        [InlineData("BBFFBBFRLL", 820)]
+        public void Solution_BoardingPassExample_SeatIdEquals(string boardingPass, int seatId)
         {
-            Assert.Equal(357, task.Solution("FBFBBFFRLR"));
-        }
-
-        [Fact]
-        public void Solution_SecondBoardingPassExample_SeatIdEquals()
-        {
-            Assert.Equal(567, task.Solution("BFFFBBFRRR"));
-        }
-
-        [Fact]
-        public void Solution_ThirdBoardingPassExample_SeatIdEquals()
-        {
-            Assert.Equal(119, task.Solution("FFFBBBFRRR"));
-        }
-
-        [Fact]
-        public void Solution_FourthBoardingPassExample_SeatIdEquals()
-        {
-            Assert.Equal(820, task.Solution("BBFFBBFRLL"));
+            Assert.Equal(seatId, task.Solution(boardingPass));
         }
     }
 }

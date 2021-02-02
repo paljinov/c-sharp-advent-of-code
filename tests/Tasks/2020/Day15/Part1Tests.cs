@@ -12,53 +12,20 @@ namespace Tests.Tasks.Year2020.Day15
             task = new Part1();
         }
 
-        [Fact]
-        public void Solution_FirstStartingNumbersExample_2020thSpokenNumberEquals()
+        [Theory]
+        [InlineData("0,3,6", 436)]
+        [InlineData("1,3,2", 1)]
+        [InlineData("2,1,3", 10)]
+        [InlineData("1,2,3", 27)]
+        [InlineData("2,3,1", 78)]
+        [InlineData("3,2,1", 438)]
+        [InlineData("3,1,2", 1836)]
+        public void Solution_StartingNumbersExample_2020thSpokenNumberEquals(
+            string startingNumbers,
+            int spokenNumberAtPosition2020
+        )
         {
-            string startingNumbers = "0,3,6";
-            Assert.Equal(436, task.Solution(startingNumbers));
-        }
-
-        [Fact]
-        public void Solution_SecondStartingNumbersExample_2020thSpokenNumberEquals()
-        {
-            string startingNumbers = "1,3,2";
-            Assert.Equal(1, task.Solution(startingNumbers));
-        }
-
-        [Fact]
-        public void Solution_ThirdStartingNumbersExample_2020thSpokenNumberEquals()
-        {
-            string startingNumbers = "2,1,3";
-            Assert.Equal(10, task.Solution(startingNumbers));
-        }
-
-        [Fact]
-        public void Solution_FourthStartingNumbersExample_2020thSpokenNumberEquals()
-        {
-            string startingNumbers = "1,2,3";
-            Assert.Equal(27, task.Solution(startingNumbers));
-        }
-
-        [Fact]
-        public void Solution_FifthStartingNumbersExample_2020thSpokenNumberEquals()
-        {
-            string startingNumbers = "2,3,1";
-            Assert.Equal(78, task.Solution(startingNumbers));
-        }
-
-        [Fact]
-        public void Solution_SixthStartingNumbersExample_2020thSpokenNumberEquals()
-        {
-            string startingNumbers = "3,2,1";
-            Assert.Equal(438, task.Solution(startingNumbers));
-        }
-
-        [Fact]
-        public void Solution_SeventhStartingNumbersExample_2020thSpokenNumberEquals()
-        {
-            string startingNumbers = "3,1,2";
-            Assert.Equal(1836, task.Solution(startingNumbers));
+            Assert.Equal(spokenNumberAtPosition2020, task.Solution(startingNumbers));
         }
     }
 }
