@@ -16,13 +16,18 @@ namespace App.Tasks.Year2017.Day3
             accessPortX = accessPortY = (squareSideSize - 1) / 2;
             int x = accessPortX;
             int y = accessPortY;
+            int inputSquareX, inputSquareY;
+            inputSquareX = inputSquareY = -1;
 
-            int currentSquare = ACCESS_PORT;
             int sideSize = 1;
             IEnumerable<Direction> directions = Enum.GetValues(typeof(Direction)).Cast<Direction>();
 
-            int inputSquareX, inputSquareY;
-            inputSquareX = inputSquareY = -1;
+            int currentSquare = ACCESS_PORT;
+            if (currentSquare == inputSquare)
+            {
+                inputSquareX = x;
+                inputSquareY = y;
+            }
 
             while (inputSquareX == -1 && inputSquareY == -1)
             {
@@ -88,11 +93,12 @@ namespace App.Tasks.Year2017.Day3
             int x = accessPortX;
             int y = accessPortY;
 
-            spiralMemory[x, y] = ACCESS_PORT;
             int sideSize = 1;
             IEnumerable<Direction> directions = Enum.GetValues(typeof(Direction)).Cast<Direction>();
 
+            spiralMemory[x, y] = ACCESS_PORT;
             int firstValueLargerThanInputSquare = -1;
+
             while (firstValueLargerThanInputSquare == -1)
             {
                 // Step right to the outer square side

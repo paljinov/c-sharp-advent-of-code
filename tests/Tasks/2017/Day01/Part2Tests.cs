@@ -18,7 +18,7 @@ namespace Tests.Tasks.Year2017.Day1
         [InlineData("123425", 4)]
         [InlineData("123123", 12)]
         [InlineData("12131415", 4)]
-        public void Solution_DigitsSequences_CaptchaSolutionEquals(string digitsSequence, int captchaSolution)
+        public void Solution_DigitsSequencesExample_CaptchaSolutionEquals(string digitsSequence, int captchaSolution)
         {
             Assert.Equal(captchaSolution, task.Solution(digitsSequence));
         }
