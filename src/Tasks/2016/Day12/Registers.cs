@@ -55,8 +55,7 @@ namespace App.Tasks.Year2016.Day12
                         if (jump)
                         {
                             i += int.Parse(instruction.SecondArgument);
-                            // When jumping iterator is not increased
-                            i--;
+                            continue;
                         }
                         break;
                 }
