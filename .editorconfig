@@ -238,6 +238,9 @@ dotnet_diagnostic.IDE0060.severity = warning
 # IDE0090: Simplify new expression
 dotnet_diagnostic.IDE0090.severity = none
 
+# IDE0066: Use switch expression
+dotnet_diagnostic.IDE0066.severity = none
+
 # CA1822: Make member static
 dotnet_diagnostic.CA1822.severity = none
 
