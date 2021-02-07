@@ -10,26 +10,45 @@ namespace App.Tasks.Year2016.Day13
 
         private const int START_Y = 1;
 
-        public int CalculateFewestNumberOfStepsToReachCoordinates(int favoriteNumber, int destinationX, int destinationY)
+        private readonly int destinationX = 31;
+
+        private readonly int destinationY = 39;
+
+        public int CalculateFewestNumberOfStepsToReachCoordinates(int favoriteNumber)
         {
-            Dictionary<(int x, int y), int> visitedCoordinatesInSteps = new Dictionary<(int x, int y), int>();
+            Dictionary<(int x, int y), int> stepsToCoordinates = new Dictionary<(int x, int y), int>();
             int minSteps = int.MaxValue;
-            GetFewestNumberOfSteps(
-                favoriteNumber, destinationX, destinationY, START_X, START_Y, 0, ref minSteps, visitedCoordinatesInSteps
-            );
+            GetFewestNumberOfSteps(favoriteNumber, START_X, START_Y, stepsToCoordinates, 0, ref minSteps);
 
             return minSteps;
         }
 
+        public int CalculateDifferentLocationsVisitedAtMostSteps(int favoriteNumber, int mostSteps)
+        {
+            int differentLocationsVisitedAtMostSteps = 0;
+
+            Dictionary<(int x, int y), int> stepsToCoordinates = new Dictionary<(int x, int y), int>();
+            int minSteps = int.MaxValue;
+            GetFewestNumberOfSteps(favoriteNumber, START_X, START_Y, stepsToCoordinates, 0, ref minSteps);
+
+            foreach (KeyValuePair<(int x, int y), int> stepsToCoordinate in stepsToCoordinates)
+            {
+                if (stepsToCoordinate.Value <= mostSteps)
+                {
+                    differentLocationsVisitedAtMostSteps++;
+                }
+            }
+
+            return differentLocationsVisitedAtMostSteps;
+        }
+
         private void GetFewestNumberOfSteps(
             int favoriteNumber,
-            int destinationX,
-            int destinationY,
             int x,
             int y,
+            Dictionary<(int x, int y), int> stepsToCoordinates,
             int steps,
-            ref int minSteps,
-            Dictionary<(int x, int y), int> visitedCoordinatesInSteps
+            ref int minSteps
         )
         {
             if (steps >= minSteps)
@@ -43,37 +62,29 @@ namespace App.Tasks.Year2016.Day13
                 return;
             }
 
-            if (visitedCoordinatesInSteps.ContainsKey((x, y)) && steps >= visitedCoordinatesInSteps[(x, y)])
+            if (stepsToCoordinates.ContainsKey((x, y)) && steps >= stepsToCoordinates[(x, y)])
             {
                 return;
             }
 
-            visitedCoordinatesInSteps[(x, y)] = steps;
-
+            stepsToCoordinates[(x, y)] = steps;
             steps += 1;
 
             if (IsOpenSpace(favoriteNumber, x + 1, y))
             {
-                GetFewestNumberOfSteps(
-                    favoriteNumber, destinationX, destinationY, x + 1, y, steps, ref minSteps, visitedCoordinatesInSteps
-                );
+                GetFewestNumberOfSteps(favoriteNumber, x + 1, y, stepsToCoordinates, steps, ref minSteps);
             }
 
             if (IsOpenSpace(favoriteNumber, x, y + 1))
             {
-                GetFewestNumberOfSteps(
-                    favoriteNumber, destinationX, destinationY, x, y + 1, steps, ref minSteps, visitedCoordinatesInSteps
-                );
+                GetFewestNumberOfSteps(favoriteNumber, x, y + 1, stepsToCoordinates, steps, ref minSteps);
             }
-
 
             if (x > 0)
             {
                 if (IsOpenSpace(favoriteNumber, x - 1, y))
                 {
-                    GetFewestNumberOfSteps(
-                        favoriteNumber, destinationX, destinationY, x - 1, y, steps, ref minSteps, visitedCoordinatesInSteps
-                    );
+                    GetFewestNumberOfSteps(favoriteNumber, x - 1, y, stepsToCoordinates, steps, ref minSteps);
                 }
             }
 
@@ -81,9 +92,7 @@ namespace App.Tasks.Year2016.Day13
             {
                 if (IsOpenSpace(favoriteNumber, x, y - 1))
                 {
-                    GetFewestNumberOfSteps(
-                        favoriteNumber, destinationX, destinationY, x, y - 1, steps, ref minSteps, visitedCoordinatesInSteps
-                    );
+                    GetFewestNumberOfSteps(favoriteNumber, x, y - 1, stepsToCoordinates, steps, ref minSteps);
                 }
             }
         }

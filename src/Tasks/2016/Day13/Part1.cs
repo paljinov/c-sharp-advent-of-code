@@ -51,16 +51,10 @@ Thus, reaching 7,4 would take a minimum of 11 steps (starting from your current 
 What is the fewest number of steps required for you to reach 31,39?
 */
 
-using System.Collections.Generic;
-
 namespace App.Tasks.Year2016.Day13
 {
     public class Part1 : ITask<int>
     {
-        private readonly int x = 31;
-
-        private readonly int y = 39;
-
         private readonly FavoriteNumberRepository favoriteNumberRepository;
 
         private readonly Maze maze;
@@ -74,9 +68,9 @@ namespace App.Tasks.Year2016.Day13
         public int Solution(string input)
         {
             int favoriteNumber = favoriteNumberRepository.GetFavoriteNumber(input);
-            int registerAValue = maze.CalculateFewestNumberOfStepsToReachCoordinates(favoriteNumber, x, y);
+            int fewestNumberOfStepsToReachCoordinates = maze.CalculateFewestNumberOfStepsToReachCoordinates(favoriteNumber);
 
-            return registerAValue;
+            return fewestNumberOfStepsToReachCoordinates;
         }
     }
 }
