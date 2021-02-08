@@ -9,7 +9,7 @@ namespace App.Tasks.Year2016.Day13
 {
     public class Part2 : ITask<int>
     {
-        private const int MOST_STEPS = 50;
+        private readonly int mostSteps = 50;
 
         private readonly FavoriteNumberRepository favoriteNumberRepository;
 
@@ -26,7 +26,7 @@ namespace App.Tasks.Year2016.Day13
             int favoriteNumber = favoriteNumberRepository.GetFavoriteNumber(input);
             int differentLocationsVisitedInSteps = maze.CalculateDifferentLocationsVisitedAtMostSteps(
                 favoriteNumber,
-                MOST_STEPS
+                mostSteps
             );
 
             return differentLocationsVisitedInSteps;
