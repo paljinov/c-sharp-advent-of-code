@@ -55,6 +55,10 @@ namespace App.Tasks.Year2016.Day13
 {
     public class Part1 : ITask<int>
     {
+        private readonly int destinationX = 31;
+
+        private readonly int destinationY = 39;
+
         private readonly FavoriteNumberRepository favoriteNumberRepository;
 
         private readonly Maze maze;
@@ -68,7 +72,8 @@ namespace App.Tasks.Year2016.Day13
         public int Solution(string input)
         {
             int favoriteNumber = favoriteNumberRepository.GetFavoriteNumber(input);
-            int fewestNumberOfStepsToReachCoordinates = maze.CalculateFewestNumberOfStepsToReachCoordinates(favoriteNumber);
+            int fewestNumberOfStepsToReachCoordinates =
+                maze.CalculateFewestNumberOfStepsToReachCoordinates(favoriteNumber, destinationX, destinationY);
 
             return fewestNumberOfStepsToReachCoordinates;
         }

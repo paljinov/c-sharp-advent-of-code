@@ -10,42 +10,51 @@ namespace App.Tasks.Year2016.Day13
 
         private const int START_Y = 1;
 
-        private readonly int destinationX = 31;
-
-        private readonly int destinationY = 39;
-
-        public int CalculateFewestNumberOfStepsToReachCoordinates(int favoriteNumber)
+        public int CalculateFewestNumberOfStepsToReachCoordinates(
+            int favoriteNumber,
+            int destinationX,
+            int destinationY
+        )
         {
             Dictionary<(int x, int y), int> stepsToCoordinates = new Dictionary<(int x, int y), int>();
-            int minSteps = int.MaxValue;
-            GetFewestNumberOfSteps(favoriteNumber, START_X, START_Y, stepsToCoordinates, 0, ref minSteps);
+            int fewestNumberOfSteps = int.MaxValue;
 
-            return minSteps;
+            DoCalculateFewestNumberOfStepsToReachCoordinates(
+                favoriteNumber,
+                START_X,
+                START_Y,
+                destinationX,
+                destinationY,
+                stepsToCoordinates,
+                0,
+                ref fewestNumberOfSteps
+            );
+
+            return fewestNumberOfSteps;
         }
 
         public int CalculateDifferentLocationsVisitedAtMostSteps(int favoriteNumber, int mostSteps)
         {
-            int differentLocationsVisitedAtMostSteps = 0;
-
             Dictionary<(int x, int y), int> stepsToCoordinates = new Dictionary<(int x, int y), int>();
-            int minSteps = int.MaxValue;
-            GetFewestNumberOfSteps(favoriteNumber, START_X, START_Y, stepsToCoordinates, 0, ref minSteps);
 
-            foreach (KeyValuePair<(int x, int y), int> stepsToCoordinate in stepsToCoordinates)
-            {
-                if (stepsToCoordinate.Value <= mostSteps)
-                {
-                    differentLocationsVisitedAtMostSteps++;
-                }
-            }
+            DoCalculateDifferentLocationsVisitedAtMostSteps(
+                favoriteNumber,
+                START_X,
+                START_Y,
+                stepsToCoordinates,
+                0,
+                mostSteps
+            );
 
-            return differentLocationsVisitedAtMostSteps;
+            return stepsToCoordinates.Count;
         }
 
-        private void GetFewestNumberOfSteps(
+        private void DoCalculateFewestNumberOfStepsToReachCoordinates(
             int favoriteNumber,
             int x,
             int y,
+            int destinationX,
+            int destinationY,
             Dictionary<(int x, int y), int> stepsToCoordinates,
             int steps,
             ref int minSteps
@@ -72,19 +81,46 @@ namespace App.Tasks.Year2016.Day13
 
             if (IsOpenSpace(favoriteNumber, x + 1, y))
             {
-                GetFewestNumberOfSteps(favoriteNumber, x + 1, y, stepsToCoordinates, steps, ref minSteps);
+                DoCalculateFewestNumberOfStepsToReachCoordinates(
+                    favoriteNumber,
+                    x + 1,
+                    y,
+                    destinationX,
+                    destinationY,
+                    stepsToCoordinates,
+                    steps,
+                    ref minSteps
+                );
             }
 
             if (IsOpenSpace(favoriteNumber, x, y + 1))
             {
-                GetFewestNumberOfSteps(favoriteNumber, x, y + 1, stepsToCoordinates, steps, ref minSteps);
+                DoCalculateFewestNumberOfStepsToReachCoordinates(
+                    favoriteNumber,
+                    x,
+                    y + 1,
+                    destinationX,
+                    destinationY,
+                    stepsToCoordinates,
+                    steps,
+                    ref minSteps
+                );
             }
 
             if (x > 0)
             {
                 if (IsOpenSpace(favoriteNumber, x - 1, y))
                 {
-                    GetFewestNumberOfSteps(favoriteNumber, x - 1, y, stepsToCoordinates, steps, ref minSteps);
+                    DoCalculateFewestNumberOfStepsToReachCoordinates(
+                        favoriteNumber,
+                        x - 1,
+                        y,
+                        destinationX,
+                        destinationY,
+                        stepsToCoordinates,
+                        steps,
+                        ref minSteps
+                    );
                 }
             }
 
@@ -92,7 +128,93 @@ namespace App.Tasks.Year2016.Day13
             {
                 if (IsOpenSpace(favoriteNumber, x, y - 1))
                 {
-                    GetFewestNumberOfSteps(favoriteNumber, x, y - 1, stepsToCoordinates, steps, ref minSteps);
+                    DoCalculateFewestNumberOfStepsToReachCoordinates(
+                        favoriteNumber,
+                        x,
+                        y - 1,
+                        destinationX,
+                        destinationY,
+                        stepsToCoordinates,
+                        steps,
+                        ref minSteps
+                    );
+                }
+            }
+        }
+
+        private void DoCalculateDifferentLocationsVisitedAtMostSteps(
+            int favoriteNumber,
+            int x,
+            int y,
+            Dictionary<(int x, int y), int> stepsToCoordinates,
+            int steps,
+            int mostSteps
+        )
+        {
+            if (steps > mostSteps)
+            {
+                return;
+            }
+
+            if (stepsToCoordinates.ContainsKey((x, y)) && steps >= stepsToCoordinates[(x, y)])
+            {
+                return;
+            }
+
+            stepsToCoordinates[(x, y)] = steps;
+            steps += 1;
+
+            if (IsOpenSpace(favoriteNumber, x + 1, y))
+            {
+                DoCalculateDifferentLocationsVisitedAtMostSteps(
+                    favoriteNumber,
+                    x + 1,
+                    y,
+                    stepsToCoordinates,
+                    steps,
+                    mostSteps
+                );
+            }
+
+            if (IsOpenSpace(favoriteNumber, x, y + 1))
+            {
+                DoCalculateDifferentLocationsVisitedAtMostSteps(
+                    favoriteNumber,
+                    x,
+                    y + 1,
+                    stepsToCoordinates,
+                    steps,
+                    mostSteps
+                );
+            }
+
+            if (x > 0)
+            {
+                if (IsOpenSpace(favoriteNumber, x - 1, y))
+                {
+                    DoCalculateDifferentLocationsVisitedAtMostSteps(
+                        favoriteNumber,
+                        x - 1,
+                        y,
+                        stepsToCoordinates,
+                        steps,
+                        mostSteps
+                    );
+                }
+            }
+
+            if (y > 0)
+            {
+                if (IsOpenSpace(favoriteNumber, x, y - 1))
+                {
+                    DoCalculateDifferentLocationsVisitedAtMostSteps(
+                        favoriteNumber,
+                        x,
+                        y - 1,
+                        stepsToCoordinates,
+                        steps,
+                        mostSteps
+                    );
                 }
             }
         }
