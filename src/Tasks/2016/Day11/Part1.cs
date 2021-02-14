@@ -181,7 +181,7 @@ namespace App.Tasks.Year2016.Day11
 
         public int Solution(string input)
         {
-            Dictionary<int, FloorObjectsArrangement> floorsObjectsArrangement =
+            Dictionary<int, FloorObjects> floorsObjectsArrangement =
                 floorsArrangementRepository.GetObjectsArrangementByFloors(input);
             int minimumNumberOfSteps =
                 elevator.CalculateMinimumNumberOfStepsToBringAllObjectsToLastFloor(floorsObjectsArrangement);

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,69 +10,165 @@ namespace App.Tasks.Year2016.Day11
         private Dictionary<string, int> floorsObjectsArrangementStepsCache = new Dictionary<string, int>();
 
         public int CalculateMinimumNumberOfStepsToBringAllObjectsToLastFloor(
-            Dictionary<int, FloorObjectsArrangement> floorsObjectsArrangement
+            Dictionary<int, FloorObjects> floorsObjectsArrangement
         )
         {
             int minFloor = floorsObjectsArrangement.Keys.Min();
-            int maxFloor = floorsObjectsArrangement.Keys.Max();
+            int minSteps = int.MaxValue;
 
-            int minSteps = maxFloor - minFloor - 1;
-            bool minStepsFound = false;
-            while (!minStepsFound)
-            {
-                minSteps++;
-                floorsObjectsArrangementStepsCache = new Dictionary<string, int>();
-                MoveObjectsToTopFloor(floorsObjectsArrangement, minFloor, 0, minSteps, ref minStepsFound);
-            }
+            floorsObjectsArrangementStepsCache = new Dictionary<string, int>();
+            MoveObjectsToTopFloor(floorsObjectsArrangement, minFloor, 0, ref minSteps);
 
             return minSteps;
         }
 
         private void MoveObjectsToTopFloor(
-            Dictionary<int, FloorObjectsArrangement> floorsObjectsArrangement,
+            Dictionary<int, FloorObjects> floorsObjectsArrangement,
             int elevatorFloor,
             int steps,
-            int minSteps,
-            ref bool minStepsFound
+            ref int minSteps
         )
         {
-            if (minStepsFound == true || steps > minSteps)
-            {
-                return;
-            }
-
-            if (IsAnyChipFried(floorsObjectsArrangement))
+            if (steps >= minSteps)
             {
                 return;
             }
 
             if (AreAllObjectsOnLastFloor(floorsObjectsArrangement))
             {
-                minStepsFound = true;
+                minSteps = Math.Min(minSteps, steps);
                 return;
             }
 
-            string floorsObjectsArrangementString = FloorsObjectsArrangementToString(floorsObjectsArrangement);
-            if (floorsObjectsArrangementStepsCache.ContainsKey(floorsObjectsArrangementString)
-                && steps >= floorsObjectsArrangementStepsCache[floorsObjectsArrangementString])
+            string floorsObjectsArrangementCacheKey = FloorsObjectsArrangementCacheKey(floorsObjectsArrangement);
+            if (floorsObjectsArrangementStepsCache.ContainsKey(floorsObjectsArrangementCacheKey)
+                && steps >= floorsObjectsArrangementStepsCache[floorsObjectsArrangementCacheKey])
             {
                 return;
             }
 
-            floorsObjectsArrangementStepsCache[floorsObjectsArrangementString] = steps;
+            floorsObjectsArrangementStepsCache[floorsObjectsArrangementCacheKey] = steps;
 
             List<string> microchips = floorsObjectsArrangement[elevatorFloor].Microchips;
             List<string> generators = floorsObjectsArrangement[elevatorFloor].Generators;
 
-            MoveObjects(floorsObjectsArrangement, elevatorFloor, steps, minSteps, ref minStepsFound, microchips, null);
-            MoveObjects(floorsObjectsArrangement, elevatorFloor, steps, minSteps, ref minStepsFound, null, generators);
-            MoveObjects(floorsObjectsArrangement, elevatorFloor, steps, minSteps, ref minStepsFound, microchips, generators);
+            // Increase number of steps
+            steps++;
+
+            bool twoObjectsUp = false;
+            // Move two microchips up
+            MoveTwoObjects(floorsObjectsArrangement,
+                elevatorFloor,
+                steps,
+                ref minSteps,
+                microchips,
+                null,
+                true,
+                ref twoObjectsUp
+            );
+            // Move two generators up
+            MoveTwoObjects(floorsObjectsArrangement,
+                elevatorFloor,
+                steps,
+                ref minSteps,
+                null,
+                generators,
+                true,
+                ref twoObjectsUp
+            );
+            // Move one microchip and one generator up
+            MoveTwoObjects(floorsObjectsArrangement,
+                elevatorFloor,
+                steps,
+                ref minSteps,
+                microchips,
+                generators,
+                true,
+                ref twoObjectsUp
+            );
+
+            bool oneObjectDown = false;
+            // Move one microchip down
+            MoveOneObject(floorsObjectsArrangement,
+                elevatorFloor,
+                steps,
+                ref minSteps,
+                microchips,
+                true,
+                false,
+                ref oneObjectDown
+            );
+            // Move one generator down
+            MoveOneObject(floorsObjectsArrangement,
+                elevatorFloor,
+                steps,
+                ref minSteps,
+                generators,
+                false,
+                false,
+                ref oneObjectDown
+            );
+
+            // Move two objects down only if it is not possible to move one object down
+            if (!oneObjectDown)
+            {
+                MoveTwoObjects(floorsObjectsArrangement,
+                    elevatorFloor,
+                    steps,
+                    ref minSteps,
+                    microchips,
+                    null,
+                    false,
+                    ref twoObjectsUp
+                );
+                MoveTwoObjects(floorsObjectsArrangement,
+                    elevatorFloor,
+                    steps,
+                    ref minSteps,
+                    null,
+                    generators,
+                    false,
+                    ref twoObjectsUp
+                );
+                MoveTwoObjects(floorsObjectsArrangement,
+                    elevatorFloor,
+                    steps,
+                    ref minSteps,
+                    microchips,
+                    generators,
+                    false,
+                    ref twoObjectsUp
+                );
+            }
+
+            // Move one object up only if it is not possible to move two objects up
+            if (!twoObjectsUp)
+            {
+                MoveOneObject(floorsObjectsArrangement,
+                    elevatorFloor,
+                    steps,
+                    ref minSteps,
+                    microchips,
+                    true,
+                    true,
+                    ref oneObjectDown
+                );
+                MoveOneObject(floorsObjectsArrangement,
+                    elevatorFloor,
+                    steps,
+                    ref minSteps,
+                    generators,
+                    false,
+                    true,
+                    ref oneObjectDown
+                );
+            }
         }
 
 
-        private bool IsAnyChipFried(Dictionary<int, FloorObjectsArrangement> floorsObjectsArrangement)
+        private bool IsAnyChipFried(Dictionary<int, FloorObjects> floorsObjectsArrangement)
         {
-            foreach (KeyValuePair<int, FloorObjectsArrangement> floorObjectsArrangement in floorsObjectsArrangement)
+            foreach (KeyValuePair<int, FloorObjects> floorObjectsArrangement in floorsObjectsArrangement)
             {
                 List<string> microchips = floorObjectsArrangement.Value.Microchips;
                 List<string> generators = floorObjectsArrangement.Value.Generators;
@@ -89,7 +186,7 @@ namespace App.Tasks.Year2016.Day11
             return false;
         }
 
-        private bool AreAllObjectsOnLastFloor(Dictionary<int, FloorObjectsArrangement> floorsObjectsArrangement)
+        private bool AreAllObjectsOnLastFloor(Dictionary<int, FloorObjects> floorsObjectsArrangement)
         {
             int minFloor = floorsObjectsArrangement.Keys.Min();
             int maxFloor = floorsObjectsArrangement.Keys.Max();
@@ -108,20 +205,135 @@ namespace App.Tasks.Year2016.Day11
             return true;
         }
 
-        private void MoveObjects(
-            Dictionary<int, FloorObjectsArrangement> floorsObjectsArrangement,
+        private void MoveOneObject(
+            Dictionary<int, FloorObjects> floorsObjectsArrangement,
             int elevatorFloor,
             int steps,
-            int minSteps,
-            ref bool minStepsFound,
-            List<string> microchips,
-            List<string> generators
+            ref int minSteps,
+            List<string> @object,
+            bool moveMicrochip,
+            bool up,
+            ref bool oneObjectDown
         )
         {
             int minFloor = floorsObjectsArrangement.Keys.Min();
             int maxFloor = floorsObjectsArrangement.Keys.Max();
-            // Increase number of steps
-            steps++;
+
+            IEnumerable<string> pairs = floorsObjectsArrangement[elevatorFloor].Microchips
+                .Intersect(floorsObjectsArrangement[elevatorFloor].Generators);
+
+            bool moveAny = false;
+            if (pairs.Count() * 2 == @object.Count)
+            {
+                moveAny = true;
+            }
+
+            for (int i = 0; i < @object.Count; i++)
+            {
+                string movedObject;
+                Dictionary<int, FloorObjects> floorsObjectsArrangementAfterMove =
+                    CloneFloorsObjectsArrangement(floorsObjectsArrangement);
+
+                if (moveMicrochip)
+                {
+                    movedObject = floorsObjectsArrangementAfterMove[elevatorFloor].Microchips[i];
+                    floorsObjectsArrangementAfterMove[elevatorFloor].Microchips.RemoveAt(i);
+                }
+                else
+                {
+                    movedObject = floorsObjectsArrangementAfterMove[elevatorFloor].Generators[i];
+                    floorsObjectsArrangementAfterMove[elevatorFloor].Generators.RemoveAt(i);
+                }
+
+                // Going up
+                if (up && elevatorFloor < maxFloor)
+                {
+                    Dictionary<int, FloorObjects> floorsObjectsArrangementAfterUpMove =
+                        CloneFloorsObjectsArrangement(floorsObjectsArrangementAfterMove);
+
+                    if (moveMicrochip)
+                    {
+                        floorsObjectsArrangementAfterUpMove[elevatorFloor + 1].Microchips.Add(movedObject);
+                    }
+                    else
+                    {
+                        floorsObjectsArrangementAfterUpMove[elevatorFloor + 1].Generators.Add(movedObject);
+                    }
+
+                    // If no chip is fried with new arrangement
+                    if (!IsAnyChipFried(floorsObjectsArrangementAfterUpMove))
+                    {
+                        MoveObjectsToTopFloor(
+                            floorsObjectsArrangementAfterUpMove, elevatorFloor + 1, steps, ref minSteps
+                        );
+                        if (moveAny)
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                // Check if all floors below the current floor are empty,
+                // if yes there is no need to move object down
+                bool allFloorsBelowAreEmpty = CheckIfAllFloorsBellowAreEmpty(
+                    floorsObjectsArrangement,
+                    elevatorFloor
+                );
+
+                // Going down
+                if (!up && elevatorFloor > minFloor && !allFloorsBelowAreEmpty)
+                {
+                    Dictionary<int, FloorObjects> floorsObjectsArrangementAfterDownMove =
+                        CloneFloorsObjectsArrangement(floorsObjectsArrangementAfterMove);
+
+                    if (moveMicrochip)
+                    {
+                        floorsObjectsArrangementAfterDownMove[elevatorFloor - 1].Microchips.Add(movedObject);
+                    }
+                    else
+                    {
+                        floorsObjectsArrangementAfterDownMove[elevatorFloor - 1].Generators.Add(movedObject);
+                    }
+
+                    // If no chip is fried with new arrangement
+                    if (!IsAnyChipFried(floorsObjectsArrangementAfterDownMove))
+                    {
+                        oneObjectDown = true;
+                        MoveObjectsToTopFloor(
+                            floorsObjectsArrangementAfterDownMove, elevatorFloor - 1, steps, ref minSteps
+                        );
+                        if (moveAny)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void MoveTwoObjects(
+            Dictionary<int, FloorObjects> floorsObjectsArrangement,
+            int elevatorFloor,
+            int steps,
+            ref int minSteps,
+            List<string> microchips,
+            List<string> generators,
+            bool up,
+            ref bool twoObjectsUp
+        )
+        {
+            int minFloor = floorsObjectsArrangement.Keys.Min();
+            int maxFloor = floorsObjectsArrangement.Keys.Max();
+
+            IEnumerable<string> pairs = floorsObjectsArrangement[elevatorFloor].Microchips
+                .Intersect(floorsObjectsArrangement[elevatorFloor].Generators);
+
+            bool moveAny = false;
+            if (pairs.Count() * 2 == floorsObjectsArrangement[elevatorFloor].Microchips.Count
+                + floorsObjectsArrangement[elevatorFloor].Generators.Count)
+            {
+                moveAny = true;
+            }
 
             List<string> first = microchips;
             List<string> second = generators;
@@ -129,84 +341,22 @@ namespace App.Tasks.Year2016.Day11
 
             if (generators == null)
             {
-                second = microchips;
-                // Same object cannot be moved twice
                 startFrom = 1;
+                second = microchips;
             }
             else if (microchips == null)
             {
-                first = generators;
-                // Same object cannot be moved twice
                 startFrom = 1;
+                first = generators;
             }
 
             for (int i = 0; i < first.Count; i++)
             {
-                // If moving only microchips or only generators try to move one item also
-                if (microchips == null || generators == null)
-                {
-                    string movedObject;
-                    Dictionary<int, FloorObjectsArrangement> floorsObjectsArrangementAfterMove =
-                        CloneFloorsObjectsArrangement(floorsObjectsArrangement);
-
-                    if (microchips == null)
-                    {
-                        movedObject = floorsObjectsArrangementAfterMove[elevatorFloor].Generators[i];
-                        floorsObjectsArrangementAfterMove[elevatorFloor].Generators.RemoveAt(i);
-                    }
-                    else
-                    {
-                        movedObject = floorsObjectsArrangementAfterMove[elevatorFloor].Microchips[i];
-                        floorsObjectsArrangementAfterMove[elevatorFloor].Microchips.RemoveAt(i);
-                    }
-
-                    // Going up
-                    if (elevatorFloor < maxFloor)
-                    {
-                        Dictionary<int, FloorObjectsArrangement> floorsObjectsArrangementAfterUpMove =
-                            CloneFloorsObjectsArrangement(floorsObjectsArrangementAfterMove);
-
-                        if (microchips == null)
-                        {
-                            floorsObjectsArrangementAfterUpMove[elevatorFloor + 1].Generators.Add(movedObject);
-                        }
-                        else
-                        {
-                            floorsObjectsArrangementAfterUpMove[elevatorFloor + 1].Microchips.Add(movedObject);
-                        }
-
-                        MoveObjectsToTopFloor(
-                            floorsObjectsArrangementAfterUpMove, elevatorFloor + 1, steps, minSteps, ref minStepsFound
-                        );
-                    }
-
-                    // Going down
-                    if (elevatorFloor > minFloor)
-                    {
-                        Dictionary<int, FloorObjectsArrangement> floorsObjectsArrangementAfterDownMove =
-                           CloneFloorsObjectsArrangement(floorsObjectsArrangementAfterMove);
-
-                        if (microchips == null)
-                        {
-                            floorsObjectsArrangementAfterDownMove[elevatorFloor - 1].Generators.Add(movedObject);
-                        }
-                        else
-                        {
-                            floorsObjectsArrangementAfterDownMove[elevatorFloor - 1].Microchips.Add(movedObject);
-                        }
-
-                        MoveObjectsToTopFloor(
-                            floorsObjectsArrangementAfterDownMove, elevatorFloor - 1, steps, minSteps, ref minStepsFound
-                        );
-                    }
-                }
-
-                // Move two objects
                 for (int j = startFrom; j < second.Count; j++)
                 {
                     string firstMovedObject;
                     string secondMovedObject;
-                    Dictionary<int, FloorObjectsArrangement> floorsObjectsArrangementAfterMove =
+                    Dictionary<int, FloorObjects> floorsObjectsArrangementAfterMove =
                         CloneFloorsObjectsArrangement(floorsObjectsArrangement);
 
                     if (microchips == null)
@@ -242,9 +392,9 @@ namespace App.Tasks.Year2016.Day11
                     }
 
                     // Going up
-                    if (elevatorFloor < maxFloor)
+                    if (up && elevatorFloor < maxFloor)
                     {
-                        Dictionary<int, FloorObjectsArrangement> floorsObjectsArrangementAfterUpMove =
+                        Dictionary<int, FloorObjects> floorsObjectsArrangementAfterUpMove =
                             CloneFloorsObjectsArrangement(floorsObjectsArrangementAfterMove);
 
                         if (microchips == null)
@@ -263,49 +413,122 @@ namespace App.Tasks.Year2016.Day11
                             floorsObjectsArrangementAfterUpMove[elevatorFloor + 1].Generators.Add(secondMovedObject);
                         }
 
-                        MoveObjectsToTopFloor(
-                            floorsObjectsArrangementAfterUpMove, elevatorFloor + 1, steps, minSteps, ref minStepsFound
-                        );
+                        // If no chip is fried with new arrangement
+                        if (!IsAnyChipFried(floorsObjectsArrangementAfterUpMove))
+                        {
+                            twoObjectsUp = true;
+                            MoveObjectsToTopFloor(
+                                floorsObjectsArrangementAfterUpMove, elevatorFloor + 1, steps, ref minSteps
+                            );
+                            if (moveAny)
+                            {
+                                break;
+                            }
+                        }
+                    }
+
+                    // Check if all floors below the current floor are empty,
+                    // if yes there is no need to move object down
+                    bool allFloorsBelowAreEmpty = CheckIfAllFloorsBellowAreEmpty(
+                        floorsObjectsArrangement,
+                        elevatorFloor
+                    );
+
+                    // Going down
+                    if (!up && elevatorFloor > minFloor && !allFloorsBelowAreEmpty)
+                    {
+                        Dictionary<int, FloorObjects> floorsObjectsArrangementAfterDownMove =
+                            CloneFloorsObjectsArrangement(floorsObjectsArrangementAfterMove);
+
+                        if (microchips == null)
+                        {
+                            floorsObjectsArrangementAfterDownMove[elevatorFloor - 1].Generators.Add(firstMovedObject);
+                            floorsObjectsArrangementAfterDownMove[elevatorFloor - 1].Generators.Add(secondMovedObject);
+                        }
+                        else if (generators == null)
+                        {
+                            floorsObjectsArrangementAfterDownMove[elevatorFloor - 1].Microchips.Add(firstMovedObject);
+                            floorsObjectsArrangementAfterDownMove[elevatorFloor - 1].Microchips.Add(secondMovedObject);
+                        }
+                        else
+                        {
+                            floorsObjectsArrangementAfterDownMove[elevatorFloor - 1].Microchips.Add(firstMovedObject);
+                            floorsObjectsArrangementAfterDownMove[elevatorFloor - 1].Generators.Add(secondMovedObject);
+                        }
+
+                        // If no chip is fried with new arrangement
+                        if (!IsAnyChipFried(floorsObjectsArrangementAfterDownMove))
+                        {
+                            MoveObjectsToTopFloor(
+                                floorsObjectsArrangementAfterDownMove, elevatorFloor - 1, steps, ref minSteps
+                            );
+                            if (moveAny)
+                            {
+                                break;
+                            }
+                        }
                     }
                 }
             }
         }
-        private Dictionary<int, FloorObjectsArrangement> CloneFloorsObjectsArrangement(
-            Dictionary<int, FloorObjectsArrangement> floorsObjectsArrangement
+
+        private Dictionary<int, FloorObjects> CloneFloorsObjectsArrangement(
+            Dictionary<int, FloorObjects> floorsObjectsArrangement
         )
         {
-            Dictionary<int, FloorObjectsArrangement> clonedFloorObjectsArrangement =
-                new Dictionary<int, FloorObjectsArrangement>();
+            Dictionary<int, FloorObjects> clonedFloorObjects =
+                new Dictionary<int, FloorObjects>();
 
-            foreach (KeyValuePair<int, FloorObjectsArrangement> floorObjectsArrangement in floorsObjectsArrangement)
+            foreach (KeyValuePair<int, FloorObjects> floorObjectsArrangement in floorsObjectsArrangement)
             {
-                clonedFloorObjectsArrangement.Add(floorObjectsArrangement.Key, new FloorObjectsArrangement
+                clonedFloorObjects.Add(floorObjectsArrangement.Key, new FloorObjects
                 {
                     Microchips = new List<string>(floorObjectsArrangement.Value.Microchips),
                     Generators = new List<string>(floorObjectsArrangement.Value.Generators)
                 });
             }
 
-            return clonedFloorObjectsArrangement;
+            return clonedFloorObjects;
         }
 
-        private string FloorsObjectsArrangementToString(
-            Dictionary<int, FloorObjectsArrangement> floorsObjectsArrangement
+        private bool CheckIfAllFloorsBellowAreEmpty(
+            Dictionary<int, FloorObjects> floorsObjectsArrangement,
+            int elevatorFloor
+        )
+        {
+            // Check if all floors below the current floor are empty,
+            // if yes there is no need to move object down
+            for (int floor = 1; floor < elevatorFloor; floor++)
+            {
+                if (floorsObjectsArrangement[floor].Microchips.Count > 0
+                    || floorsObjectsArrangement[floor].Generators.Count > 0)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private string FloorsObjectsArrangementCacheKey(
+            Dictionary<int, FloorObjects> floorsObjectsArrangement
         )
         {
             StringBuilder sb = new StringBuilder();
 
-            foreach (KeyValuePair<int, FloorObjectsArrangement> floorObjectsArrangement in floorsObjectsArrangement)
+            foreach (KeyValuePair<int, FloorObjects> floorObjectsArrangement in floorsObjectsArrangement)
             {
-                sb.Append(floorObjectsArrangement.Key);
-                foreach (string microchip in floorObjectsArrangement.Value.Microchips)
-                {
-                    sb.Append($"M{microchip}");
-                }
-                foreach (string generator in floorObjectsArrangement.Value.Generators)
-                {
-                    sb.Append($"G{generator}");
-                }
+                List<string> microchips = floorObjectsArrangement.Value.Microchips;
+                List<string> generators = floorObjectsArrangement.Value.Generators;
+
+                IEnumerable<string> pairs = microchips.Intersect(generators);
+                IEnumerable<string> unpairedMicrochips = microchips.Except(generators);
+                IEnumerable<string> unpairedGenerators = generators.Except(microchips);
+
+                sb.Append($"Floor-{floorObjectsArrangement.Key}:");
+                sb.Append($"pairs-{string.Join(',', pairs)},");
+                sb.Append($"microchips-{string.Join(',', unpairedMicrochips)},");
+                sb.Append($"generators-{string.Join(',', unpairedGenerators)}");
             }
 
             return sb.ToString();

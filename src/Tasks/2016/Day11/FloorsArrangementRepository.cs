@@ -7,10 +7,10 @@ namespace App.Tasks.Year2016.Day11
 {
     public class FloorsArrangementRepository
     {
-        public Dictionary<int, FloorObjectsArrangement> GetObjectsArrangementByFloors(string input)
+        public Dictionary<int, FloorObjects> GetObjectsArrangementByFloors(string input)
         {
-            Dictionary<int, FloorObjectsArrangement> floorsObjectsArrangement =
-                new Dictionary<int, FloorObjectsArrangement>();
+            Dictionary<int, FloorObjects> floorsObjectsArrangement =
+                new Dictionary<int, FloorObjects>();
 
             string[] floorsString = input.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
             Regex microchipRegex = new Regex(@"(\w+)\-compatible\smicrochip");
@@ -34,7 +34,7 @@ namespace App.Tasks.Year2016.Day11
                     generators.Add(generatorMatch.Groups[1].Value);
                 }
 
-                floorsObjectsArrangement.Add(floor, new FloorObjectsArrangement
+                floorsObjectsArrangement.Add(floor, new FloorObjects
                 {
                     Microchips = microchips,
                     Generators = generators
