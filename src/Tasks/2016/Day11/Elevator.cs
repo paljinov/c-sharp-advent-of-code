@@ -40,7 +40,10 @@ namespace App.Tasks.Year2016.Day11
                 return;
             }
 
-            string floorsObjectsArrangementCacheKey = FloorsObjectsArrangementCacheKey(floorsObjectsArrangement);
+            string floorsObjectsArrangementCacheKey = FloorsObjectsArrangementCacheKey(
+                floorsObjectsArrangement,
+                elevatorFloor
+            );
             if (floorsObjectsArrangementStepsCache.ContainsKey(floorsObjectsArrangementCacheKey)
                 && steps >= floorsObjectsArrangementStepsCache[floorsObjectsArrangementCacheKey])
             {
@@ -148,23 +151,22 @@ namespace App.Tasks.Year2016.Day11
 
                 for (int i = 0; i < objects.Count; i++)
                 {
-                    string movedObject;
                     Dictionary<int, FloorObjects> floorsObjectsArrangementAfterMove =
                         CloneFloorsObjectsArrangement(floorsObjectsArrangement);
 
                     switch (combination)
                     {
                         case MoveOneObjectCombination.OneMicrochip:
-                            movedObject = floorsObjectsArrangementAfterMove[elevatorFloor].Microchips[i];
+                            string moveMicrochip = floorsObjectsArrangementAfterMove[elevatorFloor].Microchips[i];
                             floorsObjectsArrangementAfterMove[elevatorFloor].Microchips.RemoveAt(i);
 
-                            floorsObjectsArrangementAfterMove[nextFloor].Microchips.Add(movedObject);
+                            floorsObjectsArrangementAfterMove[nextFloor].Microchips.Add(moveMicrochip);
                             break;
                         default:
-                            movedObject = floorsObjectsArrangementAfterMove[elevatorFloor].Generators[i];
+                            string moveGenerator = floorsObjectsArrangementAfterMove[elevatorFloor].Generators[i];
                             floorsObjectsArrangementAfterMove[elevatorFloor].Generators.RemoveAt(i);
 
-                            floorsObjectsArrangementAfterMove[nextFloor].Generators.Add(movedObject);
+                            floorsObjectsArrangementAfterMove[nextFloor].Generators.Add(moveGenerator);
                             break;
                     }
 
@@ -230,74 +232,79 @@ namespace App.Tasks.Year2016.Day11
 
             foreach (MoveTwoObjectsCombination combination in combinations)
             {
-                List<string> first;
-                List<string> second;
-                int startFrom = 1;
+                List<string> firstObjects;
+                List<string> secondObjects;
+                int startFrom = 0;
 
                 switch (combination)
                 {
                     case MoveTwoObjectsCombination.TwoMicrochips:
-                        first = microchips;
-                        second = microchips;
+                        firstObjects = microchips;
+                        secondObjects = microchips;
                         break;
                     case MoveTwoObjectsCombination.TwoGenerators:
-                        first = generators;
-                        second = generators;
+                        firstObjects = generators;
+                        secondObjects = generators;
                         break;
                     default:
-                        first = microchips;
-                        second = generators;
-                        startFrom = 0;
+                        firstObjects = microchips;
+                        secondObjects = generators;
                         break;
                 }
 
-                for (int i = 0; i < first.Count; i++)
+                for (int i = 0; i < firstObjects.Count; i++)
                 {
-                    for (int j = startFrom; j < second.Count; j++)
+                    for (int j = startFrom; j < secondObjects.Count; j++)
                     {
-                        string firstMovedObject;
-                        string secondMovedObject;
                         Dictionary<int, FloorObjects> floorsObjectsArrangementAfterMove =
                             CloneFloorsObjectsArrangement(floorsObjectsArrangement);
 
                         switch (combination)
                         {
                             case MoveTwoObjectsCombination.TwoMicrochips:
-                                if (floorsObjectsArrangementAfterMove[elevatorFloor].Microchips.Count < 2)
+                                string moveFirstMicrochip =
+                                    floorsObjectsArrangementAfterMove[elevatorFloor].Microchips[i];
+                                string moveSecondMicrochip =
+                                    floorsObjectsArrangementAfterMove[elevatorFloor].Microchips[j];
+
+                                // There is no two same microchips
+                                if (moveFirstMicrochip == moveSecondMicrochip)
                                 {
                                     continue;
                                 }
 
-                                firstMovedObject = floorsObjectsArrangementAfterMove[elevatorFloor].Microchips[i];
-                                secondMovedObject = floorsObjectsArrangementAfterMove[elevatorFloor].Microchips[j];
                                 floorsObjectsArrangementAfterMove[elevatorFloor].Microchips.RemoveAt(i);
-                                floorsObjectsArrangementAfterMove[elevatorFloor].Microchips.Remove(secondMovedObject);
+                                floorsObjectsArrangementAfterMove[elevatorFloor].Microchips.Remove(moveSecondMicrochip);
 
-                                floorsObjectsArrangementAfterMove[nextFloor].Microchips.Add(firstMovedObject);
-                                floorsObjectsArrangementAfterMove[nextFloor].Microchips.Add(secondMovedObject);
+                                floorsObjectsArrangementAfterMove[nextFloor].Microchips.Add(moveFirstMicrochip);
+                                floorsObjectsArrangementAfterMove[nextFloor].Microchips.Add(moveSecondMicrochip);
                                 break;
                             case MoveTwoObjectsCombination.TwoGenerators:
-                                if (floorsObjectsArrangementAfterMove[elevatorFloor].Generators.Count < 2)
+                                string moveFirstGenerator =
+                                    floorsObjectsArrangementAfterMove[elevatorFloor].Generators[i];
+                                string moveSecondGenerator =
+                                    floorsObjectsArrangementAfterMove[elevatorFloor].Generators[j];
+
+                                // There is no two same generators
+                                if (moveFirstGenerator == moveSecondGenerator)
                                 {
                                     continue;
                                 }
 
-                                firstMovedObject = floorsObjectsArrangementAfterMove[elevatorFloor].Generators[i];
-                                secondMovedObject = floorsObjectsArrangementAfterMove[elevatorFloor].Generators[j];
                                 floorsObjectsArrangementAfterMove[elevatorFloor].Generators.RemoveAt(i);
-                                floorsObjectsArrangementAfterMove[elevatorFloor].Generators.Remove(secondMovedObject);
+                                floorsObjectsArrangementAfterMove[elevatorFloor].Generators.Remove(moveSecondGenerator);
 
-                                floorsObjectsArrangementAfterMove[nextFloor].Generators.Add(firstMovedObject);
-                                floorsObjectsArrangementAfterMove[nextFloor].Generators.Add(secondMovedObject);
+                                floorsObjectsArrangementAfterMove[nextFloor].Generators.Add(moveFirstGenerator);
+                                floorsObjectsArrangementAfterMove[nextFloor].Generators.Add(moveSecondGenerator);
                                 break;
                             default:
-                                firstMovedObject = floorsObjectsArrangementAfterMove[elevatorFloor].Microchips[i];
+                                string moveMicrochip = floorsObjectsArrangementAfterMove[elevatorFloor].Microchips[i];
                                 floorsObjectsArrangementAfterMove[elevatorFloor].Microchips.RemoveAt(i);
-                                secondMovedObject = floorsObjectsArrangementAfterMove[elevatorFloor].Generators[j];
+                                string moveGenerator = floorsObjectsArrangementAfterMove[elevatorFloor].Generators[j];
                                 floorsObjectsArrangementAfterMove[elevatorFloor].Generators.RemoveAt(j);
 
-                                floorsObjectsArrangementAfterMove[nextFloor].Microchips.Add(firstMovedObject);
-                                floorsObjectsArrangementAfterMove[nextFloor].Generators.Add(secondMovedObject);
+                                floorsObjectsArrangementAfterMove[nextFloor].Microchips.Add(moveMicrochip);
+                                floorsObjectsArrangementAfterMove[nextFloor].Generators.Add(moveGenerator);
                                 break;
                         }
 
@@ -336,27 +343,7 @@ namespace App.Tasks.Year2016.Day11
                         }
                     }
                 }
-
             }
-        }
-
-        private Dictionary<int, FloorObjects> CloneFloorsObjectsArrangement(
-            Dictionary<int, FloorObjects> floorsObjectsArrangement
-        )
-        {
-            Dictionary<int, FloorObjects> clonedFloorObjects =
-                new Dictionary<int, FloorObjects>();
-
-            foreach (KeyValuePair<int, FloorObjects> floorObjectsArrangement in floorsObjectsArrangement)
-            {
-                clonedFloorObjects.Add(floorObjectsArrangement.Key, new FloorObjects
-                {
-                    Microchips = new List<string>(floorObjectsArrangement.Value.Microchips),
-                    Generators = new List<string>(floorObjectsArrangement.Value.Generators)
-                });
-            }
-
-            return clonedFloorObjects;
         }
 
         private bool CheckIfAllFloorsBellowAreEmpty(
@@ -378,28 +365,62 @@ namespace App.Tasks.Year2016.Day11
             return true;
         }
 
+        /// <summary>
+        /// Unique floor objects arrangement is defined by elevator position and microchip-generator pairs positions.
+        /// </summary>
+        /// <param name="floorsObjectsArrangement"></param>
+        /// <param name="elevatorFloor"></param>
+        /// <returns></returns>
         private string FloorsObjectsArrangementCacheKey(
-            Dictionary<int, FloorObjects> floorsObjectsArrangement
+            Dictionary<int, FloorObjects> floorsObjectsArrangement,
+            int elevatorFloor
         )
         {
             StringBuilder sb = new StringBuilder();
 
+            Dictionary<string, int> microchipsFloors = new Dictionary<string, int>();
+            Dictionary<string, int> generatorsFloors = new Dictionary<string, int>();
+
             foreach (KeyValuePair<int, FloorObjects> floorObjectsArrangement in floorsObjectsArrangement)
             {
-                List<string> microchips = floorObjectsArrangement.Value.Microchips;
-                List<string> generators = floorObjectsArrangement.Value.Generators;
+                foreach (string microchip in floorObjectsArrangement.Value.Microchips)
+                {
+                    microchipsFloors.Add(microchip, floorObjectsArrangement.Key);
+                }
 
-                IEnumerable<string> pairs = microchips.Intersect(generators);
-                IEnumerable<string> unpairedMicrochips = microchips.Except(generators);
-                IEnumerable<string> unpairedGenerators = generators.Except(microchips);
-
-                sb.Append($"Floor-{floorObjectsArrangement.Key}:");
-                sb.Append($"pairs-{string.Join(',', pairs)},");
-                sb.Append($"microchips-{string.Join(',', unpairedMicrochips)},");
-                sb.Append($"generators-{string.Join(',', unpairedGenerators)}");
+                foreach (string generator in floorObjectsArrangement.Value.Generators)
+                {
+                    generatorsFloors.Add(generator, floorObjectsArrangement.Key);
+                }
             }
 
+            sb.Append($"(E{elevatorFloor}-");
+            foreach (KeyValuePair<string, int> microchipsFloor in microchipsFloors)
+            {
+                sb.Append($"(M{microchipsFloor.Value}-G{generatorsFloors[microchipsFloor.Key]}),");
+            }
+            sb.Remove(sb.Length - 1, 1);
+
             return sb.ToString();
+        }
+
+        private Dictionary<int, FloorObjects> CloneFloorsObjectsArrangement(
+            Dictionary<int, FloorObjects> floorsObjectsArrangement
+        )
+        {
+            Dictionary<int, FloorObjects> clonedFloorObjects =
+                new Dictionary<int, FloorObjects>();
+
+            foreach (KeyValuePair<int, FloorObjects> floorObjectsArrangement in floorsObjectsArrangement)
+            {
+                clonedFloorObjects.Add(floorObjectsArrangement.Key, new FloorObjects
+                {
+                    Microchips = new List<string>(floorObjectsArrangement.Value.Microchips),
+                    Generators = new List<string>(floorObjectsArrangement.Value.Generators)
+                });
+            }
+
+            return clonedFloorObjects;
         }
     }
 }
