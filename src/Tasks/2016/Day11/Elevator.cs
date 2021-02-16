@@ -40,7 +40,7 @@ namespace App.Tasks.Year2016.Day11
                 return;
             }
 
-            string floorsObjectsArrangementCacheKey = FloorsObjectsArrangementCacheKey(
+            string floorsObjectsArrangementCacheKey = FloorsObjectsInterchangeableArrangementsCacheKey(
                 floorsObjectsArrangement,
                 elevatorFloor
             );
@@ -73,46 +73,6 @@ namespace App.Tasks.Year2016.Day11
             {
                 MoveOneObject(floorsObjectsArrangement, elevatorFloor, steps, ref minSteps, true, ref oneObjectDown);
             }
-        }
-
-
-        private bool IsAnyChipFried(Dictionary<int, FloorObjects> floorsObjectsArrangement)
-        {
-            foreach (KeyValuePair<int, FloorObjects> floorObjectsArrangement in floorsObjectsArrangement)
-            {
-                List<string> microchips = floorObjectsArrangement.Value.Microchips;
-                List<string> generators = floorObjectsArrangement.Value.Generators;
-
-                if (microchips.Count > 0 && generators.Count > 0)
-                {
-                    IEnumerable<string> unpairedMicrochips = microchips.Except(generators);
-                    if (unpairedMicrochips.Any())
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        private bool AreAllObjectsOnLastFloor(Dictionary<int, FloorObjects> floorsObjectsArrangement)
-        {
-            int minFloor = floorsObjectsArrangement.Keys.Min();
-            int maxFloor = floorsObjectsArrangement.Keys.Max();
-
-            for (int floor = minFloor; floor < maxFloor; floor++)
-            {
-                List<string> microchips = floorsObjectsArrangement[floor].Microchips;
-                List<string> generators = floorsObjectsArrangement[floor].Generators;
-
-                if (microchips.Count > 0 || generators.Count > 0)
-                {
-                    return false;
-                }
-            }
-
-            return true;
         }
 
         private void MoveOneObject(
@@ -346,32 +306,27 @@ namespace App.Tasks.Year2016.Day11
             }
         }
 
-        private bool CheckIfAllFloorsBellowAreEmpty(
-            Dictionary<int, FloorObjects> floorsObjectsArrangement,
-            int elevatorFloor
-        )
-        {
-            // Check if all floors below the current floor are empty,
-            // if yes there is no need to move object down
-            for (int floor = 1; floor < elevatorFloor; floor++)
-            {
-                if (floorsObjectsArrangement[floor].Microchips.Count > 0
-                    || floorsObjectsArrangement[floor].Generators.Count > 0)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
         /// <summary>
+        /// All pairs are interchangeabls, e.g.:
+        ///
+        /// FLOOR 1: Lithium microchip,
+        /// FLOOR 2: Hydrogen microchip,
+        /// FLOOR 3: Hydrogen generator,
+        /// FLOOR 4: Lithium generator
+        ///
+        /// requries the same number of steps to top floor as
+        ///
+        /// FLOOR 1: Hydrogen microchip,
+        /// FLOOR 2: Lithium microchip,
+        /// FLOOR 3: Lithium generator,
+        /// FLOOR 4: Hydrogen generator
+        ///
         /// Unique floor objects arrangement is defined by elevator position and microchip-generator pairs positions.
         /// </summary>
         /// <param name="floorsObjectsArrangement"></param>
         /// <param name="elevatorFloor"></param>
         /// <returns></returns>
-        private string FloorsObjectsArrangementCacheKey(
+        private string FloorsObjectsInterchangeableArrangementsCacheKey(
             Dictionary<int, FloorObjects> floorsObjectsArrangement,
             int elevatorFloor
         )
@@ -402,6 +357,64 @@ namespace App.Tasks.Year2016.Day11
             sb.Remove(sb.Length - 1, 1);
 
             return sb.ToString();
+        }
+
+        private bool IsAnyChipFried(Dictionary<int, FloorObjects> floorsObjectsArrangement)
+        {
+            foreach (KeyValuePair<int, FloorObjects> floorObjectsArrangement in floorsObjectsArrangement)
+            {
+                List<string> microchips = floorObjectsArrangement.Value.Microchips;
+                List<string> generators = floorObjectsArrangement.Value.Generators;
+
+                if (microchips.Count > 0 && generators.Count > 0)
+                {
+                    IEnumerable<string> unpairedMicrochips = microchips.Except(generators);
+                    if (unpairedMicrochips.Any())
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private bool AreAllObjectsOnLastFloor(Dictionary<int, FloorObjects> floorsObjectsArrangement)
+        {
+            int minFloor = floorsObjectsArrangement.Keys.Min();
+            int maxFloor = floorsObjectsArrangement.Keys.Max();
+
+            for (int floor = minFloor; floor < maxFloor; floor++)
+            {
+                List<string> microchips = floorsObjectsArrangement[floor].Microchips;
+                List<string> generators = floorsObjectsArrangement[floor].Generators;
+
+                if (microchips.Count > 0 || generators.Count > 0)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private bool CheckIfAllFloorsBellowAreEmpty(
+            Dictionary<int, FloorObjects> floorsObjectsArrangement,
+            int elevatorFloor
+        )
+        {
+            // Check if all floors below the current floor are empty,
+            // if yes there is no need to move object down
+            for (int floor = 1; floor < elevatorFloor; floor++)
+            {
+                if (floorsObjectsArrangement[floor].Microchips.Count > 0
+                    || floorsObjectsArrangement[floor].Generators.Count > 0)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private Dictionary<int, FloorObjects> CloneFloorsObjectsArrangement(
