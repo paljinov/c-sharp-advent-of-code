@@ -1,5 +1,3 @@
-using System.Linq;
-
 namespace App.Tasks.Year2016.Day15
 {
     public class Capsule
@@ -7,7 +5,6 @@ namespace App.Tasks.Year2016.Day15
         public int CalculateFirstTimeYouCanPressButtonAndGetCapsule(Disc[] discs)
         {
             int time = 0;
-
             while (!AreAllDiscsSequentiallyAtPositionZero(discs, 1, time + 1))
             {
                 time++;
