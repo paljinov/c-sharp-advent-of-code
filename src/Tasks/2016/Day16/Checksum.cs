@@ -4,9 +4,9 @@ namespace App.Tasks.Year2016.Day16
 {
     public class Checksum
     {
-        public string CalculateChecksum(string data, int diskLength)
+        public string CalculateChecksum(string initialState, int diskLength)
         {
-            data = MakeDataLonger(data, diskLength);
+            string data = MakeDataLonger(initialState, diskLength);
 
             StringBuilder checksum = null;
             // If the length of the checksum is even, repeat the process
