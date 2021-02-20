@@ -1,10 +1,10 @@
 # C# (C-Sharp) Advent of Code solutions
 
 ## Tasks solutions:
-* [2015](./src/Tasks/2015)
-* [2016](./src/Tasks/2016)
-* [2017](./src/Tasks/2017)
-* [2020](./src/Tasks/2020)
+* [2015](https://github.com/paljinov/c-sharp-advent-of-code/tree/master/src/Tasks/2015)
+* [2016](https://github.com/paljinov/c-sharp-advent-of-code/tree/master/src/Tasks/2016)
+* [2017](https://github.com/paljinov/c-sharp-advent-of-code/tree/master/src/Tasks/2017)
+* [2020](https://github.com/paljinov/c-sharp-advent-of-code/tree/master/src/Tasks/2020)
 
 ## Prerequisites for running project
 Copy `env.example` to `.env` file and set year, day and part for task you wish to debug or run.
