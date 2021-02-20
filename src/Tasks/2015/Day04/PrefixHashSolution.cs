@@ -19,7 +19,7 @@ namespace App.Tasks.Year2015.Day4
             return i;
         }
 
-        public string GetMd5HashForString(string input)
+        private string GetMd5HashForString(string input)
         {
             MD5 md5 = MD5.Create();
 
