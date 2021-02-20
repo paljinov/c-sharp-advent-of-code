@@ -1,10 +1,10 @@
 namespace App.Tasks.Year2016.Day17
 {
-    public enum Direction
+    public readonly struct Direction
     {
-        UP = 0,
-        DOWN = 1,
-        LEFT = 2,
-        RIGHT = 3
+        public static readonly (int Index, char Letter) Up = (0, 'U');
+        public static readonly (int Index, char Letter) Down = (1, 'D');
+        public static readonly (int Index, char Letter) Left = (2, 'L');
+        public static readonly (int Index, char Letter) Right = (3, 'R');
     }
 }

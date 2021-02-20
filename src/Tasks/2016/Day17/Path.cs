@@ -20,51 +20,70 @@ namespace App.Tasks.Year2016.Day17
 
         public string FindShortestPathToVault(string passcode)
         {
-            StringBuilder shortestPath = new StringBuilder();
-            FindShortestPath(passcode, START_X, START_Y, string.Empty, shortestPath);
+            List<string> paths = new List<string>();
+            FindShortestPath(passcode, START_X, START_Y, string.Empty, paths);
 
-            return shortestPath.ToString();
-        }
-
-        private void FindShortestPath(string passcode, int x, int y, string path, StringBuilder shortestPath)
-        {
-            if (shortestPath.Length > 0 && path.Length >= shortestPath.Length)
+            string shortestPath = paths[0];
+            foreach (string path in paths)
             {
-                return;
+                if (path.Length < shortestPath.Length)
+                {
+                    shortestPath = path;
+                }
             }
 
-            if (x == VAULT_X && y == VAULT_Y
-                && (shortestPath.Length == 0 || path.Length < shortestPath.Length))
+            return shortestPath;
+        }
+
+        public int FindLengthOfLongestPathToVault(string passcode)
+        {
+            List<string> paths = new List<string>();
+            FindShortestPath(passcode, START_X, START_Y, string.Empty, paths);
+
+            int lengthOfLongestPathToVault = 0;
+            foreach (string path in paths)
             {
-                shortestPath.Remove(0, shortestPath.Length);
-                shortestPath.Append(path);
+                if (path.Length > lengthOfLongestPathToVault)
+                {
+                    lengthOfLongestPathToVault = path.Length;
+                }
+            }
+
+            return lengthOfLongestPathToVault;
+        }
+
+        private void FindShortestPath(string passcode, int x, int y, string path, List<string> paths)
+        {
+            if (x == VAULT_X && y == VAULT_Y)
+            {
+                paths.Add(path);
                 return;
             }
 
             string hash = GetMd5HashForString(passcode + path);
 
             // If it is possible to go up
-            if (y - 1 >= 0 && openDoorsCharacters.Contains(hash[(int)Direction.UP]))
+            if (y - 1 >= 0 && openDoorsCharacters.Contains(hash[Direction.Up.Index]))
             {
-                FindShortestPath(passcode, x, y - 1, path + 'U', shortestPath);
+                FindShortestPath(passcode, x, y - 1, path + Direction.Up.Letter, paths);
             }
 
             // If it is possible to go down
-            if (y + 1 <= VAULT_Y && openDoorsCharacters.Contains(hash[(int)Direction.DOWN]))
+            if (y + 1 <= VAULT_Y && openDoorsCharacters.Contains(hash[Direction.Down.Index]))
             {
-                FindShortestPath(passcode, x, y + 1, path + 'D', shortestPath);
+                FindShortestPath(passcode, x, y + 1, path + Direction.Down.Letter, paths);
             }
 
             // If it is possible to go left
-            if (x - 1 >= 0 && openDoorsCharacters.Contains(hash[(int)Direction.LEFT]))
+            if (x - 1 >= 0 && openDoorsCharacters.Contains(hash[Direction.Left.Index]))
             {
-                FindShortestPath(passcode, x - 1, y, path + 'L', shortestPath);
+                FindShortestPath(passcode, x - 1, y, path + Direction.Left.Letter, paths);
             }
 
             // If it is possible to go right
-            if (x + 1 <= VAULT_X && openDoorsCharacters.Contains(hash[(int)Direction.RIGHT]))
+            if (x + 1 <= VAULT_X && openDoorsCharacters.Contains(hash[Direction.Right.Index]))
             {
-                FindShortestPath(passcode, x + 1, y, path + 'R', shortestPath);
+                FindShortestPath(passcode, x + 1, y, path + Direction.Right.Letter, paths);
             }
         }
 
