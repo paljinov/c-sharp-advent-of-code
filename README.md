@@ -7,7 +7,7 @@
 * [2020](https://github.com/paljinov/c-sharp-advent-of-code/tree/master/src/Tasks/2020)
 
 ## Prerequisites for running project
-Copy `env.example` to `.env` file and set year, day and part for task you wish to debug or run.
+Copy `./src/.env.example` to `./src/.env` file and set year, day and part for task you wish to debug or run.
 
 ## Local development:
 
