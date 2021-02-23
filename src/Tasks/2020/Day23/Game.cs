@@ -125,6 +125,7 @@ namespace App.Tasks.Year2020.Day23
                 nodesForValues[pickedUp[i]] = pickedUpCup;
             }
         }
+
         private LinkedListNode<int> GetNextNode(LinkedListNode<int> node, LinkedList<int> cups)
         {
             if (node.Next != null)

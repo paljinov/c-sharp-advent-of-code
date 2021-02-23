@@ -36,7 +36,6 @@ namespace App.Tasks.Year2016.Day19
     {
         private readonly ElvesRepository elvesRepository;
 
-
         private readonly Elves elves;
 
         public Part1()
