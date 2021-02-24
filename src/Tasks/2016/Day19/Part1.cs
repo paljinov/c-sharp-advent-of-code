@@ -47,7 +47,8 @@ namespace App.Tasks.Year2016.Day19
         public int Solution(string input)
         {
             int totalElves = elvesRepository.GetTotalElves(input);
-            int elfWhichGetsAllThePresents = elves.FindElfWhichGetsAllThePresents(totalElves);
+            int elfWhichGetsAllThePresents =
+                elves.FindElfWhichGetsAllThePresentsWhenStealingFromTheElfToTheLeft(totalElves);
 
             return elfWhichGetsAllThePresents;
         }
