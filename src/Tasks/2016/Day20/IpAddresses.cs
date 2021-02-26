@@ -30,10 +30,13 @@ namespace App.Tasks.Year2016.Day20
             uint allowedIps = 0;
 
             List<(uint, uint)> normalizedBlacklistRanges = GetNormalizedSortedBlacklistRanges(blacklistRanges);
+
+            allowedIps += normalizedBlacklistRanges[0].Item1 - ipAddressesRange.Start;
             for (int i = 0; i < normalizedBlacklistRanges.Count - 1; i++)
             {
                 allowedIps += normalizedBlacklistRanges[i + 1].Item1 - 1 - normalizedBlacklistRanges[i].Item2;
             }
+            allowedIps += ipAddressesRange.End - normalizedBlacklistRanges[^1].Item2;
 
             return allowedIps;
         }

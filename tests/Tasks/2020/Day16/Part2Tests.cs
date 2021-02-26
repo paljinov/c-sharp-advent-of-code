@@ -14,7 +14,6 @@ namespace Tests.Tasks.Year2020.Day16
             task = new Part2();
 
             Tickets tickets = new Tickets();
-            // Preamble of 5 numbers
             typeof(Tickets)
                 .GetField("fieldStartsWith", BindingFlags.Instance | BindingFlags.NonPublic)
                 .SetValue(tickets, "class");
