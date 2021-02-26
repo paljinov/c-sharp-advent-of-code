@@ -43,7 +43,8 @@ namespace App.Tasks.Year2016.Day20
         public uint Solution(string input)
         {
             (uint, uint)[] blacklistRanges = blacklistRepository.GetBlacklistRanges(input);
-            uint lowestValuedIpThatIsNotBlocked = ipAddresses.FindLowestValuedIpThatIsNotBlocked(blacklistRanges);
+            uint lowestValuedIpThatIsNotBlocked =
+                ipAddresses.FindLowestValuedIpAddressThatIsNotBlocked(blacklistRanges);
 
             return lowestValuedIpThatIsNotBlocked;
         }
