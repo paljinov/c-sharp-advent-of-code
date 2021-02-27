@@ -61,7 +61,7 @@ namespace App.Tasks.Year2016.Day21
 {
     public class Part1 : ITask<string>
     {
-        private readonly string password = "abcdefgh";
+        private readonly string unscrambledPassword = "abcdefgh";
 
         private readonly OperationsRepository operationsRepository;
 
@@ -76,7 +76,7 @@ namespace App.Tasks.Year2016.Day21
         public string Solution(string input)
         {
             List<Operation> operations = operationsRepository.GetOperations(input);
-            string scrambledPassword = scrambler.ScramblePassword(operations, password);
+            string scrambledPassword = scrambler.ScramblePassword(operations, unscrambledPassword);
 
             return scrambledPassword;
         }
