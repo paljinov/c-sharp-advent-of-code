@@ -27,7 +27,7 @@ namespace App.Tasks.Year2017.Day5
         public int Solution(string input)
         {
             int[] jumpOffsets = jumpOffsetsRepository.GetJumpOffsets(input);
-            int steps = jump.CountStepsToReachExitForDecreaseCondition(jumpOffsets);
+            int steps = jump.CountStepsToReachExit(jumpOffsets, true);
 
             return steps;
         }
