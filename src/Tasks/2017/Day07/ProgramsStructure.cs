@@ -30,46 +30,37 @@ namespace App.Tasks.Year2017.Day7
             foreach (KeyValuePair<string, Program> program in programs)
             {
                 int towerWeight = GetTowerWeight(program.Value, programs);
-
                 towerWeights.Add(program.Value.Name, towerWeight);
             }
 
             foreach (KeyValuePair<string, Program> program in programs)
             {
-                Dictionary<int, List<string>> programsCountByWeight = new Dictionary<int, List<string>>();
+                Dictionary<int, List<string>> programsByWeight = new Dictionary<int, List<string>>();
                 foreach (string programAbove in program.Value.ProgramsAbove)
                 {
                     int programAboveWeight = towerWeights[programAbove];
-                    if (programsCountByWeight.ContainsKey(programAboveWeight))
+                    if (programsByWeight.ContainsKey(programAboveWeight))
                     {
-                        programsCountByWeight[programAboveWeight].Add(programAbove);
+                        programsByWeight[programAboveWeight].Add(programAbove);
                     }
                     else
                     {
-                        programsCountByWeight[programAboveWeight] = new List<string> { programAbove };
+                        programsByWeight[programAboveWeight] = new List<string> { programAbove };
                     }
                 }
 
-                if (programsCountByWeight.Count > 1)
+                // If the program is unbalanced it will have different weight
+                if (programsByWeight.Count > 1)
                 {
-                    int balancedWeight = 0;
-                    int unbalancedWeight = 0;
-                    string unbalancedProgram = string.Empty;
-                    foreach (KeyValuePair<int, List<string>> programCountByWeight in programsCountByWeight)
-                    {
-                        if (programCountByWeight.Value.Count == 1)
-                        {
-                            unbalancedWeight = programCountByWeight.Key;
-                            unbalancedProgram = programCountByWeight.Value.First();
-                        }
-                        else
-                        {
-                            balancedWeight = programCountByWeight.Key;
-                        }
-                    }
+                    int balancedWeight = programsByWeight
+                        .Where(p => p.Value.Count > 1).Select(p => p.Key).Single();
+                    int unbalancedWeight = programsByWeight
+                        .Where(p => p.Value.Count == 1).Select(p => p.Key).Single();
+                    string unbalancedProgram = programsByWeight[unbalancedWeight].Single();
 
-                    unbalancedProgramProperWeight =
-                        programs[unbalancedProgram].Weight - (unbalancedWeight - balancedWeight);
+                    unbalancedProgramProperWeight = programs[unbalancedProgram].Weight
+                        - (unbalancedWeight - balancedWeight);
+
                     break;
                 }
             }
