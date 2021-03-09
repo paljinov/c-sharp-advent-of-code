@@ -85,7 +85,7 @@ namespace App.Tasks.Year2017.Day7
 
         public string Solution(string input)
         {
-            List<Program> programs = programsRepository.GetPrograms(input);
+            Dictionary<string, Program> programs = programsRepository.GetPrograms(input);
             string bottomProgramName = programsStructure.FindBottomProgramName(programs);
 
             return bottomProgramName;

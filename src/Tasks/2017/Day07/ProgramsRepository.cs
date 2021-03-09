@@ -7,9 +7,9 @@ namespace App.Tasks.Year2017.Day7
 {
     public class ProgramsRepository
     {
-        public List<Program> GetPrograms(string input)
+        public Dictionary<string, Program> GetPrograms(string input)
         {
-            List<Program> programs = new List<Program>();
+            Dictionary<string, Program> programs = new Dictionary<string, Program>();
 
             string[] programsString = input.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
             Regex programsRegex = new Regex(@"^(\w+)\s\((\d+)\)(?:\s->\s(.+))?$");
@@ -32,7 +32,7 @@ namespace App.Tasks.Year2017.Day7
                     ProgramsAbove = programsAbove,
                 };
 
-                programs.Add(program);
+                programs.Add(program.Name, program);
             }
 
             return programs;
