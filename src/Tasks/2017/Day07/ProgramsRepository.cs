@@ -12,11 +12,11 @@ namespace App.Tasks.Year2017.Day7
             Dictionary<string, Program> programs = new Dictionary<string, Program>();
 
             string[] programsString = input.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
-            Regex programsRegex = new Regex(@"^(\w+)\s\((\d+)\)(?:\s->\s(.+))?$");
+            Regex programRegex = new Regex(@"^(\w+)\s\((\d+)\)(?:\s->\s(.+))?$");
 
             foreach (string programString in programsString)
             {
-                Match programMatch = programsRegex.Match(programString);
+                Match programMatch = programRegex.Match(programString);
                 GroupCollection programGroups = programMatch.Groups;
 
                 List<string> programsAbove = new List<string>();
