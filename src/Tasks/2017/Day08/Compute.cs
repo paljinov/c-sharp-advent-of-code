@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,7 +8,23 @@ namespace App.Tasks.Year2017.Day8
     {
         public int FindLargestValueInAnyRegister(List<Instruction> instructions)
         {
+            (int largestValueInAnyRegister, _) = DoCompute(instructions);
+            return largestValueInAnyRegister;
+        }
+
+        public int FindHighestValueHeldInAnyRegisterDuringComputationProcess(List<Instruction> instructions)
+        {
+            (_, int highestValueHeldInAnyRegisterDuringComputationProcess) = DoCompute(instructions);
+            return highestValueHeldInAnyRegisterDuringComputationProcess;
+        }
+
+        private (int largestValueInAnyRegister, int highestValueHeldInAnyRegisterDuringComputationProcess) DoCompute(
+            List<Instruction> instructions
+        )
+        {
             Dictionary<string, int> registers = InitializeRegisters(instructions);
+
+            int highestValueHeldInAnyRegisterDuringComputationProcess = 0;
 
             foreach (Instruction instruction in instructions)
             {
@@ -63,12 +80,17 @@ namespace App.Tasks.Year2017.Day8
                     {
                         registers[instruction.Register] -= instruction.Amount;
                     }
+
+                    highestValueHeldInAnyRegisterDuringComputationProcess = Math.Max(
+                        highestValueHeldInAnyRegisterDuringComputationProcess,
+                        registers[instruction.Register]
+                    );
                 }
             }
 
             int largestValueInAnyRegister = registers.Values.Max();
 
-            return largestValueInAnyRegister;
+            return (largestValueInAnyRegister, highestValueHeldInAnyRegisterDuringComputationProcess);
         }
 
         private Dictionary<string, int> InitializeRegisters(List<Instruction> instructions)
