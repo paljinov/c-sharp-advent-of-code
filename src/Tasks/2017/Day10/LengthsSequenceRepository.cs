@@ -16,5 +16,16 @@ namespace App.Tasks.Year2017.Day10
 
             return lengthsSequence;
         }
+
+        public List<int> GetAsciiCodesLengthsSequence(string input)
+        {
+            List<int> lengthsSequence = new List<int>();
+            foreach (char c in input)
+            {
+                lengthsSequence.Add((int)c);
+            }
+
+            return lengthsSequence;
+        }
     }
 }
