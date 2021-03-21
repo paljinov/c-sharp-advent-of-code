@@ -6,5 +6,10 @@ namespace App.Tasks.Year2017.Day13
         public int Range { get; set; }
         public int Scanner { get; set; }
         public bool IsMovingDown { get; set; }
+
+        public FirewallLayer Clone()
+        {
+            return (FirewallLayer)MemberwiseClone();
+        }
     }
 }
