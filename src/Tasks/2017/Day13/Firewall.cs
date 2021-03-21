@@ -25,8 +25,7 @@ namespace App.Tasks.Year2017.Day13
             bool passedFirewallWithoutBeingCaught = false;
             while (!passedFirewallWithoutBeingCaught)
             {
-                Dictionary<int, int> caughtInLayers = PassThroughTheFirewall(CopyFirewallLayers(firewallLayers));
-
+                Dictionary<int, int> caughtInLayers = PassThroughTheFirewall(CopyFirewallLayers(firewallLayers), true);
                 if (caughtInLayers.Count > 0)
                 {
                     delayedPicoseconds++;
@@ -42,7 +41,10 @@ namespace App.Tasks.Year2017.Day13
             return delayedPicoseconds;
         }
 
-        private Dictionary<int, int> PassThroughTheFirewall(List<FirewallLayer> firewallLayers)
+        private Dictionary<int, int> PassThroughTheFirewall(
+            List<FirewallLayer> firewallLayers,
+            bool onlyFirstCaught = false
+        )
         {
             Dictionary<int, int> caughtInLayers = new Dictionary<int, int>();
             int totalSteps = firewallLayers.Last().Depth;
@@ -55,6 +57,10 @@ namespace App.Tasks.Year2017.Day13
                     if (step == firewallLayer.Depth && firewallLayer.Scanner == 0)
                     {
                         caughtInLayers.Add(step, firewallLayer.Range);
+                        if (onlyFirstCaught)
+                        {
+                            return caughtInLayers;
+                        }
                     }
 
                     if (firewallLayer.IsMovingDown)
