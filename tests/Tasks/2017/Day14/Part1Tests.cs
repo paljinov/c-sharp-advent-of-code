@@ -1,4 +1,3 @@
-using System;
 using App.Tasks.Year2017.Day14;
 using Xunit;
 
