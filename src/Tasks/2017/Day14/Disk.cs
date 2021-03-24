@@ -20,12 +20,13 @@ namespace App.Tasks.Year2017.Day14
             int usedSquares = 0;
 
             List<string> knotHashes = CalculateKnotHashes(key);
-            foreach (string knotHash in knotHashes)
+            bool[,] binaryGrid = CalculateBinaryGrid(knotHashes);
+
+            for (int i = 0; i < binaryGrid.GetLength(0); i++)
             {
-                string binary = ConvertHexToBinary(knotHash);
-                foreach (char c in binary)
+                for (int j = 0; j < binaryGrid.GetLength(1); j++)
                 {
-                    if (c == '1')
+                    if (binaryGrid[i, j])
                     {
                         usedSquares++;
                     }
@@ -33,6 +34,31 @@ namespace App.Tasks.Year2017.Day14
             }
 
             return usedSquares;
+        }
+
+        private bool[,] CalculateBinaryGrid(List<string> knotHashes)
+        {
+            bool[,] binaryGrid = new bool[128, 128];
+
+            int i = 0;
+            foreach (string knotHash in knotHashes)
+            {
+                int j = 0;
+                string binary = ConvertHexToBinary(knotHash);
+                foreach (char c in binary)
+                {
+                    if (c == '1')
+                    {
+                        binaryGrid[i, j] = true;
+                    }
+
+                    j++;
+                }
+
+                i++;
+            }
+
+            return binaryGrid;
         }
 
         private List<string> CalculateKnotHashes(string key)
