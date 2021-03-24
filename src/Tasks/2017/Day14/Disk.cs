@@ -36,26 +36,44 @@ namespace App.Tasks.Year2017.Day14
             return usedSquares;
         }
 
+        public int CountRegions(string key)
+        {
+            List<string> knotHashes = CalculateKnotHashes(key);
+            bool[,] binaryGrid = CalculateBinaryGrid(knotHashes);
+
+            bool[,] occupiedSquaresByRegions = new bool[binaryGrid.GetLength(0), binaryGrid.GetLength(1)];
+            int regions = 0;
+
+            for (int i = 0; i < binaryGrid.GetLength(0); i++)
+            {
+                for (int j = 0; j < binaryGrid.GetLength(1); j++)
+                {
+                    // If square is used and isn't occupied by other region
+                    if (binaryGrid[i, j] && !occupiedSquaresByRegions[i, j])
+                    {
+                        FloodFill(i, j, binaryGrid, occupiedSquaresByRegions);
+                        regions++;
+                    }
+                }
+            }
+
+            return regions;
+        }
+
         private bool[,] CalculateBinaryGrid(List<string> knotHashes)
         {
-            bool[,] binaryGrid = new bool[128, 128];
+            bool[,] binaryGrid = new bool[knotHashes.Count, knotHashes.First().Length * 4];
 
-            int i = 0;
-            foreach (string knotHash in knotHashes)
+            for (int i = 0; i < knotHashes.Count; i++)
             {
-                int j = 0;
-                string binary = ConvertHexToBinary(knotHash);
-                foreach (char c in binary)
+                string binary = ConvertHexToBinary(knotHashes[i]);
+                for (int j = 0; j < binary.Length; j++)
                 {
-                    if (c == '1')
+                    if (binary[j] == '1')
                     {
                         binaryGrid[i, j] = true;
                     }
-
-                    j++;
                 }
-
-                i++;
             }
 
             return binaryGrid;
@@ -82,6 +100,39 @@ namespace App.Tasks.Year2017.Day14
             );
 
             return binary;
+        }
+
+        private void FloodFill(int i, int j, bool[,] binaryGrid, bool[,] occupiedSquaresByRegions)
+        {
+            // If square is used and isn't occupied by other region
+            if (binaryGrid[i, j] && !occupiedSquaresByRegions[i, j])
+            {
+                occupiedSquaresByRegions[i, j] = true;
+
+                // Go left
+                if (i > 0)
+                {
+                    FloodFill(i - 1, j, binaryGrid, occupiedSquaresByRegions);
+                }
+
+                // Go right
+                if (i < occupiedSquaresByRegions.GetLength(0) - 1)
+                {
+                    FloodFill(i + 1, j, binaryGrid, occupiedSquaresByRegions);
+                }
+
+                // Go up
+                if (j > 0)
+                {
+                    FloodFill(i, j - 1, binaryGrid, occupiedSquaresByRegions);
+                }
+
+                // Go down
+                if (j < occupiedSquaresByRegions.GetLength(1) - 1)
+                {
+                    FloodFill(i, j + 1, binaryGrid, occupiedSquaresByRegions);
+                }
+            }
         }
     }
 }
