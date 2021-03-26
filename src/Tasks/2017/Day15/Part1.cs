@@ -56,12 +56,12 @@ match in their lowest 16 bits.)
 After 40 million pairs, what is the judge's final count?
 */
 
-using System.Collections.Generic;
-
 namespace App.Tasks.Year2017.Day15
 {
     public class Part1 : ITask<int>
     {
+        private const int TOTAL_PAIRS = 40000000;
+
         private readonly GeneratorsRepository generatorsRepository;
 
         private readonly GeneratePairs generatePairs;
@@ -75,7 +75,11 @@ namespace App.Tasks.Year2017.Day15
         public int Solution(string input)
         {
             (int generatorAStartValue, int generatorBStartValue) = generatorsRepository.GetStartingValues(input);
-            int judgeFinalCount = generatePairs.CalculateJudgeFinalCount(generatorAStartValue, generatorBStartValue);
+            int judgeFinalCount = generatePairs.CalculateJudgeFinalCount(
+                generatorAStartValue,
+                generatorBStartValue,
+                TOTAL_PAIRS
+            );
 
             return judgeFinalCount;
         }
