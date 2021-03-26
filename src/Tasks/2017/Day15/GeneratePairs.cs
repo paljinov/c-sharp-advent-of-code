@@ -21,13 +21,13 @@ namespace App.Tasks.Year2017.Day15
 
             for (int i = 0; i < totalPairs; i++)
             {
-                generatorAValue = (generatorAValue * GENERATOR_A_FACTOR) % DIVIDE_BY;
-                generatorBValue = (generatorBValue * GENERATOR_B_FACTOR) % DIVIDE_BY;
+                generatorAValue = CalculateNextGeneratorValue(generatorAValue, GENERATOR_A_FACTOR);
+                generatorBValue = CalculateNextGeneratorValue(generatorBValue, GENERATOR_B_FACTOR);
 
-                string generatorAGetLowestBits = GetLowestBits(generatorAValue);
-                string generatorBGetLowestBits = GetLowestBits(generatorBValue);
+                string generatorALowestBits = GetLowestBits(generatorAValue);
+                string generatorBLowestBits = GetLowestBits(generatorBValue);
 
-                if (generatorAGetLowestBits == generatorBGetLowestBits)
+                if (generatorALowestBits == generatorBLowestBits)
                 {
                     matchLowestBitsPairs++;
                 }
@@ -51,28 +51,32 @@ namespace App.Tasks.Year2017.Day15
 
             for (int i = 0; i < totalPairs; i++)
             {
-                generatorAValue = (generatorAValue * GENERATOR_A_FACTOR) % DIVIDE_BY;
-                while (generatorAValue % generatorAValueMultipleOf != 0)
-                {
-                    generatorAValue = (generatorAValue * GENERATOR_A_FACTOR) % DIVIDE_BY;
-                }
+                generatorAValue =
+                    CalculateNextGeneratorValue(generatorAValue, GENERATOR_A_FACTOR, generatorAValueMultipleOf);
+                generatorBValue =
+                    CalculateNextGeneratorValue(generatorBValue, GENERATOR_B_FACTOR, generatorBValueMultipleOf);
 
-                generatorBValue = (generatorBValue * GENERATOR_B_FACTOR) % DIVIDE_BY;
-                while (generatorBValue % generatorBValueMultipleOf != 0)
-                {
-                    generatorBValue = (generatorBValue * GENERATOR_B_FACTOR) % DIVIDE_BY;
-                }
+                string generatorALowestBits = GetLowestBits(generatorAValue);
+                string generatorBLowestBits = GetLowestBits(generatorBValue);
 
-                string generatorAGetLowestBits = GetLowestBits(generatorAValue);
-                string generatorBGetLowestBits = GetLowestBits(generatorBValue);
-
-                if (generatorAGetLowestBits == generatorBGetLowestBits)
+                if (generatorALowestBits == generatorBLowestBits)
                 {
                     matchLowestBitsPairs++;
                 }
             }
 
             return matchLowestBitsPairs;
+        }
+
+        private long CalculateNextGeneratorValue(long generatorValue, int generatorFactor, int multipleOf = 1)
+        {
+            long nextGeneratorValue = (generatorValue * generatorFactor) % DIVIDE_BY;
+            while (nextGeneratorValue % multipleOf != 0)
+            {
+                nextGeneratorValue = (nextGeneratorValue * generatorFactor) % DIVIDE_BY;
+            }
+
+            return nextGeneratorValue;
         }
 
         private string GetLowestBits(long generatorValue)
