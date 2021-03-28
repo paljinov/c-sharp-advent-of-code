@@ -1,44 +1,59 @@
-using System.Text.RegularExpressions;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace App.Tasks.Year2017.Day16
 {
     public class Dance
     {
         private readonly int totalPrograms = 16;
-        private readonly Regex spinRegex = new Regex(@"^s(\d+)$");
-        private readonly Regex exchangeRegex = new Regex(@"^x(\d+)\/(\d+)$");
-        private readonly Regex partnerRegex = new Regex(@"^p(\w)\/(\w)$");
 
-        public string GetProgramsOrderAfterDance(string[] danceMoves)
+        public string GetProgramsOrderAfterDance(List<IDanceMove> danceMoves, int totalDances = 1)
         {
             char[] programs = InitializePrograms();
+            Dictionary<string, int> repetitions = new Dictionary<string, int>();
 
-            foreach (string danceMove in danceMoves)
+            for (int i = 0; i < totalDances; i++)
             {
-                Match spinMatch = spinRegex.Match(danceMove);
-                Match exchangeMatch = exchangeRegex.Match(danceMove);
-                Match partnerMatch = partnerRegex.Match(danceMove);
+                programs = DoSingleDance(programs, danceMoves);
+                string programsString = new string(programs);
 
-                if (spinMatch.Success)
+                // If result repeated circle is found
+                if (repetitions.ContainsKey(programsString))
                 {
-                    int moveProgramsFromEnd = int.Parse(spinMatch.Groups[1].Value);
-                    programs = Spin(programs, moveProgramsFromEnd);
+                    int indexAfterTotalDances = (totalDances - 1) % i;
+                    string programsAfterTotalDances = repetitions.First(r => r.Value == indexAfterTotalDances).Key;
+
+                    return programsAfterTotalDances;
                 }
-                else if (exchangeMatch.Success)
-                {
-                    int positionA = int.Parse(exchangeMatch.Groups[1].Value);
-                    int positionB = int.Parse(exchangeMatch.Groups[2].Value);
-                    programs = Exchange(programs, positionA, positionB);
-                }
-                else if (partnerMatch.Success)
-                {
-                    char programA = partnerMatch.Groups[1].Value[0];
-                    char programB = partnerMatch.Groups[2].Value[0];
-                    programs = Partner(programs, programA, programB);
-                }
+
+                repetitions.Add(programsString, i);
             }
 
             return new string(programs);
+        }
+
+        private char[] DoSingleDance(char[] programs, List<IDanceMove> danceMoves)
+        {
+            foreach (IDanceMove danceMove in danceMoves)
+            {
+                switch (danceMove.DanceMoveType)
+                {
+                    case DanceMoveType.Spin:
+                        DanceMove<int> danceMoveSpin = (DanceMove<int>)danceMove;
+                        programs = Spin(programs, danceMoveSpin.ValueA);
+                        break;
+                    case DanceMoveType.Exchange:
+                        DanceMove<int> danceMoveExchange = (DanceMove<int>)danceMove;
+                        programs = Exchange(programs, danceMoveExchange.ValueA, danceMoveExchange.ValueB);
+                        break;
+                    case DanceMoveType.Partner:
+                        DanceMove<char> danceMovePartner = (DanceMove<char>)danceMove;
+                        programs = Partner(programs, danceMovePartner.ValueA, danceMovePartner.ValueB);
+                        break;
+                }
+            }
+
+            return programs;
         }
 
         private char[] InitializePrograms()
@@ -58,22 +73,23 @@ namespace App.Tasks.Year2017.Day16
 
         private char[] Spin(char[] programs, int moveProgramsFromEnd)
         {
-            char[] startPrograms = programs[^moveProgramsFromEnd..];
-            char[] endPrograms = programs[0..^moveProgramsFromEnd];
+            int n = programs.Length;
+            char[] programsAfterSpin = new char[n];
+            int position = 0;
 
-            int i = 0;
-            foreach (char program in startPrograms)
+            for (int i = n - moveProgramsFromEnd; i < n; i++)
             {
-                programs[i] = program;
-                i++;
-            }
-            foreach (char program in endPrograms)
-            {
-                programs[i] = program;
-                i++;
+                programsAfterSpin[position] = programs[i];
+                position++;
             }
 
-            return programs;
+            for (int i = 0; i < n - moveProgramsFromEnd; i++)
+            {
+                programsAfterSpin[position] = programs[i];
+                position++;
+            }
+
+            return programsAfterSpin;
         }
 
         private char[] Exchange(char[] programs, int positionA, int positionB)

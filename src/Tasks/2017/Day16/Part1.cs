@@ -28,6 +28,8 @@ You watch the dance for a while and record their dance moves (your puzzle
 input). In what order are the programs standing after their dance?
 */
 
+using System.Collections.Generic;
+
 namespace App.Tasks.Year2017.Day16
 {
     public class Part1 : ITask<string>
@@ -44,7 +46,7 @@ namespace App.Tasks.Year2017.Day16
 
         public string Solution(string input)
         {
-            string[] danceMoves = danceMovesRepository.GetDanceMoves(input);
+            List<IDanceMove> danceMoves = danceMovesRepository.GetDanceMoves(input);
             string programsOrderAfterDance = dance.GetProgramsOrderAfterDance(danceMoves);
 
             return programsOrderAfterDance;
