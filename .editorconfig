@@ -222,6 +222,9 @@ dotnet_diagnostic.IDE0011.severity = warning
 # IDE0040: Add accessibility modifiers
 dotnet_diagnostic.IDE0040.severity = warning
 
+# IDE0042: Deconstruct variable declaration
+dotnet_diagnostic.IDE0042.severity = none
+
 # CONSIDER: Are IDE0051 and IDE0052 too noisy to be warnings for IDE editing scenarios? Should they be made build-only warnings?
 # IDE0051: Remove unused private member
 dotnet_diagnostic.IDE0051.severity = warning
@@ -235,11 +238,11 @@ dotnet_diagnostic.IDE0059.severity = warning
 # IDE0060: Remove unused parameter
 dotnet_diagnostic.IDE0060.severity = warning
 
-# IDE0090: Simplify new expression
-dotnet_diagnostic.IDE0090.severity = none
-
 # IDE0066: Use switch expression
 dotnet_diagnostic.IDE0066.severity = none
+
+# IDE0090: Simplify new expression
+dotnet_diagnostic.IDE0090.severity = none
 
 # CA1822: Make member static
 dotnet_diagnostic.CA1822.severity = none
