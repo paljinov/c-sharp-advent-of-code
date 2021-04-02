@@ -57,25 +57,12 @@ namespace App.Tasks.Year2016.Day22
                 // Goal higher and more right than empty
                 if (goal.y < empty.y && goal.x > empty.x)
                 {
-                    empty = (empty.x, empty.y - 1);
-                    nodesGrid[empty.x, empty.y + 1] = ORDINARY_NODE;
-                    nodesGrid[empty.x, empty.y] = EMPTY_NODE;
+                    (nodesGrid, empty, goal) = MoveEmptyNode(nodesGrid, empty, goal, Direction.UP);
                 }
                 // Goal more right than empty
                 else if (goal.x > empty.x)
                 {
-                    empty = (empty.x + 1, empty.y);
-                    if (empty.x == goal.x && empty.y == goal.y)
-                    {
-                        nodesGrid[empty.x - 1, empty.y] = GOAL_NODE;
-                        goal = (empty.x - 1, empty.y);
-                    }
-                    else
-                    {
-                        nodesGrid[empty.x - 1, empty.y] = ORDINARY_NODE;
-                    }
-
-                    nodesGrid[empty.x, empty.y] = EMPTY_NODE;
+                    (nodesGrid, empty, goal) = MoveEmptyNode(nodesGrid, empty, goal, Direction.RIGHT);
                 }
                 // Goal more or equally left than empty
                 else if (goal.x <= empty.x)
@@ -83,25 +70,12 @@ namespace App.Tasks.Year2016.Day22
                     // If on same height
                     if (empty.y == goal.y)
                     {
-                        empty = (empty.x, empty.y + 1);
-                        nodesGrid[empty.x, empty.y - 1] = ORDINARY_NODE;
-                        nodesGrid[empty.x, empty.y] = EMPTY_NODE;
+                        (nodesGrid, empty, goal) = MoveEmptyNode(nodesGrid, empty, goal, Direction.DOWN);
                     }
                     // If not on same height
                     else
                     {
-                        empty = (empty.x - 1, empty.y);
-                        if (empty.x == goal.x && empty.y == goal.y)
-                        {
-                            nodesGrid[empty.x + 1, empty.y] = GOAL_NODE;
-                            goal = (empty.x + 1, empty.y);
-                        }
-                        else
-                        {
-                            nodesGrid[empty.x + 1, empty.y] = ORDINARY_NODE;
-                        }
-
-                        nodesGrid[empty.x, empty.y] = EMPTY_NODE;
+                        (nodesGrid, empty, goal) = MoveEmptyNode(nodesGrid, empty, goal, Direction.LEFT);
                     }
                 }
 
@@ -112,30 +86,6 @@ namespace App.Tasks.Year2016.Day22
             }
 
             return steps;
-        }
-
-        private void PrintGrid(char[,] nodesGrid)
-        {
-            int previous = 0;
-
-            StringBuilder grid = new StringBuilder();
-
-            for (int j = 0; j < nodesGrid.GetLength(1); j++)
-            {
-                for (int i = 0; i < nodesGrid.GetLength(0); i++)
-                {
-                    if (previous != j)
-                    {
-                        grid.Append(Environment.NewLine);
-                        previous = j;
-                    }
-
-                    grid.Append(nodesGrid[i, j]);
-
-                }
-            }
-
-            Console.WriteLine(grid.ToString());
         }
 
         private char[,] GetNodesGrid(List<Node> nodes)
@@ -192,6 +142,70 @@ namespace App.Tasks.Year2016.Day22
             }
 
             return true;
+        }
+
+        private (char[,] nodesGrid, (int x, int y) empty, (int x, int y) goal) MoveEmptyNode(
+            char[,] nodesGrid,
+            (int x, int y) empty,
+            (int x, int y) goal,
+            Direction direction
+        )
+        {
+            (int x, int y) oldEmpty = empty;
+
+            switch (direction)
+            {
+                case Direction.UP:
+                    empty = (empty.x, empty.y - 1);
+                    break;
+                case Direction.DOWN:
+                    empty = (empty.x, empty.y + 1);
+                    break;
+                case Direction.LEFT:
+                    empty = (empty.x - 1, empty.y);
+                    break;
+                case Direction.RIGHT:
+                    empty = (empty.x + 1, empty.y);
+                    break;
+            }
+
+            if (empty.x == goal.x && empty.y == goal.y)
+            {
+                nodesGrid[oldEmpty.x, oldEmpty.y] = GOAL_NODE;
+                goal = (oldEmpty.x, oldEmpty.y);
+            }
+            else
+            {
+                nodesGrid[oldEmpty.x, oldEmpty.y] = ORDINARY_NODE;
+            }
+
+            nodesGrid[empty.x, empty.y] = EMPTY_NODE;
+
+            return (nodesGrid, empty, goal);
+        }
+
+        private void PrintGrid(char[,] nodesGrid)
+        {
+            int previous = 0;
+
+            StringBuilder grid = new StringBuilder();
+
+            for (int j = 0; j < nodesGrid.GetLength(1); j++)
+            {
+                for (int i = 0; i < nodesGrid.GetLength(0); i++)
+                {
+                    if (previous != j)
+                    {
+                        grid.Append(Environment.NewLine);
+                        previous = j;
+                    }
+
+                    grid.Append(nodesGrid[i, j]);
+
+                }
+            }
+
+            Console.WriteLine(grid.ToString());
         }
     }
 }
