@@ -50,8 +50,6 @@ namespace App.Tasks.Year2016.Day22
 
             char[,] nodesGrid = GetNodesGrid(nodes);
 
-            PrintGrid(nodesGrid);
-            Console.WriteLine($"Steps: {steps}");
             while (nodesGrid[0, 0] != 'G')
             {
                 // Goal higher and more right than empty
@@ -80,9 +78,6 @@ namespace App.Tasks.Year2016.Day22
                 }
 
                 steps++;
-
-                PrintGrid(nodesGrid);
-                Console.WriteLine($"Steps: {steps}");
             }
 
             return steps;
@@ -153,20 +148,43 @@ namespace App.Tasks.Year2016.Day22
         {
             (int x, int y) oldEmpty = empty;
 
-            switch (direction)
+            while (empty == oldEmpty)
             {
-                case Direction.UP:
-                    empty = (empty.x, empty.y - 1);
-                    break;
-                case Direction.DOWN:
-                    empty = (empty.x, empty.y + 1);
-                    break;
-                case Direction.LEFT:
-                    empty = (empty.x - 1, empty.y);
-                    break;
-                case Direction.RIGHT:
-                    empty = (empty.x + 1, empty.y);
-                    break;
+                switch (direction)
+                {
+                    case Direction.UP:
+                        empty = (empty.x, empty.y - 1);
+                        if (nodesGrid[empty.x, empty.y] == WALL_NODE)
+                        {
+                            direction = Direction.LEFT;
+                            empty = oldEmpty;
+                        }
+                        break;
+                    case Direction.DOWN:
+                        empty = (empty.x, empty.y + 1);
+                        if (nodesGrid[empty.x, empty.y] == WALL_NODE)
+                        {
+                            direction = Direction.LEFT;
+                            empty = oldEmpty;
+                        }
+                        break;
+                    case Direction.LEFT:
+                        empty = (empty.x - 1, empty.y);
+                        if (nodesGrid[empty.x, empty.y] == WALL_NODE)
+                        {
+                            direction = Direction.UP;
+                            empty = oldEmpty;
+                        }
+                        break;
+                    case Direction.RIGHT:
+                        empty = (empty.x + 1, empty.y);
+                        if (nodesGrid[empty.x, empty.y] == WALL_NODE)
+                        {
+                            direction = Direction.UP;
+                            empty = oldEmpty;
+                        }
+                        break;
+                }
             }
 
             if (empty.x == goal.x && empty.y == goal.y)
@@ -182,30 +200,6 @@ namespace App.Tasks.Year2016.Day22
             nodesGrid[empty.x, empty.y] = EMPTY_NODE;
 
             return (nodesGrid, empty, goal);
-        }
-
-        private void PrintGrid(char[,] nodesGrid)
-        {
-            int previous = 0;
-
-            StringBuilder grid = new StringBuilder();
-
-            for (int j = 0; j < nodesGrid.GetLength(1); j++)
-            {
-                for (int i = 0; i < nodesGrid.GetLength(0); i++)
-                {
-                    if (previous != j)
-                    {
-                        grid.Append(Environment.NewLine);
-                        previous = j;
-                    }
-
-                    grid.Append(nodesGrid[i, j]);
-
-                }
-            }
-
-            Console.WriteLine(grid.ToString());
         }
     }
 }
