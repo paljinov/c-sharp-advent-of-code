@@ -66,9 +66,10 @@ namespace App.Tasks.Year2018.Day1
         public int Solution(string input)
         {
             int[] frequencyChanges = frequencyChangesRepository.GetFrequencyChanges(input);
-            int captchaSolution = frequency.ResultingFrequencyAfterAllChanges(frequencyChanges);
+            int resultingFrequencyAfterAllChanges =
+                frequency.CalculateResultingFrequencyAfterAllChanges(frequencyChanges);
 
-            return captchaSolution;
+            return resultingFrequencyAfterAllChanges;
         }
     }
 }
