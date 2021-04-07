@@ -51,18 +51,18 @@ namespace App.Tasks.Year2018.Day2
     {
         private readonly BoxIdsRepository boxIdsRepository;
 
-        private readonly Checksum checksum;
+        private readonly BoxIds boxIds;
 
         public Part1()
         {
             boxIdsRepository = new BoxIdsRepository();
-            checksum = new Checksum();
+            boxIds = new BoxIds();
         }
 
         public int Solution(string input)
         {
             string[] boxIds = boxIdsRepository.GetBoxIds(input);
-            int boxIdsChecksum = checksum.CalculateBoxIdsChecksum(boxIds);
+            int boxIdsChecksum = this.boxIds.CalculateBoxIdsChecksum(boxIds);
 
             return boxIdsChecksum;
         }
