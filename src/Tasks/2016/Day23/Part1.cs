@@ -71,6 +71,8 @@ namespace App.Tasks.Year2016.Day23
 {
     public class Part1 : ITask<int>
     {
+        private const int REGISTER_A_START_VALUE = 7;
+
         private readonly InstructionsRepository instructionsRepository;
 
         private readonly Registers registers;
@@ -84,7 +86,7 @@ namespace App.Tasks.Year2016.Day23
         public int Solution(string input)
         {
             Dictionary<int, Instruction> instructions = instructionsRepository.GetInstructions(input);
-            int registerAValue = registers.GetRegisterAValue(instructions);
+            int registerAValue = registers.GetRegisterAValue(instructions, REGISTER_A_START_VALUE);
 
             return registerAValue;
         }

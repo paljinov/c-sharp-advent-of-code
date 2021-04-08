@@ -4,16 +4,10 @@ namespace App.Tasks.Year2016.Day23
 {
     public class Registers
     {
-        private readonly Dictionary<string, int> registers = new Dictionary<string, int>
+        public int GetRegisterAValue(Dictionary<int, Instruction> instructions, int registerAStartValue)
         {
-            { "a", 7 },
-            { "b", 0 },
-            { "c", 0 },
-            { "d", 0 }
-        };
+            Dictionary<string, int> registers = InitializeRegisters(registerAStartValue);
 
-        public int GetRegisterAValue(Dictionary<int, Instruction> instructions)
-        {
             int i = 0;
             while (i < instructions.Count)
             {
@@ -114,6 +108,17 @@ namespace App.Tasks.Year2016.Day23
             }
 
             return registers["a"];
+        }
+
+        private Dictionary<string, int> InitializeRegisters(int registerAStartValue)
+        {
+            return new Dictionary<string, int>
+            {
+                { "a", registerAStartValue },
+                { "b", 0 },
+                { "c", 0 },
+                { "d", 0 }
+            };
         }
     }
 }
