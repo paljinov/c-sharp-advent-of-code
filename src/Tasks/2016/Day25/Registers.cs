@@ -12,11 +12,11 @@ namespace App.Tasks.Year2016.Day25
         )
         {
             int registerAStartValue = 0;
-            bool found = false;
-            while (!found)
+            bool initialPositiveIntegerThatCausesClockSignalFound = false;
+            while (!initialPositiveIntegerThatCausesClockSignalFound)
             {
                 registerAStartValue++;
-                found = GetRegisterAValue(instructions, registerAStartValue);
+                initialPositiveIntegerThatCausesClockSignalFound = GetRegisterAValue(instructions, registerAStartValue);
             }
 
             return registerAStartValue;
@@ -72,6 +72,7 @@ namespace App.Tasks.Year2016.Day25
                             continue;
                         }
                         break;
+                    // Transmits the next value for the clock signal
                     case InstructionType.Transmit:
                         int actualClockSignal;
                         if (registers.ContainsKey(instruction.FirstArgument))
@@ -102,7 +103,7 @@ namespace App.Tasks.Year2016.Day25
                 i++;
             }
 
-            return true;
+            return false;
         }
 
         private Dictionary<string, int> InitializeRegisters(int registerAStartValue)
