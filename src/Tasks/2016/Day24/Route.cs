@@ -7,9 +7,9 @@ namespace App.Tasks.Year2016.Day24
     {
         private const char WALL = '#';
         private const char PASSAGE = '.';
-        private const int START_LOCATION_NUMBER = 0;
+        private const int ZERO = 0;
 
-        public int CalculateFewestNumberOfStepsRequiredToVisitEveryNonZeroNumber(char[,] map)
+        public int CalculateFewestNumberOfStepsRequiredToVisitEveryNonZeroNumber(char[,] map, bool returnToZero = false)
         {
             int fewestNumberOfSteps = int.MaxValue;
 
@@ -18,11 +18,12 @@ namespace App.Tasks.Year2016.Day24
 
             DoCalculateFewestNumberOfStepsRequiredToVisitEveryNonZeroNumber(
                 numbersDistances,
-                START_LOCATION_NUMBER,
+                ZERO,
                 numbers.Count,
-                new HashSet<int>() { START_LOCATION_NUMBER },
+                new HashSet<int>() { ZERO },
                 0,
-                ref fewestNumberOfSteps
+                ref fewestNumberOfSteps,
+                returnToZero
             );
 
             return fewestNumberOfSteps;
@@ -136,7 +137,8 @@ namespace App.Tasks.Year2016.Day24
             int totalNumbers,
             HashSet<int> visitedNumbers,
             int steps,
-            ref int fewestNumberOfSteps
+            ref int fewestNumberOfSteps,
+            bool returnToZero
         )
         {
             foreach (KeyValuePair<(int, int), int> distance in numbersDistances)
@@ -158,7 +160,25 @@ namespace App.Tasks.Year2016.Day24
                         // If all numbers are visited
                         if (updatedVisitedNumbers.Count == totalNumbers)
                         {
-                            fewestNumberOfSteps = Math.Min(steps + distance.Value, fewestNumberOfSteps);
+                            if (returnToZero)
+                            {
+                                updatedVisitedNumbers.Remove(ZERO);
+                                returnToZero = false;
+
+                                DoCalculateFewestNumberOfStepsRequiredToVisitEveryNonZeroNumber(
+                                    numbersDistances,
+                                    updatedCurrentNumber,
+                                    totalNumbers,
+                                    updatedVisitedNumbers,
+                                    steps + distance.Value,
+                                    ref fewestNumberOfSteps,
+                                    returnToZero
+                                );
+                            }
+                            else
+                            {
+                                fewestNumberOfSteps = Math.Min(steps + distance.Value, fewestNumberOfSteps);
+                            }
                         }
                         else
                         {
@@ -168,7 +188,8 @@ namespace App.Tasks.Year2016.Day24
                                 totalNumbers,
                                 updatedVisitedNumbers,
                                 steps + distance.Value,
-                                ref fewestNumberOfSteps
+                                ref fewestNumberOfSteps,
+                                returnToZero
                             );
                         }
                     }
