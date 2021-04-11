@@ -58,9 +58,7 @@ namespace App.Tasks.Year2017.Day17
 {
     public class Part1 : ITask<int>
     {
-        private const int TOTAL_REPETITIONS = 2017;
-
-        private const int VALUE_AFTER = 2017;
+        private const int LAST_INSERTED = 2017;
 
         private readonly StepsRepository stepsRepository;
 
@@ -75,9 +73,9 @@ namespace App.Tasks.Year2017.Day17
         public int Solution(string input)
         {
             int steps = stepsRepository.GetNumberOfSteps(input);
-            int value = spinlock.CalculateValueAfterTotalRepetitions(steps, TOTAL_REPETITIONS, VALUE_AFTER);
+            int valueAfterLastInserted = spinlock.CalculateValueAfterLastInserted(steps, LAST_INSERTED);
 
-            return value;
+            return valueAfterLastInserted;
         }
     }
 }

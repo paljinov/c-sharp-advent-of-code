@@ -13,7 +13,7 @@ namespace Tests.Tasks.Year2017.Day17
         }
 
         [Fact]
-        public void Solution_StepsExample_ValueAfterZeroWhenFiftyMillionthValueIsInsertedEquals()
+        public void Solution_StepsExample_ValueAfterZeroWhenFiftyMillionIsInsertedEquals()
         {
             string danceMoves = "3";
             Assert.Equal(1222153, task.Solution(danceMoves));

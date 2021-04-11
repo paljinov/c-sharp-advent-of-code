@@ -6,15 +6,14 @@ namespace App.Tasks.Year2017.Day17
     {
         private const int INITIAL_CIRCULAR_BUFFER_STATE = 0;
 
-        public int CalculateValueAfterTotalRepetitions(int steps, int totalRepetitions, int valueAfter)
+        public int CalculateValueAfterLastInserted(int steps, int lastInserted)
         {
             LinkedList<int> circularBuffer = new LinkedList<int>();
             circularBuffer.AddLast(INITIAL_CIRCULAR_BUFFER_STATE);
 
-            int insertValue = 1;
-
             LinkedListNode<int> node = circularBuffer.First;
-            while (insertValue <= totalRepetitions)
+
+            for (int insertValue = 1; insertValue <= lastInserted; insertValue++)
             {
                 for (int i = 0; i < steps; i++)
                 {
@@ -23,13 +22,29 @@ namespace App.Tasks.Year2017.Day17
 
                 circularBuffer.AddAfter(node, insertValue);
                 node = GetNextNode(node, circularBuffer);
-
-                insertValue++;
             }
 
-            int valueAfterTotalRepetitions = circularBuffer.Find(valueAfter).Next.Value;
+            int valueAfterLastInserted = circularBuffer.Find(lastInserted).Next.Value;
 
-            return valueAfterTotalRepetitions;
+            return valueAfterLastInserted;
+        }
+
+        public int CalculateValueAfterZeroWhenLastInserted(int steps, int lastInserted)
+        {
+            int valueAfterZero = 0;
+
+            int currentPosition = 0;
+            for (int insertValue = 1; insertValue <= lastInserted; insertValue++)
+            {
+                currentPosition = (currentPosition + steps) % insertValue + 1;
+                // If inserting after zero
+                if (currentPosition == 1)
+                {
+                    valueAfterZero = insertValue;
+                }
+            }
+
+            return valueAfterZero;
         }
 
         private LinkedListNode<int> GetNextNode(LinkedListNode<int> node, LinkedList<int> linkedList)
