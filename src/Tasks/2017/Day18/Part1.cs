@@ -84,9 +84,9 @@ namespace App.Tasks.Year2017.Day18
         public int Solution(string input)
         {
             Dictionary<int, Instruction> instructions = instructionsRepository.GetInstructions(input);
-            int registerAValue = registers.FindFirstRecoveredFrequency(instructions);
+            int firstRecoveredFrequency = registers.FindFirstRecoveredFrequency(instructions);
 
-            return registerAValue;
+            return firstRecoveredFrequency;
         }
     }
 }
