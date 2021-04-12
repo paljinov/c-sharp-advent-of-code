@@ -73,18 +73,18 @@ namespace App.Tasks.Year2017.Day18
     {
         private readonly InstructionsRepository instructionsRepository;
 
-        private readonly Registers registers;
+        private readonly Assembly assembly;
 
         public Part1()
         {
             instructionsRepository = new InstructionsRepository();
-            registers = new Registers();
+            assembly = new Assembly();
         }
 
         public int Solution(string input)
         {
             Dictionary<int, Instruction> instructions = instructionsRepository.GetInstructions(input);
-            int firstRecoveredFrequency = registers.FindFirstRecoveredFrequency(instructions);
+            int firstRecoveredFrequency = assembly.FindFirstRecoveredFrequency(instructions);
 
             return firstRecoveredFrequency;
         }

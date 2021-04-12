@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace App.Tasks.Year2017.Day18
 {
-    public class Registers
+    public class Assembly
     {
         private const string REGISTER_P = "p";
 

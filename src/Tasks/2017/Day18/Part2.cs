@@ -59,19 +59,19 @@ namespace App.Tasks.Year2017.Day18
     {
         private readonly InstructionsRepository instructionsRepository;
 
-        private readonly Registers registers;
+        private readonly Assembly assembly;
 
         public Part2()
         {
             instructionsRepository = new InstructionsRepository();
-            registers = new Registers();
+            assembly = new Assembly();
         }
 
         public int Solution(string input)
         {
             Dictionary<int, Instruction> instructions = instructionsRepository.GetInstructions(input);
             int programOneTotalSentValuesWhenAssemblyCodeIsRanTwice =
-                registers.CountProgramOneTotalSentValuesWhenAssemblyCodeIsRanTwice(instructions);
+                assembly.CountProgramOneTotalSentValuesWhenAssemblyCodeIsRanTwice(instructions);
 
             return programOneTotalSentValuesWhenAssemblyCodeIsRanTwice;
         }
