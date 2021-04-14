@@ -8,15 +8,12 @@ namespace App.Tasks.Year2017.Day19
 
         private const char VERTICAL_BAR = '|';
 
-        // private const char PLUS = '+';
-
-        // private const char MINUS = '-';
-
-        public string FindLettersSeenByLittlePacket(char[,] routingDiagram)
+        public (string, int) FindSeenLettersAndCountStepsMadeByLittlePacket(char[,] routingDiagram)
         {
             List<char> letters = new List<char>();
             List<char> allLetters = GetAllLetters(routingDiagram);
 
+            int steps = 1;
             (int i, int j) = FindStartCoordinate(routingDiagram);
             Direction direction = Direction.DOWN;
 
@@ -100,9 +97,11 @@ namespace App.Tasks.Year2017.Day19
                 {
                     letters.Add(routingDiagram[i, j]);
                 }
+
+                steps++;
             }
 
-            return string.Join("", letters);
+            return (string.Join("", letters), steps);
         }
 
         private List<char> GetAllLetters(char[,] routingDiagram)

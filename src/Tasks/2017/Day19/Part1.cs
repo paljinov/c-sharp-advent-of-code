@@ -54,7 +54,8 @@ namespace App.Tasks.Year2017.Day19
         public string Solution(string input)
         {
             char[,] routingDiagram = routingDiagramRepository.GetRoutingDiagram(input);
-            string lettersSeenByLittlePacket = followPath.FindLettersSeenByLittlePacket(routingDiagram);
+            (string lettersSeenByLittlePacket, _) =
+                followPath.FindSeenLettersAndCountStepsMadeByLittlePacket(routingDiagram);
 
             return lettersSeenByLittlePacket;
         }
