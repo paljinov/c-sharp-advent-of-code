@@ -54,9 +54,9 @@ namespace App.Tasks.Year2017.Day20
         public int Solution(string input)
         {
             Dictionary<int, Particle> particles = particlesRepository.GetParticles(input);
-            int leftParticles = simulation.CountLeftParticlesAfterAllCollisionsAreResolved(particles);
+            int leftParticlesCount = simulation.CountLeftParticlesAfterAllCollisionsAreResolved(particles);
 
-            return leftParticles;
+            return leftParticlesCount;
         }
     }
 }
