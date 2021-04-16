@@ -34,6 +34,47 @@ namespace App.Tasks.Year2017.Day20
             return closestParticleId;
         }
 
+        public int CountLeftParticlesAfterAllCollisionsAreResolved(Dictionary<int, Particle> particles)
+        {
+            for (int i = 0; i < SIMULATION_ITERATIONS; i++)
+            {
+                Dictionary<string, int> positions = new Dictionary<string, int>();
+
+                // Count particles on the same position
+                foreach (KeyValuePair<int, Particle> particleKeyValuePair in particles)
+                {
+                    Particle particle = particleKeyValuePair.Value;
+                    string positionKey = $"{particle.Position.X}{particle.Position.Y}{particle.Position.Z}";
+
+                    if (positions.ContainsKey(positionKey))
+                    {
+                        positions[positionKey]++;
+                    }
+                    else
+                    {
+                        positions[positionKey] = 1;
+                    }
+                }
+
+                // Remove particles which collide
+                foreach (KeyValuePair<int, Particle> particleKeyValuePair in particles)
+                {
+                    int particleId = particleKeyValuePair.Key;
+                    Particle particle = particleKeyValuePair.Value;
+                    string positionKey = $"{particle.Position.X}{particle.Position.Y}{particle.Position.Z}";
+
+                    if (positions[positionKey] > 1)
+                    {
+                        particles.Remove(particleId);
+                    }
+                }
+
+                DoSimulation(particles);
+            }
+
+            return particles.Count;
+        }
+
         private void DoSimulation(Dictionary<int, Particle> particles)
         {
             foreach (Particle particle in particles.Values)
