@@ -6,7 +6,11 @@ namespace App.Tasks.Year2017.Day21
     {
         private const char TURNED_ON_PIXEL = '#';
 
-        public int CountTurnedOnPixels(char[,] gridOfPixels, Dictionary<char[,], char[,]> rules, int totalIterations)
+        public int CountTurnedOnPixelsAfterIterations(
+            char[,] gridOfPixels,
+            Dictionary<char[,], char[,]> rules,
+            int totalIterations
+        )
         {
             for (int iteration = 0; iteration < totalIterations; iteration++)
             {

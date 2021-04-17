@@ -129,7 +129,9 @@ namespace App.Tasks.Year2017.Day21
         {
             char[,] gridOfPixelsInitialState = rulesRepository.GetGridOfPixelsInitialState();
             Dictionary<char[,], char[,]> rules = rulesRepository.GetRules(input);
-            int turnedOnPixels = grid.CountTurnedOnPixels(gridOfPixelsInitialState, rules, totalIterations);
+
+            int turnedOnPixels =
+                grid.CountTurnedOnPixelsAfterIterations(gridOfPixelsInitialState, rules, totalIterations);
 
             return turnedOnPixels;
         }
