@@ -47,9 +47,10 @@ namespace App.Tasks.Year2017.Day23
         public int Solution(string input)
         {
             Dictionary<int, Instruction> instructions = instructionsRepository.GetInstructions(input);
-            int firstRecoveredFrequency = coprocessor.CountMultiplicationInstructionInvocations(instructions);
+            int multiplicationInstructionInvocations =
+                coprocessor.CountMultiplicationInstructionInvocations(instructions);
 
-            return firstRecoveredFrequency;
+            return multiplicationInstructionInvocations;
         }
     }
 }
