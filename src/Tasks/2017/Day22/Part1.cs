@@ -126,6 +126,8 @@ namespace App.Tasks.Year2017.Day22
 {
     public class Part1 : ITask<int>
     {
+        private readonly int totalBurstsOfActivity = 10000;
+
         private readonly MapRepository mapRepository;
 
         private readonly VirusCarrier virusCarrier;
@@ -138,8 +140,9 @@ namespace App.Tasks.Year2017.Day22
 
         public int Solution(string input)
         {
-            Dictionary<(int, int), bool> infectedNodesMap = mapRepository.GetInfectedNodesMap(input);
-            int burstsThatCausedAnInfection = virusCarrier.CountBurstsThatCausedAnInfection(infectedNodesMap);
+            Dictionary<(int, int), char> nodesMap = mapRepository.GetNodesMap(input);
+            int burstsThatCausedAnInfection =
+                virusCarrier.CountBurstsThatCausedAnInfection(nodesMap, totalBurstsOfActivity);
 
             return burstsThatCausedAnInfection;
         }

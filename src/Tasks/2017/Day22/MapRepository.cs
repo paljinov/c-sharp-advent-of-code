@@ -5,16 +5,14 @@ namespace App.Tasks.Year2017.Day22
 {
     public class MapRepository
     {
-        private const char INFECTED_NODE = '#';
-
-        public Dictionary<(int, int), bool> GetInfectedNodesMap(string input)
+        public Dictionary<(int, int), char> GetNodesMap(string input)
         {
             string[] mapString = input.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
 
             int rows = mapString.Length;
             int columns = mapString[0].Length;
 
-            Dictionary<(int, int), bool> infectedNodesMap = new Dictionary<(int, int), bool>();
+            Dictionary<(int, int), char> nodesMap = new Dictionary<(int, int), char>();
 
             for (int i = 0; i < rows; i++)
             {
@@ -23,18 +21,11 @@ namespace App.Tasks.Year2017.Day22
                     int y = rows - 1 - i - (int)(rows / 2);
                     int x = j - (int)(columns / 2);
 
-                    if (mapString[i][j] == INFECTED_NODE)
-                    {
-                        infectedNodesMap[(x, y)] = true;
-                    }
-                    else
-                    {
-                        infectedNodesMap[(x, y)] = false;
-                    }
+                    nodesMap[(x, y)] = mapString[i][j];
                 }
             }
 
-            return infectedNodesMap;
+            return nodesMap;
         }
     }
 }

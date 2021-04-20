@@ -4,9 +4,11 @@ namespace App.Tasks.Year2017.Day22
 {
     public class VirusCarrier
     {
-        private readonly int totalBurstsOfActivity = 10000;
+        private const char INFECTED_NODE = '#';
 
-        public int CountBurstsThatCausedAnInfection(Dictionary<(int, int), bool> infectedNodesMap)
+        private const char CLEAN_NODE = '.';
+
+        public int CountBurstsThatCausedAnInfection(Dictionary<(int, int), char> nodesMap, int totalBurstsOfActivity)
         {
             int burstsThatCausedAnInfection = 0;
 
@@ -17,9 +19,9 @@ namespace App.Tasks.Year2017.Day22
             for (int i = 0; i < totalBurstsOfActivity; i++)
             {
                 // If node is not infected
-                if (!infectedNodesMap.ContainsKey((x, y)) || !infectedNodesMap[(x, y)])
+                if (!nodesMap.ContainsKey((x, y)) || nodesMap[(x, y)] == CLEAN_NODE)
                 {
-                    infectedNodesMap[(x, y)] = true;
+                    nodesMap[(x, y)] = INFECTED_NODE;
 
                     switch (facingDirection)
                     {
@@ -46,7 +48,7 @@ namespace App.Tasks.Year2017.Day22
                 // If node is infected
                 else
                 {
-                    infectedNodesMap[(x, y)] = false;
+                    nodesMap[(x, y)] = CLEAN_NODE;
 
                     switch (facingDirection)
                     {

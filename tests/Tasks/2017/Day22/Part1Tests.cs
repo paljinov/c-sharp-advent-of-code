@@ -22,13 +22,9 @@ namespace Tests.Tasks.Year2017.Day22
         [Fact]
         public void Solution_MapExample_BurstsThatCausedAnInfectionAfterSevenBurstsOfActivityEquals()
         {
-            VirusCarrier virusCarrier = new VirusCarrier();
-            typeof(VirusCarrier)
-                .GetField("totalBurstsOfActivity", BindingFlags.Instance | BindingFlags.NonPublic)
-                .SetValue(virusCarrier, 7);
             typeof(Part1)
-                .GetField("virusCarrier", BindingFlags.Instance | BindingFlags.NonPublic)
-                .SetValue(task, virusCarrier);
+                .GetField("totalBurstsOfActivity", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(task, 7);
 
             Assert.Equal(5, task.Solution(map));
         }
@@ -36,13 +32,9 @@ namespace Tests.Tasks.Year2017.Day22
         [Fact]
         public void Solution_MapExample_BurstsThatCausedAnInfectionAfterSeventyBurstsOfActivityEquals()
         {
-            VirusCarrier virusCarrier = new VirusCarrier();
-            typeof(VirusCarrier)
-                .GetField("totalBurstsOfActivity", BindingFlags.Instance | BindingFlags.NonPublic)
-                .SetValue(virusCarrier, 70);
             typeof(Part1)
-                .GetField("virusCarrier", BindingFlags.Instance | BindingFlags.NonPublic)
-                .SetValue(task, virusCarrier);
+                .GetField("totalBurstsOfActivity", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(task, 70);
 
             Assert.Equal(41, task.Solution(map));
         }
@@ -50,13 +42,9 @@ namespace Tests.Tasks.Year2017.Day22
         [Fact]
         public void Solution_MapExample_BurstsThatCausedAnInfectionAfterTenThousandBurstsOfActivityEquals()
         {
-            VirusCarrier virusCarrier = new VirusCarrier();
-            typeof(VirusCarrier)
-                .GetField("totalBurstsOfActivity", BindingFlags.Instance | BindingFlags.NonPublic)
-                .SetValue(virusCarrier, 10000);
             typeof(Part1)
-                .GetField("virusCarrier", BindingFlags.Instance | BindingFlags.NonPublic)
-                .SetValue(task, virusCarrier);
+                .GetField("totalBurstsOfActivity", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(task, 10000);
 
             Assert.Equal(5587, task.Solution(map));
         }
