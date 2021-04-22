@@ -60,8 +60,6 @@ What is the strength of the strongest bridge you can make with the components
 you have available?
 */
 
-using System.Collections.Generic;
-
 namespace App.Tasks.Year2017.Day24
 {
     public class Part1 : ITask<int>
@@ -79,9 +77,9 @@ namespace App.Tasks.Year2017.Day24
         public int Solution(string input)
         {
             Component[] components = componentRepository.GetComponents(input);
-            int strongestBridgeStrength = bridges.CalculateStrongestBridgeStrength(components);
+            int strengthOfStrongestBridge = bridges.CalculateStrengthOfStrongestBridge(components);
 
-            return strongestBridgeStrength;
+            return strengthOfStrongestBridge;
         }
     }
 }

@@ -5,7 +5,7 @@ namespace App.Tasks.Year2017.Day24
 {
     public class Bridges
     {
-        public int CalculateStrongestBridgeStrength(Component[] components)
+        public int CalculateStrengthOfStrongestBridge(Component[] components)
         {
             List<HashSet<Component>> bridges = new List<HashSet<Component>>();
             FindBridgesPermutations(components, 0, new HashSet<Component>(), bridges);
@@ -23,6 +23,35 @@ namespace App.Tasks.Year2017.Day24
             }
 
             return strongestBridge;
+        }
+
+        public int CalculateStrengthOfStrongestBridgeWhichLengthIsLongest(Component[] components)
+        {
+            List<HashSet<Component>> bridges = new List<HashSet<Component>>();
+            FindBridgesPermutations(components, 0, new HashSet<Component>(), bridges);
+
+            int longestBridge = 0;
+            foreach (HashSet<Component> bridge in bridges)
+            {
+                longestBridge = Math.Max(longestBridge, bridge.Count);
+            }
+
+            int strongestBridgeWhichLengthIsLongest = 0;
+            foreach (HashSet<Component> bridge in bridges)
+            {
+                if (longestBridge == bridge.Count)
+                {
+                    int bridgeStrength = 0;
+                    foreach (Component component in bridge)
+                    {
+                        bridgeStrength += component.Port1 + component.Port2;
+                    }
+
+                    strongestBridgeWhichLengthIsLongest = Math.Max(strongestBridgeWhichLengthIsLongest, bridgeStrength);
+                }
+            }
+
+            return strongestBridgeWhichLengthIsLongest;
         }
 
         public void FindBridgesPermutations(
