@@ -4,17 +4,17 @@ using Xunit;
 
 namespace Tests.Tasks.Year2017.Day24
 {
-    public class Part1Tests
+    public class Part2Tests
     {
-        private readonly Part1 task;
+        private readonly Part2 task;
 
-        public Part1Tests()
+        public Part2Tests()
         {
-            task = new Part1();
+            task = new Part2();
         }
 
         [Fact]
-        public void Solution_ComponentsExample_StrengthOfStrongestBridgeEquals()
+        public void Solution_ComponentsExample_StrengthOfStrongestBridgeWhichLengthIsLongestEquals()
         {
             string components = "0/2"
                 + $"{Environment.NewLine}2/2"
@@ -25,7 +25,7 @@ namespace Tests.Tasks.Year2017.Day24
                 + $"{Environment.NewLine}10/1"
                 + $"{Environment.NewLine}9/10";
 
-            Assert.Equal(31, task.Solution(components));
+            Assert.Equal(19, task.Solution(components));
         }
     }
 }
