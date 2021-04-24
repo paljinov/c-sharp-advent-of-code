@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Text.RegularExpressions;
 
 namespace App.Tasks.Year2018.Day3

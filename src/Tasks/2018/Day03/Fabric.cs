@@ -6,7 +6,53 @@ namespace App.Tasks.Year2018.Day3
     {
         public int CalculateSquareInchesOfFabricWithinTwoOrMoreClaims(List<Claim> claims)
         {
-            Dictionary<(int, int), int> fabric = new Dictionary<(int, int), int>();
+            Dictionary<(int, int), HashSet<int>> fabric = GetFabric(claims);
+
+            int squareInchesOfFabricWithinTwoOrMoreClaims = 0;
+            foreach (KeyValuePair<(int, int), HashSet<int>> square in fabric)
+            {
+                HashSet<int> claimIdsOnSquare = square.Value;
+                if (claimIdsOnSquare.Count > 1)
+                {
+                    squareInchesOfFabricWithinTwoOrMoreClaims++;
+                }
+            }
+
+            return squareInchesOfFabricWithinTwoOrMoreClaims;
+        }
+
+        public int FindIdOfTheOnlyClaimThatDoesntOverlap(List<Claim> claims)
+        {
+            int idOfTheOnlyClaimThatDoesntOverlap = 0;
+
+            Dictionary<(int, int), HashSet<int>> fabric = GetFabric(claims);
+
+            foreach (Claim claim in claims)
+            {
+                bool claimThatDoesntOverlap = true;
+                foreach (KeyValuePair<(int, int), HashSet<int>> square in fabric)
+                {
+                    HashSet<int> claimIdsOnSquare = square.Value;
+                    if (claimIdsOnSquare.Contains(claim.Id) && claimIdsOnSquare.Count > 1)
+                    {
+                        claimThatDoesntOverlap = false;
+                        break;
+                    }
+                }
+
+                if (claimThatDoesntOverlap)
+                {
+                    idOfTheOnlyClaimThatDoesntOverlap = claim.Id;
+                    break;
+                }
+            }
+
+            return idOfTheOnlyClaimThatDoesntOverlap;
+        }
+
+        private Dictionary<(int, int), HashSet<int>> GetFabric(List<Claim> claims)
+        {
+            Dictionary<(int, int), HashSet<int>> fabric = new Dictionary<(int, int), HashSet<int>>();
 
             foreach (Claim claim in claims)
             {
@@ -14,28 +60,17 @@ namespace App.Tasks.Year2018.Day3
                 {
                     for (int j = claim.FromTopEdge; j < claim.FromTopEdge + claim.Tall; j++)
                     {
-                        if (fabric.ContainsKey((i, j)))
+                        if (!fabric.ContainsKey((i, j)))
                         {
-                            fabric[(i, j)]++;
+                            fabric[(i, j)] = new HashSet<int>();
                         }
-                        else
-                        {
-                            fabric[(i, j)] = 1;
-                        }
+
+                        fabric[(i, j)].Add(claim.Id);
                     }
                 }
             }
 
-            int squareInchesOfFabricWithinTwoOrMoreClaims = 0;
-            foreach (KeyValuePair<(int, int), int> square in fabric)
-            {
-                if (square.Value > 1)
-                {
-                    squareInchesOfFabricWithinTwoOrMoreClaims++;
-                }
-            }
-
-            return squareInchesOfFabricWithinTwoOrMoreClaims;
+            return fabric;
         }
     }
 }
