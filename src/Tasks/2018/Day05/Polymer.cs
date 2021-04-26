@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using System.Text;
 
 namespace App.Tasks.Year2018.Day5
@@ -11,6 +13,28 @@ namespace App.Tasks.Year2018.Day5
 
             return unitsSb.Length;
         }
+
+        public int CalculateLengthOfShortestPolymerByRemovingAllUnitsOfExactlyOneType(string units)
+        {
+            int lengthOfShortestPolymerByRemovingAllUnitsOfExactlyOneType = int.MaxValue;
+
+            char[] distinctLetters = units.ToLower().Distinct().ToArray();
+
+            foreach (char letter in distinctLetters)
+            {
+                StringBuilder unitsSb = new StringBuilder(units
+                    .Replace(letter.ToString().ToUpper(), string.Empty)
+                    .Replace(letter.ToString(), string.Empty));
+
+                ScanPolymer(unitsSb);
+
+                lengthOfShortestPolymerByRemovingAllUnitsOfExactlyOneType =
+                    Math.Min(lengthOfShortestPolymerByRemovingAllUnitsOfExactlyOneType, unitsSb.Length);
+            }
+
+            return lengthOfShortestPolymerByRemovingAllUnitsOfExactlyOneType;
+        }
+
         private void ScanPolymer(StringBuilder units)
         {
             bool reaction = false;
