@@ -102,8 +102,7 @@ namespace App.Tasks.Year2018.Day4
         public int Solution(string input)
         {
             Dictionary<DateTime, Record> guardsRecords = guardsRecordsRepository.GetGuardsRecords(input);
-            int product = guards.FindProductOfIdAndMinuteForGuardWhoIsMostLikelyToBeAsleepAtSpecificMinute(
-                guardsRecords);
+            int product = guards.CalculateGuardIdAndAsleepMinuteProductForFirstStrategy(guardsRecords);
 
             return product;
         }
