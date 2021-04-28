@@ -4,17 +4,17 @@ using Xunit;
 
 namespace Tests.Tasks.Year2018.Day4
 {
-    public class Part1Tests
+    public class Part2Tests
     {
-        private readonly Part1 task;
+        private readonly Part2 task;
 
-        public Part1Tests()
+        public Part2Tests()
         {
-            task = new Part1();
+            task = new Part2();
         }
 
         [Fact]
-        public void Solution_GuardsRecordsExample_GuardIdAndAsleepMinuteProductForFirstStrategyEquals()
+        public void Solution_GuardsRecordsExample_GuardIdAndAsleepMinuteProductForSecondStrategyEquals()
         {
             string guardsRecords = "[1518-11-01 00:00] Guard #10 begins shift"
                 + $"{Environment.NewLine}[1518-11-01 00:05] falls asleep"
@@ -34,7 +34,7 @@ namespace Tests.Tasks.Year2018.Day4
                 + $"{Environment.NewLine}[1518-11-05 00:45] falls asleep"
                 + $"{Environment.NewLine}[1518-11-05 00:55] wakes up";
 
-            Assert.Equal(240, task.Solution(guardsRecords));
+            Assert.Equal(4455, task.Solution(guardsRecords));
         }
     }
 }
