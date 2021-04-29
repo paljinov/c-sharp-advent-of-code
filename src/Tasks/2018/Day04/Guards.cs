@@ -11,72 +11,13 @@ namespace App.Tasks.Year2018.Day4
             guardsRecords = guardsRecords.OrderBy(gr => gr.Key).ToDictionary(gr => gr.Key, gr => gr.Value);
             Dictionary<int, List<(DateTime, DateTime)>> guardsMinutesAsleep = FindGuardsMinutesAsleep(guardsRecords);
 
-            int guardWhoHasMostMinutesAsleep = guardsMinutesAsleep.First().Key;
-            int mostMinutesAsleep = 0;
+            int guardWhoHasMostMinutesAsleep = FindGuardWhoHasMostMinutesAsleep(guardsMinutesAsleep);
+            Dictionary<int, int> guardDaysAsleepForEachMinute =
+                FindGuardDaysAsleepForEachMinute(guardsMinutesAsleep[guardWhoHasMostMinutesAsleep]);
 
-            foreach (KeyValuePair<int, List<(DateTime, DateTime)>> guardMinutesAsleep in guardsMinutesAsleep)
-            {
-                int minutesAsleep = 0;
-                foreach ((DateTime fallsAsleep, DateTime wakesUp) in guardMinutesAsleep.Value)
-                {
-                    minutesAsleep += wakesUp.Minute - fallsAsleep.Minute;
-                }
+            int minuteWithMostDaysAsleep = FindMinuteWithMostDaysAsleepForGuard(guardDaysAsleepForEachMinute);
 
-                if (minutesAsleep > mostMinutesAsleep)
-                {
-                    mostMinutesAsleep = minutesAsleep;
-                    guardWhoHasMostMinutesAsleep = guardMinutesAsleep.Key;
-                }
-            }
-
-            List<List<int>> asleepMinutesPerDay = new List<List<int>>();
-            List<int> asleepMinutes = new List<int>();
-            int day = 0;
-
-            foreach ((DateTime fallsAsleep, DateTime wakesUp) in guardsMinutesAsleep[guardWhoHasMostMinutesAsleep])
-            {
-                // If day changed
-                if (day != fallsAsleep.Day)
-                {
-                    day = fallsAsleep.Day;
-                    asleepMinutes = new List<int>();
-                }
-
-                for (int t = fallsAsleep.Minute; t < wakesUp.Minute; t++)
-                {
-                    asleepMinutes.Add(t);
-                }
-
-                asleepMinutesPerDay.Add(asleepMinutes);
-            }
-
-            Dictionary<int, int> asleepInMinutes = new Dictionary<int, int>();
-            for (int min = 0; min <= 59; min++)
-            {
-                asleepInMinutes[min] = 0;
-            }
-
-            foreach (List<int> minutes in asleepMinutesPerDay)
-            {
-                foreach (int minute in minutes)
-                {
-                    asleepInMinutes[minute]++;
-                }
-            }
-
-            int mostTimesAsleepInMinute = 0;
-            int mostTimesAsleep = 0;
-
-            foreach (KeyValuePair<int, int> asleepInMinute in asleepInMinutes)
-            {
-                if (asleepInMinute.Value > mostTimesAsleep)
-                {
-                    mostTimesAsleep = asleepInMinute.Value;
-                    mostTimesAsleepInMinute = asleepInMinute.Key;
-                }
-            }
-
-            int product = guardWhoHasMostMinutesAsleep * mostTimesAsleepInMinute;
+            int product = guardWhoHasMostMinutesAsleep * minuteWithMostDaysAsleep;
 
             return product;
         }
@@ -86,45 +27,36 @@ namespace App.Tasks.Year2018.Day4
             guardsRecords = guardsRecords.OrderBy(gr => gr.Key).ToDictionary(gr => gr.Key, gr => gr.Value);
             Dictionary<int, List<(DateTime, DateTime)>> guardsMinutesAsleep = FindGuardsMinutesAsleep(guardsRecords);
 
-            Dictionary<int, Dictionary<int, int>> guardsAsleepPerMinutes = new Dictionary<int, Dictionary<int, int>>();
-            foreach (KeyValuePair<int, List<(DateTime, DateTime)>> guardMinutesAsleep in guardsMinutesAsleep)
+            Dictionary<int, Dictionary<int, int>> guardsDaysAsleepForEachMinute =
+                new Dictionary<int, Dictionary<int, int>>();
+            foreach (int guardId in guardsMinutesAsleep.Keys)
             {
-                foreach ((DateTime fallsAsleep, DateTime wakesUp) in guardMinutesAsleep.Value)
-                {
-                    for (int minute = fallsAsleep.Minute; minute < wakesUp.Minute; minute++)
-                    {
-                        if (!guardsAsleepPerMinutes.ContainsKey(guardMinutesAsleep.Key))
-                        {
-                            guardsAsleepPerMinutes[guardMinutesAsleep.Key] = new Dictionary<int, int>();
-                            for (int min = 0; min <= 59; min++)
-                            {
-                                guardsAsleepPerMinutes[guardMinutesAsleep.Key][min] = 0;
-                            }
-                        }
+                guardsDaysAsleepForEachMinute[guardId] = FindGuardDaysAsleepForEachMinute(guardsMinutesAsleep[guardId]);
+            }
 
-                        guardsAsleepPerMinutes[guardMinutesAsleep.Key][minute]++;
+            int guardWhoIsMostFrequentlyAsleepOnSameMinute = guardsDaysAsleepForEachMinute.First().Key;
+            int mostFrequentlyAsleepMinute = FindMinuteWithMostDaysAsleepForGuard(
+                guardsDaysAsleepForEachMinute[guardWhoIsMostFrequentlyAsleepOnSameMinute]);
+            int totalDaysForMostFrequentlyAsleepMinute = 0;
+
+            foreach (KeyValuePair<int, Dictionary<int, int>> guardDaysAsleepForEachMinute in guardsDaysAsleepForEachMinute)
+            {
+                if (guardDaysAsleepForEachMinute.Value.Count > 0)
+                {
+                    int minuteWithMostDaysAsleep =
+                        FindMinuteWithMostDaysAsleepForGuard(guardDaysAsleepForEachMinute.Value);
+                    int daysAsleep = guardDaysAsleepForEachMinute.Value[minuteWithMostDaysAsleep];
+
+                    if (daysAsleep > totalDaysForMostFrequentlyAsleepMinute)
+                    {
+                        guardWhoIsMostFrequentlyAsleepOnSameMinute = guardDaysAsleepForEachMinute.Key;
+                        mostFrequentlyAsleepMinute = minuteWithMostDaysAsleep;
+                        totalDaysForMostFrequentlyAsleepMinute = daysAsleep;
                     }
                 }
             }
 
-            int guardId = 0;
-            int mostFrequentlyAsleepMinute = 0;
-            int mostFrequentlyAsleep = 0;
-
-            foreach (KeyValuePair<int, Dictionary<int, int>> guardAsleepPerMinutes in guardsAsleepPerMinutes)
-            {
-                foreach (KeyValuePair<int, int> asleepPerMinute in guardAsleepPerMinutes.Value)
-                {
-                    if (asleepPerMinute.Value > mostFrequentlyAsleep)
-                    {
-                        guardId = guardAsleepPerMinutes.Key;
-                        mostFrequentlyAsleepMinute = asleepPerMinute.Key;
-                        mostFrequentlyAsleep = asleepPerMinute.Value;
-                    }
-                }
-            }
-
-            int product = guardId * mostFrequentlyAsleepMinute;
+            int product = guardWhoIsMostFrequentlyAsleepOnSameMinute * mostFrequentlyAsleepMinute;
 
             return product;
         }
@@ -159,6 +91,65 @@ namespace App.Tasks.Year2018.Day4
             }
 
             return guardsMinutesAsleep;
+        }
+
+        private int FindGuardWhoHasMostMinutesAsleep(Dictionary<int, List<(DateTime, DateTime)>> guardsMinutesAsleep)
+        {
+            int guardWhoHasMostMinutesAsleep = guardsMinutesAsleep.First().Key;
+            int mostMinutesAsleep = 0;
+
+            foreach (KeyValuePair<int, List<(DateTime, DateTime)>> guardMinutesAsleep in guardsMinutesAsleep)
+            {
+                int minutesAsleep = 0;
+                foreach ((DateTime fallsAsleep, DateTime wakesUp) in guardMinutesAsleep.Value)
+                {
+                    minutesAsleep += wakesUp.Minute - fallsAsleep.Minute;
+                }
+
+                if (minutesAsleep > mostMinutesAsleep)
+                {
+                    mostMinutesAsleep = minutesAsleep;
+                    guardWhoHasMostMinutesAsleep = guardMinutesAsleep.Key;
+                }
+            }
+
+            return guardWhoHasMostMinutesAsleep;
+        }
+
+        private Dictionary<int, int> FindGuardDaysAsleepForEachMinute(List<(DateTime, DateTime)> guardMinutesAsleep)
+        {
+            Dictionary<int, int> daysAsleepForEachMinute = new Dictionary<int, int>();
+            foreach ((DateTime fallsAsleep, DateTime wakesUp) in guardMinutesAsleep)
+            {
+                for (int minute = fallsAsleep.Minute; minute < wakesUp.Minute; minute++)
+                {
+                    if (!daysAsleepForEachMinute.ContainsKey(minute))
+                    {
+                        daysAsleepForEachMinute[minute] = 1;
+                    }
+                    else
+                    {
+                        daysAsleepForEachMinute[minute]++;
+                    }
+                }
+            }
+
+            return daysAsleepForEachMinute;
+        }
+
+        private int FindMinuteWithMostDaysAsleepForGuard(Dictionary<int, int> guardDaysAsleepForEachMinute)
+        {
+            int minuteWithMostDaysAsleep = 0;
+            foreach (KeyValuePair<int, int> guardDaysAsleepForMinute in guardDaysAsleepForEachMinute)
+            {
+                if (!guardDaysAsleepForEachMinute.ContainsKey(minuteWithMostDaysAsleep)
+                    || guardDaysAsleepForMinute.Value > guardDaysAsleepForEachMinute[minuteWithMostDaysAsleep])
+                {
+                    minuteWithMostDaysAsleep = guardDaysAsleepForMinute.Key;
+                }
+            }
+
+            return minuteWithMostDaysAsleep;
         }
     }
 }
