@@ -22,6 +22,40 @@ namespace App.Tasks.Year2018.Day6
             return sizeOfTheLargestNonInfiniteArea;
         }
 
+        public int CalculateRegionSize(List<(int, int)> coordinates, int totalDistanceToAllCoordinatesLessThan)
+        {
+            int regionSize = 0;
+
+            (int leftX, int rightX, int topY, int bottomY) = GetEdgeCoordinates(coordinates);
+            leftX = Math.Max(leftX - totalDistanceToAllCoordinatesLessThan, 0);
+            rightX += totalDistanceToAllCoordinatesLessThan;
+            topY = Math.Max(topY - totalDistanceToAllCoordinatesLessThan, 0);
+            bottomY += totalDistanceToAllCoordinatesLessThan;
+
+            for (int i = leftX; i <= rightX; i++)
+            {
+                for (int j = topY; j <= bottomY; j++)
+                {
+                    int totalDistance = 0;
+                    foreach ((int, int) coordinate in coordinates)
+                    {
+                        totalDistance += CalculateManhattanDistance((i, j), coordinate);
+                        if (totalDistance >= totalDistanceToAllCoordinatesLessThan)
+                        {
+                            break;
+                        }
+                    }
+
+                    if (totalDistance < totalDistanceToAllCoordinatesLessThan)
+                    {
+                        regionSize++;
+                    }
+                }
+            }
+
+            return regionSize;
+        }
+
         private (int leftX, int rightX, int topY, int bottomY) GetEdgeCoordinates(List<(int, int)> coordinates)
         {
             int leftX = int.MaxValue;
@@ -105,7 +139,7 @@ namespace App.Tasks.Year2018.Day6
                 for (int j = topY; j <= bottomY; j++)
                 {
                     bool isAnySurroundingPointCloser = false;
-                    foreach ((int x, int y) coordinate in coordinates)
+                    foreach ((int, int) coordinate in coordinates)
                     {
                         if (surroundedPoint != coordinate
                             && !IsFirstPointCloserToReferencePoint((i, j), surroundedPoint, coordinate))
