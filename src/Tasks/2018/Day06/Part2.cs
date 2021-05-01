@@ -51,7 +51,7 @@ namespace App.Tasks.Year2018.Day6
 {
     public class Part2 : ITask<int>
     {
-        private static readonly int totalDistanceToAllCoordinatesLessThan = 10000;
+        private readonly int totalDistanceToAllCoordinatesLessThan = 10000;
 
         private readonly CoordinatesRepository coordinatesRepository;
 
