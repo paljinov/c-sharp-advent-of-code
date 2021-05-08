@@ -180,7 +180,7 @@ namespace App.Tasks.Year2018.Day10
         public string Solution(string input)
         {
             List<Point> points = pointsRepository.GetPoints(input);
-            string message = this.message.FindMessageWhichAppearsInTheSky(points);
+            (string message, _) = this.message.FindMessageWhichAppearsInTheSky(points);
 
             return message;
         }

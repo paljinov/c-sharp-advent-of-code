@@ -11,7 +11,7 @@ namespace App.Tasks.Year2018.Day10
 
         private const char HASH = '#';
 
-        public string FindMessageWhichAppearsInTheSky(List<Point> points)
+        public (string, int) FindMessageWhichAppearsInTheSky(List<Point> points)
         {
             int minDiff = int.MaxValue;
             bool messageFound = false;
@@ -53,7 +53,7 @@ namespace App.Tasks.Year2018.Day10
 
             string message = GetMessage(points);
 
-            return message;
+            return (message, seconds);
         }
 
         private string GetMessage(List<Point> points)
