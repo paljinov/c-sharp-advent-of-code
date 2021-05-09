@@ -8,7 +8,7 @@ namespace App.Tasks.Year2018.Day11
 
         private const int SUBTRACT_FROM_FUEL_CELL_POWER_LEVEL = 5;
 
-        public (int, int) FindTopLeftFuelCellCoordinateOfTheSquareWithLargestTotalPower(int gridSerialNumber)
+        public (int, int) FindTopLeftFuelCellCoordinateOfThe3x3SquareWithLargestTotalPower(int gridSerialNumber)
         {
             int[,] grid = new int[GRID_SQUARE_LENGTH, GRID_SQUARE_LENGTH];
             for (int i = 0; i < GRID_SQUARE_LENGTH; i++)
@@ -19,7 +19,7 @@ namespace App.Tasks.Year2018.Day11
                 }
             }
 
-            (int x, int y) = FindTopLeftFuelCellCoordinateForThreeTimesThreeSquareWithLargestTotalPower(grid);
+            (int x, int y) = FindTopLeftFuelCellCoordinateOfThe3x3SquareWithLargestTotalPowerForGrid(grid);
 
             return (x, y);
         }
@@ -43,7 +43,7 @@ namespace App.Tasks.Year2018.Day11
             return fuelCellPowerLevel;
         }
 
-        private (int x, int y) FindTopLeftFuelCellCoordinateForThreeTimesThreeSquareWithLargestTotalPower(int[,] grid)
+        private (int x, int y) FindTopLeftFuelCellCoordinateOfThe3x3SquareWithLargestTotalPowerForGrid(int[,] grid)
         {
             int x = 0;
             int y = 0;

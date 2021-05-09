@@ -91,7 +91,8 @@ namespace App.Tasks.Year2018.Day11
         public string Solution(string input)
         {
             int gridSerialNumber = gridSerialNumberRepository.GetGridSerialNumber(input);
-            (int x, int y) = fuelCells.FindTopLeftFuelCellCoordinateOfTheSquareWithLargestTotalPower(gridSerialNumber);
+            (int x, int y) =
+                fuelCells.FindTopLeftFuelCellCoordinateOfThe3x3SquareWithLargestTotalPower(gridSerialNumber);
 
             return $"{x},{y}";
         }
