@@ -8,7 +8,42 @@ namespace App.Tasks.Year2018.Day11
 
         private const int SUBTRACT_FROM_FUEL_CELL_POWER_LEVEL = 5;
 
-        public (int, int) FindTopLeftFuelCellCoordinateOfThe3x3SquareWithLargestTotalPower(int gridSerialNumber)
+        public (int x, int y) FindTopLeftFuelCellCoordinateOfThe3x3SquareWithLargestTotalPower(int gridSerialNumber)
+        {
+            int[,] grid = CalculateGridFuelCellsPowerLevels(gridSerialNumber);
+            int squareSize = 3;
+
+            (int x, int y, _) = FindTopLeftFuelCellCoordinateOfTheSquareWithLargestTotalPower(grid, squareSize);
+
+            return (x, y);
+        }
+
+        public (int x, int y, int squareSize) FindIdentifierOfTheSquareWithTheLargestTotalPower(int gridSerialNumber)
+        {
+            int x = 1;
+            int y = 1;
+            int largestTotalPower = 0;
+            int largestTotalPowerSquareSize = 1;
+
+            int[,] grid = CalculateGridFuelCellsPowerLevels(gridSerialNumber);
+            for (int squareSize = 1; squareSize <= GRID_SQUARE_LENGTH; squareSize++)
+            {
+                (int i, int j, int totalPower) =
+                    FindTopLeftFuelCellCoordinateOfTheSquareWithLargestTotalPower(grid, squareSize);
+
+                if (totalPower > largestTotalPower)
+                {
+                    x = i;
+                    y = j;
+                    largestTotalPower = totalPower;
+                    largestTotalPowerSquareSize = squareSize;
+                }
+            }
+
+            return (x, y, largestTotalPowerSquareSize);
+        }
+
+        private int[,] CalculateGridFuelCellsPowerLevels(int gridSerialNumber)
         {
             int[,] grid = new int[GRID_SQUARE_LENGTH, GRID_SQUARE_LENGTH];
             for (int i = 0; i < GRID_SQUARE_LENGTH; i++)
@@ -19,9 +54,7 @@ namespace App.Tasks.Year2018.Day11
                 }
             }
 
-            (int x, int y) = FindTopLeftFuelCellCoordinateOfThe3x3SquareWithLargestTotalPowerForGrid(grid);
-
-            return (x, y);
+            return grid;
         }
 
         private int CalculateFuelCellPowerLevel(int x, int y, int gridSerialNumber)
@@ -43,21 +76,24 @@ namespace App.Tasks.Year2018.Day11
             return fuelCellPowerLevel;
         }
 
-        private (int x, int y) FindTopLeftFuelCellCoordinateOfThe3x3SquareWithLargestTotalPowerForGrid(int[,] grid)
+        private (int x, int y, int largestTotalPower) FindTopLeftFuelCellCoordinateOfTheSquareWithLargestTotalPower(
+            int[,] grid,
+            int squareSize
+        )
         {
-            int x = 0;
-            int y = 0;
+            int x = 1;
+            int y = 1;
             int largestTotalPower = 0;
 
-            for (int i = 0; i < GRID_SQUARE_LENGTH - 3; i++)
+            for (int i = 0; i <= GRID_SQUARE_LENGTH - squareSize; i++)
             {
-                for (int j = 0; j < GRID_SQUARE_LENGTH - 3; j++)
+                for (int j = 0; j <= GRID_SQUARE_LENGTH - squareSize; j++)
                 {
                     int totalPower = 0;
 
-                    for (int k = i; k < i + 3; k++)
+                    for (int k = i; k < i + squareSize; k++)
                     {
-                        for (int h = j; h < j + 3; h++)
+                        for (int h = j; h < j + squareSize; h++)
                         {
                             totalPower += grid[k, h];
                         }
@@ -73,7 +109,7 @@ namespace App.Tasks.Year2018.Day11
                 }
             }
 
-            return (x, y);
+            return (x, y, largestTotalPower);
         }
     }
 }
