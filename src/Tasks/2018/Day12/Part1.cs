@@ -108,9 +108,9 @@ using System.Collections.Generic;
 
 namespace App.Tasks.Year2018.Day12
 {
-    public class Part1 : ITask<int>
+    public class Part1 : ITask<long>
     {
-        private const int GENERATIONS = 20;
+        private const long GENERATIONS = 20;
 
         private readonly PlantsRepository plantsRepository;
 
@@ -121,14 +121,14 @@ namespace App.Tasks.Year2018.Day12
             plantsRepository = new PlantsRepository();
             plantsGenerations = new PlantsGenerations();
         }
-        public int Solution(string input)
+        public long Solution(string input)
         {
             string pots = plantsRepository.GetPots(input);
             Dictionary<string, char> spreadNotes = plantsRepository.GetSpreadNotes(input);
-            int numbersSumOfAllPotsWhichContainPlantAfterGenerations = plantsGenerations
-                .CalculateNumbersSumOfAllPotsWhichContainPlantAfterGenerations(pots, spreadNotes, GENERATIONS);
+            long sumOfTheNumbersOfAllPotsWhichContainPlantAfterGenerations = plantsGenerations
+                .CalculateSumOfTheNumbersOfAllPotsWhichContainPlantAfterGenerations(pots, spreadNotes, GENERATIONS);
 
-            return numbersSumOfAllPotsWhichContainPlantAfterGenerations;
+            return sumOfTheNumbersOfAllPotsWhichContainPlantAfterGenerations;
         }
     }
 }

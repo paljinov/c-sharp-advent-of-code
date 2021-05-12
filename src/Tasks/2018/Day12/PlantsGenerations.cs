@@ -10,40 +10,42 @@ namespace App.Tasks.Year2018.Day12
 
         private const char NO_PLANT = '.';
 
-        public int CalculateNumbersSumOfAllPotsWhichContainPlantAfterGenerations(
+        private const int SPREAD_GROWTH_REPETITIONS_LIMIT = 10;
+
+        public long CalculateSumOfTheNumbersOfAllPotsWhichContainPlantAfterGenerations(
             string pots,
             Dictionary<string, char> spreadNotes,
-            int generations
+            long generations
         )
         {
             Dictionary<int, char> currentGeneration = new Dictionary<int, char>();
-
-            int from = -generations * 4 - 2;
-            int to = pots.Length + generations * 4 + 2;
-
-            for (int i = from; i < 0; i++)
-            {
-                currentGeneration.Add(i, NO_PLANT);
-            }
             for (int i = 0; i < pots.Length; i++)
             {
                 currentGeneration.Add(i, pots[i]);
             }
-            for (int i = pots.Length; i < to; i++)
-            {
-                currentGeneration.Add(i, NO_PLANT);
-            }
 
-            for (int generation = 1; generation <= generations; generation++)
-            {
-                Dictionary<int, char> nextGeneration = currentGeneration.ToDictionary(p => p.Key, p => p.Value);
+            int previousSpreadGrowth = 0;
+            int spreadGrowthRepetitions = 0;
+            long generation;
 
-                for (int i = from + 2; i < to - 2; i++)
+            for (generation = 1; generation <= generations; generation++)
+            {
+                Dictionary<int, char> nextGeneration = new Dictionary<int, char>(currentGeneration);
+                int sumOfTheNumbersOfAllPots = CalculateSumOfTheNumbersOfAllPotsForGeneration(currentGeneration);
+
+                for (int i = -2; i < currentGeneration.Count + 2; i++)
                 {
                     StringBuilder adjacentPotsSb = new StringBuilder();
                     for (int j = i - 2; j <= i + 2; j++)
                     {
-                        adjacentPotsSb.Append(currentGeneration[j]);
+                        if (currentGeneration.ContainsKey(j))
+                        {
+                            adjacentPotsSb.Append(currentGeneration[j]);
+                        }
+                        else
+                        {
+                            adjacentPotsSb.Append(NO_PLANT);
+                        }
                     }
 
                     string adjacentPots = adjacentPotsSb.ToString();
@@ -57,19 +59,51 @@ namespace App.Tasks.Year2018.Day12
                     }
                 }
 
-                currentGeneration = nextGeneration.ToDictionary(p => p.Key, p => p.Value);
+                int spreadGrowth = CalculateSumOfTheNumbersOfAllPotsForGeneration(nextGeneration)
+                    - sumOfTheNumbersOfAllPots;
+
+                // Is spread growth is the same as in the last generation
+                if (spreadGrowth == previousSpreadGrowth)
+                {
+                    spreadGrowthRepetitions++;
+                }
+                else
+                {
+                    spreadGrowthRepetitions = 0;
+                }
+
+                // After spread growth is repeated many times it is continuous growth
+                if (spreadGrowthRepetitions == SPREAD_GROWTH_REPETITIONS_LIMIT)
+                {
+                    break;
+                }
+
+                previousSpreadGrowth = spreadGrowth;
+
+                currentGeneration = new Dictionary<int, char>(nextGeneration);
             }
 
-            int numbersSumOfAllPotsWhichContainPlantAfterGenerations = 0;
-            foreach (KeyValuePair<int, char> pot in currentGeneration)
+            long sumOfTheNumbersOfAllPotsWhichContainPlantAfterGenerations =
+                CalculateSumOfTheNumbersOfAllPotsForGeneration(currentGeneration);
+
+            sumOfTheNumbersOfAllPotsWhichContainPlantAfterGenerations +=
+                (generations - (generation - 1)) * previousSpreadGrowth;
+
+            return sumOfTheNumbersOfAllPotsWhichContainPlantAfterGenerations;
+        }
+
+        private int CalculateSumOfTheNumbersOfAllPotsForGeneration(Dictionary<int, char> generation)
+        {
+            int sumOfTheNumbersOfAllPots = 0;
+            foreach (KeyValuePair<int, char> pot in generation)
             {
                 if (pot.Value == PLANT)
                 {
-                    numbersSumOfAllPotsWhichContainPlantAfterGenerations += pot.Key;
+                    sumOfTheNumbersOfAllPots += pot.Key;
                 }
             }
 
-            return numbersSumOfAllPotsWhichContainPlantAfterGenerations;
+            return sumOfTheNumbersOfAllPots;
         }
     }
 }
