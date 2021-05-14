@@ -73,18 +73,18 @@ namespace App.Tasks.Year2018.Day14
 {
     public class Part1 : ITask<string>
     {
-        private readonly NumberOfRecipesRepository numberOfRecipesRepository;
+        private readonly RecipesRepository recipesRepository;
 
         private readonly Scores scores;
 
         public Part1()
         {
-            numberOfRecipesRepository = new NumberOfRecipesRepository();
+            recipesRepository = new RecipesRepository();
             scores = new Scores();
         }
         public string Solution(string input)
         {
-            int numberOfRecipes = numberOfRecipesRepository.GetNumberOfRecipesRepository(input);
+            int numberOfRecipes = recipesRepository.GetNumberOfRecipesRepository(input);
             string scoresOfTenRecipesImmediatelyAfterInputNumberOfRecipes = scores
                 .CalculateScoresOfTenRecipesImmediatelyAfterInputNumberOfRecipes(numberOfRecipes);
 
