@@ -53,9 +53,10 @@ namespace App.Tasks.Year2019.Day1
         public int Solution(string input)
         {
             int[] modulesMasses = modulesMassesRepository.GetModulesMasses(input);
-            int sumForAllModulesFuelRequirements = fuelCounter.CalculateSumForAllModulesFuelRequirements(modulesMasses);
+            int sumOfTheFuelRequirementsForAllOfTheModules =
+                fuelCounter.CalculateSumOfTheFuelRequirementsForAllOfTheModules(modulesMasses);
 
-            return sumForAllModulesFuelRequirements;
+            return sumOfTheFuelRequirementsForAllOfTheModules;
         }
     }
 }
