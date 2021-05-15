@@ -5,6 +5,7 @@
 * [2016](https://github.com/paljinov/c-sharp-advent-of-code/tree/master/src/Tasks/2016)
 * [2017](https://github.com/paljinov/c-sharp-advent-of-code/tree/master/src/Tasks/2017)
 * [2018](https://github.com/paljinov/c-sharp-advent-of-code/tree/master/src/Tasks/2018)
+* [2019](https://github.com/paljinov/c-sharp-advent-of-code/tree/master/src/Tasks/2019)
 * [2020](https://github.com/paljinov/c-sharp-advent-of-code/tree/master/src/Tasks/2020)
 
 ## Prerequisites for running project
