@@ -89,6 +89,8 @@ namespace App.Tasks.Year2019.Day2
 {
     public class Part1 : ITask<int>
     {
+        private readonly bool replacePositions = true;
+
         private readonly IntegersRepository integersRepository;
 
         private readonly RunProgram runProgram;
@@ -103,7 +105,7 @@ namespace App.Tasks.Year2019.Day2
         {
             int[] integers = integersRepository.GetIntegers(input);
             int valueLeftAtFirstPositionAfterProgramHalts =
-                runProgram.CalculateValueLeftAtFirstPositionAfterProgramHalts(integers);
+                runProgram.CalculateValueLeftAtFirstPositionAfterProgramHalts(integers, replacePositions);
 
             return valueLeftAtFirstPositionAfterProgramHalts;
         }
