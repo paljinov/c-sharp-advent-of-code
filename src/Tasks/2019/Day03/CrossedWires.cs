@@ -6,6 +6,10 @@ namespace App.Tasks.Year2019.Day3
 {
     public class CrossedWires
     {
+        private const int FIRST_WIRE = 1;
+
+        private const int SECOND_WIRE = 2;
+
         public int CalculateManhattanDistanceFromTheCentralPortToTheClosestIntersection(
             Dictionary<int, List<Instruction>> wiresPaths
         )
@@ -18,14 +22,10 @@ namespace App.Tasks.Year2019.Day3
                 wiresLocations.Add(wirePath.Key, wireLocations);
             }
 
-            IEnumerable<(int, int)> intersections = wiresLocations[1].Intersect(wiresLocations[2]);
-            int minManhattanDistance = int.MaxValue;
+            IEnumerable<(int, int)> wiresIntersections =
+                wiresLocations[FIRST_WIRE].Intersect(wiresLocations[SECOND_WIRE]);
 
-            foreach ((int x, int y) in intersections)
-            {
-                int manhattanDistance = Math.Abs(x) + Math.Abs(y);
-                minManhattanDistance = Math.Min(manhattanDistance, minManhattanDistance);
-            }
+            int minManhattanDistance = CalculateMinManhattanDistance(wiresIntersections);
 
             return minManhattanDistance;
         }
@@ -79,6 +79,19 @@ namespace App.Tasks.Year2019.Day3
             }
 
             return wireLocations;
+        }
+
+        private int CalculateMinManhattanDistance(IEnumerable<(int, int)> wiresIntersections)
+        {
+            int minManhattanDistance = int.MaxValue;
+
+            foreach ((int x, int y) in wiresIntersections)
+            {
+                int manhattanDistance = Math.Abs(x) + Math.Abs(y);
+                minManhattanDistance = Math.Min(manhattanDistance, minManhattanDistance);
+            }
+
+            return minManhattanDistance;
         }
     }
 }

@@ -59,7 +59,6 @@ What is the Manhattan distance from the central port to the closest
 intersection?
 */
 
-using System;
 using System.Collections.Generic;
 
 namespace App.Tasks.Year2019.Day3
