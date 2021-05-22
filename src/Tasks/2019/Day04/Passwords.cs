@@ -2,13 +2,19 @@ namespace App.Tasks.Year2019.Day4
 {
     public class Passwords
     {
-        public int CountDifferentPasswordsWithinRangeWhichMeetCriteria((int Start, int End) passwordsRange)
+        public int CountDifferentPasswordsWithinRangeWhichMeetCriteria(
+            (int Start, int End) passwordsRange,
+            bool adjacentMatchingDigitsAreNotPartOfLargerGroupCriteria = false
+        )
         {
             int passwordsWithinRangeWhichMeetCriteria = 0;
 
             for (int password = passwordsRange.Start; password <= passwordsRange.End; password++)
             {
-                if (TwoAdjacentDigitsAreSame(password) && DigitsNeverDecrease(password))
+                string passwordString = password.ToString();
+
+                if (TwoAdjacentDigitsAreSame(passwordString, adjacentMatchingDigitsAreNotPartOfLargerGroupCriteria)
+                    && DigitsNeverDecrease(passwordString))
                 {
                     passwordsWithinRangeWhichMeetCriteria++;
                 }
@@ -17,28 +23,44 @@ namespace App.Tasks.Year2019.Day4
             return passwordsWithinRangeWhichMeetCriteria;
         }
 
-        private bool TwoAdjacentDigitsAreSame(int password)
+        private bool TwoAdjacentDigitsAreSame(
+            string password,
+            bool adjacentMatchingDigitsAreNotPartOfLargerGroupCriteria
+        )
         {
-            string passwordString = password.ToString();
-
-            for (int i = 0; i < passwordString.Length - 1; i++)
+            int i = 0;
+            while (i < password.Length - 1)
             {
-                if (passwordString[i] == passwordString[i + 1])
+                if (password[i] == password[i + 1])
                 {
-                    return true;
+                    // If adjacent matching digits are not part of a larger group of matching digits is not criteria
+                    // or group size is only two
+                    if (!adjacentMatchingDigitsAreNotPartOfLargerGroupCriteria
+                        || i + 2 == password.Length || password[i] != password[i + 2])
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        // In case of larger group move forward until digit changes
+                        while (i + 1 < password.Length && password[i] == password[i + 1])
+                        {
+                            i++;
+                        }
+                    }
                 }
+
+                i++;
             }
 
             return false;
         }
 
-        private bool DigitsNeverDecrease(int password)
+        private bool DigitsNeverDecrease(string password)
         {
-            string passwordString = password.ToString();
-
-            for (int i = 0; i < passwordString.Length - 1; i++)
+            for (int i = 0; i < password.Length - 1; i++)
             {
-                if (passwordString[i] > passwordString[i + 1])
+                if (password[i] > password[i + 1])
                 {
                     return false;
                 }
