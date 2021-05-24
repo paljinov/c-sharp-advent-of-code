@@ -16,32 +16,21 @@ basement?
 
 namespace App.Tasks.Year2015.Day1
 {
+
     public class Part2 : ITask<int>
     {
+        private readonly Floor floor;
+
+        public Part2()
+        {
+            floor = new Floor();
+        }
+
         public int Solution(string input)
         {
-            int floor = 0;
+            (_, int stepsToEnterBasementFirstTime) = floor.FindResultFloorAndStepsToEnterBasementFirstTime(input);
 
-            for (int i = 0; i <= input.Length; i++)
-            {
-                char parenthesis = input[i];
-
-                if (parenthesis == '(')
-                {
-                    floor += 1;
-                }
-                else
-                {
-                    floor -= 1;
-                }
-
-                if (floor == -1)
-                {
-                    return i + 1;
-                }
-            }
-
-            return 0;
+            return stepsToEnterBasementFirstTime;
         }
     }
 }

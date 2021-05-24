@@ -37,23 +37,18 @@ namespace App.Tasks.Year2015.Day1
 {
     public class Part1 : ITask<int>
     {
+        private readonly Floor floor;
+
+        public Part1()
+        {
+            floor = new Floor();
+        }
+
         public int Solution(string input)
         {
-            int floor = 0;
+            (int resultFloor, _) = floor.FindResultFloorAndStepsToEnterBasementFirstTime(input);
 
-            foreach (char parenthesis in input)
-            {
-                if (parenthesis == '(')
-                {
-                    floor += 1;
-                }
-                else
-                {
-                    floor -= 1;
-                }
-            }
-
-            return floor;
+            return resultFloor;
         }
     }
 }
