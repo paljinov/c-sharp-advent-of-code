@@ -4,40 +4,72 @@ namespace App.Tasks.Year2015.Day3
 {
     public class Houses
     {
-        public static HashSet<(int, int)> GetVisitedHousesLocationsForMoves(string moves)
+        public int CountHousesThatReceiveAtLeastOnePresent(CardinalDirection[] instructions)
         {
-            HashSet<(int, int)> houseLocations = new HashSet<(int, int)>();
+            HashSet<(int, int)> visitedHouses = GetVisitedHouses(instructions);
 
-            // Starting location is (0,0) we track visited houses by using Cartesian coordinate system
+            return visitedHouses.Count;
+        }
+
+        public int CountHousesThatReceiveAtLeastOnePresentWithRoboSanta(CardinalDirection[] instructions)
+        {
+            CardinalDirection[] santaMoves = new CardinalDirection[instructions.Length / 2];
+            CardinalDirection[] roboSantaMoves = new CardinalDirection[instructions.Length / 2];
+
+            for (int i = 0; i < instructions.Length; i++)
+            {
+                CardinalDirection instruction = instructions[i];
+
+                if (i % 2 == 0)
+                {
+                    santaMoves[i / 2] = instruction;
+                }
+                else
+                {
+                    roboSantaMoves[i / 2] = instruction;
+                }
+            }
+
+            HashSet<(int, int)> santaHouseLocations = GetVisitedHouses(santaMoves);
+            HashSet<(int, int)> roboSantaHouseLocations = GetVisitedHouses(roboSantaMoves);
+
+            santaHouseLocations.UnionWith(roboSantaHouseLocations);
+
+            return santaHouseLocations.Count;
+        }
+
+        private HashSet<(int, int)> GetVisitedHouses(CardinalDirection[] instructions)
+        {
+            HashSet<(int, int)> visitedHouses = new HashSet<(int, int)>();
+
+            // Starting location is (0,0)
             int x = 0;
             int y = 0;
 
-            houseLocations.Add((x, y));
+            visitedHouses.Add((x, y));
 
-            foreach (char move in moves)
+            foreach (CardinalDirection instruction in instructions)
             {
-                switch (move)
+                switch (instruction)
                 {
-                    case '^': // north
+                    case CardinalDirection.North:
                         y += 1;
                         break;
-                    case 'v': // south
+                    case CardinalDirection.South:
                         y -= 1;
                         break;
-                    case '>': // east
+                    case CardinalDirection.East:
                         x += 1;
                         break;
-                    case '<': // west
-                        x -= 1;
-                        break;
                     default:
+                        x -= 1;
                         break;
                 }
 
-                houseLocations.Add((x, y));
+                visitedHouses.Add((x, y));
             }
 
-            return houseLocations;
+            return visitedHouses;
         }
     }
 }

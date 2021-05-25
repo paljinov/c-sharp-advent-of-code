@@ -27,11 +27,23 @@ namespace App.Tasks.Year2015.Day3
 {
     public class Part1 : ITask<int>
     {
-        public int Solution(string moves)
-        {
-            var houseLocations = Houses.GetVisitedHousesLocationsForMoves(moves);
+        private readonly InstructionsRepository instructionsRepository;
 
-            return houseLocations.Count;
+        private readonly Houses houses;
+
+        public Part1()
+        {
+            instructionsRepository = new InstructionsRepository();
+            houses = new Houses();
+        }
+
+        public int Solution(string input)
+        {
+            CardinalDirection[] instructions = instructionsRepository.GetInstructions(input);
+
+            int housesThatReceiveAtLeastOnePresent = houses.CountHousesThatReceiveAtLeastOnePresent(instructions);
+
+            return housesThatReceiveAtLeastOnePresent;
         }
     }
 }

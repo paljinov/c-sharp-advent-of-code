@@ -20,37 +20,27 @@ For example:
   and Robo-Santa going the other.
 */
 
-using System.Text;
-
 namespace App.Tasks.Year2015.Day3
 {
     public class Part2 : ITask<int>
     {
-        public int Solution(string moves)
+        private readonly InstructionsRepository instructionsRepository;
+
+        private readonly Houses houses;
+
+        public Part2()
         {
-            StringBuilder santaMoves = new StringBuilder();
-            StringBuilder roboSantaMoves = new StringBuilder();
+            instructionsRepository = new InstructionsRepository();
+            houses = new Houses();
+        }
+        public int Solution(string input)
+        {
+            CardinalDirection[] instructions = instructionsRepository.GetInstructions(input);
 
-            for (int i = 0; i < moves.Length; i++)
-            {
-                char move = moves[i];
+            int housesThatReceiveAtLeastOnePresent =
+                houses.CountHousesThatReceiveAtLeastOnePresentWithRoboSanta(instructions);
 
-                if (i % 2 == 0)
-                {
-                    santaMoves.Append(move);
-                }
-                else
-                {
-                    roboSantaMoves.Append(move);
-                }
-            }
-
-            var santaHouseLocations = Houses.GetVisitedHousesLocationsForMoves(santaMoves.ToString());
-            var roboSantaHouseLocations = Houses.GetVisitedHousesLocationsForMoves(roboSantaMoves.ToString());
-
-            santaHouseLocations.UnionWith(roboSantaHouseLocations);
-
-            return santaHouseLocations.Count;
+            return housesThatReceiveAtLeastOnePresent;
         }
     }
 }
