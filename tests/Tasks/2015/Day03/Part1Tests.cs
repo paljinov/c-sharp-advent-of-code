@@ -13,18 +13,15 @@ namespace Tests.Tasks.Year2015.Day3
         }
 
         [Theory]
-        [InlineData(">")]
-        [InlineData("^v^v^v^v^v")]
-        public void Solution_ExampleDirections_DeliversPresentsToTwoHouses(string directions)
+        [InlineData(">", 2)]
+        [InlineData("^>v<", 4)]
+        [InlineData("^v^v^v^v^v", 2)]
+        public void Solution_ExampleInstructions_HousesThatReceiveAtLeastOnePresentCountEquals(
+            string instructions,
+            int housesThatReceiveAtLeastOnePresent
+        )
         {
-            Assert.Equal(2, task.Solution(directions));
-        }
-
-        [Theory]
-        [InlineData("^>v<")]
-        public void Solution_ExampleDirections_DeliversPresentsToFourHouses(string directions)
-        {
-            Assert.Equal(4, task.Solution(directions));
+            Assert.Equal(housesThatReceiveAtLeastOnePresent, task.Solution(instructions));
         }
     }
 }
