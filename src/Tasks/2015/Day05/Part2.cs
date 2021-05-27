@@ -24,79 +24,27 @@ letter between them, like xyx, abcdefeghi (efe), or even aaa. For example:
 How many strings are nice under these new rules?
 */
 
-using System.Collections.Generic;
-
 namespace App.Tasks.Year2015.Day5
 {
     public class Part2 : ITask<int>
     {
+        private readonly StringsRepository stringsRepository;
+
+        private readonly NiceStrings niceStrings;
+
+        public Part2()
+        {
+            stringsRepository = new StringsRepository();
+            niceStrings = new NiceStrings();
+        }
+
         public int Solution(string input)
         {
-            int niceStrings = 0;
+            string[] strings = stringsRepository.GetStrings(input);
 
-            var strings = StringsRepository.GetStrings(input);
+            int niceStringsCount = niceStrings.CountNiceStringsForPart2Rules(strings);
 
-            foreach (var str in strings)
-            {
-                bool hasLetterPair = HasLetterPair(str);
-                if (hasLetterPair)
-                {
-                    bool hasLetterWhichRepeatsWithExactlyOneLetterBetweenThem =
-                        HasLetterWhichRepeatsWithExactlyOneLetterBetweenThem(str);
-                    if (hasLetterWhichRepeatsWithExactlyOneLetterBetweenThem)
-                    {
-                        niceStrings++;
-                    }
-                }
-            }
-
-            return niceStrings;
-        }
-
-        private bool HasLetterPair(string str)
-        {
-            bool hasLetterPair = false;
-
-            List<string> letterPairs = new List<string>();
-
-            for (int i = 0; i < str.Length - 1; i++)
-            {
-                string letterPair = new string(new char[] { str[i], str[i + 1] });
-                if (letterPairs.Contains(letterPair))
-                {
-                    hasLetterPair = true;
-                    break;
-                }
-
-                letterPairs.Add(letterPair);
-
-                // If character overlaps like 'aaa' we will not add it as new pair
-                if (str[i] == str[i + 1] && (i + 2 < str.Length && str[i + 1] == str[i + 2]))
-                {
-                    i++;
-                }
-            }
-
-            return hasLetterPair;
-        }
-
-        private bool HasLetterWhichRepeatsWithExactlyOneLetterBetweenThem(string str)
-        {
-            bool hasLetterWhichRepeatsWithExactlyOneLetterBetweenThem = false;
-
-            for (int i = 0; i < str.Length - 2; i++)
-            {
-                char currentLetter = str[i];
-                char twoPlacesAheeadLetter = str[i + 2];
-
-                if (currentLetter == twoPlacesAheeadLetter)
-                {
-                    hasLetterWhichRepeatsWithExactlyOneLetterBetweenThem = true;
-                    break;
-                }
-            }
-
-            return hasLetterWhichRepeatsWithExactlyOneLetterBetweenThem;
+            return niceStringsCount;
         }
     }
 }

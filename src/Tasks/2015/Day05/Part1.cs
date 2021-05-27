@@ -23,8 +23,6 @@ requirements. For example:
 How many strings are nice?
 */
 
-using System.Linq;
-
 namespace App.Tasks.Year2015.Day5
 {
     public class Part1 : ITask<int>
@@ -32,88 +30,23 @@ namespace App.Tasks.Year2015.Day5
         private static readonly char[] vowels = { 'a', 'e', 'i', 'o', 'u' };
         private static readonly string[] forbiddenSubstrings = { "ab", "cd", "pq", "xy" };
 
+        private readonly StringsRepository stringsRepository;
+
+        private readonly NiceStrings niceStrings;
+
+        public Part1()
+        {
+            stringsRepository = new StringsRepository();
+            niceStrings = new NiceStrings();
+        }
+
         public int Solution(string input)
         {
-            int niceStrings = 0;
+            string[] strings = stringsRepository.GetStrings(input);
 
-            var strings = StringsRepository.GetStrings(input);
+            int niceStringsCount = niceStrings.CountNiceStringsForPart1Rules(strings, vowels, forbiddenSubstrings);
 
-            foreach (var str in strings)
-            {
-                bool hasThreeVowels = HasThreeVowels(str);
-                if (hasThreeVowels)
-                {
-                    bool atLeastOneLetterAppearsConsecutively = AtLeastOneLetterAppearsConsecutively(str);
-                    if (atLeastOneLetterAppearsConsecutively)
-                    {
-                        bool hasForbiddenSubstrings = HasForbiddenSubstrings(str);
-                        if (!hasForbiddenSubstrings)
-                        {
-                            niceStrings++;
-                        }
-                    }
-                }
-            }
-
-            return niceStrings;
-        }
-
-        private bool HasThreeVowels(string str)
-        {
-            bool hasThreeVowels = false;
-
-            int stringVowels = 0;
-
-            foreach (char c in str)
-            {
-                if (vowels.Contains(c))
-                {
-                    stringVowels++;
-                }
-
-                if (stringVowels >= 3)
-                {
-                    hasThreeVowels = true;
-                    break;
-                }
-            }
-
-            return hasThreeVowels;
-        }
-
-        private bool AtLeastOneLetterAppearsConsecutively(string str)
-        {
-            bool atLeastOneLetterAppearsConsecutively = false;
-
-            for (int i = 0; i < str.Length - 1; i++)
-            {
-                char currentLetter = str[i];
-                char nextLetter = str[i + 1];
-
-                if (currentLetter == nextLetter)
-                {
-                    atLeastOneLetterAppearsConsecutively = true;
-                    break;
-                }
-            }
-
-            return atLeastOneLetterAppearsConsecutively;
-        }
-
-        private bool HasForbiddenSubstrings(string str)
-        {
-            bool hasForbiddenSubstrings = false;
-
-            foreach (var forbiddenSubstring in forbiddenSubstrings)
-            {
-                if (str.Contains(forbiddenSubstring))
-                {
-                    hasForbiddenSubstrings = true;
-                    break;
-                }
-            }
-
-            return hasForbiddenSubstrings;
+            return niceStringsCount;
         }
     }
 }
