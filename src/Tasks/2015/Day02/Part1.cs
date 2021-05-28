@@ -22,29 +22,27 @@ wrapping paper should they order?
 */
 
 using System.Collections.Generic;
-using System.Linq;
 
 namespace App.Tasks.Year2015.Day2
 {
     public class Part1 : ITask<int>
     {
+        private readonly BoxesRepository boxesRepository;
+
+        private readonly PresentMaterial presentMaterial;
+
+        public Part1()
+        {
+            boxesRepository = new BoxesRepository();
+            presentMaterial = new PresentMaterial();
+        }
+
         public int Solution(string input)
         {
-            int wrappingPaperTotalSquareFeet = 0;
+            List<Box> boxes = boxesRepository.GetBoxes(input);
+            int totalSquareFeetOfWrappingPaper = presentMaterial.CalculateTotalSquareFeetOfWrappingPaper(boxes);
 
-            List<Box> boxes = BoxesRepository.GetBoxes(input);
-            foreach (Box box in boxes)
-            {
-                int wrappingPaperBoxSquareFeet =
-                    2 * box.Length * box.Width
-                    + 2 * box.Width * box.Height
-                    + 2 * box.Height * box.Length
-                    + (new int[] { box.Length * box.Width, box.Width * box.Height, box.Height * box.Length }).Min();
-
-                wrappingPaperTotalSquareFeet += wrappingPaperBoxSquareFeet;
-            }
-
-            return wrappingPaperTotalSquareFeet;
+            return totalSquareFeetOfWrappingPaper;
         }
     }
 }

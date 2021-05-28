@@ -30,25 +30,22 @@ namespace App.Tasks.Year2015.Day2
 {
     public class Part2 : ITask<int>
     {
+        private readonly BoxesRepository boxesRepository;
+
+        private readonly PresentMaterial presentMaterial;
+
+        public Part2()
+        {
+            boxesRepository = new BoxesRepository();
+            presentMaterial = new PresentMaterial();
+        }
+
         public int Solution(string input)
         {
-            int ribbonTotalFeet = 0;
+            List<Box> boxes = boxesRepository.GetBoxes(input);
+            int totalFeetOfRribbon = presentMaterial.CalculateTotalFeetOfRribbon(boxes);
 
-            List<Box> boxes = BoxesRepository.GetBoxes(input);
-            foreach (Box box in boxes)
-            {
-                int[] boxSides = new int[] { box.Length, box.Width, box.Height };
-                Array.Sort(boxSides);
-
-                int ribbonBoxFeet =
-                    2 * boxSides[0]
-                    + 2 * boxSides[1]
-                    + box.Length * box.Width * box.Height;
-
-                ribbonTotalFeet += ribbonBoxFeet;
-            }
-
-            return ribbonTotalFeet;
+            return totalFeetOfRribbon;
         }
     }
 }
