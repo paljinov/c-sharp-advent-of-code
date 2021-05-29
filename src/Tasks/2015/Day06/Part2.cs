@@ -33,57 +33,18 @@ namespace App.Tasks.Year2015.Day6
     {
         private readonly LightsSetupInstructionsRepository lightsSetupInstructionsRepository;
 
+        private readonly Lights lights;
+
         public Part2()
         {
             lightsSetupInstructionsRepository = new LightsSetupInstructionsRepository();
+            lights = new Lights();
         }
 
         public int Solution(string input)
         {
-            int[,] lights = new int[1000, 1000];
-
             List<LightsRectangle> lightsSetupInstructions = lightsSetupInstructionsRepository.GetInstructions(input);
-            foreach (LightsRectangle lightsRectangle in lightsSetupInstructions)
-            {
-                for (int i = lightsRectangle.X1; i <= lightsRectangle.X2; i++)
-                {
-                    for (int j = lightsRectangle.Y1; j <= lightsRectangle.Y2; j++)
-                    {
-                        switch (lightsRectangle.Instruction)
-                        {
-                            case Instructions.TurnOn:
-                                lights[i, j] += 1;
-                                break;
-                            case Instructions.TurnOff:
-                                if (lights[i, j] > 0)
-                                {
-                                    lights[i, j] -= 1;
-                                }
-                                break;
-                            case Instructions.Toggle:
-                                lights[i, j] += 2;
-                                break;
-                        }
-                    }
-                }
-            }
-
-            int totalBrightness = CalculateTotalBrightness(lights);
-
-            return totalBrightness;
-        }
-
-        public int CalculateTotalBrightness(int[,] lights)
-        {
-            int totalBrightness = 0;
-
-            for (int i = 0; i < lights.GetLength(0); i++)
-            {
-                for (int j = 0; j < lights.GetLength(1); j++)
-                {
-                    totalBrightness += lights[i, j];
-                }
-            }
+            int totalBrightness = lights.CalculateTotalBrightnes(lightsSetupInstructions);
 
             return totalBrightness;
         }

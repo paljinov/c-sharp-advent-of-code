@@ -37,57 +37,18 @@ namespace App.Tasks.Year2015.Day6
     {
         private readonly LightsSetupInstructionsRepository lightsSetupInstructionsRepository;
 
+        private readonly Lights lights;
+
         public Part1()
         {
             lightsSetupInstructionsRepository = new LightsSetupInstructionsRepository();
+            lights = new Lights();
         }
 
         public int Solution(string input)
         {
-            bool[,] lights = new bool[1000, 1000];
-
             List<LightsRectangle> lightsSetupInstructions = lightsSetupInstructionsRepository.GetInstructions(input);
-            foreach (LightsRectangle lightsRectangle in lightsSetupInstructions)
-            {
-                for (int i = lightsRectangle.X1; i <= lightsRectangle.X2; i++)
-                {
-                    for (int j = lightsRectangle.Y1; j <= lightsRectangle.Y2; j++)
-                    {
-                        switch (lightsRectangle.Instruction)
-                        {
-                            case Instructions.TurnOn:
-                                lights[i, j] = true;
-                                break;
-                            case Instructions.TurnOff:
-                                lights[i, j] = false;
-                                break;
-                            case Instructions.Toggle:
-                                lights[i, j] = !lights[i, j];
-                                break;
-                        }
-                    }
-                }
-            }
-
-            int litLights = CountLitLights(lights);
-
-            return litLights;
-        }
-
-        public int CountLitLights(bool[,] lights)
-        {
-            int litLights = 0;
-
-            for (int i = 0; i < lights.GetLength(0); i++)
-            {
-                for (int j = 0; j < lights.GetLength(1); j++)
-                {
-                    if (lights[i, j])
-                    {
-                        litLights++;
-                    }
-                }
-            }
+            int litLights = lights.CountLitLights(lightsSetupInstructions);
 
             return litLights;
         }
