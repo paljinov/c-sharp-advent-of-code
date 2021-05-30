@@ -20,36 +20,27 @@ literal. For example, for the strings above, the total encoded length (6 + 9 +
 like in the first part of this puzzle) is 42 - 23 = 19.
 */
 
-using System;
-
 namespace App.Tasks.Year2015.Day8
 {
     public class Part2 : ITask<int>
     {
-        public int Solution(string input)
+        private readonly StringsRepository stringsRepository;
+
+        private readonly Characters characters;
+
+        public Part2()
         {
-            int totalCharacters = 0;
-
-            string[] decodedStrings = input.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
-            foreach (string decodedString in decodedStrings)
-            {
-                string encodedString = GetEncodedString(decodedString);
-                totalCharacters += encodedString.Length - decodedString.Length;
-            }
-
-            return totalCharacters;
+            stringsRepository = new StringsRepository();
+            characters = new Characters();
         }
 
-        private string GetEncodedString(string decodedString)
+        public int Solution(string input)
         {
-            // Add backslash escape
-            string encodedString = decodedString.Replace(@"\", @"\\");
-            // Add quote escape
-            encodedString = encodedString.Replace("\"", "\\\"");
-            // Surround with quotes
-            encodedString = "\"" + encodedString + "\"";
+            string[] strings = stringsRepository.GetStrings(input);
+            int encodedStringMinusStringLiteralsDiff =
+                characters.CalculateEncodedStringMinusStringLiteralsDiff(strings);
 
-            return encodedString;
+            return encodedStringMinusStringLiteralsDiff;
         }
     }
 }

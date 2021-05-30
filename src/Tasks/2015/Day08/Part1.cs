@@ -38,52 +38,26 @@ string code (2 + 5 + 10 + 6 = 23) minus the total number of characters in memory
 for string values (0 + 3 + 7 + 1 = 11) is 23 - 11 = 12.
 */
 
-using System;
-using System.Globalization;
-using System.Text.RegularExpressions;
-
 namespace App.Tasks.Year2015.Day8
 {
     public class Part1 : ITask<int>
     {
-        public int Solution(string input)
+        private readonly StringsRepository stringsRepository;
+
+        private readonly Characters characters;
+
+        public Part1()
         {
-            int totalCharacters = 0;
-
-            string[] stringsCode = input.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
-            foreach (string stringCode in stringsCode)
-            {
-                string stringInMemory = GetStringInMemory(stringCode);
-                totalCharacters += stringCode.Length - stringInMemory.Length;
-            }
-
-            return totalCharacters;
+            stringsRepository = new StringsRepository();
+            characters = new Characters();
         }
 
-        private string GetStringInMemory(string stringCode)
+        public int Solution(string input)
         {
-            // Remove start and end quote
-            string stringInMemory = stringCode.Trim(new char[] { '"' });
-            // Remove backslash escape
-            stringInMemory = stringInMemory.Replace(@"\\", @"\");
-            // Remove quote escape
-            stringInMemory = stringInMemory.Replace("\\\"", "\"");
+            string[] strings = stringsRepository.GetStrings(input);
+            int stringLiteralsMinusStringMemoryDiff = characters.CalculateStringLiteralsMinusStringMemoryDiff(strings);
 
-            // Find and replace hexadecimal regex with character
-            Regex hexadecimalCharacterRegex = new Regex(@"\\x([0-9a-f]{2})");
-            MatchCollection hexadecimalCharacterMatches = hexadecimalCharacterRegex.Matches(stringInMemory);
-            if (hexadecimalCharacterMatches.Count > 0)
-            {
-                foreach (Match hexadecimalCharacterMatch in hexadecimalCharacterMatches)
-                {
-                    GroupCollection groups = hexadecimalCharacterMatch.Groups;
-                    char character = (char)int.Parse(groups[1].Value, NumberStyles.AllowHexSpecifier);
-
-                    stringInMemory = stringInMemory.Replace(groups[0].Value, character.ToString());
-                }
-            }
-
-            return stringInMemory;
+            return stringLiteralsMinusStringMemoryDiff;
         }
     }
 }
