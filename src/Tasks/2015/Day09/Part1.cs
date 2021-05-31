@@ -33,25 +33,20 @@ namespace App.Tasks.Year2015.Day9
 {
     public class Part1 : ITask<int>
     {
+        private readonly PossibleRoutesRepository possibleRoutesRepository;
+
         private readonly PossibleRoutes possibleRoutes;
 
         public Part1()
         {
+            possibleRoutesRepository = new PossibleRoutesRepository();
             possibleRoutes = new PossibleRoutes();
         }
 
         public int Solution(string input)
         {
-            int shortestRouteDistance = int.MaxValue;
-
-            var possibleRoutes = this.possibleRoutes.GetPossibleRoutes(input);
-            foreach (var route in possibleRoutes)
-            {
-                if (route.Value < shortestRouteDistance)
-                {
-                    shortestRouteDistance = route.Value;
-                }
-            }
+            string[] possibleRoutes = possibleRoutesRepository.GetPossibleRoutes(input);
+            int shortestRouteDistance = this.possibleRoutes.CalculateDistanceOfTheShortestRoute(possibleRoutes);
 
             return shortestRouteDistance;
         }

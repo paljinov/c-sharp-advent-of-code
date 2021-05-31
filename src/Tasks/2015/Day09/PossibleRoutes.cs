@@ -7,27 +7,57 @@ namespace App.Tasks.Year2015.Day9
 {
     public class PossibleRoutes
     {
-        public Dictionary<string, int> GetPossibleRoutes(string input)
+        public int CalculateDistanceOfTheShortestRoute(string[] possibleRoutes)
         {
-            Dictionary<string, int> possibleRoutes = new Dictionary<string, int>();
+            int shortestRouteDistance = int.MaxValue;
 
-            string[] distancesString = input.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+            var possibleRoutesDistances = GetPossibleRoutes(possibleRoutes);
+            foreach (var route in possibleRoutesDistances)
+            {
+                if (route.Value < shortestRouteDistance)
+                {
+                    shortestRouteDistance = route.Value;
+                }
+            }
+
+            return shortestRouteDistance;
+        }
+
+        public int CalculateDistanceOfTheLongestRoute(string[] possibleRoutes)
+        {
+            int longestRouteDistance = 0;
+
+            var possibleRoutesDistances = GetPossibleRoutes(possibleRoutes);
+            foreach (var route in possibleRoutesDistances)
+            {
+                if (route.Value > longestRouteDistance)
+                {
+                    longestRouteDistance = route.Value;
+                }
+            }
+
+            return longestRouteDistance;
+        }
+
+        public Dictionary<string, int> GetPossibleRoutes(string[] possibleRoutes)
+        {
+            Dictionary<string, int> possibleRoutesDistances = new Dictionary<string, int>();
 
             Dictionary<string, List<LocationsDistance>> groupedLocationsDistances =
-                GroupByStartLocation(distancesString);
+                GroupByStartLocation(possibleRoutes);
 
             foreach (var locationsDistances in groupedLocationsDistances)
             {
-                possibleRoutes.Add(locationsDistances.Key, 0);
+                possibleRoutesDistances.Add(locationsDistances.Key, 0);
                 CalculatePossibleRoutesStartingFromLocation(
                     locationsDistances.Key,
                     groupedLocationsDistances,
-                    possibleRoutes
+                    possibleRoutesDistances
                 );
 
             }
 
-            return possibleRoutes;
+            return possibleRoutesDistances;
         }
 
         private Dictionary<string, List<LocationsDistance>> GroupByStartLocation(string[] distancesString)
