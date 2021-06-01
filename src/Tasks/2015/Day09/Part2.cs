@@ -17,20 +17,20 @@ namespace App.Tasks.Year2015.Day9
 {
     public class Part2 : ITask<int>
     {
-        private readonly PossibleRoutesRepository possibleRoutesRepository;
+        private readonly DistancesRepository distancesRepository;
 
         private readonly PossibleRoutes possibleRoutes;
 
         public Part2()
         {
-            possibleRoutesRepository = new PossibleRoutesRepository();
+            distancesRepository = new DistancesRepository();
             possibleRoutes = new PossibleRoutes();
         }
 
         public int Solution(string input)
         {
-            string[] possibleRoutes = possibleRoutesRepository.GetPossibleRoutes(input);
-            int longestRouteDistance = this.possibleRoutes.CalculateDistanceOfTheLongestRoute(possibleRoutes);
+            LocationsDistance[] distances = distancesRepository.GetDistances(input);
+            int longestRouteDistance = possibleRoutes.CalculateDistanceOfTheLongestRoute(distances);
 
             return longestRouteDistance;
         }

@@ -7,12 +7,12 @@ namespace App.Tasks.Year2015.Day9
 {
     public class PossibleRoutes
     {
-        public int CalculateDistanceOfTheShortestRoute(string[] possibleRoutes)
+        public int CalculateDistanceOfTheShortestRoute(LocationsDistance[] distances)
         {
             int shortestRouteDistance = int.MaxValue;
 
-            var possibleRoutesDistances = GetPossibleRoutes(possibleRoutes);
-            foreach (var route in possibleRoutesDistances)
+            var possibleRoutes = GetPossibleRoutes(distances);
+            foreach (var route in possibleRoutes)
             {
                 if (route.Value < shortestRouteDistance)
                 {
@@ -23,12 +23,12 @@ namespace App.Tasks.Year2015.Day9
             return shortestRouteDistance;
         }
 
-        public int CalculateDistanceOfTheLongestRoute(string[] possibleRoutes)
+        public int CalculateDistanceOfTheLongestRoute(LocationsDistance[] distances)
         {
             int longestRouteDistance = 0;
 
-            var possibleRoutesDistances = GetPossibleRoutes(possibleRoutes);
-            foreach (var route in possibleRoutesDistances)
+            var possibleRoutes = GetPossibleRoutes(distances);
+            foreach (var route in possibleRoutes)
             {
                 if (route.Value > longestRouteDistance)
                 {
@@ -39,43 +39,37 @@ namespace App.Tasks.Year2015.Day9
             return longestRouteDistance;
         }
 
-        public Dictionary<string, int> GetPossibleRoutes(string[] possibleRoutes)
+        public Dictionary<string, int> GetPossibleRoutes(LocationsDistance[] distances)
         {
-            Dictionary<string, int> possibleRoutesDistances = new Dictionary<string, int>();
+            Dictionary<string, int> possibleRoutes = new Dictionary<string, int>();
 
-            Dictionary<string, List<LocationsDistance>> groupedLocationsDistances =
-                GroupByStartLocation(possibleRoutes);
+            Dictionary<string, List<LocationsDistance>> groupedLocationsDistances = GroupByStartLocation(distances);
 
             foreach (var locationsDistances in groupedLocationsDistances)
             {
-                possibleRoutesDistances.Add(locationsDistances.Key, 0);
+                possibleRoutes.Add(locationsDistances.Key, 0);
                 CalculatePossibleRoutesStartingFromLocation(
                     locationsDistances.Key,
                     groupedLocationsDistances,
-                    possibleRoutesDistances
+                    possibleRoutes
                 );
 
             }
 
-            return possibleRoutesDistances;
+            return possibleRoutes;
         }
 
-        private Dictionary<string, List<LocationsDistance>> GroupByStartLocation(string[] distancesString)
+        private Dictionary<string, List<LocationsDistance>> GroupByStartLocation(LocationsDistance[] distances)
         {
             Dictionary<string, List<LocationsDistance>> groupedLocationsDistances =
                 new Dictionary<string, List<LocationsDistance>>();
 
-            Regex distanceRegex = new Regex(@"^(\w+)\sto\s(\w+)\s\=\s(\d+)$");
-
-            foreach (var distanceString in distancesString)
+            foreach (LocationsDistance distance in distances)
             {
-                Match distanceMatches = distanceRegex.Match(distanceString);
-                GroupCollection groups = distanceMatches.Groups;
-
                 // Each location can be starting and ending
                 string[][] locationsCombinations = new string[2][]{
-                    new string[2] {groups[1].Value, groups[2].Value},
-                    new string[2] {groups[2].Value, groups[1].Value}
+                    new string[2] {distance.StartLocation, distance.EndLocation},
+                    new string[2] {distance.EndLocation, distance.StartLocation}
                 };
 
                 // Iterating through both combinations
@@ -83,11 +77,11 @@ namespace App.Tasks.Year2015.Day9
                 {
                     var locationsCombination = locationsCombinations[i];
 
-                    LocationsDistance distance = new LocationsDistance
+                    LocationsDistance directedDistance = new LocationsDistance
                     {
                         StartLocation = locationsCombination[0],
                         EndLocation = locationsCombination[1],
-                        Distance = int.Parse(groups[3].Value)
+                        Distance = distance.Distance
                     };
 
                     // If distances starting from this location still don't exist
@@ -97,7 +91,7 @@ namespace App.Tasks.Year2015.Day9
                         groupedLocationsDistances.Add(locationsCombination[0], distancesStartingFromLocation);
                     }
 
-                    groupedLocationsDistances[locationsCombination[0]].Add(distance);
+                    groupedLocationsDistances[locationsCombination[0]].Add(directedDistance);
                 }
             }
 
