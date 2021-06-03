@@ -6,20 +6,6 @@ namespace App.Tasks.Year2015.Day16
 {
     public class CompoundsRepository
     {
-        public readonly Compounds AuntSueCompounds = new Compounds
-        {
-            Children = 3,
-            Cats = 7,
-            Samoyeds = 2,
-            Pomeranians = 3,
-            Akitas = 0,
-            Vizslas = 0,
-            Goldfish = 5,
-            Trees = 3,
-            Cars = 2,
-            Perfumes = 1
-        };
-
         public Dictionary<int, Compounds> ParseInput(string input)
         {
             Dictionary<int, Compounds> compounds = new Dictionary<int, Compounds>();

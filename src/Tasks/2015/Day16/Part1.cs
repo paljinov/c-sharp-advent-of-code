@@ -54,73 +54,20 @@ namespace App.Tasks.Year2015.Day16
     public class Part1 : ITask<int>
     {
         private readonly CompoundsRepository compoundsRepository;
+        private readonly AuntSue auntSue;
 
         public Part1()
         {
             compoundsRepository = new CompoundsRepository();
+            auntSue = new AuntSue();
         }
 
         public int Solution(string input)
         {
-            int sue = 0;
-
             Dictionary<int, Compounds> suesCompounds = compoundsRepository.ParseInput(input);
-            foreach (KeyValuePair<int, Compounds> compounds in suesCompounds)
-            {
-                if (IsAuntSue(compounds.Value))
-                {
-                    sue = compounds.Key;
-                    break;
-                }
-            }
+            int numberOfTheSueThatSentTheGift = auntSue.FindNumberOfTheSueThatSentTheGift(suesCompounds);
 
-            return sue;
-        }
-
-        private bool IsAuntSue(Compounds compounds)
-        {
-            if (compounds.Children != null && compounds.Children != compoundsRepository.AuntSueCompounds.Children)
-            {
-                return false;
-            }
-            if (compounds.Cats != null && compounds.Cats != compoundsRepository.AuntSueCompounds.Cats)
-            {
-                return false;
-            }
-            if (compounds.Samoyeds != null && compounds.Samoyeds != compoundsRepository.AuntSueCompounds.Samoyeds)
-            {
-                return false;
-            }
-            if (compounds.Pomeranians != null && compounds.Pomeranians != compoundsRepository.AuntSueCompounds.Pomeranians)
-            {
-                return false;
-            }
-            if (compounds.Akitas != null && compounds.Akitas != compoundsRepository.AuntSueCompounds.Akitas)
-            {
-                return false;
-            }
-            if (compounds.Vizslas != null && compounds.Vizslas != compoundsRepository.AuntSueCompounds.Vizslas)
-            {
-                return false;
-            }
-            if (compounds.Goldfish != null && compounds.Goldfish != compoundsRepository.AuntSueCompounds.Goldfish)
-            {
-                return false;
-            }
-            if (compounds.Trees != null && compounds.Trees != compoundsRepository.AuntSueCompounds.Trees)
-            {
-                return false;
-            }
-            if (compounds.Cars != null && compounds.Cars != compoundsRepository.AuntSueCompounds.Cars)
-            {
-                return false;
-            }
-            if (compounds.Perfumes != null && compounds.Perfumes != compoundsRepository.AuntSueCompounds.Perfumes)
-            {
-                return false;
-            }
-
-            return true;
+            return numberOfTheSueThatSentTheGift;
         }
     }
 }

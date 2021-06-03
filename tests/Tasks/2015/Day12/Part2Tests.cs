@@ -17,7 +17,10 @@ namespace Tests.Tasks.Year2015.Day12
         [InlineData("[1,{\"c\":\"red\",\"b\":2},3]", 4)]
         [InlineData("{\"d\":\"red\",\"e\":[1,2,3,4],\"f\":5}", 0)]
         [InlineData("[1,\"red\",5]", 6)]
-        public void Solution_JsonDocumentExample_AllNumbersSumEquals(string jsonDocument, int sum)
+        public void Solution_JsonDocumentExample_AllNumbersSumWhenIgnoringObjectPropertiesWithValueRedEquals(
+            string jsonDocument,
+            int sum
+        )
         {
             Assert.Equal(sum, task.Solution(jsonDocument));
         }
