@@ -24,7 +24,7 @@ namespace App.Tasks.Year2015.Day4
 {
     public class Part1 : ITask<int>
     {
-        private const string HashStartsWithPrefix = "00000";
+        private const string HASH_STARTS_WITH_PREFIX = "00000";
 
         private readonly PrefixHashSolution prefixHashSolution;
 
@@ -35,7 +35,7 @@ namespace App.Tasks.Year2015.Day4
 
         public int Solution(string secretKey)
         {
-            return prefixHashSolution.FindIntegerWhichGivesMd5HashWithPrefix(secretKey, HashStartsWithPrefix);
+            return prefixHashSolution.FindIntegerWhichGivesMd5HashWithPrefix(secretKey, HASH_STARTS_WITH_PREFIX);
         }
     }
 }

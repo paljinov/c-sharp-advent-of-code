@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace App.Tasks.Year2015.Day4
 {
@@ -7,16 +8,30 @@ namespace App.Tasks.Year2015.Day4
     {
         public int FindIntegerWhichGivesMd5HashWithPrefix(string secretKey, string hashStartsWithPrefix)
         {
-            string hash = string.Empty;
-            int i = 0;
+            int integerWhichGivesMd5HashWithPrefix = 0;
 
-            while (!hash.StartsWith(hashStartsWithPrefix))
+            string hash = string.Empty;
+            int start = 0;
+            int chunk = 100000;
+            int end = chunk;
+
+            while (integerWhichGivesMd5HashWithPrefix == 0)
             {
-                i++;
-                hash = GetMd5HashForString(secretKey + i);
+                Parallel.For(start, end, (i, state) =>
+                {
+                    hash = GetMd5HashForString(secretKey + i);
+                    if (hash.StartsWith(hashStartsWithPrefix))
+                    {
+                        integerWhichGivesMd5HashWithPrefix = i;
+                        state.Stop();
+                    }
+                });
+
+                start = end;
+                end += chunk;
             }
 
-            return i;
+            return integerWhichGivesMd5HashWithPrefix;
         }
 
         private string GetMd5HashForString(string input)
