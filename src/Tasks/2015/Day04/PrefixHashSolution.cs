@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,13 +12,9 @@ namespace App.Tasks.Year2015.Day4
             int integerWhichGivesMd5HashWithPrefix = 0;
 
             string hash = string.Empty;
-            int start = 0;
-            int chunk = 100000;
-            int end = chunk;
-
             while (integerWhichGivesMd5HashWithPrefix == 0)
             {
-                Parallel.For(start, end, (i, state) =>
+                Parallel.ForEach(Integers(), (i, state) =>
                 {
                     hash = GetMd5HashForString(secretKey + i);
                     if (hash.StartsWith(hashStartsWithPrefix))
@@ -26,9 +23,6 @@ namespace App.Tasks.Year2015.Day4
                         state.Stop();
                     }
                 });
-
-                start = end;
-                end += chunk;
             }
 
             return integerWhichGivesMd5HashWithPrefix;
@@ -50,6 +44,16 @@ namespace App.Tasks.Year2015.Day4
             string hash = sb.ToString();
 
             return hash;
+        }
+
+        private IEnumerable<int> Integers()
+        {
+            int i = 0;
+            while (i <= int.MaxValue)
+            {
+                yield return i;
+                i++;
+            }
         }
     }
 }
