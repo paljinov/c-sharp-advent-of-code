@@ -21,8 +21,6 @@ What do you get if you multiply together the number of trees encountered on each
 of the listed slopes?
 */
 
-using System;
-
 namespace App.Tasks.Year2020.Day3
 {
     public class Part2 : ITask<long>

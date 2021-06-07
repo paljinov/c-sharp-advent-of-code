@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace App.Tasks.Year2017.Day8
 {
     public class Instruction

@@ -1,5 +1,3 @@
-using System;
-
 namespace App.Tasks.Year2015.Day25
 {
     public class MachineCode

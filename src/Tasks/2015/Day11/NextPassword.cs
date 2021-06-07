@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 
 namespace App.Tasks.Year2015.Day11

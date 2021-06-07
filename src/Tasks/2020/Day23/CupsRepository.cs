@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace App.Tasks.Year2020.Day23

@@ -23,7 +23,6 @@ For example:
 How many total feet of ribbon should they order?
 */
 
-using System;
 using System.Collections.Generic;
 
 namespace App.Tasks.Year2015.Day2
