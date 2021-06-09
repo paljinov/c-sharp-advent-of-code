@@ -1,5 +1,3 @@
-using System.Linq;
-
 namespace App.Tasks.Year2019.Day5
 {
     public class Program
@@ -28,33 +26,73 @@ namespace App.Tasks.Year2019.Day5
                 switch (operation)
                 {
                     case (int)Operation.Addition:
-                        firstParameter = GetParameter(integers, i + 1, firstParameterMode, false);
-                        secondParameter = GetParameter(integers, i + 2, secondParameterMode, false);
-                        thirdParameter = GetParameter(integers, i + 3, thirdParameterMode, true);
-
-                        integers[thirdParameter] = firstParameter + secondParameter;
-                        i += 4;
-                        break;
                     case (int)Operation.Multiplication:
+                    case (int)Operation.LessThan:
+                    case (int)Operation.Equals:
                         firstParameter = GetParameter(integers, i + 1, firstParameterMode, false);
                         secondParameter = GetParameter(integers, i + 2, secondParameterMode, false);
                         thirdParameter = GetParameter(integers, i + 3, thirdParameterMode, true);
-
-                        integers[thirdParameter] = firstParameter * secondParameter;
                         i += 4;
+
+                        if (operation == (int)Operation.Addition)
+                        {
+                            integers[thirdParameter] = firstParameter + secondParameter;
+                        }
+                        else if (operation == (int)Operation.Multiplication)
+                        {
+                            integers[thirdParameter] = firstParameter * secondParameter;
+                        }
+                        else if (operation == (int)Operation.LessThan)
+                        {
+                            integers[thirdParameter] = 0;
+                            if (firstParameter < secondParameter)
+                            {
+                                integers[thirdParameter] = 1;
+                            }
+                        }
+                        else if (operation == (int)Operation.Equals)
+                        {
+                            integers[thirdParameter] = 0;
+                            if (firstParameter == secondParameter)
+                            {
+                                integers[thirdParameter] = 1;
+                            }
+                        }
                         break;
                     case (int)Operation.Input:
-                        firstParameter = GetParameter(integers, i + 1, firstParameterMode, true);
-                        integers[firstParameter] = input;
-                        i += 2;
-                        break;
                     case (int)Operation.Output:
                         firstParameter = GetParameter(integers, i + 1, firstParameterMode, true);
-                        if (integers[firstParameter] != 0)
+                        i += 2;
+
+                        if (operation == (int)Operation.Input)
+                        {
+                            integers[firstParameter] = input;
+                        }
+                        else if (operation == (int)Operation.Output && integers[firstParameter] != 0)
                         {
                             diagnosticCode = integers[firstParameter];
                         }
-                        i += 2;
+                        break;
+                    case (int)Operation.JumpIfTrue:
+                    case (int)Operation.JumpIfFalse:
+                        firstParameter = GetParameter(integers, i + 1, firstParameterMode, false);
+                        secondParameter = GetParameter(integers, i + 2, secondParameterMode, false);
+                        i += 3;
+
+                        if (operation == (int)Operation.JumpIfTrue)
+                        {
+                            if (firstParameter != 0)
+                            {
+                                i = secondParameter;
+                            }
+                        }
+                        else if (operation == (int)Operation.JumpIfFalse)
+                        {
+                            if (firstParameter == 0)
+                            {
+                                i = secondParameter;
+                            }
+                        }
                         break;
                 }
             }
