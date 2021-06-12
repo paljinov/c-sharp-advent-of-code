@@ -5,18 +5,18 @@ namespace App.Tasks.Year2019.Day6
 {
     public class OrbitsRepository
     {
-        public List<(string, string)> GetOrbits(string input)
+        public List<(string, string)> GetLocalOrbits(string input)
         {
-            List<(string, string)> orbits = new List<(string, string)>();
+            List<(string, string)> localOrbits = new List<(string, string)>();
 
-            string[] orbitsString = input.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
-            for (int i = 0; i < orbitsString.Length; i++)
+            string[] localOrbitsString = input.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+            for (int i = 0; i < localOrbitsString.Length; i++)
             {
-                string[] orbit = orbitsString[i].Split(')');
-                orbits.Add((orbit[0], orbit[1]));
+                string[] localOrbit = localOrbitsString[i].Split(')');
+                localOrbits.Add((localOrbit[0], localOrbit[1]));
             }
 
-            return orbits;
+            return localOrbits;
         }
     }
 }

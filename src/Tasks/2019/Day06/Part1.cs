@@ -88,9 +88,9 @@ namespace App.Tasks.Year2019.Day6
 
         public int Solution(string input)
         {
-            List<(string, string)> orbits = orbitsRepository.GetOrbits(input);
+            List<(string, string)> localOrbits = orbitsRepository.GetLocalOrbits(input);
             int totalNumberOfDirectAndIndirectOrbits =
-                this.orbits.CountTotalNumberOfDirectAndIndirectOrbits(orbits);
+                orbits.CountTotalNumberOfDirectAndIndirectOrbits(localOrbits);
 
             return totalNumberOfDirectAndIndirectOrbits;
         }
