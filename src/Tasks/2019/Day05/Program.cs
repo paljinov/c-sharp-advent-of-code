@@ -2,14 +2,12 @@ namespace App.Tasks.Year2019.Day5
 {
     public class Program
     {
-        private const int HALT = 99;
-
         public int CalculateDiagnosticCode(int[] integers, int input)
         {
             int diagnosticCode = 0;
 
             int i = 0;
-            while (integers[i] != HALT)
+            while (integers[i] != (int)Operation.Halt)
             {
                 // Pad first instruction with leading zeros
                 string instruction = integers[i].ToString("D5");

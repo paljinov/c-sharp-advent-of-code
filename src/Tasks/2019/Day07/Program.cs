@@ -9,8 +9,6 @@ namespace App.Tasks.Year2019.Day7
 
         private const int PHASE_TO = 4;
 
-        private const int HALT = 99;
-
         private readonly Permutations permutations;
 
         public Program()
@@ -45,7 +43,7 @@ namespace App.Tasks.Year2019.Day7
             int i = 0;
             bool isPhaseSettingUsed = false;
 
-            while (integers[i] != HALT)
+            while (integers[i] != (int)Operation.Halt)
             {
                 // Pad first instruction with leading zeros
                 string instruction = integers[i].ToString("D5");

@@ -9,6 +9,7 @@ namespace App.Tasks.Year2019.Day5
         JumpIfTrue = 5,
         JumpIfFalse = 6,
         LessThan = 7,
-        Equals = 8
+        Equals = 8,
+        Halt = 99
     }
 }
