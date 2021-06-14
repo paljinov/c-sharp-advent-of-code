@@ -2,14 +2,8 @@ using System.Linq;
 
 namespace App.Tasks.Year2019.Day2
 {
-    public class RunProgram
+    public class Program
     {
-        private const int ADDITION = 1;
-
-        private const int MULTIPLICATION = 2;
-
-        private const int HALT = 99;
-
         private const int FIRST_POSITION_REPLACEMENT = 12;
 
         private const int SECOND_POSITION_REPLACEMENT = 2;
@@ -23,7 +17,7 @@ namespace App.Tasks.Year2019.Day2
             }
 
             int i = 0;
-            while (integers[i] != HALT && i < integers.Length)
+            while (integers[i] != (int)Operation.Halt && i < integers.Length)
             {
                 int operation = integers[i];
                 int firstValue = integers[integers[i + 1]];
@@ -35,11 +29,11 @@ namespace App.Tasks.Year2019.Day2
                     break;
                 }
 
-                if (operation == ADDITION)
+                if (operation == (int)Operation.Addition)
                 {
                     integers[outputPosition] = firstValue + secondValue;
                 }
-                else if (operation == MULTIPLICATION)
+                else if (operation == (int)Operation.Multiplication)
                 {
                     integers[outputPosition] = firstValue * secondValue;
                 }

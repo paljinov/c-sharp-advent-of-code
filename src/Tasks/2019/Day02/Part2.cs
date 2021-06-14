@@ -59,18 +59,18 @@ namespace App.Tasks.Year2019.Day2
 
         private readonly IntegersRepository integersRepository;
 
-        private readonly RunProgram runProgram;
+        private readonly Program program;
 
         public Part2()
         {
             integersRepository = new IntegersRepository();
-            runProgram = new RunProgram();
+            program = new Program();
         }
 
         public int Solution(string input)
         {
             int[] integers = integersRepository.GetIntegers(input);
-            int nounAndVerbResult = runProgram
+            int nounAndVerbResult = program
                 .CalculateNounAndVerbResult(integers, OUTPUT, INPUT_VALUES_FROM, INPUT_VALUES_TO);
 
             return nounAndVerbResult;

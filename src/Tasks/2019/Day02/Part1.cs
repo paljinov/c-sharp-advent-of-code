@@ -93,19 +93,19 @@ namespace App.Tasks.Year2019.Day2
 
         private readonly IntegersRepository integersRepository;
 
-        private readonly RunProgram runProgram;
+        private readonly Program program;
 
         public Part1()
         {
             integersRepository = new IntegersRepository();
-            runProgram = new RunProgram();
+            program = new Program();
         }
 
         public int Solution(string input)
         {
             int[] integers = integersRepository.GetIntegers(input);
             int valueLeftAtFirstPositionAfterProgramHalts =
-                runProgram.CalculateValueLeftAtFirstPositionAfterProgramHalts(integers, replacePositions);
+                program.CalculateValueLeftAtFirstPositionAfterProgramHalts(integers, replacePositions);
 
             return valueLeftAtFirstPositionAfterProgramHalts;
         }
