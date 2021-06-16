@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace App.Tasks.Year2019.Day7
 {
     public class Program
     {
-        private const int PHASE_FROM = 0;
-
-        private const int PHASE_TO = 4;
-
         private readonly Permutations permutations;
 
         public Program()
@@ -16,35 +13,62 @@ namespace App.Tasks.Year2019.Day7
             permutations = new Permutations();
         }
 
-        public int CalculateHighestSignalThatCanBeSentToTheThrusters(int[] integers)
+        public int CalculateHighestSignalThatCanBeSentToTheThrusters(int[] integers, int phaseFrom, int phaseTo)
         {
             int highestSignalThatCanBeSentToTheThrusters = int.MinValue;
 
-            List<List<int>> phasesPermutations = permutations.GetPermutations(PHASE_FROM, PHASE_TO);
+            List<List<int>> phasesPermutations = permutations.GetPermutations(phaseFrom, phaseTo);
 
             foreach (List<int> phasesPermutation in phasesPermutations)
             {
-                int input = 0;
-                foreach (int phase in phasesPermutation)
+                List<(int, int[])> indexWithAmplifierIntegers = new List<(int, int[])>()
                 {
-                    input = CalculateOutputSignal(integers, phase, input);
-                }
+                    (0, integers.ToArray()),
+                    (0, integers.ToArray()),
+                    (0, integers.ToArray()),
+                    (0, integers.ToArray()),
+                    (0, integers.ToArray())
+                };
 
-                highestSignalThatCanBeSentToTheThrusters = Math.Max(input, highestSignalThatCanBeSentToTheThrusters);
+                int input = 0;
+                bool halted = false;
+                bool fullLoop = false;
+
+                while (!halted)
+                {
+                    for (int i = 0; i < phasesPermutation.Count; i++)
+                    {
+                        int phaseSetting = phasesPermutation[i];
+                        (int index, int[] amplifierIntegers) = indexWithAmplifierIntegers[i];
+
+                        (input, halted) = CalculateOutputSignal(
+                            amplifierIntegers, fullLoop ? input : phaseSetting, input, ref index);
+                        indexWithAmplifierIntegers[i] = (index, amplifierIntegers);
+                    }
+
+                    highestSignalThatCanBeSentToTheThrusters =
+                        Math.Max(input, highestSignalThatCanBeSentToTheThrusters);
+
+                    fullLoop = true;
+                }
             }
 
             return highestSignalThatCanBeSentToTheThrusters;
         }
 
-        public int CalculateOutputSignal(int[] integers, int phaseSetting, int inputSignal)
+        public (int, bool) CalculateOutputSignal(int[] integers, int phaseSetting, int inputSignal, ref int i)
         {
             int outputSignal = 0;
 
-            int i = 0;
             bool isPhaseSettingUsed = false;
 
             while (integers[i] != (int)Operation.Halt)
             {
+                if (outputSignal != 0)
+                {
+                    return (outputSignal, false);
+                }
+
                 // Pad first instruction with leading zeros
                 string instruction = integers[i].ToString("D5");
 
@@ -139,7 +163,7 @@ namespace App.Tasks.Year2019.Day7
                 }
             }
 
-            return outputSignal;
+            return (outputSignal, true);
         }
 
         private int GetParameter(int[] integers, int i, int mode, bool isOutput)
@@ -157,7 +181,6 @@ namespace App.Tasks.Year2019.Day7
             }
             else
             {
-
                 parameter = integers[integers[i]];
             }
 

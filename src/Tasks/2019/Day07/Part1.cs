@@ -79,6 +79,10 @@ namespace App.Tasks.Year2019.Day7
 {
     public class Part1 : ITask<int>
     {
+        private const int PHASE_FROM = 0;
+
+        private const int PHASE_TO = 4;
+
         private readonly IntegersRepository integersRepository;
 
         private readonly Program program;
@@ -93,7 +97,7 @@ namespace App.Tasks.Year2019.Day7
         {
             int[] integers = integersRepository.GetIntegers(input);
             int highestSignalThatCanBeSentToTheThrusters =
-                program.CalculateHighestSignalThatCanBeSentToTheThrusters(integers);
+                program.CalculateHighestSignalThatCanBeSentToTheThrusters(integers, PHASE_FROM, PHASE_TO);
 
             return highestSignalThatCanBeSentToTheThrusters;
         }
