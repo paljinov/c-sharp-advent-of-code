@@ -66,7 +66,7 @@ namespace App.Tasks.Year2019.Day5
                         {
                             integers[firstParameter] = input;
                         }
-                        else if (operation == (int)Operation.Output && integers[firstParameter] != 0)
+                        else if (operation == (int)Operation.Output)
                         {
                             diagnosticCode = integers[firstParameter];
                         }
@@ -111,9 +111,9 @@ namespace App.Tasks.Year2019.Day5
             {
                 parameter = integers[i];
             }
+            // If position mode
             else
             {
-
                 parameter = integers[integers[i]];
             }
 

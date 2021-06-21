@@ -134,7 +134,7 @@ namespace App.Tasks.Year2019.Day7
                                 integers[firstParameter] = inputSignal;
                             }
                         }
-                        else if (operation == (int)Operation.Output && integers[firstParameter] != 0)
+                        else if (operation == (int)Operation.Output)
                         {
                             outputSignal = integers[firstParameter];
                         }
@@ -179,6 +179,7 @@ namespace App.Tasks.Year2019.Day7
             {
                 parameter = integers[i];
             }
+            // If position mode
             else
             {
                 parameter = integers[integers[i]];
