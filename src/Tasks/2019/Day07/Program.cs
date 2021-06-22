@@ -73,13 +73,16 @@ namespace App.Tasks.Year2019.Day7
                 string instruction = integers[i].ToString("D5");
 
                 int operation = (int)char.GetNumericValue(instruction[^1]);
-                int firstParameterMode = (int)char.GetNumericValue(instruction[2]);
-                int secondParameterMode = (int)char.GetNumericValue(instruction[1]);
-                int thirdParameterMode = (int)char.GetNumericValue(instruction[0]);
+                int firstParameterModeDigit = (int)char.GetNumericValue(instruction[2]);
+                int secondParameterModeDigit = (int)char.GetNumericValue(instruction[1]);
+                int thirdParameterModeDigit = (int)char.GetNumericValue(instruction[0]);
 
-                int firstParameter = 0;
-                int secondParameter = 0;
-                int thirdParameter = 0;
+                ParameterMode firstParameterMode;
+                ParameterMode secondParameterMode;
+                ParameterMode thirdParameterMode;
+                int firstParameter;
+                int secondParameter;
+                int thirdParameter;
 
                 switch (operation)
                 {
@@ -87,9 +90,12 @@ namespace App.Tasks.Year2019.Day7
                     case (int)Operation.Multiplication:
                     case (int)Operation.LessThan:
                     case (int)Operation.Equals:
-                        firstParameter = GetParameter(integers, i + 1, firstParameterMode, false);
-                        secondParameter = GetParameter(integers, i + 2, secondParameterMode, false);
-                        thirdParameter = GetParameter(integers, i + 3, thirdParameterMode, true);
+                        firstParameterMode = GetParameterMode(firstParameterModeDigit);
+                        secondParameterMode = GetParameterMode(secondParameterModeDigit);
+                        thirdParameterMode = GetParameterMode(thirdParameterModeDigit, true);
+                        firstParameter = GetParameter(integers, i + 1, firstParameterMode);
+                        secondParameter = GetParameter(integers, i + 2, secondParameterMode);
+                        thirdParameter = GetParameter(integers, i + 3, thirdParameterMode);
                         i += 4;
 
                         if (operation == (int)Operation.Addition)
@@ -119,7 +125,8 @@ namespace App.Tasks.Year2019.Day7
                         break;
                     case (int)Operation.Input:
                     case (int)Operation.Output:
-                        firstParameter = GetParameter(integers, i + 1, firstParameterMode, true);
+                        firstParameterMode = GetParameterMode(firstParameterModeDigit, true);
+                        firstParameter = GetParameter(integers, i + 1, firstParameterMode);
                         i += 2;
 
                         if (operation == (int)Operation.Input)
@@ -141,8 +148,10 @@ namespace App.Tasks.Year2019.Day7
                         break;
                     case (int)Operation.JumpIfTrue:
                     case (int)Operation.JumpIfFalse:
-                        firstParameter = GetParameter(integers, i + 1, firstParameterMode, false);
-                        secondParameter = GetParameter(integers, i + 2, secondParameterMode, false);
+                        firstParameterMode = GetParameterMode(firstParameterModeDigit);
+                        secondParameterMode = GetParameterMode(secondParameterModeDigit);
+                        firstParameter = GetParameter(integers, i + 1, firstParameterMode);
+                        secondParameter = GetParameter(integers, i + 2, secondParameterMode);
                         i += 3;
 
                         if (operation == (int)Operation.JumpIfTrue)
@@ -166,23 +175,39 @@ namespace App.Tasks.Year2019.Day7
             return (outputSignal, true);
         }
 
-        private int GetParameter(int[] integers, int i, int mode, bool isOutput)
+        private ParameterMode GetParameterMode(int mode, bool instructionWritesTo = false)
+        {
+            if (instructionWritesTo)
+            {
+                return ParameterMode.ImmediateMode;
+            }
+
+            ParameterMode parameterMode;
+            switch (mode)
+            {
+                case 1:
+                    parameterMode = ParameterMode.ImmediateMode;
+                    break;
+                default:
+                    parameterMode = ParameterMode.PositionMode;
+                    break;
+            }
+
+            return parameterMode;
+        }
+
+        private int GetParameter(int[] integers, int i, ParameterMode mode)
         {
             int parameter;
 
-            if (isOutput)
+            switch (mode)
             {
-                parameter = integers[i];
-            }
-            // If immediate mode
-            else if (mode == 1)
-            {
-                parameter = integers[i];
-            }
-            // If position mode
-            else
-            {
-                parameter = integers[integers[i]];
+                case ParameterMode.ImmediateMode:
+                    parameter = integers[i];
+                    break;
+                default:
+                    parameter = integers[integers[i]];
+                    break;
             }
 
             return parameter;
