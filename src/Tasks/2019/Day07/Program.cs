@@ -92,10 +92,10 @@ namespace App.Tasks.Year2019.Day7
                     case (int)Operation.Equals:
                         firstParameterMode = GetParameterMode(firstParameterModeDigit);
                         secondParameterMode = GetParameterMode(secondParameterModeDigit);
-                        thirdParameterMode = GetParameterMode(thirdParameterModeDigit, true);
+                        thirdParameterMode = GetParameterMode(thirdParameterModeDigit);
                         firstParameter = GetParameter(integers, i + 1, firstParameterMode);
                         secondParameter = GetParameter(integers, i + 2, secondParameterMode);
-                        thirdParameter = GetParameter(integers, i + 3, thirdParameterMode);
+                        thirdParameter = GetParameter(integers, i + 3, thirdParameterMode, true);
                         i += 4;
 
                         if (operation == (int)Operation.Addition)
@@ -125,8 +125,8 @@ namespace App.Tasks.Year2019.Day7
                         break;
                     case (int)Operation.Input:
                     case (int)Operation.Output:
-                        firstParameterMode = GetParameterMode(firstParameterModeDigit, true);
-                        firstParameter = GetParameter(integers, i + 1, firstParameterMode);
+                        firstParameterMode = GetParameterMode(firstParameterModeDigit);
+                        firstParameter = GetParameter(integers, i + 1, firstParameterMode, true);
                         i += 2;
 
                         if (operation == (int)Operation.Input)
@@ -175,14 +175,10 @@ namespace App.Tasks.Year2019.Day7
             return (outputSignal, true);
         }
 
-        private ParameterMode GetParameterMode(int mode, bool instructionWritesTo = false)
+        private ParameterMode GetParameterMode(int mode)
         {
-            if (instructionWritesTo)
-            {
-                return ParameterMode.ImmediateMode;
-            }
-
             ParameterMode parameterMode;
+
             switch (mode)
             {
                 case 1:
@@ -196,9 +192,14 @@ namespace App.Tasks.Year2019.Day7
             return parameterMode;
         }
 
-        private int GetParameter(int[] integers, int i, ParameterMode mode)
+        private int GetParameter(int[] integers, int i, ParameterMode mode, bool instructionWritesTo = false)
         {
             int parameter;
+
+            if (instructionWritesTo)
+            {
+                return integers[i];
+            }
 
             switch (mode)
             {

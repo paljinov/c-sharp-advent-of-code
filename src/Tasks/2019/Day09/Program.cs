@@ -134,6 +134,7 @@ namespace App.Tasks.Year2019.Day9
         private ParameterMode GetParameterMode(int mode)
         {
             ParameterMode parameterMode;
+
             switch (mode)
             {
                 case 1:
