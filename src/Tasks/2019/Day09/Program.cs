@@ -83,8 +83,8 @@ namespace App.Tasks.Year2019.Day9
                         }
                         else if (operation == (int)Operation.Output)
                         {
-                            boostKeycode = integers[firstParameter];
-                            System.Console.WriteLine(boostKeycode);
+                            boostKeycode = integers.ContainsKey(firstParameter)
+                                ? integers[firstParameter] : firstParameter;
                         }
                         else if (operation == (int)Operation.RelativeBaseOffset)
                         {
