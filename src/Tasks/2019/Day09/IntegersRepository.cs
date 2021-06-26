@@ -1,5 +1,3 @@
-using System;
-
 namespace App.Tasks.Year2019.Day9
 {
     public class IntegersRepository
