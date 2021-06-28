@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace App.Tasks.Year2019.Day11
 {
@@ -8,7 +10,50 @@ namespace App.Tasks.Year2019.Day11
 
         private const int WHITE = 1;
 
+        private const char BLACK_PRINT = '.';
+
+        private const char WHITE_PRINT = '#';
+
         public int CountPanelsWhichArePaintAtLeastOnce(long[] integersArray)
+        {
+            (_, HashSet<(int, int)> totalPainted) = GetPanelGrid(integersArray, BLACK);
+            return totalPainted.Count;
+        }
+
+        public string GetRegistrationIdentifierWhichIsPaintedOnHull(long[] integersArray)
+        {
+            (Dictionary<(int, int), int> panelsGrid, _) = GetPanelGrid(integersArray, WHITE);
+
+            int rowMin = panelsGrid.Keys.Select(panel => panel.Item1).Min();
+            int rowMax = panelsGrid.Keys.Select(panel => panel.Item1).Max();
+            int columnMin = panelsGrid.Keys.Select(panel => panel.Item2).Min();
+            int columnMax = panelsGrid.Keys.Select(panel => panel.Item2).Max();
+
+            StringBuilder registrationIdentifier = new StringBuilder();
+
+            for (int i = rowMin; i <= rowMax; i++)
+            {
+                registrationIdentifier.AppendLine();
+                for (int j = columnMin; j <= columnMax; j++)
+                {
+                    if (!panelsGrid.ContainsKey((i, j)) || panelsGrid[(i, j)] == BLACK)
+                    {
+                        registrationIdentifier.Append(BLACK_PRINT);
+                    }
+                    else
+                    {
+                        registrationIdentifier.Append(WHITE_PRINT);
+                    }
+                }
+            }
+
+            return registrationIdentifier.ToString();
+        }
+
+        private (Dictionary<(int, int), int>, HashSet<(int, int)>) GetPanelGrid(
+            long[] integersArray,
+            int startPanelColor
+            )
         {
             HashSet<(int, int)> totalPainted = new HashSet<(int, int)>();
 
@@ -24,6 +69,8 @@ namespace App.Tasks.Year2019.Day11
             int i = 0;
             int j = 0;
             long index = 0;
+
+            panelsGrid[(i, j)] = startPanelColor;
 
             while (!halted)
             {
@@ -99,11 +146,10 @@ namespace App.Tasks.Year2019.Day11
                 outputPaint = !outputPaint;
             }
 
-            return totalPainted.Count;
+            return (panelsGrid, totalPainted);
         }
 
-
-        public (long, bool) CalculateOutputSignal(Dictionary<long, long> integers, int input, ref long i)
+        private (long, bool) CalculateOutputSignal(Dictionary<long, long> integers, int input, ref long i)
         {
             long outputSignal = long.MinValue;
 

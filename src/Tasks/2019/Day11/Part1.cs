@@ -115,9 +115,9 @@ namespace App.Tasks.Year2019.Day11
         public int Solution(string input)
         {
             long[] integers = integersRepository.GetIntegers(input);
-            int boostKeycode = program.CountPanelsWhichArePaintAtLeastOnce(integers);
+            int panelsWhichArePaintAtLeastOnce = program.CountPanelsWhichArePaintAtLeastOnce(integers);
 
-            return boostKeycode;
+            return panelsWhichArePaintAtLeastOnce;
         }
     }
 }
