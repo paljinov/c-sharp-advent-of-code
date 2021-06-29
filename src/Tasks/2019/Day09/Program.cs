@@ -73,8 +73,8 @@ namespace App.Tasks.Year2019.Day9
                     case (int)Operation.Output:
                     case (int)Operation.RelativeBaseOffset:
                         firstParameterMode = GetParameterMode(firstParameterModeDigit);
-                        firstParameter = GetParameter(integers, i + 1, firstParameterMode, relativeBase,
-                            operation != (int)Operation.RelativeBaseOffset);
+                        firstParameter = GetParameter(
+                            integers, i + 1, firstParameterMode, relativeBase, operation == (int)Operation.Input);
                         i += 2;
 
                         if (operation == (int)Operation.Input)
@@ -83,8 +83,7 @@ namespace App.Tasks.Year2019.Day9
                         }
                         else if (operation == (int)Operation.Output)
                         {
-                            boostKeycode = integers.ContainsKey(firstParameter)
-                                ? integers[firstParameter] : firstParameter;
+                            boostKeycode = firstParameter;
                         }
                         else if (operation == (int)Operation.RelativeBaseOffset)
                         {

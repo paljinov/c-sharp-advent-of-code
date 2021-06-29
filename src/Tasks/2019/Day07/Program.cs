@@ -126,7 +126,8 @@ namespace App.Tasks.Year2019.Day7
                     case (int)Operation.Input:
                     case (int)Operation.Output:
                         firstParameterMode = GetParameterMode(firstParameterModeDigit);
-                        firstParameter = GetParameter(integers, i + 1, firstParameterMode, true);
+                        firstParameter = GetParameter(
+                            integers, i + 1, firstParameterMode, operation == (int)Operation.Input);
                         i += 2;
 
                         if (operation == (int)Operation.Input)
@@ -143,7 +144,7 @@ namespace App.Tasks.Year2019.Day7
                         }
                         else if (operation == (int)Operation.Output)
                         {
-                            outputSignal = integers[firstParameter];
+                            outputSignal = firstParameter;
                         }
                         break;
                     case (int)Operation.JumpIfTrue:

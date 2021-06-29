@@ -66,7 +66,8 @@ namespace App.Tasks.Year2019.Day5
                     case (int)Operation.Input:
                     case (int)Operation.Output:
                         firstParameterMode = GetParameterMode(firstParameterModeDigit);
-                        firstParameter = GetParameter(integers, i + 1, firstParameterMode, true);
+                        firstParameter = GetParameter(
+                            integers, i + 1, firstParameterMode, operation == (int)Operation.Input);
                         i += 2;
 
                         if (operation == (int)Operation.Input)
@@ -75,7 +76,7 @@ namespace App.Tasks.Year2019.Day5
                         }
                         else if (operation == (int)Operation.Output)
                         {
-                            diagnosticCode = integers[firstParameter];
+                            diagnosticCode = firstParameter;
                         }
                         break;
                     case (int)Operation.JumpIfTrue:
