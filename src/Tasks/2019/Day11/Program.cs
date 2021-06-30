@@ -31,10 +31,10 @@ namespace App.Tasks.Year2019.Day11
 
             StringBuilder registrationIdentifier = new StringBuilder();
 
-            for (int i = rowMin; i <= rowMax; i++)
+            for (int j = columnMax; j >= columnMin; j--)
             {
                 registrationIdentifier.AppendLine();
-                for (int j = columnMin; j <= columnMax; j++)
+                for (int i = rowMin; i <= rowMax; i++)
                 {
                     if (!panelsGrid.ContainsKey((i, j)) || panelsGrid[(i, j)] == BLACK)
                     {
@@ -62,15 +62,16 @@ namespace App.Tasks.Year2019.Day11
             Dictionary<(int, int), int> panelsGrid = new Dictionary<(int, int), int>();
             Direction facing = Direction.Up;
 
-            long outputSignal;
-            bool outputPaint = true;
+            int output;
             bool halted = false;
+            bool paintThePanel = true;
 
             int i = 0;
             int j = 0;
-            long index = 0;
-
             panelsGrid[(i, j)] = startPanelColor;
+
+            long index = 0;
+            long relativeBase = 0;
 
             while (!halted)
             {
@@ -79,85 +80,96 @@ namespace App.Tasks.Year2019.Day11
                     panelsGrid[(i, j)] = BLACK;
                 }
 
-                int input = panelsGrid[(i, j)];
-                (outputSignal, _) = CalculateOutputSignal(integers, input, ref index);
-                int output = outputSignal == 0 ? 0 : 1;
-                if (panelsGrid[(i, j)] != output)
+                (output, halted) = CalculateOutputSignal(integers, panelsGrid[(i, j)], ref index, ref relativeBase);
+
+                // Halt
+                if (halted)
                 {
-                    panelsGrid[(i, j)] = output;
-                    totalPainted.Add((i, j));
+                    break;
+                }
+                // Paint the panel the robot is over
+                else if (paintThePanel)
+                {
+                    if (panelsGrid[(i, j)] != output)
+                    {
+                        panelsGrid[(i, j)] = output;
+                        totalPainted.Add((i, j));
+                    }
+                }
+                // Turn the robot in the direction
+                else
+                {
+                    switch (facing)
+                    {
+                        case Direction.Up:
+                            if (output == 1)
+                            {
+                                facing = Direction.Right;
+                                i++;
+                            }
+                            else
+                            {
+                                facing = Direction.Left;
+                                i--;
+                            }
+                            break;
+                        case Direction.Right:
+                            if (output == 1)
+                            {
+                                facing = Direction.Down;
+                                j--;
+                            }
+                            else
+                            {
+                                facing = Direction.Up;
+                                j++;
+                            }
+                            break;
+                        case Direction.Down:
+                            if (output == 1)
+                            {
+                                facing = Direction.Left;
+                                i--;
+                            }
+                            else
+                            {
+                                facing = Direction.Right;
+                                i++;
+                            }
+                            break;
+                        case Direction.Left:
+                            if (output == 1)
+                            {
+                                facing = Direction.Up;
+                                j++;
+                            }
+                            else
+                            {
+                                facing = Direction.Down;
+                                j--;
+                            }
+                            break;
+                    }
                 }
 
-                (outputSignal, halted) = CalculateOutputSignal(integers, input, ref index);
-                output = outputSignal == 0 ? 0 : 1;
-
-                switch (facing)
-                {
-                    case Direction.Up:
-                        if (output == 1)
-                        {
-                            facing = Direction.Right;
-                            i++;
-                        }
-                        else
-                        {
-                            facing = Direction.Left;
-                            i--;
-                        }
-                        break;
-                    case Direction.Right:
-                        if (output == 1)
-                        {
-                            facing = Direction.Down;
-                            j--;
-                        }
-                        else
-                        {
-                            facing = Direction.Up;
-                            j++;
-                        }
-                        break;
-                    case Direction.Down:
-                        if (output == 1)
-                        {
-                            facing = Direction.Left;
-                            i--;
-                        }
-                        else
-                        {
-                            facing = Direction.Right;
-                            i++;
-                        }
-                        break;
-                    case Direction.Left:
-                        if (output == 1)
-                        {
-                            facing = Direction.Up;
-                            j++;
-                        }
-                        else
-                        {
-                            facing = Direction.Down;
-                            j--;
-                        }
-                        break;
-                }
-
-                outputPaint = !outputPaint;
+                paintThePanel = !paintThePanel;
             }
 
             return (panelsGrid, totalPainted);
         }
 
-        private (long, bool) CalculateOutputSignal(Dictionary<long, long> integers, int input, ref long i)
+        private (int, bool) CalculateOutputSignal(
+            Dictionary<long, long> integers,
+            int input,
+            ref long i,
+            ref long relativeBase
+        )
         {
-            long outputSignal = long.MinValue;
-
-            long relativeBase = 0;
+            int outputSignal = -1;
 
             while (integers[i] != (int)Operation.Halt)
             {
-                if (outputSignal != long.MinValue)
+                if (outputSignal != -1)
                 {
                     return (outputSignal, false);
                 }
@@ -220,8 +232,8 @@ namespace App.Tasks.Year2019.Day11
                     case (int)Operation.Output:
                     case (int)Operation.RelativeBaseOffset:
                         firstParameterMode = GetParameterMode(firstParameterModeDigit);
-                        firstParameter = GetParameter(integers, i + 1, firstParameterMode, relativeBase,
-                            operation != (int)Operation.RelativeBaseOffset);
+                        firstParameter = GetParameter(
+                            integers, i + 1, firstParameterMode, relativeBase, operation == (int)Operation.Input);
                         i += 2;
 
                         if (operation == (int)Operation.Input)
@@ -230,7 +242,7 @@ namespace App.Tasks.Year2019.Day11
                         }
                         else if (operation == (int)Operation.Output)
                         {
-                            outputSignal = integers[firstParameter];
+                            outputSignal = (int)firstParameter;
                         }
                         else if (operation == (int)Operation.RelativeBaseOffset)
                         {
