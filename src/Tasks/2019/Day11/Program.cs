@@ -24,17 +24,17 @@ namespace App.Tasks.Year2019.Day11
         {
             (Dictionary<(int, int), int> panelsGrid, _) = GetPanelGrid(integersArray, WHITE);
 
-            int rowMin = panelsGrid.Keys.Select(panel => panel.Item1).Min();
-            int rowMax = panelsGrid.Keys.Select(panel => panel.Item1).Max();
-            int columnMin = panelsGrid.Keys.Select(panel => panel.Item2).Min();
-            int columnMax = panelsGrid.Keys.Select(panel => panel.Item2).Max();
+            int xMin = panelsGrid.Keys.Select(panel => panel.Item1).Min();
+            int xMax = panelsGrid.Keys.Select(panel => panel.Item1).Max();
+            int yMin = panelsGrid.Keys.Select(panel => panel.Item2).Min();
+            int yMax = panelsGrid.Keys.Select(panel => panel.Item2).Max();
 
             StringBuilder registrationIdentifier = new StringBuilder();
 
-            for (int j = columnMax; j >= columnMin; j--)
+            for (int j = yMax; j >= yMin; j--)
             {
                 registrationIdentifier.AppendLine();
-                for (int i = rowMin; i <= rowMax; i++)
+                for (int i = xMin; i <= xMax; i++)
                 {
                     if (!panelsGrid.ContainsKey((i, j)) || panelsGrid[(i, j)] == BLACK)
                     {
@@ -66,10 +66,12 @@ namespace App.Tasks.Year2019.Day11
             bool halted = false;
             bool paintThePanel = true;
 
+            // Initialize start coordinates and start panel color
             int i = 0;
             int j = 0;
             panelsGrid[(i, j)] = startPanelColor;
 
+            // IntCode program current index and relative base value
             long index = 0;
             long relativeBase = 0;
 
