@@ -4,8 +4,6 @@ namespace App.Tasks.Year2019.Day13
 {
     public class Program
     {
-        private const int BLOCK_TILE = 2;
-
         public int CountBlockTiles(long[] integersArray)
         {
             List<Tile> tiles = GetTiles(integersArray);
@@ -13,13 +11,74 @@ namespace App.Tasks.Year2019.Day13
             int blockTiles = 0;
             foreach (Tile tile in tiles)
             {
-                if (tile.Id == BLOCK_TILE)
+                if (tile.Id == (int)TileType.Block)
                 {
                     blockTiles++;
                 }
             }
 
             return blockTiles;
+        }
+
+        public int CalculateScoreAfterTheLastBlockIsBroken(long[] integersArray)
+        {
+            int score = 0;
+
+            Dictionary<long, long> integers = InitIntegersMemory(integersArray);
+
+            (int x, int y) ball = (0, 0);
+            (int x, int y) horizontalPaddle = (0, 0);
+            long output;
+            bool halted = false;
+
+            // IntCode program current index and relative base value
+            long index = 0;
+            long relativeBase = 0;
+
+            while (!halted)
+            {
+                Tile tile = new Tile();
+
+                for (int i = 0; i < 3; i++)
+                {
+                    int input = ((ball.x > horizontalPaddle.x) ? 1 : 0) - ((ball.x < horizontalPaddle.x) ? 1 : 0);
+                    (output, halted) = CalculateOutputSignal(integers, input, ref index, ref relativeBase);
+
+                    if (!halted)
+                    {
+                        if (i == 0)
+                        {
+                            tile.X = output;
+                        }
+                        else if (i == 1)
+                        {
+                            tile.Y = output;
+                        }
+                        else
+                        {
+                            tile.Id = output;
+                        }
+                    }
+                }
+
+                if (!halted)
+                {
+                    if (tile.X == -1 && tile.Y == 0)
+                    {
+                        score = (int)tile.Id;
+                    }
+                    else if (tile.Id == (int)TileType.HorizontalPaddle)
+                    {
+                        (horizontalPaddle.x, horizontalPaddle.y) = ((int)tile.X, (int)tile.Y);
+                    }
+                    else if (tile.Id == (int)TileType.Ball)
+                    {
+                        (ball.x, ball.y) = ((int)tile.X, (int)tile.Y);
+                    }
+                }
+            }
+
+            return score;
         }
 
         private List<Tile> GetTiles(long[] integersArray)
