@@ -43,9 +43,9 @@ namespace App.Tasks.Year2019.Day13
             long[] integers = integersRepository.GetIntegers(input);
             integers[0] = MEMORY_ADDRESS_ZERO_QUARTERS;
 
-            int blockTiles = program.CalculateScoreAfterTheLastBlockIsBroken(integers);
+            int scoreAfterTheLastBlockIsBroken = program.CalculateScoreAfterTheLastBlockIsBroken(integers);
 
-            return blockTiles;
+            return scoreAfterTheLastBlockIsBroken;
         }
     }
 }

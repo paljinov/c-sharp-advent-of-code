@@ -6,12 +6,42 @@ namespace App.Tasks.Year2019.Day13
     {
         public int CountBlockTiles(long[] integersArray)
         {
-            List<Tile> tiles = GetTiles(integersArray);
-
             int blockTiles = 0;
-            foreach (Tile tile in tiles)
+
+            Dictionary<long, long> integers = InitIntegersMemory(integersArray);
+
+            int output;
+            bool halted = false;
+
+            // IntCode program current index and relative base value
+            long index = 0;
+            long relativeBase = 0;
+
+            while (!halted)
             {
-                if (tile.Id == (int)TileType.Block)
+                Tile tile = new Tile();
+                for (int i = 0; i < 3; i++)
+                {
+                    (output, halted) = CalculateOutputSignal(integers, 0, ref index, ref relativeBase);
+
+                    if (!halted)
+                    {
+                        if (i == 0)
+                        {
+                            tile.X = output;
+                        }
+                        else if (i == 1)
+                        {
+                            tile.Y = output;
+                        }
+                        else
+                        {
+                            tile.Id = output;
+                        }
+                    }
+                }
+
+                if (!halted && tile.Id == (int)TileType.Block)
                 {
                     blockTiles++;
                 }
@@ -26,9 +56,9 @@ namespace App.Tasks.Year2019.Day13
 
             Dictionary<long, long> integers = InitIntegersMemory(integersArray);
 
-            (int x, int y) ball = (0, 0);
-            (int x, int y) horizontalPaddle = (0, 0);
-            long output;
+            int ballX = 0;
+            int horizontalPaddleX = 0;
+            int output;
             bool halted = false;
 
             // IntCode program current index and relative base value
@@ -38,10 +68,18 @@ namespace App.Tasks.Year2019.Day13
             while (!halted)
             {
                 Tile tile = new Tile();
-
                 for (int i = 0; i < 3; i++)
                 {
-                    int input = ((ball.x > horizontalPaddle.x) ? 1 : 0) - ((ball.x < horizontalPaddle.x) ? 1 : 0);
+                    int input = 0;
+                    if (ballX > horizontalPaddleX)
+                    {
+                        input = 1;
+                    }
+                    else if (ballX < horizontalPaddleX)
+                    {
+                        input = -1;
+                    }
+
                     (output, halted) = CalculateOutputSignal(integers, input, ref index, ref relativeBase);
 
                     if (!halted)
@@ -65,15 +103,15 @@ namespace App.Tasks.Year2019.Day13
                 {
                     if (tile.X == -1 && tile.Y == 0)
                     {
-                        score = (int)tile.Id;
+                        score = tile.Id;
                     }
                     else if (tile.Id == (int)TileType.HorizontalPaddle)
                     {
-                        (horizontalPaddle.x, horizontalPaddle.y) = ((int)tile.X, (int)tile.Y);
+                        horizontalPaddleX = tile.X;
                     }
                     else if (tile.Id == (int)TileType.Ball)
                     {
-                        (ball.x, ball.y) = ((int)tile.X, (int)tile.Y);
+                        ballX = tile.X;
                     }
                 }
             }
@@ -81,61 +119,14 @@ namespace App.Tasks.Year2019.Day13
             return score;
         }
 
-        private List<Tile> GetTiles(long[] integersArray)
-        {
-            List<Tile> tiles = new List<Tile>();
-
-            Dictionary<long, long> integers = InitIntegersMemory(integersArray);
-
-            long output;
-            bool halted = false;
-
-            // IntCode program current index and relative base value
-            long index = 0;
-            long relativeBase = 0;
-
-            while (!halted)
-            {
-                Tile tile = new Tile();
-
-                for (int i = 0; i < 3; i++)
-                {
-                    (output, halted) = CalculateOutputSignal(integers, 0, ref index, ref relativeBase);
-
-                    if (!halted)
-                    {
-                        if (i == 0)
-                        {
-                            tile.X = output;
-                        }
-                        else if (i == 1)
-                        {
-                            tile.Y = output;
-                        }
-                        else
-                        {
-                            tile.Id = output;
-                        }
-                    }
-                }
-
-                if (!halted)
-                {
-                    tiles.Add(tile);
-                }
-            }
-
-            return tiles;
-        }
-
-        private (long, bool) CalculateOutputSignal(
+        private (int, bool) CalculateOutputSignal(
             Dictionary<long, long> integers,
             int input,
             ref long i,
             ref long relativeBase
         )
         {
-            long? output = null;
+            int? output = null;
 
             while (integers[i] != (int)Operation.Halt)
             {
