@@ -19,19 +19,15 @@ namespace App.Tasks.Year2019.Day15
                 { (0, 0), 0 }
             };
 
-            long index = 0;
-            long relativeBase = 0;
-
-            DoCalculateFewestNumberOfMovementCommands(
-                integers, ref index, ref relativeBase, movementCommands, 0, 0, ref minMovementCommands);
+            DoCalculateFewestNumberOfMovementCommands(integers, 0, 0, movementCommands, 0, 0, ref minMovementCommands);
 
             return minMovementCommands;
         }
 
         private void DoCalculateFewestNumberOfMovementCommands(
             Dictionary<long, long> integers,
-            ref long index,
-            ref long relativeBase,
+            long index,
+            long relativeBase,
             Dictionary<(int, int), int> movementCommands,
             int i,
             int j,
@@ -41,56 +37,64 @@ namespace App.Tasks.Year2019.Day15
             IEnumerable<MovementCommand> movementCommandsEnumValues =
                 Enum.GetValues(typeof(MovementCommand)).Cast<MovementCommand>();
 
+            foreach (MovementCommand movementCommand in movementCommandsEnumValues)
+            {
+                DoMove(movementCommand, integers.ToDictionary(i => i.Key, i => i.Value), index,
+                    relativeBase, movementCommands, i, j, ref minMovementCommands);
+            }
+        }
+
+        private void DoMove(
+            MovementCommand movementCommand,
+            Dictionary<long, long> integers,
+            long index,
+            long relativeBase,
+            Dictionary<(int, int), int> movementCommands,
+            int i,
+            int j,
+            ref int minMovementCommands
+        )
+        {
             // Movement commands to this location
             int movementCommandsCount = movementCommands[(i, j)];
 
-            foreach (MovementCommand movementCommandEnumValue in movementCommandsEnumValues)
+            (int output, bool halted) = CalculateOutputSignal(
+                integers, (int)movementCommand, ref index, ref relativeBase);
+
+            // If not halted and not wall
+            if (!halted && output != (int)StatusCode.Wall)
             {
-                // Copy variables for current iteration
-                Dictionary<long, long> integersCopy = integers.ToDictionary(i => i.Key, i => i.Value);
-                long indexCopy = index;
-                long relativeBaseCopy = relativeBase;
-                int k = i;
-                int h = j;
-
-                (int output, bool halted) = CalculateOutputSignal(
-                    integersCopy, (int)movementCommandEnumValue, ref indexCopy, ref relativeBaseCopy);
-
-                // If not halted and not wall
-                if (!halted && output != (int)StatusCode.Wall)
+                switch (movementCommand)
                 {
-                    switch (movementCommandEnumValue)
+                    case MovementCommand.North:
+                        j++;
+                        break;
+                    case MovementCommand.South:
+                        j--;
+                        break;
+                    case MovementCommand.West:
+                        i--;
+                        break;
+                    case MovementCommand.East:
+                        i++;
+                        break;
+                }
+
+                // If location is not discovered yet or can be reached in less movement commands
+                if (!movementCommands.ContainsKey((i, j)) || movementCommandsCount + 1 < movementCommands[(i, j)])
+                {
+                    movementCommands[(i, j)] = movementCommandsCount + 1;
+
+                    // If oxygen system is found
+                    if (output == (int)StatusCode.OxygenSystem)
                     {
-                        case MovementCommand.North:
-                            h++;
-                            break;
-                        case MovementCommand.South:
-                            h--;
-                            break;
-                        case MovementCommand.West:
-                            k--;
-                            break;
-                        case MovementCommand.East:
-                            k++;
-                            break;
+                        minMovementCommands = movementCommands[(i, j)];
                     }
-
-                    // If location is not discovered yet or can be reached in less movement commands
-                    if (!movementCommands.ContainsKey((k, h)) || movementCommandsCount + 1 < movementCommands[(k, h)])
+                    // If repair droid has moved one step in the requested direction
+                    else
                     {
-                        movementCommands[(k, h)] = movementCommandsCount + 1;
-
-                        // If oxygen system is found
-                        if (output == (int)StatusCode.OxygenSystem)
-                        {
-                            minMovementCommands = movementCommands[(k, h)];
-                        }
-                        // If repair droid has moved one step in the requested direction
-                        else
-                        {
-                            DoCalculateFewestNumberOfMovementCommands(integersCopy, ref indexCopy, ref relativeBaseCopy,
-                                movementCommands, k, h, ref minMovementCommands);
-                        }
+                        DoCalculateFewestNumberOfMovementCommands(integers, index, relativeBase,
+                            movementCommands, i, j, ref minMovementCommands);
                     }
                 }
             }
