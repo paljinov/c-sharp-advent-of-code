@@ -10,37 +10,61 @@ namespace App.Tasks.Year2019.Day15
             long[] integersArray
         )
         {
-            int minMovementCommands = int.MaxValue;
-
             Dictionary<long, long> integers = InitIntegersMemory(integersArray);
 
-            Dictionary<(int, int), int> movementCommands = new Dictionary<(int, int), int>
+            Dictionary<(int, int), (int, StatusCode)> minStepsToLocation = new Dictionary<(int, int), (int, StatusCode)>
             {
-                { (0, 0), 0 }
+                { (0, 0), (0, StatusCode.Moved) }
             };
 
-            DoCalculateFewestNumberOfMovementCommands(integers, 0, 0, movementCommands, 0, 0, ref minMovementCommands);
+            GetMinStepsToLocation(integers, 0, 0, minStepsToLocation, 0, 0);
+
+            // Find fewest number of movement commands required to move the repair droid
+            // from its starting position to the location of the oxygen system
+            int minMovementCommands = int.MaxValue;
+            foreach (KeyValuePair<(int, int), (int, StatusCode)> location in minStepsToLocation)
+            {
+                if (location.Value.Item2 == StatusCode.OxygenSystem)
+                {
+                    minMovementCommands = Math.Min(location.Value.Item1, minMovementCommands);
+                }
+            }
 
             return minMovementCommands;
         }
 
-        private void DoCalculateFewestNumberOfMovementCommands(
+        public int CalculateNumberOfMinutesToFillAreaWithOxygen(long[] integersArray)
+        {
+            int minMovementCommands = int.MaxValue;
+
+            Dictionary<long, long> integers = InitIntegersMemory(integersArray);
+
+            Dictionary<(int, int), (int, StatusCode)> minStepsToLocation = new Dictionary<(int, int), (int, StatusCode)>
+            {
+                { (0, 0), (0, StatusCode.Moved) }
+            };
+
+            GetMinStepsToLocation(integers, 0, 0, minStepsToLocation, 0, 0);
+
+            return minMovementCommands;
+        }
+
+        private void GetMinStepsToLocation(
             Dictionary<long, long> integers,
             long index,
             long relativeBase,
-            Dictionary<(int, int), int> movementCommands,
+            Dictionary<(int, int), (int, StatusCode)> minStepsToLocation,
             int i,
-            int j,
-            ref int minMovementCommands
+            int j
         )
         {
-            IEnumerable<MovementCommand> movementCommandsEnumValues =
+            IEnumerable<MovementCommand> minStepsToLocationEnumValues =
                 Enum.GetValues(typeof(MovementCommand)).Cast<MovementCommand>();
 
-            foreach (MovementCommand movementCommand in movementCommandsEnumValues)
+            foreach (MovementCommand movementCommand in minStepsToLocationEnumValues)
             {
                 DoMove(movementCommand, integers.ToDictionary(i => i.Key, i => i.Value), index,
-                    relativeBase, movementCommands, i, j, ref minMovementCommands);
+                    relativeBase, minStepsToLocation, i, j);
             }
         }
 
@@ -49,14 +73,13 @@ namespace App.Tasks.Year2019.Day15
             Dictionary<long, long> integers,
             long index,
             long relativeBase,
-            Dictionary<(int, int), int> movementCommands,
+            Dictionary<(int, int), (int, StatusCode)> minStepsToLocation,
             int i,
-            int j,
-            ref int minMovementCommands
+            int j
         )
         {
             // Movement commands to this location
-            int movementCommandsCount = movementCommands[(i, j)];
+            int minStepsToLocationCount = minStepsToLocation[(i, j)].Item1;
 
             (int output, bool halted) = CalculateOutputSignal(
                 integers, (int)movementCommand, ref index, ref relativeBase);
@@ -81,20 +104,19 @@ namespace App.Tasks.Year2019.Day15
                 }
 
                 // If location is not discovered yet or can be reached in less movement commands
-                if (!movementCommands.ContainsKey((i, j)) || movementCommandsCount + 1 < movementCommands[(i, j)])
+                if (!minStepsToLocation.ContainsKey((i, j))
+                    || minStepsToLocationCount + 1 < minStepsToLocation[(i, j)].Item1)
                 {
-                    movementCommands[(i, j)] = movementCommandsCount + 1;
-
                     // If oxygen system is found
                     if (output == (int)StatusCode.OxygenSystem)
                     {
-                        minMovementCommands = movementCommands[(i, j)];
+                        minStepsToLocation[(i, j)] = (minStepsToLocationCount + 1, StatusCode.OxygenSystem);
                     }
                     // If repair droid has moved one step in the requested direction
                     else
                     {
-                        DoCalculateFewestNumberOfMovementCommands(integers, index, relativeBase,
-                            movementCommands, i, j, ref minMovementCommands);
+                        minStepsToLocation[(i, j)] = (minStepsToLocationCount + 1, StatusCode.Moved);
+                        GetMinStepsToLocation(integers, index, relativeBase, minStepsToLocation, i, j);
                     }
                 }
             }
