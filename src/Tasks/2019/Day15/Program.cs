@@ -21,21 +21,21 @@ namespace App.Tasks.Year2019.Day15
 
             // Find fewest number of movement commands required to move the repair droid
             // from its starting position to the location of the oxygen system
-            int minMovementCommands = int.MaxValue;
+            int fewestNumberOfMovementCommands = int.MaxValue;
             foreach (KeyValuePair<(int, int), (int, StatusCode)> location in minStepsToLocation)
             {
                 if (location.Value.Item2 == StatusCode.OxygenSystem)
                 {
-                    minMovementCommands = Math.Min(location.Value.Item1, minMovementCommands);
+                    fewestNumberOfMovementCommands = Math.Min(location.Value.Item1, fewestNumberOfMovementCommands);
                 }
             }
 
-            return minMovementCommands;
+            return fewestNumberOfMovementCommands;
         }
 
         public int CalculateNumberOfMinutesToFillAreaWithOxygen(long[] integersArray)
         {
-            int minMovementCommands = int.MaxValue;
+            int numberOfMinutesToFillAreaWithOxygen = 0;
 
             Dictionary<long, long> integers = InitIntegersMemory(integersArray);
 
@@ -46,7 +46,58 @@ namespace App.Tasks.Year2019.Day15
 
             GetMinStepsToLocation(integers, 0, 0, minStepsToLocation, 0, 0);
 
-            return minMovementCommands;
+            IEnumerable<MovementCommand> movementCommands =
+                Enum.GetValues(typeof(MovementCommand)).Cast<MovementCommand>();
+
+            // Collection of locations whose oxygen needs to be spread to adjacent locations
+            HashSet<(int, int)> oxygenLocations = minStepsToLocation
+                .Where(sl => sl.Value.Item2 == StatusCode.OxygenSystem)
+                .Select(sl => sl.Key)
+                .ToHashSet();
+
+            while (minStepsToLocation.Count > 1)
+            {
+                // Spread oxygen from locations
+                foreach ((int x, int y) in oxygenLocations.ToList())
+                {
+                    // Go in all directions
+                    foreach (MovementCommand movementCommand in movementCommands)
+                    {
+                        int i = x;
+                        int j = y;
+
+                        switch (movementCommand)
+                        {
+                            case MovementCommand.North:
+                                j++;
+                                break;
+                            case MovementCommand.South:
+                                j--;
+                                break;
+                            case MovementCommand.West:
+                                i--;
+                                break;
+                            case MovementCommand.East:
+                                i++;
+                                break;
+                        }
+
+                        // Spread oxygen to adjacent location
+                        if (minStepsToLocation.ContainsKey((i, j)))
+                        {
+                            oxygenLocations.Add((i, j));
+                        }
+                    }
+
+                    // This oxygen location is used so it can be removed
+                    oxygenLocations.Remove((x, y));
+                    minStepsToLocation.Remove((x, y));
+                }
+
+                numberOfMinutesToFillAreaWithOxygen++;
+            }
+
+            return numberOfMinutesToFillAreaWithOxygen;
         }
 
         private void GetMinStepsToLocation(
@@ -116,8 +167,9 @@ namespace App.Tasks.Year2019.Day15
                     else
                     {
                         minStepsToLocation[(i, j)] = (minStepsToLocationCount + 1, StatusCode.Moved);
-                        GetMinStepsToLocation(integers, index, relativeBase, minStepsToLocation, i, j);
                     }
+
+                    GetMinStepsToLocation(integers, index, relativeBase, minStepsToLocation, i, j);
                 }
             }
         }
