@@ -60,7 +60,7 @@ namespace Tests.Tasks.Year2019.Day15
                 + ",75,9,97,99,80,28,93,44,85,39,92,49,99,17,81,97,91,3,76,37,76,49,86,0,0,21,21,1,"
                 + "10,1,0,0,0,0,0,0";
 
-            Assert.Equal(327, task.Solution(numberOfMinutesToFillAreaWithOxygen));
+            Assert.Equal(326, task.Solution(numberOfMinutesToFillAreaWithOxygen));
         }
     }
 }

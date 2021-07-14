@@ -35,7 +35,7 @@ namespace App.Tasks.Year2019.Day15
 
         public int CalculateNumberOfMinutesToFillAreaWithOxygen(long[] integersArray)
         {
-            int numberOfMinutesToFillAreaWithOxygen = 0;
+            int numberOfMinutesToFillAreaWithOxygen = -1;
 
             Dictionary<long, long> integers = InitIntegersMemory(integersArray);
 
@@ -55,7 +55,7 @@ namespace App.Tasks.Year2019.Day15
                 .Select(sl => sl.Key)
                 .ToHashSet();
 
-            while (minStepsToLocation.Count > 1)
+            while (minStepsToLocation.Count > 0)
             {
                 // Spread oxygen from locations
                 foreach ((int x, int y) in oxygenLocations.ToList())
