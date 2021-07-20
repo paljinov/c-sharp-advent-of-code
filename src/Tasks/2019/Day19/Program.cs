@@ -1,56 +1,111 @@
 using System.Collections.Generic;
-using System.Linq;
 
 namespace App.Tasks.Year2019.Day19
 {
     public class Program
     {
-        private const int X = 50;
-
-        private const int Y = 50;
-
-        public int CountPointsWhichAreAffectedByTheTractorBeam(long[] integersArray)
+        public int CountPointsWhichAreAffectedByTheTractorBeam(long[] integersArray, int sizeOfAreaClosestToEmitter)
         {
-            Dictionary<(int, int), bool> grid = GetGridOfPoints(integersArray);
-
-            int sumOfTheAlignmentParameters = grid.Count(g => g.Value == true);
-
-            return sumOfTheAlignmentParameters;
-        }
-
-        private Dictionary<(int, int), bool> GetGridOfPoints(long[] integersArray)
-        {
-            Dictionary<(int, int), bool> grid = new Dictionary<(int, int), bool>();
+            int pointsWhichAreAffectedByTheTractorBeam = 0;
 
             Dictionary<long, long> integers = InitIntegersMemory(integersArray);
 
-            for (int i = 0; i < X; i++)
+            for (int i = 0; i < sizeOfAreaClosestToEmitter; i++)
             {
-                for (int j = 0; j < Y; j++)
+                for (int j = 0; j < sizeOfAreaClosestToEmitter; j++)
                 {
-                    int output;
-                    bool halted = false;
-
-                    while (!halted)
+                    if (IsPointAffectedByTheTractorBeam(new Dictionary<long, long>(integers), i, j))
                     {
-                        Queue<int> inputs = new Queue<int>();
-                        inputs.Enqueue(i);
-                        inputs.Enqueue(j);
-
-                        (output, halted) =
-                            CalculateOutputSignal(integers.ToDictionary(i => i.Key, i => i.Value), inputs);
-
-                        grid[(i, j)] = false;
-                        if (output == 1)
-                        {
-                            grid[(i, j)] = true;
-                        }
+                        pointsWhichAreAffectedByTheTractorBeam++;
                     }
-
                 }
             }
 
-            return grid;
+            return pointsWhichAreAffectedByTheTractorBeam;
+        }
+
+        public int CalculateResultForClosestPointToEmitterOfSquareThatFitsEntirelyWithinTractorBeam(
+            long[] integersArray,
+            int squareSize,
+            int multiplier
+        )
+        {
+            int x;
+            int y = 0;
+            bool squareFound = false;
+            int pointsGridSize = 2000;
+
+            Dictionary<long, long> integers = InitIntegersMemory(integersArray);
+
+            Dictionary<(int, int), bool> pointsGrid = GetPointsGrid(integers, pointsGridSize);
+
+            for (x = 0; x < pointsGridSize - squareSize; x++)
+            {
+                for (y = 0; y < pointsGridSize - squareSize; y++)
+                {
+                    bool allPointsAreAffectedByTheTractorBeam = true;
+
+                    for (int i = x; i < x + squareSize; i++)
+                    {
+                        for (int j = y; j < y + squareSize; j++)
+                        {
+                            if (!pointsGrid[(i, j)])
+                            {
+                                allPointsAreAffectedByTheTractorBeam = false;
+                                break;
+                            }
+                        }
+
+                        if (!allPointsAreAffectedByTheTractorBeam)
+                        {
+                            break;
+                        }
+                    }
+
+                    if (allPointsAreAffectedByTheTractorBeam)
+                    {
+                        squareFound = true;
+                        break;
+                    }
+                }
+
+                if (squareFound)
+                {
+                    break;
+                }
+            }
+
+            return x * multiplier + y;
+        }
+
+        private bool IsPointAffectedByTheTractorBeam(Dictionary<long, long> integers, int i, int j)
+        {
+            Queue<int> inputs = new Queue<int>();
+            inputs.Enqueue(i);
+            inputs.Enqueue(j);
+
+            (int output, _) = CalculateOutputSignal(integers, inputs);
+
+            return output == 1;
+        }
+
+        private Dictionary<(int, int), bool> GetPointsGrid(Dictionary<long, long> integers, int gridSize)
+        {
+            Dictionary<(int, int), bool> pointsGrid = new Dictionary<(int, int), bool>();
+
+            for (int i = 0; i < gridSize; i++)
+            {
+                for (int j = 0; j < gridSize; j++)
+                {
+                    pointsGrid[(i, j)] = false;
+                    if (IsPointAffectedByTheTractorBeam(new Dictionary<long, long>(integers), i, j))
+                    {
+                        pointsGrid[(i, j)] = true;
+                    }
+                }
+            }
+
+            return pointsGrid;
         }
 
         private (int, bool) CalculateOutputSignal(Dictionary<long, long> integers, Queue<int> inputs)

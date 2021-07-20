@@ -49,6 +49,8 @@ namespace App.Tasks.Year2019.Day19
 {
     public class Part1 : ITask<int>
     {
+        private const int SIZE_OF_AREA_CLOSEST_TO_EMITTER = 50;
+
         private readonly IntegersRepository integersRepository;
 
         private readonly Program program;
@@ -62,7 +64,8 @@ namespace App.Tasks.Year2019.Day19
         public int Solution(string input)
         {
             long[] integers = integersRepository.GetIntegers(input);
-            int pointsWhichAreAffectedByTheTractorBeam = program.CountPointsWhichAreAffectedByTheTractorBeam(integers);
+            int pointsWhichAreAffectedByTheTractorBeam =
+                program.CountPointsWhichAreAffectedByTheTractorBeam(integers, SIZE_OF_AREA_CLOSEST_TO_EMITTER);
 
             return pointsWhichAreAffectedByTheTractorBeam;
         }
