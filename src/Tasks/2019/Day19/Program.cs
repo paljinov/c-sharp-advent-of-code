@@ -31,7 +31,7 @@ namespace App.Tasks.Year2019.Day19
         )
         {
             int x = 0;
-            int y = 100;
+            int y = 0;
             bool squareFound = false;
 
             Dictionary<long, long> integers = InitIntegersMemory(integersArray);
