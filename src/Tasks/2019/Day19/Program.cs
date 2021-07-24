@@ -39,44 +39,41 @@ namespace App.Tasks.Year2019.Day19
             // While square that fits entirely within the tractor beam is not found
             while (!squareFound)
             {
-                bool isSquareTopLeftPointAffectedByTheTractorBeam = false;
+                int? firstAffectedX = FindFirstXForPointInRowAffectedByTheTractorBeam(integers, squareSize, x, y);
 
-                // Find first point in current row which is affected by the tractor beam
-                while (!isSquareTopLeftPointAffectedByTheTractorBeam && (x - y <= squareSize))
+                // If current row has point affected by tractor beam
+                if (firstAffectedX.HasValue)
                 {
-                    isSquareTopLeftPointAffectedByTheTractorBeam = IsPointAffectedByTheTractorBeam(
-                       new Dictionary<long, long>(integers), x, y);
+                    x = firstAffectedX.Value;
+                    int xAffected = x;
 
-                    if (!isSquareTopLeftPointAffectedByTheTractorBeam)
+                    bool isSquareTopRightPointAffectedByTheTractorBeam = true;
+                    while (isSquareTopRightPointAffectedByTheTractorBeam)
                     {
-                        x++;
-                    }
-                }
+                        isSquareTopRightPointAffectedByTheTractorBeam = IsPointAffectedByTheTractorBeam(
+                            new Dictionary<long, long>(integers), xAffected + squareSize - 1, y);
 
-                int xAffected = x;
-                bool isSquareTopRightPointAffectedByTheTractorBeam = IsPointAffectedByTheTractorBeam(
-                        new Dictionary<long, long>(integers), xAffected + squareSize - 1, y);
+                        bool isSquareBottomLeftPointAffectedByTheTractorBeam = IsPointAffectedByTheTractorBeam(
+                            new Dictionary<long, long>(integers), xAffected, y + squareSize - 1);
 
-                while (isSquareTopRightPointAffectedByTheTractorBeam)
-                {
-                    isSquareTopRightPointAffectedByTheTractorBeam = IsPointAffectedByTheTractorBeam(
-                        new Dictionary<long, long>(integers), xAffected + squareSize - 1, y);
+                        if (isSquareTopRightPointAffectedByTheTractorBeam
+                            && isSquareBottomLeftPointAffectedByTheTractorBeam)
+                        {
+                            squareFound = true;
+                            x = xAffected;
+                            break;
+                        }
 
-                    bool isSquareBottomLeftPointAffectedByTheTractorBeam = IsPointAffectedByTheTractorBeam(
-                        new Dictionary<long, long>(integers), xAffected, y + squareSize - 1);
-
-                    if (isSquareTopRightPointAffectedByTheTractorBeam
-                        && isSquareBottomLeftPointAffectedByTheTractorBeam)
-                    {
-                        squareFound = true;
-                        x = xAffected;
-                        break;
+                        xAffected++;
                     }
 
-                    xAffected++;
+                    if (!squareFound)
+                    {
+                        y++;
+                    }
                 }
-
-                if (!squareFound)
+                // If current row doesn't have point affected by tractor beam
+                else
                 {
                     y++;
                 }
@@ -94,6 +91,35 @@ namespace App.Tasks.Year2019.Day19
             (int output, _) = CalculateOutputSignal(integers, inputs);
 
             return output == 1;
+        }
+
+        private int? FindFirstXForPointInRowAffectedByTheTractorBeam(
+            Dictionary<long, long> integers,
+            int squareSize,
+            int x,
+            int y
+        )
+        {
+            bool isPointAffectedByTheTractorBeam = false;
+            // Find first point in current row which is affected by the tractor beam
+            while (!isPointAffectedByTheTractorBeam)
+            {
+                isPointAffectedByTheTractorBeam = IsPointAffectedByTheTractorBeam(
+                    new Dictionary<long, long>(integers), x, y);
+
+                if (!isPointAffectedByTheTractorBeam)
+                {
+                    x++;
+                }
+
+                // If x and y diff is larger than square side required square is not possible
+                if (x - y > squareSize)
+                {
+                    return null;
+                }
+            }
+
+            return x;
         }
 
         private (int, bool) CalculateOutputSignal(Dictionary<long, long> integers, Queue<int> inputs)
