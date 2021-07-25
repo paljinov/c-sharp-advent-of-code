@@ -1,163 +1,87 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-namespace App.Tasks.Year2019.Day11
+namespace App.Tasks.Year2019.Day17
 {
-    public class Program
+    public class VacuumRobot
     {
-        private const int BLACK = 0;
-
-        private const int WHITE = 1;
-
-        private const char BLACK_PRINT = '.';
-
-        private const char WHITE_PRINT = '#';
-
-        public int CountPanelsWhichArePaintAtLeastOnce(long[] integersArray)
+        public int CalculateSumOfTheAlignmentParametersForTheScaffoldIntersections(long[] integersArray)
         {
-            (_, HashSet<(int, int)> totalPainted) = GetPanelGrid(integersArray, BLACK);
-            return totalPainted.Count;
-        }
+            int sumOfTheAlignmentParameters = 0;
 
-        public string GetRegistrationIdentifierWhichIsPaintedOnHull(long[] integersArray)
-        {
-            (Dictionary<(int, int), int> panelsGrid, _) = GetPanelGrid(integersArray, WHITE);
+            Dictionary<(int, int), CameraOutput> image = GetImage(integersArray);
 
-            int xMin = panelsGrid.Keys.Select(panel => panel.Item1).Min();
-            int xMax = panelsGrid.Keys.Select(panel => panel.Item1).Max();
-            int yMin = panelsGrid.Keys.Select(panel => panel.Item2).Min();
-            int yMax = panelsGrid.Keys.Select(panel => panel.Item2).Max();
+            int iMax = image.Keys.Select(k => k.Item1).Max();
+            int jMax = image.Keys.Select(k => k.Item2).Max();
 
-            StringBuilder registrationIdentifier = new StringBuilder();
-
-            for (int j = yMax; j >= yMin; j--)
+            for (int i = 1; i < iMax; i++)
             {
-                registrationIdentifier.AppendLine();
-                for (int i = xMin; i <= xMax; i++)
+                for (int j = 1; j < jMax; j++)
                 {
-                    if (!panelsGrid.ContainsKey((i, j)) || panelsGrid[(i, j)] == BLACK)
+                    // If this is scaffold intersection
+                    if (IsScaffoldIntersection(i, j, image))
                     {
-                        registrationIdentifier.Append(BLACK_PRINT);
-                    }
-                    else
-                    {
-                        registrationIdentifier.Append(WHITE_PRINT);
+                        int alignmentParameter = i * j;
+                        sumOfTheAlignmentParameters += alignmentParameter;
                     }
                 }
             }
 
-            return registrationIdentifier.ToString();
+            return sumOfTheAlignmentParameters;
         }
 
-        private (Dictionary<(int, int), int>, HashSet<(int, int)>) GetPanelGrid(
-            long[] integersArray,
-            int startPanelColor
-            )
+        private Dictionary<(int, int), CameraOutput> GetImage(long[] integersArray)
         {
-            HashSet<(int, int)> totalPainted = new HashSet<(int, int)>();
-
             Dictionary<long, long> integers = InitIntegersMemory(integersArray);
-
-            Dictionary<(int, int), int> panelsGrid = new Dictionary<(int, int), int>();
-            Direction facing = Direction.Up;
 
             int output;
             bool halted = false;
-            bool paintThePanel = true;
-
-            // Initialize start coordinates and start panel color
-            int i = 0;
-            int j = 0;
-            panelsGrid[(i, j)] = startPanelColor;
 
             // IntCode program current index and relative base value
             long index = 0;
             long relativeBase = 0;
 
+            int i = 0;
+            int j = 0;
+            Dictionary<(int, int), CameraOutput> image = new Dictionary<(int, int), CameraOutput>();
+
             while (!halted)
             {
-                if (!panelsGrid.ContainsKey((i, j)))
+                (output, halted) = CalculateOutputSignal(integers, 0, ref index, ref relativeBase);
+                if (output == (int)CameraOutput.NewLine)
                 {
-                    panelsGrid[(i, j)] = BLACK;
+                    i++;
+                    j = 0;
                 }
-
-                (output, halted) = CalculateOutputSignal(integers, panelsGrid[(i, j)], ref index, ref relativeBase);
-
-                // Halt
-                if (halted)
-                {
-                    break;
-                }
-                // Paint the panel the robot is over
-                else if (paintThePanel)
-                {
-                    if (panelsGrid[(i, j)] != output)
-                    {
-                        panelsGrid[(i, j)] = output;
-                        totalPainted.Add((i, j));
-                    }
-                }
-                // Turn the robot in the direction
                 else
                 {
-                    switch (facing)
-                    {
-                        case Direction.Up:
-                            if (output == 1)
-                            {
-                                facing = Direction.Right;
-                                i++;
-                            }
-                            else
-                            {
-                                facing = Direction.Left;
-                                i--;
-                            }
-                            break;
-                        case Direction.Right:
-                            if (output == 1)
-                            {
-                                facing = Direction.Down;
-                                j--;
-                            }
-                            else
-                            {
-                                facing = Direction.Up;
-                                j++;
-                            }
-                            break;
-                        case Direction.Down:
-                            if (output == 1)
-                            {
-                                facing = Direction.Left;
-                                i--;
-                            }
-                            else
-                            {
-                                facing = Direction.Right;
-                                i++;
-                            }
-                            break;
-                        case Direction.Left:
-                            if (output == 1)
-                            {
-                                facing = Direction.Up;
-                                j++;
-                            }
-                            else
-                            {
-                                facing = Direction.Down;
-                                j--;
-                            }
-                            break;
-                    }
+                    image[(i, j)] = output == (int)CameraOutput.Scaffold ? CameraOutput.Scaffold : CameraOutput.NewLine;
+                    j++;
                 }
-
-                paintThePanel = !paintThePanel;
             }
 
-            return (panelsGrid, totalPainted);
+            return image;
+        }
+
+        private bool IsScaffoldIntersection(int i, int j, Dictionary<(int, int), CameraOutput> image)
+        {
+            for (int k = i - 1; k <= i + 1; k++)
+            {
+                if (!image.ContainsKey((k, j)) || image[(k, j)] != CameraOutput.Scaffold)
+                {
+                    return false;
+                }
+            }
+
+            for (int h = j - 1; h <= j + 1; h++)
+            {
+                if (!image.ContainsKey((i, h)) || image[(i, h)] != CameraOutput.Scaffold)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private (int, bool) CalculateOutputSignal(

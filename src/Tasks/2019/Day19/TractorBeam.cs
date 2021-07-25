@@ -1,97 +1,133 @@
 using System.Collections.Generic;
-using System.Linq;
 
-namespace App.Tasks.Year2019.Day17
+namespace App.Tasks.Year2019.Day19
 {
-    public class Program
+    public class TractorBeam
     {
-        public int CalculateSumOfTheAlignmentParametersForTheScaffoldIntersections(long[] integersArray)
+        public int CountPointsWhichAreAffectedByTheTractorBeam(long[] integersArray, int sizeOfAreaClosestToEmitter)
         {
-            int sumOfTheAlignmentParameters = 0;
+            int pointsWhichAreAffectedByTheTractorBeam = 0;
 
-            Dictionary<(int, int), CameraOutput> image = GetImage(integersArray);
+            Dictionary<long, long> integers = InitIntegersMemory(integersArray);
 
-            int iMax = image.Keys.Select(k => k.Item1).Max();
-            int jMax = image.Keys.Select(k => k.Item2).Max();
-
-            for (int i = 1; i < iMax; i++)
+            for (int i = 0; i < sizeOfAreaClosestToEmitter; i++)
             {
-                for (int j = 1; j < jMax; j++)
+                for (int j = 0; j < sizeOfAreaClosestToEmitter; j++)
                 {
-                    // If this is scaffold intersection
-                    if (IsScaffoldIntersection(i, j, image))
+                    if (IsPointAffectedByTheTractorBeam(new Dictionary<long, long>(integers), i, j))
                     {
-                        int alignmentParameter = i * j;
-                        sumOfTheAlignmentParameters += alignmentParameter;
+                        pointsWhichAreAffectedByTheTractorBeam++;
                     }
                 }
             }
 
-            return sumOfTheAlignmentParameters;
+            return pointsWhichAreAffectedByTheTractorBeam;
         }
 
-        private Dictionary<(int, int), CameraOutput> GetImage(long[] integersArray)
-        {
-            Dictionary<long, long> integers = InitIntegersMemory(integersArray);
-
-            int output;
-            bool halted = false;
-
-            // IntCode program current index and relative base value
-            long index = 0;
-            long relativeBase = 0;
-
-            int i = 0;
-            int j = 0;
-            Dictionary<(int, int), CameraOutput> image = new Dictionary<(int, int), CameraOutput>();
-
-            while (!halted)
-            {
-                (output, halted) = CalculateOutputSignal(integers, 0, ref index, ref relativeBase);
-                if (output == (int)CameraOutput.NewLine)
-                {
-                    i++;
-                    j = 0;
-                }
-                else
-                {
-                    image[(i, j)] = output == (int)CameraOutput.Scaffold ? CameraOutput.Scaffold : CameraOutput.NewLine;
-                    j++;
-                }
-            }
-
-            return image;
-        }
-
-        private bool IsScaffoldIntersection(int i, int j, Dictionary<(int, int), CameraOutput> image)
-        {
-            for (int k = i - 1; k <= i + 1; k++)
-            {
-                if (!image.ContainsKey((k, j)) || image[(k, j)] != CameraOutput.Scaffold)
-                {
-                    return false;
-                }
-            }
-
-            for (int h = j - 1; h <= j + 1; h++)
-            {
-                if (!image.ContainsKey((i, h)) || image[(i, h)] != CameraOutput.Scaffold)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        private (int, bool) CalculateOutputSignal(
-            Dictionary<long, long> integers,
-            int input,
-            ref long i,
-            ref long relativeBase
+        public int CalculateResultForClosestPointToEmitterOfSquareThatFitsEntirelyWithinTractorBeam(
+            long[] integersArray,
+            int squareSize,
+            int multiplier
         )
         {
+            int x = 0;
+            int y = 0;
+            bool squareFound = false;
+
+            Dictionary<long, long> integers = InitIntegersMemory(integersArray);
+
+            // While square that fits entirely within the tractor beam is not found
+            while (!squareFound)
+            {
+                int? firstAffectedX = FindFirstXForPointInRowAffectedByTheTractorBeam(integers, squareSize, x, y);
+
+                // If current row has point affected by tractor beam
+                if (firstAffectedX.HasValue)
+                {
+                    x = firstAffectedX.Value;
+                    int xAffected = x;
+
+                    bool isSquareTopRightPointAffectedByTheTractorBeam = true;
+                    while (isSquareTopRightPointAffectedByTheTractorBeam)
+                    {
+                        isSquareTopRightPointAffectedByTheTractorBeam = IsPointAffectedByTheTractorBeam(
+                            new Dictionary<long, long>(integers), xAffected + squareSize - 1, y);
+
+                        bool isSquareBottomLeftPointAffectedByTheTractorBeam = IsPointAffectedByTheTractorBeam(
+                            new Dictionary<long, long>(integers), xAffected, y + squareSize - 1);
+
+                        if (isSquareTopRightPointAffectedByTheTractorBeam
+                            && isSquareBottomLeftPointAffectedByTheTractorBeam)
+                        {
+                            squareFound = true;
+                            x = xAffected;
+                            break;
+                        }
+
+                        xAffected++;
+                    }
+
+                    if (!squareFound)
+                    {
+                        y++;
+                    }
+                }
+                // If current row doesn't have point affected by tractor beam
+                else
+                {
+                    y++;
+                }
+            }
+
+            return x * multiplier + y;
+        }
+
+        private bool IsPointAffectedByTheTractorBeam(Dictionary<long, long> integers, int i, int j)
+        {
+            Queue<int> inputs = new Queue<int>();
+            inputs.Enqueue(i);
+            inputs.Enqueue(j);
+
+            (int output, _) = CalculateOutputSignal(integers, inputs);
+
+            return output == 1;
+        }
+
+        private int? FindFirstXForPointInRowAffectedByTheTractorBeam(
+            Dictionary<long, long> integers,
+            int squareSize,
+            int x,
+            int y
+        )
+        {
+            bool isPointAffectedByTheTractorBeam = false;
+            // Find first point in current row which is affected by the tractor beam
+            while (!isPointAffectedByTheTractorBeam)
+            {
+                isPointAffectedByTheTractorBeam = IsPointAffectedByTheTractorBeam(
+                    new Dictionary<long, long>(integers), x, y);
+
+                if (!isPointAffectedByTheTractorBeam)
+                {
+                    x++;
+                }
+
+                // If x and y diff is larger than square side required square is not possible
+                if (x - y > squareSize)
+                {
+                    return null;
+                }
+            }
+
+            return x;
+        }
+
+        private (int, bool) CalculateOutputSignal(Dictionary<long, long> integers, Queue<int> inputs)
+        {
             int outputSignal = -1;
+
+            long i = 0;
+            long relativeBase = 0;
 
             while (integers[i] != (int)Operation.Halt)
             {
@@ -164,7 +200,7 @@ namespace App.Tasks.Year2019.Day17
 
                         if (operation == (int)Operation.Input)
                         {
-                            integers[firstParameter] = input;
+                            integers[firstParameter] = inputs.Count > 0 ? inputs.Dequeue() : 0;
                         }
                         else if (operation == (int)Operation.Output)
                         {

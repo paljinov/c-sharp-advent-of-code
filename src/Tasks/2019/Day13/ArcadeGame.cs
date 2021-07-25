@@ -1,139 +1,138 @@
 using System.Collections.Generic;
 
-namespace App.Tasks.Year2019.Day19
+namespace App.Tasks.Year2019.Day13
 {
-    public class Program
+    public class ArcadeGame
     {
-        public int CountPointsWhichAreAffectedByTheTractorBeam(long[] integersArray, int sizeOfAreaClosestToEmitter)
+        public int CountBlockTiles(long[] integersArray)
         {
-            int pointsWhichAreAffectedByTheTractorBeam = 0;
+            int blockTiles = 0;
 
             Dictionary<long, long> integers = InitIntegersMemory(integersArray);
 
-            for (int i = 0; i < sizeOfAreaClosestToEmitter; i++)
-            {
-                for (int j = 0; j < sizeOfAreaClosestToEmitter; j++)
-                {
-                    if (IsPointAffectedByTheTractorBeam(new Dictionary<long, long>(integers), i, j))
-                    {
-                        pointsWhichAreAffectedByTheTractorBeam++;
-                    }
-                }
-            }
+            int output;
+            bool halted = false;
 
-            return pointsWhichAreAffectedByTheTractorBeam;
-        }
-
-        public int CalculateResultForClosestPointToEmitterOfSquareThatFitsEntirelyWithinTractorBeam(
-            long[] integersArray,
-            int squareSize,
-            int multiplier
-        )
-        {
-            int x = 0;
-            int y = 0;
-            bool squareFound = false;
-
-            Dictionary<long, long> integers = InitIntegersMemory(integersArray);
-
-            // While square that fits entirely within the tractor beam is not found
-            while (!squareFound)
-            {
-                int? firstAffectedX = FindFirstXForPointInRowAffectedByTheTractorBeam(integers, squareSize, x, y);
-
-                // If current row has point affected by tractor beam
-                if (firstAffectedX.HasValue)
-                {
-                    x = firstAffectedX.Value;
-                    int xAffected = x;
-
-                    bool isSquareTopRightPointAffectedByTheTractorBeam = true;
-                    while (isSquareTopRightPointAffectedByTheTractorBeam)
-                    {
-                        isSquareTopRightPointAffectedByTheTractorBeam = IsPointAffectedByTheTractorBeam(
-                            new Dictionary<long, long>(integers), xAffected + squareSize - 1, y);
-
-                        bool isSquareBottomLeftPointAffectedByTheTractorBeam = IsPointAffectedByTheTractorBeam(
-                            new Dictionary<long, long>(integers), xAffected, y + squareSize - 1);
-
-                        if (isSquareTopRightPointAffectedByTheTractorBeam
-                            && isSquareBottomLeftPointAffectedByTheTractorBeam)
-                        {
-                            squareFound = true;
-                            x = xAffected;
-                            break;
-                        }
-
-                        xAffected++;
-                    }
-
-                    if (!squareFound)
-                    {
-                        y++;
-                    }
-                }
-                // If current row doesn't have point affected by tractor beam
-                else
-                {
-                    y++;
-                }
-            }
-
-            return x * multiplier + y;
-        }
-
-        private bool IsPointAffectedByTheTractorBeam(Dictionary<long, long> integers, int i, int j)
-        {
-            Queue<int> inputs = new Queue<int>();
-            inputs.Enqueue(i);
-            inputs.Enqueue(j);
-
-            (int output, _) = CalculateOutputSignal(integers, inputs);
-
-            return output == 1;
-        }
-
-        private int? FindFirstXForPointInRowAffectedByTheTractorBeam(
-            Dictionary<long, long> integers,
-            int squareSize,
-            int x,
-            int y
-        )
-        {
-            bool isPointAffectedByTheTractorBeam = false;
-            // Find first point in current row which is affected by the tractor beam
-            while (!isPointAffectedByTheTractorBeam)
-            {
-                isPointAffectedByTheTractorBeam = IsPointAffectedByTheTractorBeam(
-                    new Dictionary<long, long>(integers), x, y);
-
-                if (!isPointAffectedByTheTractorBeam)
-                {
-                    x++;
-                }
-
-                // If x and y diff is larger than square side required square is not possible
-                if (x - y > squareSize)
-                {
-                    return null;
-                }
-            }
-
-            return x;
-        }
-
-        private (int, bool) CalculateOutputSignal(Dictionary<long, long> integers, Queue<int> inputs)
-        {
-            int outputSignal = -1;
-
-            long i = 0;
+            // IntCode program current index and relative base value
+            long index = 0;
             long relativeBase = 0;
+
+            while (!halted)
+            {
+                Tile tile = new Tile();
+                for (int i = 0; i < 3; i++)
+                {
+                    (output, halted) = CalculateOutputSignal(integers, 0, ref index, ref relativeBase);
+
+                    if (!halted)
+                    {
+                        if (i == 0)
+                        {
+                            tile.X = output;
+                        }
+                        else if (i == 1)
+                        {
+                            tile.Y = output;
+                        }
+                        else
+                        {
+                            tile.Id = output;
+                        }
+                    }
+                }
+
+                if (!halted && tile.Id == (int)TileType.Block)
+                {
+                    blockTiles++;
+                }
+            }
+
+            return blockTiles;
+        }
+
+        public int CalculateScoreAfterTheLastBlockIsBroken(long[] integersArray)
+        {
+            int score = 0;
+
+            Dictionary<long, long> integers = InitIntegersMemory(integersArray);
+
+            int ballX = 0;
+            int horizontalPaddleX = 0;
+            int output;
+            bool halted = false;
+
+            // IntCode program current index and relative base value
+            long index = 0;
+            long relativeBase = 0;
+
+            while (!halted)
+            {
+                Tile tile = new Tile();
+                for (int i = 0; i < 3; i++)
+                {
+                    int input = 0;
+                    if (ballX > horizontalPaddleX)
+                    {
+                        input = 1;
+                    }
+                    else if (ballX < horizontalPaddleX)
+                    {
+                        input = -1;
+                    }
+
+                    (output, halted) = CalculateOutputSignal(integers, input, ref index, ref relativeBase);
+
+                    if (!halted)
+                    {
+                        if (i == 0)
+                        {
+                            tile.X = output;
+                        }
+                        else if (i == 1)
+                        {
+                            tile.Y = output;
+                        }
+                        else
+                        {
+                            tile.Id = output;
+                        }
+                    }
+                }
+
+                if (!halted)
+                {
+                    if (tile.X == -1 && tile.Y == 0)
+                    {
+                        score = tile.Id;
+                    }
+                    else if (tile.Id == (int)TileType.HorizontalPaddle)
+                    {
+                        horizontalPaddleX = tile.X;
+                    }
+                    else if (tile.Id == (int)TileType.Ball)
+                    {
+                        ballX = tile.X;
+                    }
+                }
+            }
+
+            return score;
+        }
+
+        private (int, bool) CalculateOutputSignal(
+            Dictionary<long, long> integers,
+            int input,
+            ref long i,
+            ref long relativeBase
+        )
+        {
+            int? output = null;
 
             while (integers[i] != (int)Operation.Halt)
             {
-                if (outputSignal != -1)
+                if (output.HasValue)
                 {
-                    return (outputSignal, false);
+                    return (output.Value, false);
                 }
 
                 // Pad first instruction with leading zeros
@@ -200,11 +199,11 @@ namespace App.Tasks.Year2019.Day19
 
                         if (operation == (int)Operation.Input)
                         {
-                            integers[firstParameter] = inputs.Count > 0 ? inputs.Dequeue() : 0;
+                            integers[firstParameter] = input;
                         }
                         else if (operation == (int)Operation.Output)
                         {
-                            outputSignal = (int)firstParameter;
+                            output = (int)firstParameter;
                         }
                         else if (operation == (int)Operation.RelativeBaseOffset)
                         {
@@ -237,7 +236,7 @@ namespace App.Tasks.Year2019.Day19
                 }
             }
 
-            return (outputSignal, true);
+            return (0, true);
         }
 
         private Dictionary<long, long> InitIntegersMemory(long[] integersArray)

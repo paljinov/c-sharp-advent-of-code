@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace App.Tasks.Year2019.Day15
 {
-    public class Program
+    public class OxygenSystem
     {
         public int CalculateFewestNumberOfMovementCommandsToMoveRepairDroidFromStartToOxygenSystemLocation(
             long[] integersArray

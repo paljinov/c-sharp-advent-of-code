@@ -30,12 +30,12 @@ namespace App.Tasks.Year2019.Day13
 
         private readonly IntegersRepository integersRepository;
 
-        private readonly Program program;
+        private readonly ArcadeGame arcadeGame;
 
         public Part2()
         {
             integersRepository = new IntegersRepository();
-            program = new Program();
+            arcadeGame = new ArcadeGame();
         }
 
         public int Solution(string input)
@@ -43,7 +43,7 @@ namespace App.Tasks.Year2019.Day13
             long[] integers = integersRepository.GetIntegers(input);
             integers[0] = MEMORY_ADDRESS_ZERO_QUARTERS;
 
-            int scoreAfterTheLastBlockIsBroken = program.CalculateScoreAfterTheLastBlockIsBroken(integers);
+            int scoreAfterTheLastBlockIsBroken = arcadeGame.CalculateScoreAfterTheLastBlockIsBroken(integers);
 
             return scoreAfterTheLastBlockIsBroken;
         }

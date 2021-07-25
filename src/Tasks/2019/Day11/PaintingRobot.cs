@@ -1,65 +1,75 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
-namespace App.Tasks.Year2019.Day13
+namespace App.Tasks.Year2019.Day11
 {
-    public class Program
+    public class PaintingRobot
     {
-        public int CountBlockTiles(long[] integersArray)
+        private const int BLACK = 0;
+
+        private const int WHITE = 1;
+
+        private const char BLACK_PRINT = '.';
+
+        private const char WHITE_PRINT = '#';
+
+        public int CountPanelsWhichArePaintAtLeastOnce(long[] integersArray)
         {
-            int blockTiles = 0;
-
-            Dictionary<long, long> integers = InitIntegersMemory(integersArray);
-
-            int output;
-            bool halted = false;
-
-            // IntCode program current index and relative base value
-            long index = 0;
-            long relativeBase = 0;
-
-            while (!halted)
-            {
-                Tile tile = new Tile();
-                for (int i = 0; i < 3; i++)
-                {
-                    (output, halted) = CalculateOutputSignal(integers, 0, ref index, ref relativeBase);
-
-                    if (!halted)
-                    {
-                        if (i == 0)
-                        {
-                            tile.X = output;
-                        }
-                        else if (i == 1)
-                        {
-                            tile.Y = output;
-                        }
-                        else
-                        {
-                            tile.Id = output;
-                        }
-                    }
-                }
-
-                if (!halted && tile.Id == (int)TileType.Block)
-                {
-                    blockTiles++;
-                }
-            }
-
-            return blockTiles;
+            (_, HashSet<(int, int)> totalPainted) = GetPanelGrid(integersArray, BLACK);
+            return totalPainted.Count;
         }
 
-        public int CalculateScoreAfterTheLastBlockIsBroken(long[] integersArray)
+        public string GetRegistrationIdentifierWhichIsPaintedOnHull(long[] integersArray)
         {
-            int score = 0;
+            (Dictionary<(int, int), int> panelsGrid, _) = GetPanelGrid(integersArray, WHITE);
+
+            int xMin = panelsGrid.Keys.Select(panel => panel.Item1).Min();
+            int xMax = panelsGrid.Keys.Select(panel => panel.Item1).Max();
+            int yMin = panelsGrid.Keys.Select(panel => panel.Item2).Min();
+            int yMax = panelsGrid.Keys.Select(panel => panel.Item2).Max();
+
+            StringBuilder registrationIdentifier = new StringBuilder();
+
+            for (int j = yMax; j >= yMin; j--)
+            {
+                registrationIdentifier.AppendLine();
+                for (int i = xMin; i <= xMax; i++)
+                {
+                    if (!panelsGrid.ContainsKey((i, j)) || panelsGrid[(i, j)] == BLACK)
+                    {
+                        registrationIdentifier.Append(BLACK_PRINT);
+                    }
+                    else
+                    {
+                        registrationIdentifier.Append(WHITE_PRINT);
+                    }
+                }
+            }
+
+            return registrationIdentifier.ToString();
+        }
+
+        private (Dictionary<(int, int), int>, HashSet<(int, int)>) GetPanelGrid(
+            long[] integersArray,
+            int startPanelColor
+            )
+        {
+            HashSet<(int, int)> totalPainted = new HashSet<(int, int)>();
 
             Dictionary<long, long> integers = InitIntegersMemory(integersArray);
 
-            int ballX = 0;
-            int horizontalPaddleX = 0;
+            Dictionary<(int, int), int> panelsGrid = new Dictionary<(int, int), int>();
+            Direction facing = Direction.Up;
+
             int output;
             bool halted = false;
+            bool paintThePanel = true;
+
+            // Initialize start coordinates and start panel color
+            int i = 0;
+            int j = 0;
+            panelsGrid[(i, j)] = startPanelColor;
 
             // IntCode program current index and relative base value
             long index = 0;
@@ -67,56 +77,87 @@ namespace App.Tasks.Year2019.Day13
 
             while (!halted)
             {
-                Tile tile = new Tile();
-                for (int i = 0; i < 3; i++)
+                if (!panelsGrid.ContainsKey((i, j)))
                 {
-                    int input = 0;
-                    if (ballX > horizontalPaddleX)
-                    {
-                        input = 1;
-                    }
-                    else if (ballX < horizontalPaddleX)
-                    {
-                        input = -1;
-                    }
+                    panelsGrid[(i, j)] = BLACK;
+                }
 
-                    (output, halted) = CalculateOutputSignal(integers, input, ref index, ref relativeBase);
+                (output, halted) = CalculateOutputSignal(integers, panelsGrid[(i, j)], ref index, ref relativeBase);
 
-                    if (!halted)
+                // Halt
+                if (halted)
+                {
+                    break;
+                }
+                // Paint the panel the robot is over
+                else if (paintThePanel)
+                {
+                    if (panelsGrid[(i, j)] != output)
                     {
-                        if (i == 0)
-                        {
-                            tile.X = output;
-                        }
-                        else if (i == 1)
-                        {
-                            tile.Y = output;
-                        }
-                        else
-                        {
-                            tile.Id = output;
-                        }
+                        panelsGrid[(i, j)] = output;
+                        totalPainted.Add((i, j));
+                    }
+                }
+                // Turn the robot in the direction
+                else
+                {
+                    switch (facing)
+                    {
+                        case Direction.Up:
+                            if (output == 1)
+                            {
+                                facing = Direction.Right;
+                                i++;
+                            }
+                            else
+                            {
+                                facing = Direction.Left;
+                                i--;
+                            }
+                            break;
+                        case Direction.Right:
+                            if (output == 1)
+                            {
+                                facing = Direction.Down;
+                                j--;
+                            }
+                            else
+                            {
+                                facing = Direction.Up;
+                                j++;
+                            }
+                            break;
+                        case Direction.Down:
+                            if (output == 1)
+                            {
+                                facing = Direction.Left;
+                                i--;
+                            }
+                            else
+                            {
+                                facing = Direction.Right;
+                                i++;
+                            }
+                            break;
+                        case Direction.Left:
+                            if (output == 1)
+                            {
+                                facing = Direction.Up;
+                                j++;
+                            }
+                            else
+                            {
+                                facing = Direction.Down;
+                                j--;
+                            }
+                            break;
                     }
                 }
 
-                if (!halted)
-                {
-                    if (tile.X == -1 && tile.Y == 0)
-                    {
-                        score = tile.Id;
-                    }
-                    else if (tile.Id == (int)TileType.HorizontalPaddle)
-                    {
-                        horizontalPaddleX = tile.X;
-                    }
-                    else if (tile.Id == (int)TileType.Ball)
-                    {
-                        ballX = tile.X;
-                    }
-                }
+                paintThePanel = !paintThePanel;
             }
 
-            return score;
+            return (panelsGrid, totalPainted);
         }
 
         private (int, bool) CalculateOutputSignal(
@@ -126,13 +167,13 @@ namespace App.Tasks.Year2019.Day13
             ref long relativeBase
         )
         {
-            int? output = null;
+            int outputSignal = -1;
 
             while (integers[i] != (int)Operation.Halt)
             {
-                if (output.HasValue)
+                if (outputSignal != -1)
                 {
-                    return (output.Value, false);
+                    return (outputSignal, false);
                 }
 
                 // Pad first instruction with leading zeros
@@ -203,7 +244,7 @@ namespace App.Tasks.Year2019.Day13
                         }
                         else if (operation == (int)Operation.Output)
                         {
-                            output = (int)firstParameter;
+                            outputSignal = (int)firstParameter;
                         }
                         else if (operation == (int)Operation.RelativeBaseOffset)
                         {
@@ -236,7 +277,7 @@ namespace App.Tasks.Year2019.Day13
                 }
             }
 
-            return (0, true);
+            return (outputSignal, true);
         }
 
         private Dictionary<long, long> InitIntegersMemory(long[] integersArray)

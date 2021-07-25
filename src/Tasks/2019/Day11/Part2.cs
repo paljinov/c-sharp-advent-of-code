@@ -21,18 +21,18 @@ namespace App.Tasks.Year2019.Day11
     {
         private readonly IntegersRepository integersRepository;
 
-        private readonly Program program;
+        private readonly PaintingRobot paintingRobot;
 
         public Part2()
         {
             integersRepository = new IntegersRepository();
-            program = new Program();
+            paintingRobot = new PaintingRobot();
         }
 
         public string Solution(string input)
         {
             long[] integers = integersRepository.GetIntegers(input);
-            string registrationIdentifier = program.GetRegistrationIdentifierWhichIsPaintedOnHull(integers);
+            string registrationIdentifier = paintingRobot.GetRegistrationIdentifierWhichIsPaintedOnHull(integers);
 
             return registrationIdentifier;
         }

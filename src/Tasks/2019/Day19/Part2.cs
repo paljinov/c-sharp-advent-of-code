@@ -67,18 +67,18 @@ namespace App.Tasks.Year2019.Day19
 
         private readonly IntegersRepository integersRepository;
 
-        private readonly Program program;
+        private readonly TractorBeam tractorBeam;
 
         public Part2()
         {
             integersRepository = new IntegersRepository();
-            program = new Program();
+            tractorBeam = new TractorBeam();
         }
 
         public int Solution(string input)
         {
             long[] integers = integersRepository.GetIntegers(input);
-            int result = program.CalculateResultForClosestPointToEmitterOfSquareThatFitsEntirelyWithinTractorBeam(
+            int result = tractorBeam.CalculateResultForClosestPointToEmitterOfSquareThatFitsEntirelyWithinTractorBeam(
                 integers, SQUARE_SIZE, MULTIPLIER);
 
             return result;
