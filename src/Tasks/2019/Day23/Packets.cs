@@ -53,6 +53,10 @@ namespace App.Tasks.Year2019.Day23
             return y;
         }
 
+        public int FindFirstYValueDeliveredByTheNatToTheComputerAtAddressZeroTwiceInARow(long[] integersArray)
+        {
+            return integersArray.Length;
+        }
         private (int, bool) CalculateOutputSignal(Dictionary<long, long> integers, Queue<int> inputs)
         {
             int outputSignal = -1;
