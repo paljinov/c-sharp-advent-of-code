@@ -10,63 +10,79 @@ namespace App.Tasks.Year2019.Day23
 
         public int FindYValueOfTheFirstPacketSentToAddressTwoHundredAndFiftyFive(long[] integersArray)
         {
-            int address = 0;
-            int x;
-            int y = 0;
+            int? address = 0;
+            int? x;
+            int? y = 0;
 
             Dictionary<long, long> integers = InitIntegersMemory(integersArray);
-            Dictionary<int, Queue<int>> computers = new Dictionary<int, Queue<int>>();
+            List<Computer> computers = new List<Computer>();
 
             for (int i = 0; i < TOTAL_COMPUTERS; i++)
             {
-                computers[i] = new Queue<int>();
+                Queue<int> inputs = new Queue<int>();
+                inputs.Enqueue(i);
+
+                Computer computer = new Computer
+                {
+                    Integers = new Dictionary<long, long>(integers),
+                    Inputs = inputs,
+                    Index = 0,
+                    RelativeBase = 0
+                };
+
+                computers.Add(computer);
             }
 
             while (address != WANTED_ADDRESS)
             {
-                foreach (KeyValuePair<int, Queue<int>> computer in computers)
+                foreach (Computer computer in computers)
                 {
-                    Queue<int> inputs = computer.Value;
+                    // IntCode program current index and relative base value
+                    long index = computer.Index;
+                    long relativeBase = computer.RelativeBase;
 
-                    if (inputs.Count == 0)
+                    (address, _) = CalculateOutputSignal(computer.Integers, computer.Inputs, ref index, ref relativeBase);
+                    if (address.HasValue)
                     {
-                        inputs.Enqueue(-1);
+                        (x, _) = CalculateOutputSignal(computer.Integers, computer.Inputs, ref index, ref relativeBase);
+                        (y, _) = CalculateOutputSignal(computer.Integers, computer.Inputs, ref index, ref relativeBase);
+
+                        System.Console.WriteLine($"address: {address}, x: {x}, y: {y}");
+
+                        if (address == WANTED_ADDRESS)
+                        {
+                            break;
+                        }
+
+                        computers[address.Value].Inputs.Enqueue(x.Value);
+                        computers[address.Value].Inputs.Enqueue(y.Value);
                     }
 
-                    (address, _) = CalculateOutputSignal(new Dictionary<long, long>(integers), inputs);
-                    (x, _) = CalculateOutputSignal(new Dictionary<long, long>(integers), inputs);
-                    (y, _) = CalculateOutputSignal(new Dictionary<long, long>(integers), inputs);
-
-                    inputs = new Queue<int>();
-                    inputs.Enqueue(x);
-                    inputs.Enqueue(y);
-
-                    computers[address] = inputs;
-
-                    if (address == WANTED_ADDRESS)
-                    {
-                        break;
-                    }
+                    computer.Index = index;
+                    computer.RelativeBase = relativeBase;
                 }
             }
 
-            return y;
+            return y.Value;
         }
 
         public int FindFirstYValueDeliveredByTheNatToTheComputerAtAddressZeroTwiceInARow(long[] integersArray)
         {
             return integersArray.Length;
         }
-        private (int, bool) CalculateOutputSignal(Dictionary<long, long> integers, Queue<int> inputs)
-        {
-            int outputSignal = -1;
 
-            long i = 0;
-            long relativeBase = 0;
+        private (int?, bool) CalculateOutputSignal(
+            Dictionary<long, long> integers,
+            Queue<int> inputs,
+            ref long i,
+            ref long relativeBase
+        )
+        {
+            int outputSignal = int.MinValue;
 
             while (integers[i] != (int)Operation.Halt)
             {
-                if (outputSignal != -1)
+                if (outputSignal != int.MinValue)
                 {
                     return (outputSignal, false);
                 }
@@ -135,7 +151,8 @@ namespace App.Tasks.Year2019.Day23
 
                         if (operation == (int)Operation.Input)
                         {
-                            integers[firstParameter] = inputs.Count > 0 ? inputs.Dequeue() : 0;
+                            integers[firstParameter] = inputs.Count > 0 ? inputs.Dequeue() : -1;
+                            return (null, false);
                         }
                         else if (operation == (int)Operation.Output)
                         {
