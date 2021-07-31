@@ -6,24 +6,23 @@ namespace App.Tasks.Year2019.Day23
     {
         private const int TOTAL_COMPUTERS = 50;
 
-        private const int WANTED_ADDRESS = 255;
-
-        public int FindYValueOfTheFirstPacketSentToAddressTwoHundredAndFiftyFive(long[] integersArray)
+        public long FindYValueOfTheFirstPacketSentToWantedAddress(long[] integersArray, int wantedAddress)
         {
             int? address = 0;
-            int? x;
-            int? y = 0;
+            long? x;
+            long? y = 0;
 
             Dictionary<long, long> integers = InitIntegersMemory(integersArray);
             List<Computer> computers = new List<Computer>();
 
-            for (int i = 0; i < TOTAL_COMPUTERS; i++)
+            for (int networkAddress = 0; networkAddress < TOTAL_COMPUTERS; networkAddress++)
             {
-                Queue<int> inputs = new Queue<int>();
-                inputs.Enqueue(i);
+                Queue<long> inputs = new Queue<long>();
+                inputs.Enqueue(networkAddress);
 
                 Computer computer = new Computer
                 {
+                    NetworkAddress = networkAddress,
                     Integers = new Dictionary<long, long>(integers),
                     Inputs = inputs,
                     Index = 0,
@@ -33,7 +32,7 @@ namespace App.Tasks.Year2019.Day23
                 computers.Add(computer);
             }
 
-            while (address != WANTED_ADDRESS)
+            while (address != wantedAddress)
             {
                 foreach (Computer computer in computers)
                 {
@@ -41,15 +40,15 @@ namespace App.Tasks.Year2019.Day23
                     long index = computer.Index;
                     long relativeBase = computer.RelativeBase;
 
-                    (address, _) = CalculateOutputSignal(computer.Integers, computer.Inputs, ref index, ref relativeBase);
+                    address = (int?)CalculateOutputSignal(
+                        computer.Integers, computer.Inputs, ref index, ref relativeBase);
+
                     if (address.HasValue)
                     {
-                        (x, _) = CalculateOutputSignal(computer.Integers, computer.Inputs, ref index, ref relativeBase);
-                        (y, _) = CalculateOutputSignal(computer.Integers, computer.Inputs, ref index, ref relativeBase);
+                        x = CalculateOutputSignal(computer.Integers, computer.Inputs, ref index, ref relativeBase);
+                        y = CalculateOutputSignal(computer.Integers, computer.Inputs, ref index, ref relativeBase);
 
-                        System.Console.WriteLine($"address: {address}, x: {x}, y: {y}");
-
-                        if (address == WANTED_ADDRESS)
+                        if (address == wantedAddress)
                         {
                             break;
                         }
@@ -71,22 +70,17 @@ namespace App.Tasks.Year2019.Day23
             return integersArray.Length;
         }
 
-        private (int?, bool) CalculateOutputSignal(
+        private long? CalculateOutputSignal(
             Dictionary<long, long> integers,
-            Queue<int> inputs,
+            Queue<long> inputs,
             ref long i,
             ref long relativeBase
         )
         {
-            int outputSignal = int.MinValue;
+            long? outputSignal = null;
 
             while (integers[i] != (int)Operation.Halt)
             {
-                if (outputSignal != int.MinValue)
-                {
-                    return (outputSignal, false);
-                }
-
                 // Pad first instruction with leading zeros
                 string instruction = integers[i].ToString("D5");
 
@@ -152,11 +146,12 @@ namespace App.Tasks.Year2019.Day23
                         if (operation == (int)Operation.Input)
                         {
                             integers[firstParameter] = inputs.Count > 0 ? inputs.Dequeue() : -1;
-                            return (null, false);
+                            return null;
                         }
                         else if (operation == (int)Operation.Output)
                         {
-                            outputSignal = (int)firstParameter;
+                            outputSignal = firstParameter;
+                            return outputSignal;
                         }
                         else if (operation == (int)Operation.RelativeBaseOffset)
                         {
@@ -189,7 +184,7 @@ namespace App.Tasks.Year2019.Day23
                 }
             }
 
-            return (outputSignal, true);
+            return outputSignal;
         }
 
         private Dictionary<long, long> InitIntegersMemory(long[] integersArray)

@@ -43,8 +43,10 @@ the first packet sent to address 255?
 
 namespace App.Tasks.Year2019.Day23
 {
-    public class Part1 : ITask<int>
+    public class Part1 : ITask<long>
     {
+        private const int WANTED_ADDRESS = 255;
+
         private readonly IntegersRepository integersRepository;
 
         private readonly Packets packets;
@@ -55,10 +57,10 @@ namespace App.Tasks.Year2019.Day23
             packets = new Packets();
         }
 
-        public int Solution(string input)
+        public long Solution(string input)
         {
             long[] integers = integersRepository.GetIntegers(input);
-            int yValue = packets.FindYValueOfTheFirstPacketSentToAddressTwoHundredAndFiftyFive(integers);
+            long yValue = packets.FindYValueOfTheFirstPacketSentToWantedAddress(integers, WANTED_ADDRESS);
 
             return yValue;
         }
