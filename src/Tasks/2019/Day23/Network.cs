@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace App.Tasks.Year2019.Day23
 {
-    public class Packets
+    public class Network
     {
         private const int TOTAL_COMPUTERS = 50;
 

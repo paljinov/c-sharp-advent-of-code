@@ -47,18 +47,18 @@ namespace App.Tasks.Year2019.Day23
     {
         private readonly IntegersRepository integersRepository;
 
-        private readonly Packets packets;
+        private readonly Network network;
 
         public Part1()
         {
             integersRepository = new IntegersRepository();
-            packets = new Packets();
+            network = new Network();
         }
 
         public long Solution(string input)
         {
             long[] integers = integersRepository.GetIntegers(input);
-            long yValue = packets.FindYValueOfTheFirstPacketSentToAddressTwoHundredFiftyFive(integers);
+            long yValue = network.FindYValueOfTheFirstPacketSentToAddressTwoHundredFiftyFive(integers);
 
             return yValue;
         }
