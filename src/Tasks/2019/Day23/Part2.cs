@@ -26,7 +26,7 @@ first Y value delivered by the NAT to the computer at address 0 twice in a row?
 
 namespace App.Tasks.Year2019.Day23
 {
-    public class Part2 : ITask<int>
+    public class Part2 : ITask<long>
     {
         private readonly IntegersRepository integersRepository;
 
@@ -38,10 +38,10 @@ namespace App.Tasks.Year2019.Day23
             packets = new Packets();
         }
 
-        public int Solution(string input)
+        public long Solution(string input)
         {
             long[] integers = integersRepository.GetIntegers(input);
-            int yValue = packets.FindFirstYValueDeliveredByTheNatToTheComputerAtAddressZeroTwiceInARow(integers);
+            long yValue = packets.FindFirstYValueDeliveredByTheNatToTheComputerAtAddressZeroTwiceInARow(integers);
 
             return yValue;
         }

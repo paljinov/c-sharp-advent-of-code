@@ -6,7 +6,9 @@ namespace App.Tasks.Year2019.Day23
     {
         private const int TOTAL_COMPUTERS = 50;
 
-        public long FindYValueOfTheFirstPacketSentToWantedAddress(long[] integersArray, int wantedAddress)
+        private const int TWO_HUNDRED_FIFTY_FIVE = 255;
+
+        public long FindYValueOfTheFirstPacketSentToAddressTwoHundredFiftyFive(long[] integersArray)
         {
             int? address = 0;
             long? x;
@@ -32,7 +34,7 @@ namespace App.Tasks.Year2019.Day23
                 computers.Add(computer);
             }
 
-            while (address != wantedAddress)
+            while (address != TWO_HUNDRED_FIFTY_FIVE)
             {
                 foreach (Computer computer in computers)
                 {
@@ -48,7 +50,7 @@ namespace App.Tasks.Year2019.Day23
                         x = CalculateOutputSignal(computer.Integers, computer.Inputs, ref index, ref relativeBase);
                         y = CalculateOutputSignal(computer.Integers, computer.Inputs, ref index, ref relativeBase);
 
-                        if (address == wantedAddress)
+                        if (address == TWO_HUNDRED_FIFTY_FIVE)
                         {
                             break;
                         }
@@ -65,9 +67,105 @@ namespace App.Tasks.Year2019.Day23
             return y.Value;
         }
 
-        public int FindFirstYValueDeliveredByTheNatToTheComputerAtAddressZeroTwiceInARow(long[] integersArray)
+        public long FindFirstYValueDeliveredByTheNatToTheComputerAtAddressZeroTwiceInARow(long[] integersArray)
         {
-            return integersArray.Length;
+            (long X, long Y) nat = (0, 0);
+            int onlyReceivingPackets = 0;
+            long lastYValueDeliveredByTheNatToTheComputerAtAddressZero = long.MinValue;
+            long firstYValueDeliveredByTheNatToTheComputerAtAddressZeroTwiceInARow = long.MinValue;
+
+            int? address;
+            long? x;
+            long? y;
+
+            Dictionary<long, long> integers = InitIntegersMemory(integersArray);
+            List<Computer> computers = new List<Computer>();
+
+            for (int networkAddress = 0; networkAddress < TOTAL_COMPUTERS; networkAddress++)
+            {
+                Queue<long> inputs = new Queue<long>();
+                inputs.Enqueue(networkAddress);
+
+                Computer computer = new Computer
+                {
+                    NetworkAddress = networkAddress,
+                    Integers = new Dictionary<long, long>(integers),
+                    Inputs = inputs,
+                    Index = 0,
+                    RelativeBase = 0
+                };
+
+                computers.Add(computer);
+            }
+
+            while (firstYValueDeliveredByTheNatToTheComputerAtAddressZeroTwiceInARow == long.MinValue)
+            {
+                foreach (Computer computer in computers)
+                {
+                    // IntCode program current index and relative base value
+                    long index = computer.Index;
+                    long relativeBase = computer.RelativeBase;
+
+                    address = (int?)CalculateOutputSignal(
+                        computer.Integers, computer.Inputs, ref index, ref relativeBase);
+
+                    if (address.HasValue)
+                    {
+                        x = CalculateOutputSignal(computer.Integers, computer.Inputs, ref index, ref relativeBase);
+                        y = CalculateOutputSignal(computer.Integers, computer.Inputs, ref index, ref relativeBase);
+
+                        if (address == TWO_HUNDRED_FIFTY_FIVE)
+                        {
+                            nat = (x.Value, y.Value);
+                        }
+                        else
+                        {
+                            computers[address.Value].Inputs.Enqueue(x.Value);
+                            computers[address.Value].Inputs.Enqueue(y.Value);
+                        }
+
+                        onlyReceivingPackets = 0;
+                    }
+                    else
+                    {
+                        onlyReceivingPackets++;
+
+                        // If network is idle
+                        if (onlyReceivingPackets > TOTAL_COMPUTERS * 100 && AreIncomingPacketQueuesEmpty(computers))
+                        {
+                            computers[0].Inputs.Enqueue(nat.X);
+                            computers[0].Inputs.Enqueue(nat.Y);
+                            onlyReceivingPackets = 0;
+
+                            // Y value delivered by the NAT to the computer at address 0 twice in a row
+                            if (lastYValueDeliveredByTheNatToTheComputerAtAddressZero == nat.Y)
+                            {
+                                firstYValueDeliveredByTheNatToTheComputerAtAddressZeroTwiceInARow = nat.Y;
+                            }
+
+                            lastYValueDeliveredByTheNatToTheComputerAtAddressZero = nat.Y;
+                        }
+                    }
+
+                    computer.Index = index;
+                    computer.RelativeBase = relativeBase;
+                }
+            }
+
+            return firstYValueDeliveredByTheNatToTheComputerAtAddressZeroTwiceInARow;
+        }
+
+        private bool AreIncomingPacketQueuesEmpty(List<Computer> computers)
+        {
+            foreach (Computer computer in computers)
+            {
+                if (computer.Inputs.Count > 0)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private long? CalculateOutputSignal(
