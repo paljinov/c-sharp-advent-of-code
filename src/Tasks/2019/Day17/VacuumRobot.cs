@@ -30,6 +30,33 @@ namespace App.Tasks.Year2019.Day17
             return sumOfTheAlignmentParameters;
         }
 
+        public int CalculateHowMuchDustDoesTheVacuumRobotReportItHasCollected(long[] integersArray)
+        {
+            int sumOfTheAlignmentParameters = 0;
+
+            integersArray[0] = 2;
+
+            Dictionary<(int, int), CameraOutput> image = GetImage(integersArray);
+
+            int iMax = image.Keys.Select(k => k.Item1).Max();
+            int jMax = image.Keys.Select(k => k.Item2).Max();
+
+            for (int i = 1; i < iMax; i++)
+            {
+                for (int j = 1; j < jMax; j++)
+                {
+                    // If this is scaffold intersection
+                    if (IsScaffoldIntersection(i, j, image))
+                    {
+                        int alignmentParameter = i * j;
+                        sumOfTheAlignmentParameters += alignmentParameter;
+                    }
+                }
+            }
+
+            return sumOfTheAlignmentParameters;
+        }
+
         private Dictionary<(int, int), CameraOutput> GetImage(long[] integersArray)
         {
             Dictionary<long, long> integers = InitIntegersMemory(integersArray);
