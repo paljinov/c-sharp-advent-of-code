@@ -13,11 +13,11 @@ namespace App.Tasks.Year2019.Day10
             int rows = asteroidMapString.Length;
             int columns = asteroidMapString[0].Length;
 
-            bool[,] asteroidMap = new bool[asteroidMapString.Length, asteroidMapString[0].Length];
+            bool[,] asteroidMap = new bool[columns, rows];
 
-            for (int y = 0; y < columns; y++)
+            for (int y = 0; y < rows; y++)
             {
-                for (int x = 0; x < rows; x++)
+                for (int x = 0; x < columns; x++)
                 {
                     if (asteroidMapString[y][x] == ASTEROID)
                     {
