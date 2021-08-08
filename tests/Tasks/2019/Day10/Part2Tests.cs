@@ -19,7 +19,7 @@ namespace Tests.Tasks.Year2019.Day10
             string asteroidMap = ".#....#####...#.."
                 + $"{Environment.NewLine}##...##.#####..##"
                 + $"{Environment.NewLine}##...#...#.#####."
-                + $"{Environment.NewLine}..#.....X...###.."
+                + $"{Environment.NewLine}..#.....#...###.."
                 + $"{Environment.NewLine}..#.#.....#....##";
 
             Assert.Equal(802, task.Solution(asteroidMap));

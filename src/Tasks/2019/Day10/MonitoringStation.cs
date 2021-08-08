@@ -1,11 +1,150 @@
 using System;
+using System.Collections.Generic;
 
 namespace App.Tasks.Year2019.Day10
 {
     public class MonitoringStation
     {
+        private const int TWO_HUNDRED = 200;
+
+        private const int MULTIPLY_X_BY = 100;
+
         public int CountNumberOfAsteroidsWhichCanBeDetectedFromMonitoringStation(bool[,] asteroidMap)
         {
+            (_, int numberOfAsteroidsWhichCanBeDetectedFromMonitoringStation) =
+                GetMonitoringStationLocationAndNumberOfAsteroidsWhichCanBeDetected(asteroidMap);
+
+            return numberOfAsteroidsWhichCanBeDetectedFromMonitoringStation;
+        }
+
+        public int CalculateResultForTwoHundredthAsteroidToBeVaporized(bool[,] asteroidMap)
+        {
+            int result;
+            Location twoHundredthAsteroidToBeVaporized = new Location(0, 0);
+
+            (Location monitoringStation, _) =
+                GetMonitoringStationLocationAndNumberOfAsteroidsWhichCanBeDetected(asteroidMap);
+
+            List<Location> vaporized = new List<Location>();
+            asteroidMap[monitoringStation.X, monitoringStation.Y] = false;
+
+            int quadrant = 1;
+
+            while (vaporized.Count < TWO_HUNDRED)
+            {
+                switch (quadrant)
+                {
+                    case 1:
+                    default:
+                        for (int x = monitoringStation.X; x < asteroidMap.GetLength(0) - 1; x++)
+                        {
+                            for (int y = 0; y <= monitoringStation.Y; y++)
+                            {
+                                // If there is an asteroid on this location
+                                if (asteroidMap[x, y])
+                                {
+                                    // If view is not blocked
+                                    if (!IsViewBlocked(monitoringStation, new Location(x, y), asteroidMap))
+                                    {
+                                        vaporized.Add(new Location(x, y));
+                                        if (vaporized.Count == TWO_HUNDRED)
+                                        {
+                                            twoHundredthAsteroidToBeVaporized = new Location(x, y);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case 2:
+                        for (int x = asteroidMap.GetLength(0) - 1; x >= monitoringStation.X; x--)
+                        {
+                            for (int y = monitoringStation.Y; y < asteroidMap.GetLength(1) - 1; y++)
+                            {
+                                // If there is an asteroid on this location
+                                if (asteroidMap[x, y])
+                                {
+                                    // If view is not blocked
+                                    if (!IsViewBlocked(monitoringStation, new Location(x, y), asteroidMap))
+                                    {
+                                        vaporized.Add(new Location(x, y));
+                                        if (vaporized.Count == TWO_HUNDRED)
+                                        {
+                                            twoHundredthAsteroidToBeVaporized = new Location(x, y);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case 3:
+                        for (int x = monitoringStation.X; x >= 0; x--)
+                        {
+                            for (int y = asteroidMap.GetLength(1) - 1; y >= monitoringStation.Y; y--)
+                            {
+                                // If there is an asteroid on this location
+                                if (asteroidMap[x, y])
+                                {
+                                    // If view is not blocked
+                                    if (!IsViewBlocked(monitoringStation, new Location(x, y), asteroidMap))
+                                    {
+                                        vaporized.Add(new Location(x, y));
+                                        if (vaporized.Count == TWO_HUNDRED)
+                                        {
+                                            twoHundredthAsteroidToBeVaporized = new Location(x, y);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                    case 4:
+                        for (int x = 0; x < monitoringStation.X; x++)
+                        {
+                            for (int y = monitoringStation.Y; y >= 0; y--)
+                            {
+                                // If there is an asteroid on this location
+                                if (asteroidMap[x, y])
+                                {
+                                    // If view is not blocked
+                                    if (!IsViewBlocked(monitoringStation, new Location(x, y), asteroidMap))
+                                    {
+                                        vaporized.Add(new Location(x, y));
+                                        if (vaporized.Count == TWO_HUNDRED)
+                                        {
+                                            twoHundredthAsteroidToBeVaporized = new Location(x, y);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        break;
+                }
+
+                foreach (Location vaporizedAsteroid in vaporized)
+                {
+                    asteroidMap[vaporizedAsteroid.X, vaporizedAsteroid.Y] = false;
+                }
+
+                quadrant++;
+                if (quadrant > 4)
+                {
+                    quadrant = 1;
+                }
+            }
+
+            result = twoHundredthAsteroidToBeVaporized.X * MULTIPLY_X_BY + twoHundredthAsteroidToBeVaporized.Y;
+
+            return result;
+        }
+
+        private (Location, int) GetMonitoringStationLocationAndNumberOfAsteroidsWhichCanBeDetected(bool[,] asteroidMap)
+        {
+            Location monitoringStation = new Location(0, 0);
             int numberOfAsteroidsWhichCanBeDetectedFromMonitoringStation = 0;
 
             for (int x = 0; x < asteroidMap.GetLength(0); x++)
@@ -18,13 +157,16 @@ namespace App.Tasks.Year2019.Day10
                         int detectableAsteroidsFromLocation =
                             CountDetectableAsteroidsFromLocation(new Location(x, y), asteroidMap);
 
-                        numberOfAsteroidsWhichCanBeDetectedFromMonitoringStation = Math.Max(
-                            numberOfAsteroidsWhichCanBeDetectedFromMonitoringStation, detectableAsteroidsFromLocation);
+                        if (detectableAsteroidsFromLocation > numberOfAsteroidsWhichCanBeDetectedFromMonitoringStation)
+                        {
+                            monitoringStation = new Location(x, y);
+                            numberOfAsteroidsWhichCanBeDetectedFromMonitoringStation = detectableAsteroidsFromLocation;
+                        }
                     }
                 }
             }
 
-            return numberOfAsteroidsWhichCanBeDetectedFromMonitoringStation;
+            return (monitoringStation, numberOfAsteroidsWhichCanBeDetectedFromMonitoringStation);
         }
 
         private int CountDetectableAsteroidsFromLocation(Location monitoringLocation, bool[,] asteroidMap)
