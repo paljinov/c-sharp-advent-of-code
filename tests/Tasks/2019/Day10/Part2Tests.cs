@@ -16,11 +16,26 @@ namespace Tests.Tasks.Year2019.Day10
         [Fact]
         public void Solution_AsteroidMapExample_ResultForTwoHundredVaporizedAsteroidEquals()
         {
-            string asteroidMap = ".#....#####...#.."
-                + $"{Environment.NewLine}##...##.#####..##"
-                + $"{Environment.NewLine}##...#...#.#####."
-                + $"{Environment.NewLine}..#.....#...###.."
-                + $"{Environment.NewLine}..#.#.....#....##";
+            string asteroidMap = ".#..##.###...#######"
+                + $"{Environment.NewLine}##.############..##."
+                + $"{Environment.NewLine}.#.######.########.#"
+                + $"{Environment.NewLine}.###.#######.####.#."
+                + $"{Environment.NewLine}#####.##.#.##.###.##"
+                + $"{Environment.NewLine}..#####..#.#########"
+                + $"{Environment.NewLine}####################"
+                + $"{Environment.NewLine}#.####....###.#.#.##"
+                + $"{Environment.NewLine}##.#################"
+                + $"{Environment.NewLine}#####.##.###..####.."
+                + $"{Environment.NewLine}..######..##.#######"
+                + $"{Environment.NewLine}####.##.####...##..#"
+                + $"{Environment.NewLine}.#####..#.######.###"
+                + $"{Environment.NewLine}##...#.##########..."
+                + $"{Environment.NewLine}#.##########.#######"
+                + $"{Environment.NewLine}.####.#.###.###.#.##"
+                + $"{Environment.NewLine}....##.##.###..#####"
+                + $"{Environment.NewLine}.#.#.###########.###"
+                + $"{Environment.NewLine}#.#.#.#####.####.###"
+                + $"{Environment.NewLine}###.##.####.##.#..##";
 
             Assert.Equal(802, task.Solution(asteroidMap));
         }
