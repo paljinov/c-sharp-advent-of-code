@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace App.Tasks.Year2019.Day10
 {
@@ -19,125 +21,40 @@ namespace App.Tasks.Year2019.Day10
 
         public int CalculateResultForTwoHundredthAsteroidToBeVaporized(bool[,] asteroidMap)
         {
-            int result;
             Location twoHundredthAsteroidToBeVaporized = new Location(0, 0);
 
             (Location monitoringStation, _) =
                 GetMonitoringStationLocationAndNumberOfAsteroidsWhichCanBeDetected(asteroidMap);
 
+            List<(double, Location)> angles = GetAnglesFromMonitoringStationToAsteroids(monitoringStation, asteroidMap);
+
             List<Location> vaporized = new List<Location>();
             asteroidMap[monitoringStation.X, monitoringStation.Y] = false;
 
-            int quadrant = 1;
-
             while (vaporized.Count < TWO_HUNDRED)
             {
-                switch (quadrant)
+                foreach ((_, Location location) in angles)
                 {
-                    case 1:
-                    default:
-                        for (int x = monitoringStation.X; x < asteroidMap.GetLength(0) - 1; x++)
+                    // If there is an asteroid on this location and view is not blocked
+                    if (asteroidMap[location.X, location.Y] && !IsViewBlocked(monitoringStation, location, asteroidMap))
+                    {
+                        vaporized.Add(location);
+                        if (vaporized.Count == TWO_HUNDRED)
                         {
-                            for (int y = 0; y <= monitoringStation.Y; y++)
-                            {
-                                // If there is an asteroid on this location
-                                if (asteroidMap[x, y])
-                                {
-                                    // If view is not blocked
-                                    if (!IsViewBlocked(monitoringStation, new Location(x, y), asteroidMap))
-                                    {
-                                        vaporized.Add(new Location(x, y));
-                                        if (vaporized.Count == TWO_HUNDRED)
-                                        {
-                                            twoHundredthAsteroidToBeVaporized = new Location(x, y);
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
+                            twoHundredthAsteroidToBeVaporized = location;
+                            break;
                         }
-                        break;
-                    case 2:
-                        for (int x = asteroidMap.GetLength(0) - 1; x >= monitoringStation.X; x--)
-                        {
-                            for (int y = monitoringStation.Y; y < asteroidMap.GetLength(1) - 1; y++)
-                            {
-                                // If there is an asteroid on this location
-                                if (asteroidMap[x, y])
-                                {
-                                    // If view is not blocked
-                                    if (!IsViewBlocked(monitoringStation, new Location(x, y), asteroidMap))
-                                    {
-                                        vaporized.Add(new Location(x, y));
-                                        if (vaporized.Count == TWO_HUNDRED)
-                                        {
-                                            twoHundredthAsteroidToBeVaporized = new Location(x, y);
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        break;
-                    case 3:
-                        for (int x = monitoringStation.X; x >= 0; x--)
-                        {
-                            for (int y = asteroidMap.GetLength(1) - 1; y >= monitoringStation.Y; y--)
-                            {
-                                // If there is an asteroid on this location
-                                if (asteroidMap[x, y])
-                                {
-                                    // If view is not blocked
-                                    if (!IsViewBlocked(monitoringStation, new Location(x, y), asteroidMap))
-                                    {
-                                        vaporized.Add(new Location(x, y));
-                                        if (vaporized.Count == TWO_HUNDRED)
-                                        {
-                                            twoHundredthAsteroidToBeVaporized = new Location(x, y);
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        break;
-                    case 4:
-                        for (int x = 0; x < monitoringStation.X; x++)
-                        {
-                            for (int y = monitoringStation.Y; y >= 0; y--)
-                            {
-                                // If there is an asteroid on this location
-                                if (asteroidMap[x, y])
-                                {
-                                    // If view is not blocked
-                                    if (!IsViewBlocked(monitoringStation, new Location(x, y), asteroidMap))
-                                    {
-                                        vaporized.Add(new Location(x, y));
-                                        if (vaporized.Count == TWO_HUNDRED)
-                                        {
-                                            twoHundredthAsteroidToBeVaporized = new Location(x, y);
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        break;
+                    }
                 }
 
+                // Removing vaporized asteroids after full cycle
                 foreach (Location vaporizedAsteroid in vaporized)
                 {
                     asteroidMap[vaporizedAsteroid.X, vaporizedAsteroid.Y] = false;
                 }
-
-                quadrant++;
-                if (quadrant > 4)
-                {
-                    quadrant = 1;
-                }
             }
 
-            result = twoHundredthAsteroidToBeVaporized.X * MULTIPLY_X_BY + twoHundredthAsteroidToBeVaporized.Y;
+            int result = twoHundredthAsteroidToBeVaporized.X * MULTIPLY_X_BY + twoHundredthAsteroidToBeVaporized.Y;
 
             return result;
         }
@@ -235,6 +152,44 @@ namespace App.Tasks.Year2019.Day10
             }
 
             return false;
+        }
+
+        private List<(double, Location)> GetAnglesFromMonitoringStationToAsteroids(
+            Location monitoringStation,
+            bool[,] asteroidMap
+        )
+        {
+            List<(double Angle, Location)> angles = new List<(double, Location)>();
+
+            for (int x = 0; x < asteroidMap.GetLength(0); x++)
+            {
+                for (int y = 0; y < asteroidMap.GetLength(1); y++)
+                {
+                    // If there is an asteroid on this location
+                    if (asteroidMap[x, y])
+                    {
+                        double angle = Math.Atan2(monitoringStation.Y - y, monitoringStation.X - x);
+                        angles.Add((angle, new Location(x, y)));
+                    }
+                }
+            }
+
+            List<(double Angle, Location)> firstQuadrant =
+                angles.Where(a => a.Angle >= Math.Atan2(1, 0)).OrderBy(a => a.Angle).ToList();
+            List<(double Angle, Location)> secondQuadrant =
+                angles.Where(a => a.Angle <= Math.Atan2(-1, 0)).OrderBy(a => a.Angle).ToList();
+            List<(double Angle, Location)> thirdQuadrant =
+                angles.Where(a => a.Angle > Math.Atan2(-1, 0) && a.Angle <= 0).OrderBy(a => a.Angle).ToList();
+            List<(double Angle, Location)> fourthQuadrant =
+                angles.Where(a => a.Angle > 0 && a.Angle < Math.Atan2(1, 0)).OrderBy(a => a.Angle).ToList();
+
+            angles.Clear();
+            angles.AddRange(firstQuadrant);
+            angles.AddRange(secondQuadrant);
+            angles.AddRange(thirdQuadrant);
+            angles.AddRange(fourthQuadrant);
+
+            return angles;
         }
     }
 }
