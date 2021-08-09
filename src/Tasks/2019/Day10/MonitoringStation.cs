@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 
 namespace App.Tasks.Year2019.Day10
@@ -174,20 +173,21 @@ namespace App.Tasks.Year2019.Day10
                 }
             }
 
-            List<(double Angle, Location)> firstQuadrant =
+            // Get quandrants starting from laser pointing up and rotate clockwise
+            List<(double Angle, Location)> firstQuadrantClockwise =
                 angles.Where(a => a.Angle >= Math.Atan2(1, 0)).OrderBy(a => a.Angle).ToList();
-            List<(double Angle, Location)> secondQuadrant =
+            List<(double Angle, Location)> secondQuadrantClockwise =
                 angles.Where(a => a.Angle <= Math.Atan2(-1, 0)).OrderBy(a => a.Angle).ToList();
-            List<(double Angle, Location)> thirdQuadrant =
+            List<(double Angle, Location)> thirdQuadrantClockwise =
                 angles.Where(a => a.Angle > Math.Atan2(-1, 0) && a.Angle <= 0).OrderBy(a => a.Angle).ToList();
-            List<(double Angle, Location)> fourthQuadrant =
+            List<(double Angle, Location)> fourthQuadrantClockwise =
                 angles.Where(a => a.Angle > 0 && a.Angle < Math.Atan2(1, 0)).OrderBy(a => a.Angle).ToList();
 
             angles.Clear();
-            angles.AddRange(firstQuadrant);
-            angles.AddRange(secondQuadrant);
-            angles.AddRange(thirdQuadrant);
-            angles.AddRange(fourthQuadrant);
+            angles.AddRange(firstQuadrantClockwise);
+            angles.AddRange(secondQuadrantClockwise);
+            angles.AddRange(thirdQuadrantClockwise);
+            angles.AddRange(fourthQuadrantClockwise);
 
             return angles;
         }
