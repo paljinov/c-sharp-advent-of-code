@@ -30,7 +30,7 @@ namespace App.Tasks.Year2019.Day17
             return sumOfTheAlignmentParameters;
         }
 
-        public int CalculateHowMuchDustDoesTheVacuumRobotReportItHasCollected(long[] integersArray)
+        public int CalculateDustCollectedByTheVacuumRobot(long[] integersArray)
         {
             int sumOfTheAlignmentParameters = 0;
 

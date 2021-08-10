@@ -3,17 +3,17 @@ using Xunit;
 
 namespace Tests.Tasks.Year2019.Day17
 {
-    public class Part1Tests
+    public class Part2Tests
     {
-        private readonly Part1 task;
+        private readonly Part2 task;
 
-        public Part1Tests()
+        public Part2Tests()
         {
-            task = new Part1();
+            task = new Part2();
         }
 
         [Fact]
-        public void Solution_IntegersExample_SumOfTheAlignmentParametersForTheScaffoldIntersectionsEquals()
+        public void Solution_IntegersExample_DustCollectedByTheVacuumRobotEquals()
         {
             string integers =
                 "1,330,331,332,109,3376,1101,1182,0,16,1102,1,1449,24,101,0,0,570,1006,570,36,100"
@@ -79,7 +79,7 @@ namespace Tests.Tasks.Year2019.Day17
                 + ",5,1,25,1,8,1,5,1,25,1,8,7,25,1,40,1,40,1,40,1,40,1,40,1,34,7,34,1,40,1,40,1,40,"
                 + "1,10";
 
-            Assert.Equal(2508, task.Solution(integers));
+            Assert.Equal(799463, task.Solution(integers));
         }
     }
 }
