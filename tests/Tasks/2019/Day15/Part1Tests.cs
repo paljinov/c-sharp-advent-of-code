@@ -15,7 +15,7 @@ namespace Tests.Tasks.Year2019.Day15
         [Fact]
         public void Solution_IntegersExample_FewestNumberOfMovementCommandsToMoveRepairDroidFromStartToOxygenSystemLocationEquals()
         {
-            string fewestNumberOfMovementCommands =
+            string integers =
                 "3,1033,1008,1033,1,1032,1005,1032,31,1008,1033,2,1032,1005,1032,58,1008,1033,3,1"
                 + "032,1005,1032,81,1008,1033,4,1032,1005,1032,104,99,1001,1034,0,1039,102,1,1036,1"
                 + "041,1001,1035,-1,1040,1008,1038,0,1043,102,-1,1043,1032,1,1037,1032,1042,1106,0,"
@@ -60,7 +60,7 @@ namespace Tests.Tasks.Year2019.Day15
                 + ",75,9,97,99,80,28,93,44,85,39,92,49,99,17,81,97,91,3,76,37,76,49,86,0,0,21,21,1,"
                 + "10,1,0,0,0,0,0,0";
 
-            Assert.Equal(216, task.Solution(fewestNumberOfMovementCommands));
+            Assert.Equal(216, task.Solution(integers));
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Tests.Tasks.Year2019.Day19
         [Fact]
         public void Solution_IntegersExample_PointsWhichAreAffectedByTheTractorBeamCountEquals()
         {
-            string pointsWhichAreAffectedByTheTractorBeam =
+            string integers =
                 "109,424,203,1,21101,0,11,0,1106,0,282,21102,1,18,0,1106,0,259,2101,0,1,221,203,1"
                 + ",21101,0,31,0,1106,0,282,21101,0,38,0,1106,0,259,21001,23,0,2,21202,1,1,3,21102,"
                 + "1,1,1,21102,1,57,0,1106,0,303,2102,1,1,222,20102,1,221,3,21001,221,0,2,21102,1,2"
@@ -36,7 +36,7 @@ namespace Tests.Tasks.Year2019.Day19
                 + "-4,22202,-3,-2,-2,22202,-2,-4,-4,22202,-3,-2,-3,21202,-4,-1,-2,22201,-3,-2,1,221"
                 + "02,1,1,-4,109,-5,2105,1,0";
 
-            Assert.Equal(10311666, task.Solution(pointsWhichAreAffectedByTheTractorBeam));
+            Assert.Equal(10311666, task.Solution(integers));
         }
     }
 }

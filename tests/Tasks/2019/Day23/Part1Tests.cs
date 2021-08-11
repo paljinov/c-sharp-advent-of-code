@@ -15,7 +15,7 @@ namespace Tests.Tasks.Year2019.Day23
         [Fact]
         public void Solution_IntegersExample_YValueOfTheFirstPacketSentToWantedAddressEquals()
         {
-            string yValueOfTheFirstPacketSentToWantedAddress =
+            string integers =
                 "3,62,1001,62,11,10,109,2229,105,1,0,703,1792,1586,775,1524,1856,1002,2058,1965,6"
                 + "37,1930,1334,1262,2025,2196,744,1557,1615,1159,1460,1124,666,839,1759,971,1396,1"
                 + "093,1064,806,2163,1365,606,1730,2093,1644,1231,868,1033,1297,1825,901,571,1190,9"
@@ -117,7 +117,7 @@ namespace Tests.Tasks.Year2019.Day23
                 + "6,1102,1,1,67,1102,1,2223,68,1101,0,556,69,1102,1,2,71,1102,2225,1,72,1106,0,73,"
                 + "1,10,33,252292,42,205053";
 
-            Assert.Equal(16660, task.Solution(yValueOfTheFirstPacketSentToWantedAddress));
+            Assert.Equal(16660, task.Solution(integers));
         }
     }
 }
