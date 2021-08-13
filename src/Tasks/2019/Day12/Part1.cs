@@ -215,6 +215,8 @@ namespace App.Tasks.Year2019.Day12
 {
     public class Part1 : ITask<int>
     {
+        private readonly int totalSteps = 1000;
+
         private readonly MoonsPositionsRepository moonsPositionsRepository;
 
         private readonly SystemEnergy systemEnergy;
@@ -228,7 +230,7 @@ namespace App.Tasks.Year2019.Day12
         public int Solution(string input)
         {
             List<Position> moonsPositions = moonsPositionsRepository.GetMoonsPositions(input);
-            int particle = systemEnergy.CalculateTotalEnergyInTheSystem(moonsPositions);
+            int particle = systemEnergy.CalculateTotalEnergyInTheSystem(moonsPositions, totalSteps);
 
             return particle;
         }

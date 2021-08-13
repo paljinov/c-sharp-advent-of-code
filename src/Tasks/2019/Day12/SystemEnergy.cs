@@ -5,13 +5,11 @@ namespace App.Tasks.Year2019.Day12
 {
     public class SystemEnergy
     {
-        private const int STEPS = 1000;
-
-        public int CalculateTotalEnergyInTheSystem(List<Position> moonsPositions)
+        public int CalculateTotalEnergyInTheSystem(List<Position> moonsPositions, int totalSteps)
         {
             Dictionary<int, (Position Position, Velocity Velocity)> system = InitializeSystem(moonsPositions);
 
-            for (int step = 0; step < STEPS; step++)
+            for (int step = 0; step < totalSteps; step++)
             {
                 Dictionary<int, Velocity> newVelocities = CalculateNewVelocities(system);
 
