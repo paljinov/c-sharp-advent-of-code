@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace App.Tasks.Year2019.Day12
 {
@@ -30,6 +31,54 @@ namespace App.Tasks.Year2019.Day12
             int totalEnergy = CalculateTotalEnergy(system);
 
             return totalEnergy;
+        }
+
+        public long CalculateNumberOfStepsNeededToReachFirstStateThatExactlyMatchesPreviousState(
+            List<Position> moonsPositions
+        )
+        {
+            long steps = 0;
+
+            Dictionary<int, (Position Position, Velocity Velocity)> system = InitializeSystem(moonsPositions);
+
+            HashSet<string> states = new HashSet<string>();
+            StringBuilder currentStateSb = new StringBuilder();
+            string currentState = string.Empty;
+
+            while (!states.Contains(currentState))
+            {
+                if (steps > 0)
+                {
+                    states.Add(currentState);
+                }
+
+                Dictionary<int, Velocity> newVelocities = CalculateNewVelocities(system);
+
+                // Update system velocities and positions
+                foreach (KeyValuePair<int, Velocity> newVelocity in newVelocities)
+                {
+                    Position newPosition = new Position
+                    {
+                        X = system[newVelocity.Key].Position.X + newVelocity.Value.X,
+                        Y = system[newVelocity.Key].Position.Y + newVelocity.Value.Y,
+                        Z = system[newVelocity.Key].Position.Z + newVelocity.Value.Z
+                    };
+
+                    system[newVelocity.Key] = (newPosition, newVelocity.Value);
+
+                    currentStateSb.Append($"{newPosition.X}{newPosition.Y}{newPosition.Z}"
+                        + $"{newVelocity.Value.X}{newVelocity.Value.Y}{newVelocity.Value.Z}");
+                }
+
+                currentState = currentStateSb.ToString();
+                currentStateSb = currentStateSb.Clear();
+
+                steps++;
+            }
+
+            steps--;
+
+            return steps;
         }
 
         private Dictionary<int, (Position, Velocity)> InitializeSystem(List<Position> moonsPositions)
