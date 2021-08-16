@@ -1,11 +1,19 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace App.Tasks.Year2019.Day12
 {
     public class SystemEnergy
     {
+        private readonly LcmHelper lcmHelper;
+
+        public SystemEnergy()
+        {
+            lcmHelper = new LcmHelper();
+        }
+
         public int CalculateTotalEnergyInTheSystem(List<Position> moonsPositions, int totalSteps)
         {
             Dictionary<int, (Position Position, Velocity Velocity)> system = InitializeSystem(moonsPositions);
@@ -13,19 +21,7 @@ namespace App.Tasks.Year2019.Day12
             for (int step = 0; step < totalSteps; step++)
             {
                 Dictionary<int, Velocity> newVelocities = CalculateNewVelocities(system);
-
-                // Update system velocities and positions
-                foreach (KeyValuePair<int, Velocity> newVelocity in newVelocities)
-                {
-                    Position newPosition = new Position
-                    {
-                        X = system[newVelocity.Key].Position.X + newVelocity.Value.X,
-                        Y = system[newVelocity.Key].Position.Y + newVelocity.Value.Y,
-                        Z = system[newVelocity.Key].Position.Z + newVelocity.Value.Z
-                    };
-
-                    system[newVelocity.Key] = (newPosition, newVelocity.Value);
-                }
+                UpdateSystemPositionsAndVelocities(system, newVelocities);
             }
 
             int totalEnergy = CalculateTotalEnergy(system);
@@ -37,46 +33,25 @@ namespace App.Tasks.Year2019.Day12
             List<Position> moonsPositions
         )
         {
-            long steps = 0;
+            IEnumerable<Dimension> dimensions = Enum.GetValues(typeof(Dimension)).Cast<Dimension>();
+            Dictionary<Dimension, int> dimensionSteps = new Dictionary<Dimension, int>();
 
-            Dictionary<int, (Position Position, Velocity Velocity)> system = InitializeSystem(moonsPositions);
-
-            HashSet<string> states = new HashSet<string>();
-            StringBuilder currentStateSb = new StringBuilder();
-            string currentState = string.Empty;
-
-            while (!states.Contains(currentState))
+            Dictionary<int, (Position Position, Velocity Velocity)> systemStartState = InitializeSystem(moonsPositions);
+            foreach (Dimension dimension in dimensions)
             {
-                if (steps > 0)
+                dimensionSteps[dimension] = 0;
+                Dictionary<int, (Position Position, Velocity Velocity)> system = InitializeSystem(moonsPositions);
+
+                while (dimensionSteps[dimension] == 0
+                    || !IsSystemStartStateReachedForDimension(systemStartState, system, dimension))
                 {
-                    states.Add(currentState);
+                    Dictionary<int, Velocity> newVelocities = CalculateNewVelocities(system);
+                    UpdateSystemPositionsAndVelocities(system, newVelocities);
+                    dimensionSteps[dimension]++;
                 }
-
-                Dictionary<int, Velocity> newVelocities = CalculateNewVelocities(system);
-
-                // Update system velocities and positions
-                foreach (KeyValuePair<int, Velocity> newVelocity in newVelocities)
-                {
-                    Position newPosition = new Position
-                    {
-                        X = system[newVelocity.Key].Position.X + newVelocity.Value.X,
-                        Y = system[newVelocity.Key].Position.Y + newVelocity.Value.Y,
-                        Z = system[newVelocity.Key].Position.Z + newVelocity.Value.Z
-                    };
-
-                    system[newVelocity.Key] = (newPosition, newVelocity.Value);
-
-                    currentStateSb.Append($"{newPosition.X}{newPosition.Y}{newPosition.Z}"
-                        + $"{newVelocity.Value.X}{newVelocity.Value.Y}{newVelocity.Value.Z}");
-                }
-
-                currentState = currentStateSb.ToString();
-                currentStateSb = currentStateSb.Clear();
-
-                steps++;
             }
 
-            steps--;
+            long steps = lcmHelper.CalculateLeastCommonMultiple(dimensionSteps.Values.ToArray());
 
             return steps;
         }
@@ -143,6 +118,25 @@ namespace App.Tasks.Year2019.Day12
             return 0;
         }
 
+        private void UpdateSystemPositionsAndVelocities(
+            Dictionary<int, (Position Position, Velocity Velocity)> system,
+            Dictionary<int, Velocity> newVelocities
+        )
+        {
+            // Update system velocities and positions
+            foreach (KeyValuePair<int, Velocity> newVelocity in newVelocities)
+            {
+                Position newPosition = new Position
+                {
+                    X = system[newVelocity.Key].Position.X + newVelocity.Value.X,
+                    Y = system[newVelocity.Key].Position.Y + newVelocity.Value.Y,
+                    Z = system[newVelocity.Key].Position.Z + newVelocity.Value.Z
+                };
+
+                system[newVelocity.Key] = (newPosition, newVelocity.Value);
+            }
+        }
+
         private int CalculateTotalEnergy(Dictionary<int, (Position Position, Velocity Velocity)> system)
         {
             int totalEnergy = 0;
@@ -158,6 +152,52 @@ namespace App.Tasks.Year2019.Day12
             }
 
             return totalEnergy;
+        }
+
+        private bool IsSystemStartStateReachedForDimension(
+            Dictionary<int, (Position Position, Velocity Velocity)> systemStartState,
+            Dictionary<int, (Position Position, Velocity Velocity)> system,
+            Dimension dimension
+        )
+        {
+            foreach (KeyValuePair<int, (Position Position, Velocity Velocity)> moon in systemStartState)
+            {
+                switch (dimension)
+                {
+                    case Dimension.X:
+                        if (moon.Value.Position.X != system[moon.Key].Position.X)
+                        {
+                            return false;
+                        }
+                        if (moon.Value.Velocity.X != system[moon.Key].Velocity.X)
+                        {
+                            return false;
+                        }
+                        break;
+                    case Dimension.Y:
+                        if (moon.Value.Position.Y != system[moon.Key].Position.Y)
+                        {
+                            return false;
+                        }
+                        if (moon.Value.Velocity.Y != system[moon.Key].Velocity.Y)
+                        {
+                            return false;
+                        }
+                        break;
+                    case Dimension.Z:
+                        if (moon.Value.Position.Z != system[moon.Key].Position.Z)
+                        {
+                            return false;
+                        }
+                        if (moon.Value.Velocity.Z != system[moon.Key].Velocity.Z)
+                        {
+                            return false;
+                        }
+                        break;
+                }
+            }
+
+            return true;
         }
     }
 }
