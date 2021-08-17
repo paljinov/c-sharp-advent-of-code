@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -5,18 +6,29 @@ namespace App.Tasks.Year2019.Day17
 {
     public class VacuumRobot
     {
+        private const char SCAFFOLD = '#';
+
+        private const char OPEN_SPACE = '.';
+
+        private const char UP = '^';
+
+        private const char DOWN = 'v';
+
+        private const char LEFT = '<';
+
+        private const char RIGHT = '>';
+
+        private const int MOVEMENT_FUNCTIONS_MAX_CHARACTERS = 20;
+
         public int CalculateSumOfTheAlignmentParametersForTheScaffoldIntersections(long[] integersArray)
         {
             int sumOfTheAlignmentParameters = 0;
 
-            Dictionary<(int, int), CameraOutput> image = GetImage(integersArray);
+            char[,] image = GetImage(integersArray);
 
-            int iMax = image.Keys.Select(k => k.Item1).Max();
-            int jMax = image.Keys.Select(k => k.Item2).Max();
-
-            for (int i = 1; i < iMax; i++)
+            for (int i = 1; i < image.GetLength(0) - 1; i++)
             {
-                for (int j = 1; j < jMax; j++)
+                for (int j = 1; j < image.GetLength(1) - 1; j++)
                 {
                     // If this is scaffold intersection
                     if (IsScaffoldIntersection(i, j, image))
@@ -32,36 +44,22 @@ namespace App.Tasks.Year2019.Day17
 
         public int CalculateDustCollectedByTheVacuumRobot(long[] integersArray)
         {
-            int sumOfTheAlignmentParameters = 0;
+            int dust = 0;
 
             integersArray[0] = 2;
+            char[,] image = GetImage(integersArray);
 
-            Dictionary<(int, int), CameraOutput> image = GetImage(integersArray);
+            PrintImage(image);
 
-            int iMax = image.Keys.Select(k => k.Item1).Max();
-            int jMax = image.Keys.Select(k => k.Item2).Max();
-
-            for (int i = 1; i < iMax; i++)
-            {
-                for (int j = 1; j < jMax; j++)
-                {
-                    // If this is scaffold intersection
-                    if (IsScaffoldIntersection(i, j, image))
-                    {
-                        int alignmentParameter = i * j;
-                        sumOfTheAlignmentParameters += alignmentParameter;
-                    }
-                }
-            }
-
-            return sumOfTheAlignmentParameters;
+            return dust;
         }
 
-        private Dictionary<(int, int), CameraOutput> GetImage(long[] integersArray)
+        private char[,] GetImage(long[] integersArray)
         {
             Dictionary<long, long> integers = InitIntegersMemory(integersArray);
 
-            int output;
+            List<int> outputs = new List<int>();
+            int outputSignal;
             bool halted = false;
 
             // IntCode program current index and relative base value
@@ -70,11 +68,19 @@ namespace App.Tasks.Year2019.Day17
 
             int i = 0;
             int j = 0;
-            Dictionary<(int, int), CameraOutput> image = new Dictionary<(int, int), CameraOutput>();
 
             while (!halted)
             {
-                (output, halted) = CalculateOutputSignal(integers, 0, ref index, ref relativeBase);
+                (outputSignal, halted) = CalculateOutputSignal(integers, 0, ref index, ref relativeBase);
+                outputs.Add(outputSignal);
+            }
+
+            int rows = outputs.Where(o => o == (int)CameraOutput.NewLine).Count();
+            int columns = outputs.IndexOf((int)CameraOutput.NewLine);
+
+            char[,] image = new char[rows, columns];
+            foreach (int output in outputs)
+            {
                 if (output == (int)CameraOutput.NewLine)
                 {
                     i++;
@@ -82,7 +88,33 @@ namespace App.Tasks.Year2019.Day17
                 }
                 else
                 {
-                    image[(i, j)] = output == (int)CameraOutput.Scaffold ? CameraOutput.Scaffold : CameraOutput.NewLine;
+                    if (output == (int)CameraOutput.Scaffold)
+                    {
+                        image[i, j] = SCAFFOLD;
+                    }
+                    else if (output == (int)CameraOutput.OpenSpace)
+                    {
+                        image[i, j] = OPEN_SPACE;
+                    }
+                    else
+                    {
+                        switch (output)
+                        {
+                            case UP:
+                                image[i, j] = UP;
+                                break;
+                            case DOWN:
+                                image[i, j] = DOWN;
+                                break;
+                            case LEFT:
+                                image[i, j] = LEFT;
+                                break;
+                            case RIGHT:
+                                image[i, j] = RIGHT;
+                                break;
+                        }
+                    }
+
                     j++;
                 }
             }
@@ -90,11 +122,11 @@ namespace App.Tasks.Year2019.Day17
             return image;
         }
 
-        private bool IsScaffoldIntersection(int i, int j, Dictionary<(int, int), CameraOutput> image)
+        private bool IsScaffoldIntersection(int i, int j, char[,] image)
         {
             for (int k = i - 1; k <= i + 1; k++)
             {
-                if (!image.ContainsKey((k, j)) || image[(k, j)] != CameraOutput.Scaffold)
+                if (k < 0 || k >= image.GetLength(0) || image[k, j] != SCAFFOLD)
                 {
                     return false;
                 }
@@ -102,13 +134,26 @@ namespace App.Tasks.Year2019.Day17
 
             for (int h = j - 1; h <= j + 1; h++)
             {
-                if (!image.ContainsKey((i, h)) || image[(i, h)] != CameraOutput.Scaffold)
+                if (h < 0 || h >= image.GetLength(1) || image[i, h] != SCAFFOLD)
                 {
                     return false;
                 }
             }
 
             return true;
+        }
+
+        private void PrintImage(char[,] image)
+        {
+            for (int i = 0; i < image.GetLength(0); i++)
+            {
+                for (int j = 0; j < image.GetLength(1); j++)
+                {
+                    Console.Write(image[i, j]);
+                }
+
+                Console.WriteLine();
+            }
         }
 
         private (int, bool) CalculateOutputSignal(
