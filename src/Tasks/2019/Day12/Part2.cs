@@ -59,18 +59,18 @@ namespace App.Tasks.Year2019.Day12
     {
         private readonly MoonsPositionsRepository moonsPositionsRepository;
 
-        private readonly SystemEnergy systemEnergy;
+        private readonly MoonSystem moonSystem;
 
         public Part2()
         {
             moonsPositionsRepository = new MoonsPositionsRepository();
-            systemEnergy = new SystemEnergy();
+            moonSystem = new MoonSystem();
         }
 
         public long Solution(string input)
         {
             List<Position> moonsPositions = moonsPositionsRepository.GetMoonsPositions(input);
-            long steps = systemEnergy
+            long steps = moonSystem
                 .CalculateNumberOfStepsNeededToReachFirstStateThatExactlyMatchesPreviousState(moonsPositions);
 
             return steps;

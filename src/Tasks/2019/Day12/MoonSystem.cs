@@ -1,15 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace App.Tasks.Year2019.Day12
 {
-    public class SystemEnergy
+    public class MoonSystem
     {
         private readonly LcmHelper lcmHelper;
 
-        public SystemEnergy()
+        public MoonSystem()
         {
             lcmHelper = new LcmHelper();
         }

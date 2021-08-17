@@ -219,18 +219,18 @@ namespace App.Tasks.Year2019.Day12
 
         private readonly MoonsPositionsRepository moonsPositionsRepository;
 
-        private readonly SystemEnergy systemEnergy;
+        private readonly MoonSystem moonSystem;
 
         public Part1()
         {
             moonsPositionsRepository = new MoonsPositionsRepository();
-            systemEnergy = new SystemEnergy();
+            moonSystem = new MoonSystem();
         }
 
         public int Solution(string input)
         {
             List<Position> moonsPositions = moonsPositionsRepository.GetMoonsPositions(input);
-            int totalEnergyInTheSystem = systemEnergy.CalculateTotalEnergyInTheSystem(moonsPositions, totalSteps);
+            int totalEnergyInTheSystem = moonSystem.CalculateTotalEnergyInTheSystem(moonsPositions, totalSteps);
 
             return totalEnergyInTheSystem;
         }
