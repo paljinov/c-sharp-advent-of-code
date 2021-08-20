@@ -132,9 +132,9 @@ namespace App.Tasks.Year2019.Day14
         public int Solution(string input)
         {
             List<Reaction> reactions = reactionsRepository.GetReactions(input);
-            int amountOfOre = fuelNanofactory.CalculateMinimumAmountOfOreRequiredToProduceExactlyOneFuel(reactions);
+            int totalOre = fuelNanofactory.CalculateMinimumAmountOfOreRequiredToProduceExactlyOneFuel(reactions);
 
-            return amountOfOre;
+            return totalOre;
         }
     }
 }
