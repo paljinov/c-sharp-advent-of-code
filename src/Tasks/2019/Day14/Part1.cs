@@ -131,7 +131,7 @@ namespace App.Tasks.Year2019.Day14
 
         public int Solution(string input)
         {
-            List<Reaction> reactions = reactionsRepository.GetReactions(input);
+            Dictionary<string, Reaction> reactions = reactionsRepository.GetReactions(input);
             int minimumAmountOfOre =
                 fuelNanofactory.CalculateMinimumAmountOfOreRequiredToProduceExactlyOneFuel(reactions);
 

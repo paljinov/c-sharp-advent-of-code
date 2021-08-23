@@ -6,9 +6,9 @@ namespace App.Tasks.Year2019.Day14
 {
     public class ReactionsRepository
     {
-        public List<Reaction> GetReactions(string input)
+        public Dictionary<string, Reaction> GetReactions(string input)
         {
-            List<Reaction> reactions = new List<Reaction>();
+            Dictionary<string, Reaction> reactions = new Dictionary<string, Reaction>();
 
             string[] reactionsString = input.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
             Regex reactionRegex = new Regex(@"(\d+\s\w+)");
@@ -40,7 +40,7 @@ namespace App.Tasks.Year2019.Day14
                     OutputChemical = outputChemical
                 };
 
-                reactions.Add(reaction);
+                reactions.Add(outputChemical.Name, reaction);
             }
 
             return reactions;

@@ -8,23 +8,21 @@ namespace App.Tasks.Year2019.Day14
 
         private const string FUEL = "FUEL";
 
-        public int CalculateMinimumAmountOfOreRequiredToProduceExactlyOneFuel(List<Reaction> reactions)
+        public int CalculateMinimumAmountOfOreRequiredToProduceExactlyOneFuel(Dictionary<string, Reaction> reactions)
         {
-            Reaction currentReaction = FindReactionWhereOutputIsChemical(FUEL, reactions);
             Dictionary<string, int> materialChemicals = InitializeMaterialChemicals(reactions);
 
             int minimumAmountOfOre = CalculateMinimumAmountOfOreRequiredToProduceChemical(
-                currentReaction, materialChemicals, reactions);
+                reactions[FUEL], materialChemicals, reactions);
 
             return minimumAmountOfOre;
         }
 
         public long CalculateMaximumAmountOfFuelThatCanBeProducedWithGivenAmountOfOre(
-            List<Reaction> reactions,
+            Dictionary<string, Reaction> reactions,
             long totalOre
         )
         {
-            Reaction currentReaction = FindReactionWhereOutputIsChemical(FUEL, reactions);
             Dictionary<string, int> materialChemicals = InitializeMaterialChemicals(reactions);
             List<Dictionary<string, int>> materialChemicalsCycle = new List<Dictionary<string, int>>();
 
@@ -37,7 +35,7 @@ namespace App.Tasks.Year2019.Day14
                 materialChemicalsCycle.Add(new Dictionary<string, int>(materialChemicals));
 
                 long oreRequired = CalculateMinimumAmountOfOreRequiredToProduceChemical(
-                    currentReaction, materialChemicals, reactions);
+                    reactions[FUEL], materialChemicals, reactions);
 
                 if (usedOreForCycle + oreRequired <= totalOre)
                 {
@@ -60,7 +58,7 @@ namespace App.Tasks.Year2019.Day14
             while (remainingOre >= 0)
             {
                 int usedOre = CalculateMinimumAmountOfOreRequiredToProduceChemical(
-                    currentReaction, materialChemicals, reactions);
+                    reactions[FUEL], materialChemicals, reactions);
 
                 remainingOre -= usedOre;
                 if (remainingOre >= 0)
@@ -75,7 +73,7 @@ namespace App.Tasks.Year2019.Day14
         private int CalculateMinimumAmountOfOreRequiredToProduceChemical(
             Reaction currentReaction,
             Dictionary<string, int> materialChemicals,
-            List<Reaction> reactions
+            Dictionary<string, Reaction> reactions
         )
         {
             int minimumAmountOfOre = 0;
@@ -91,7 +89,7 @@ namespace App.Tasks.Year2019.Day14
                     // If there is not enough of this chemical in materials stockpile it needs to be produced
                     while (materialChemicals[chemical.Name] < chemical.Amount)
                     {
-                        Reaction nextReaction = FindReactionWhereOutputIsChemical(chemical.Name, reactions);
+                        Reaction nextReaction = reactions[chemical.Name];
                         minimumAmountOfOre += CalculateMinimumAmountOfOreRequiredToProduceChemical(
                             nextReaction, materialChemicals, reactions);
                     }
@@ -107,28 +105,15 @@ namespace App.Tasks.Year2019.Day14
             return minimumAmountOfOre;
         }
 
-        private Dictionary<string, int> InitializeMaterialChemicals(List<Reaction> reactions)
+        private Dictionary<string, int> InitializeMaterialChemicals(Dictionary<string, Reaction> reactions)
         {
             Dictionary<string, int> materialChemicals = new Dictionary<string, int>();
-            foreach (Reaction reaction in reactions)
+            foreach (KeyValuePair<string, Reaction> reaction in reactions)
             {
-                materialChemicals[reaction.OutputChemical.Name] = 0;
+                materialChemicals[reaction.Value.OutputChemical.Name] = 0;
             }
 
             return materialChemicals;
-        }
-
-        private Reaction FindReactionWhereOutputIsChemical(string chemical, List<Reaction> reactions)
-        {
-            foreach (Reaction reaction in reactions)
-            {
-                if (reaction.OutputChemical.Name == chemical)
-                {
-                    return reaction;
-                }
-            }
-
-            return null;
         }
 
         private bool AreAllMaterialChemicalsUsed(Dictionary<string, int> materialChemicals)

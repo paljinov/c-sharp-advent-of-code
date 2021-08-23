@@ -32,7 +32,7 @@ namespace App.Tasks.Year2019.Day14
         }
         public long Solution(string input)
         {
-            List<Reaction> reactions = reactionsRepository.GetReactions(input);
+            Dictionary<string, Reaction> reactions = reactionsRepository.GetReactions(input);
             long maximumAmountOfFuel =
                 fuelNanofactory.CalculateMaximumAmountOfFuelThatCanBeProducedWithGivenAmountOfOre(reactions, TOTAL_ORE);
 
