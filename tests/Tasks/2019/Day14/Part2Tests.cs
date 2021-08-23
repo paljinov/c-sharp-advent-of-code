@@ -79,26 +79,26 @@ namespace Tests.Tasks.Year2019.Day14
                     5586022
                 };
 
-                // yield return new object[] {
-                //     "171 ORE => 8 CNZTR"
-                //     + $"{Environment.NewLine}7 ZLQW, 3 BMBT, 9 XCVML, 26 XMNCP, 1 WPTQ, 2 MZWV, 1 RJRHP => 4 PLWSL"
-                //     + $"{Environment.NewLine}114 ORE => 4 BHXH"
-                //     + $"{Environment.NewLine}14 VRPVC => 6 BMBT"
-                //     + $"{Environment.NewLine}6 BHXH, 18 KTJDG, 12 WPTQ, 7 PLWSL, 31 FHTLT, 37 ZDVW => 1 FUEL"
-                //     + $"{Environment.NewLine}6 WPTQ, 2 BMBT, 8 ZLQW, 18 KTJDG, 1 XMNCP, 6 MZWV, 1 RJRHP => 6 FHTLT"
-                //     + $"{Environment.NewLine}15 XDBXC, 2 LTCX, 1 VRPVC => 6 ZLQW"
-                //     + $"{Environment.NewLine}13 WPTQ, 10 LTCX, 3 RJRHP, 14 XMNCP, 2 MZWV, 1 ZLQW => 1 ZDVW"
-                //     + $"{Environment.NewLine}5 BMBT => 4 WPTQ"
-                //     + $"{Environment.NewLine}189 ORE => 9 KTJDG"
-                //     + $"{Environment.NewLine}1 MZWV, 17 XDBXC, 3 XCVML => 2 XMNCP"
-                //     + $"{Environment.NewLine}12 VRPVC, 27 CNZTR => 2 XDBXC"
-                //     + $"{Environment.NewLine}15 KTJDG, 12 BHXH => 5 XCVML"
-                //     + $"{Environment.NewLine}3 BHXH, 2 VRPVC => 7 MZWV"
-                //     + $"{Environment.NewLine}121 ORE => 7 VRPVC"
-                //     + $"{Environment.NewLine}7 XCVML => 6 RJRHP"
-                //     + $"{Environment.NewLine}5 BHXH, 4 VRPVC => 5 LTCX",
-                //     460664
-                // };
+                yield return new object[] {
+                    "171 ORE => 8 CNZTR"
+                    + $"{Environment.NewLine}7 ZLQW, 3 BMBT, 9 XCVML, 26 XMNCP, 1 WPTQ, 2 MZWV, 1 RJRHP => 4 PLWSL"
+                    + $"{Environment.NewLine}114 ORE => 4 BHXH"
+                    + $"{Environment.NewLine}14 VRPVC => 6 BMBT"
+                    + $"{Environment.NewLine}6 BHXH, 18 KTJDG, 12 WPTQ, 7 PLWSL, 31 FHTLT, 37 ZDVW => 1 FUEL"
+                    + $"{Environment.NewLine}6 WPTQ, 2 BMBT, 8 ZLQW, 18 KTJDG, 1 XMNCP, 6 MZWV, 1 RJRHP => 6 FHTLT"
+                    + $"{Environment.NewLine}15 XDBXC, 2 LTCX, 1 VRPVC => 6 ZLQW"
+                    + $"{Environment.NewLine}13 WPTQ, 10 LTCX, 3 RJRHP, 14 XMNCP, 2 MZWV, 1 ZLQW => 1 ZDVW"
+                    + $"{Environment.NewLine}5 BMBT => 4 WPTQ"
+                    + $"{Environment.NewLine}189 ORE => 9 KTJDG"
+                    + $"{Environment.NewLine}1 MZWV, 17 XDBXC, 3 XCVML => 2 XMNCP"
+                    + $"{Environment.NewLine}12 VRPVC, 27 CNZTR => 2 XDBXC"
+                    + $"{Environment.NewLine}15 KTJDG, 12 BHXH => 5 XCVML"
+                    + $"{Environment.NewLine}3 BHXH, 2 VRPVC => 7 MZWV"
+                    + $"{Environment.NewLine}121 ORE => 7 VRPVC"
+                    + $"{Environment.NewLine}7 XCVML => 6 RJRHP"
+                    + $"{Environment.NewLine}5 BHXH, 4 VRPVC => 5 LTCX",
+                    460664
+                };
             }
 
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

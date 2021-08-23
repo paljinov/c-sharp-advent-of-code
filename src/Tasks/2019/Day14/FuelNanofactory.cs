@@ -28,18 +28,26 @@ namespace App.Tasks.Year2019.Day14
             Dictionary<string, int> materialChemicals = InitializeMaterialChemicals(reactions);
             List<Dictionary<string, int>> materialChemicalsCycle = new List<Dictionary<string, int>>();
 
-            int usedOreForCycle = 0;
-            int producedFuelForCycle = 0;
+            long usedOreForCycle = 0;
+            long producedFuelForCycle = 0;
 
             // Loop until all material is used without reminder, that makes one full cycle
             while (materialChemicals[FUEL] == 0 || !AreAllMaterialChemicalsUsed(materialChemicals))
             {
                 materialChemicalsCycle.Add(new Dictionary<string, int>(materialChemicals));
 
-                usedOreForCycle += CalculateMinimumAmountOfOreRequiredToProduceChemical(
+                long oreRequired = CalculateMinimumAmountOfOreRequiredToProduceChemical(
                     currentReaction, materialChemicals, reactions);
 
-                producedFuelForCycle++;
+                if (usedOreForCycle + oreRequired <= totalOre)
+                {
+                    usedOreForCycle += oreRequired;
+                    producedFuelForCycle++;
+                }
+                else
+                {
+                    return producedFuelForCycle;
+                }
             }
 
             long totalFullCycles = totalOre / usedOreForCycle;
