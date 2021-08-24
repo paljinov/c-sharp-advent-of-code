@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace App.Tasks.Year2019.Day14
 {
@@ -24,7 +25,6 @@ namespace App.Tasks.Year2019.Day14
         )
         {
             Dictionary<string, int> materialChemicals = InitializeMaterialChemicals(reactions);
-            List<Dictionary<string, int>> materialChemicalsCycle = new List<Dictionary<string, int>>();
 
             long usedOreForCycle = 0;
             long producedFuelForCycle = 0;
@@ -32,8 +32,6 @@ namespace App.Tasks.Year2019.Day14
             // Loop until all material is used without reminder, that makes one full cycle
             while (materialChemicals[FUEL] == 0 || !AreAllMaterialChemicalsUsed(materialChemicals))
             {
-                materialChemicalsCycle.Add(new Dictionary<string, int>(materialChemicals));
-
                 long oreRequired = CalculateMinimumAmountOfOreRequiredToProduceChemical(
                     reactions[FUEL], materialChemicals, reactions);
 
@@ -110,7 +108,7 @@ namespace App.Tasks.Year2019.Day14
             Dictionary<string, int> materialChemicals = new Dictionary<string, int>();
             foreach (KeyValuePair<string, Reaction> reaction in reactions)
             {
-                materialChemicals[reaction.Value.OutputChemical.Name] = 0;
+                materialChemicals[reaction.Key] = 0;
             }
 
             return materialChemicals;
@@ -118,15 +116,7 @@ namespace App.Tasks.Year2019.Day14
 
         private bool AreAllMaterialChemicalsUsed(Dictionary<string, int> materialChemicals)
         {
-            foreach (KeyValuePair<string, int> chemical in materialChemicals)
-            {
-                if (chemical.Key != FUEL && chemical.Value > 0)
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return !materialChemicals.Any(c => c.Key != FUEL && c.Value > 0);
         }
     }
 }
