@@ -13,7 +13,7 @@ namespace App.Tasks.Year2019.Day14
         {
             Dictionary<string, int> materialChemicals = InitializeMaterialChemicals(reactions);
 
-            int minimumAmountOfOre = CalculateMinimumAmountOfOreRequiredToProduceChemical(
+            int minimumAmountOfOre = CalculateDiscreteAmountOfOreRequiredToProduceChemical(
                 reactions[FUEL], materialChemicals, reactions);
 
             return minimumAmountOfOre;
@@ -24,63 +24,27 @@ namespace App.Tasks.Year2019.Day14
             long totalOre
         )
         {
-            Dictionary<string, int> materialChemicals = InitializeMaterialChemicals(reactions);
+            double averageAmountOfOre = CalculateAverageAmountOfOreRequiredToProduceChemical(
+                reactions[FUEL], reactions);
 
-            long usedOreForCycle = 0;
-            long producedFuelForCycle = 0;
-
-            // Loop until all material is used without reminder, that makes one full cycle
-            while (materialChemicals[FUEL] == 0 || !AreAllMaterialChemicalsUsed(materialChemicals))
-            {
-                long oreRequired = CalculateMinimumAmountOfOreRequiredToProduceChemical(
-                    reactions[FUEL], materialChemicals, reactions);
-
-                if (usedOreForCycle + oreRequired <= totalOre)
-                {
-                    usedOreForCycle += oreRequired;
-                    producedFuelForCycle++;
-                }
-                else
-                {
-                    return producedFuelForCycle;
-                }
-            }
-
-            long totalFullCycles = totalOre / usedOreForCycle;
-            // Remaining ore outside full cycles
-            long remainingOre = totalOre - totalFullCycles * usedOreForCycle;
-
-            long maximumAmountOfFuel = totalFullCycles * producedFuelForCycle;
-
-            // Use remaining ore
-            while (remainingOre >= 0)
-            {
-                int usedOre = CalculateMinimumAmountOfOreRequiredToProduceChemical(
-                    reactions[FUEL], materialChemicals, reactions);
-
-                remainingOre -= usedOre;
-                if (remainingOre >= 0)
-                {
-                    maximumAmountOfFuel++;
-                }
-            }
+            long maximumAmountOfFuel = (long)(totalOre / averageAmountOfOre);
 
             return maximumAmountOfFuel;
         }
 
-        private int CalculateMinimumAmountOfOreRequiredToProduceChemical(
+        private int CalculateDiscreteAmountOfOreRequiredToProduceChemical(
             Reaction currentReaction,
             Dictionary<string, int> materialChemicals,
             Dictionary<string, Reaction> reactions
         )
         {
-            int minimumAmountOfOre = 0;
+            int discreteAmountOfOre = 0;
 
             foreach (Chemical chemical in currentReaction.InputChemicals)
             {
                 if (chemical.Name == ORE)
                 {
-                    minimumAmountOfOre += chemical.Amount;
+                    discreteAmountOfOre += chemical.Amount;
                 }
                 else
                 {
@@ -88,7 +52,7 @@ namespace App.Tasks.Year2019.Day14
                     while (materialChemicals[chemical.Name] < chemical.Amount)
                     {
                         Reaction nextReaction = reactions[chemical.Name];
-                        minimumAmountOfOre += CalculateMinimumAmountOfOreRequiredToProduceChemical(
+                        discreteAmountOfOre += CalculateDiscreteAmountOfOreRequiredToProduceChemical(
                             nextReaction, materialChemicals, reactions);
                     }
 
@@ -100,7 +64,31 @@ namespace App.Tasks.Year2019.Day14
             // Add produced chemical to material stockpile
             materialChemicals[currentReaction.OutputChemical.Name] += currentReaction.OutputChemical.Amount;
 
-            return minimumAmountOfOre;
+            return discreteAmountOfOre;
+        }
+
+        private double CalculateAverageAmountOfOreRequiredToProduceChemical(
+            Reaction currentReaction,
+            Dictionary<string, Reaction> reactions
+        )
+        {
+            double averageAmountOfOre = 0;
+
+            foreach (Chemical chemical in currentReaction.InputChemicals)
+            {
+                if (chemical.Name == ORE)
+                {
+                    averageAmountOfOre += chemical.Amount;
+                }
+                else
+                {
+                    Reaction nextReaction = reactions[chemical.Name];
+                    averageAmountOfOre += ((double)chemical.Amount / nextReaction.OutputChemical.Amount)
+                        * CalculateAverageAmountOfOreRequiredToProduceChemical(nextReaction, reactions);
+                }
+            }
+
+            return averageAmountOfOre;
         }
 
         private Dictionary<string, int> InitializeMaterialChemicals(Dictionary<string, Reaction> reactions)
@@ -112,11 +100,6 @@ namespace App.Tasks.Year2019.Day14
             }
 
             return materialChemicals;
-        }
-
-        private bool AreAllMaterialChemicalsUsed(Dictionary<string, int> materialChemicals)
-        {
-            return !materialChemicals.Any(c => c.Key != FUEL && c.Value > 0);
         }
     }
 }
