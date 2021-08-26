@@ -110,7 +110,9 @@ Here are some larger examples:
 121 ORE => 7 VRPVC
 7 XCVML => 6 RJRHP
 5 BHXH, 4 VRPVC => 5 LTCX
-Given the list of reactions in your puzzle input, what is the minimum amount of ORE required to produce exactly 1 FUEL?
+
+Given the list of reactions in your puzzle input, what is the minimum amount of
+ORE required to produce exactly 1 FUEL?
 */
 
 using System.Collections.Generic;
