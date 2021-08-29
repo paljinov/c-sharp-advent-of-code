@@ -45,7 +45,7 @@ namespace App.Tasks.Year2019.Day16
 
             for (int position = 0; position < inputSignalLength; position++)
             {
-                int[] pattern = GetPattern(position + 1);
+                int[] pattern = GetPattern(position + 1, inputSignalLength);
                 patternForEachPosition[position] = pattern;
             }
 
@@ -53,14 +53,38 @@ namespace App.Tasks.Year2019.Day16
         }
 
 
-        private int[] GetPattern(int repetitions)
+        private int[] GetPattern(int repetitions, int inputSignalLength)
         {
-            int[] pattern = new int[basePattern.Length * repetitions];
-            for (int i = 0; i < basePattern.Length; i++)
+            bool firstValue = true;
+            int patternIndex = 0;
+            int basePatternIndex = 0;
+            int[] pattern = new int[inputSignalLength];
+
+            while (patternIndex < inputSignalLength)
             {
-                for (int j = 0; j < repetitions; j++)
+                for (int i = 0; i < repetitions; i++)
                 {
-                    pattern[i * repetitions + j] = basePattern[i];
+                    // Skip the very first value exactly once
+                    if (firstValue)
+                    {
+                        firstValue = false;
+                        continue;
+                    }
+
+                    // If last position is calculated
+                    if (patternIndex >= inputSignalLength)
+                    {
+                        return pattern;
+                    }
+
+                    pattern[patternIndex] = basePattern[basePatternIndex];
+                    patternIndex++;
+                }
+
+                basePatternIndex++;
+                if (basePatternIndex == basePattern.Length)
+                {
+                    basePatternIndex = 0;
                 }
             }
 
@@ -69,19 +93,10 @@ namespace App.Tasks.Year2019.Day16
 
         private int CalculateOutputDigit(int[] inputSignal, int[] pattern)
         {
-            // Skip the very first value exactly once
-            int patternIndex = 1;
-
             int result = 0;
             for (int i = 0; i < inputSignal.Length; i++)
             {
-                if (patternIndex == pattern.Length)
-                {
-                    patternIndex = 0;
-                }
-
-                result += inputSignal[i] * pattern[patternIndex];
-                patternIndex++;
+                result += inputSignal[i] * pattern[i];
             }
 
             // Only the ones digit is kept
