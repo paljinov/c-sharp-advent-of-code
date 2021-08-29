@@ -105,8 +105,6 @@ namespace App.Tasks.Year2019.Day16
 {
     public class Part1 : ITask<string>
     {
-        private const int PHASES = 100;
-
         private readonly InputSignalRepository inputSignalRepository;
 
         private readonly FlawedFrequencyTransmissionAlgorithm flawedFrequencyTransmissionAlgorithm;
@@ -121,7 +119,7 @@ namespace App.Tasks.Year2019.Day16
         {
             int[] inputSignal = inputSignalRepository.GetInputSignal(input);
             string firstEightDigitsInTheFinalOutputList = flawedFrequencyTransmissionAlgorithm
-                .CalculateFirstEightDigitsInTheFinalOutputList(inputSignal, PHASES);
+                .CalculateFirstEightDigitsInTheFinalOutputList(inputSignal);
 
             return firstEightDigitsInTheFinalOutputList;
         }
