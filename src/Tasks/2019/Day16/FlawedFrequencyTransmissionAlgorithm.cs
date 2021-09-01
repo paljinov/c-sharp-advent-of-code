@@ -31,6 +31,7 @@ namespace App.Tasks.Year2019.Day16
             int messageOffset
         )
         {
+            int offset = int.Parse(string.Join("", inputSignal[..messageOffset]));
             List<int> realInputSignal = new List<int>();
 
             for (int i = 0; i < inputSignalRepetitions; i++)
@@ -38,7 +39,7 @@ namespace App.Tasks.Year2019.Day16
                 realInputSignal = realInputSignal.Concat(inputSignal.ToList()).ToList();
             }
 
-            int[] outputList = CalculateFinalOutputList(realInputSignal.ToArray());
+            int[] outputList = CalculateFinalOutputList(realInputSignal.ToArray(), offset);
 
             string eightDigitMessageEmbeddedInTheFinalOutputList = string.Empty;
             for (int i = messageOffset; i < messageOffset + EIGHT_DIGITS; i++)
@@ -49,32 +50,35 @@ namespace App.Tasks.Year2019.Day16
             return eightDigitMessageEmbeddedInTheFinalOutputList;
         }
 
-        private int[] CalculateFinalOutputList(int[] inputSignal)
+        private int[] CalculateFinalOutputList(int[] inputSignal, int offset = 0)
         {
             int[] outputList = new int[inputSignal.Length];
 
-            int[][] patternForEachPosition = GetPatternForEachPosition(inputSignal.Length);
-
-            for (int phase = 1; phase <= PHASES; phase++)
+            if (inputSignal.Length > offset)
             {
-                // Iteration for each digit
-                for (int position = 0; position < inputSignal.Length; position++)
-                {
-                    // Only the ones digit is kept
-                    outputList[position] = CalculateOutputDigit(inputSignal, patternForEachPosition[position]);
-                }
+                Dictionary<int, int[]> patternForEachPosition = GetPatternForEachPosition(inputSignal.Length, offset);
 
-                inputSignal = outputList;
+                for (int phase = 1; phase <= PHASES; phase++)
+                {
+                    // Iteration for each digit
+                    for (int position = offset; position < inputSignal.Length; position++)
+                    {
+                        // Only the ones digit is kept
+                        outputList[position] = CalculateOutputDigit(inputSignal, patternForEachPosition[position]);
+                    }
+
+                    inputSignal = outputList;
+                }
             }
 
             return outputList;
         }
 
-        private int[][] GetPatternForEachPosition(int inputSignalLength)
+        private Dictionary<int, int[]> GetPatternForEachPosition(int inputSignalLength, int offset)
         {
-            int[][] patternForEachPosition = new int[inputSignalLength][];
+            Dictionary<int, int[]> patternForEachPosition = new Dictionary<int, int[]>();
 
-            for (int position = 0; position < inputSignalLength; position++)
+            for (int position = offset; position < inputSignalLength; position++)
             {
                 int[] pattern = GetPattern(position + 1, inputSignalLength);
                 patternForEachPosition[position] = pattern;
@@ -82,7 +86,6 @@ namespace App.Tasks.Year2019.Day16
 
             return patternForEachPosition;
         }
-
 
         private int[] GetPattern(int repetitions, int inputSignalLength)
         {
