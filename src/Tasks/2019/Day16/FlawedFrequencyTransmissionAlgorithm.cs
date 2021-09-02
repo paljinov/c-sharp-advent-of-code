@@ -14,10 +14,11 @@ namespace App.Tasks.Year2019.Day16
 
         public string CalculateFirstEightDigitsInTheFinalOutputList(int[] inputSignal)
         {
-            int[] outputList = CalculateFinalOutputList(inputSignal);
+            Dictionary<int, int> outputList = CalculateFinalOutputList(inputSignal);
+            int from = outputList.Keys.First();
 
             string firstEightDigitsInTheFinalOutputList = string.Empty;
-            for (int i = 0; i < EIGHT_DIGITS; i++)
+            for (int i = from; i < from + EIGHT_DIGITS; i++)
             {
                 firstEightDigitsInTheFinalOutputList += outputList[i];
             }
@@ -39,10 +40,11 @@ namespace App.Tasks.Year2019.Day16
                 realInputSignal = realInputSignal.Concat(inputSignal.ToList()).ToList();
             }
 
-            int[] outputList = CalculateFinalOutputList(realInputSignal.ToArray(), offset);
+            Dictionary<int, int> outputList = CalculateFinalOutputList(realInputSignal.ToArray(), offset);
+            int from = outputList.Keys.First();
 
             string eightDigitMessageEmbeddedInTheFinalOutputList = string.Empty;
-            for (int i = messageOffset; i < messageOffset + EIGHT_DIGITS; i++)
+            for (int i = from; i < from + EIGHT_DIGITS; i++)
             {
                 eightDigitMessageEmbeddedInTheFinalOutputList += outputList[i];
             }
@@ -50,13 +52,14 @@ namespace App.Tasks.Year2019.Day16
             return eightDigitMessageEmbeddedInTheFinalOutputList;
         }
 
-        private int[] CalculateFinalOutputList(int[] inputSignal, int offset = 0)
+        private Dictionary<int, int> CalculateFinalOutputList(int[] inputSignal, int offset = 0)
         {
-            int[] outputList = new int[inputSignal.Length];
+            Dictionary<int, int> outputList = InitializeOutputList(inputSignal, offset);
 
             if (inputSignal.Length > offset)
             {
-                Dictionary<int, int[]> patternForEachPosition = GetPatternForEachPosition(inputSignal.Length, offset);
+                Dictionary<int, Dictionary<int, int>> patternForEachPosition =
+                    GetPatternForEachPosition(inputSignal.Length, offset);
 
                 for (int phase = 1; phase <= PHASES; phase++)
                 {
@@ -64,54 +67,58 @@ namespace App.Tasks.Year2019.Day16
                     for (int position = offset; position < inputSignal.Length; position++)
                     {
                         // Only the ones digit is kept
-                        outputList[position] = CalculateOutputDigit(inputSignal, patternForEachPosition[position]);
+                        outputList[position] = CalculateOutputDigit(outputList, patternForEachPosition[position]);
                     }
-
-                    inputSignal = outputList;
                 }
             }
 
             return outputList;
         }
 
-        private Dictionary<int, int[]> GetPatternForEachPosition(int inputSignalLength, int offset)
+        private Dictionary<int, int> InitializeOutputList(int[] inputSignal, int offset)
         {
-            Dictionary<int, int[]> patternForEachPosition = new Dictionary<int, int[]>();
+            Dictionary<int, int> outputList = new Dictionary<int, int>();
+
+            for (int position = offset; position < inputSignal.Length; position++)
+            {
+                // Only the ones digit is kept
+                outputList[position] = inputSignal[position];
+            }
+
+            return outputList;
+        }
+
+        private Dictionary<int, Dictionary<int, int>> GetPatternForEachPosition(int inputSignalLength, int offset)
+        {
+            Dictionary<int, Dictionary<int, int>> patternForEachPosition = new Dictionary<int, Dictionary<int, int>>();
 
             for (int position = offset; position < inputSignalLength; position++)
             {
-                int[] pattern = GetPattern(position + 1, inputSignalLength);
+                Dictionary<int, int> pattern = GetPattern(position + 1, offset, inputSignalLength);
                 patternForEachPosition[position] = pattern;
             }
 
             return patternForEachPosition;
         }
 
-        private int[] GetPattern(int repetitions, int inputSignalLength)
+        private Dictionary<int, int> GetPattern(int repetitions, int offset, int inputSignalLength)
         {
-            bool firstValue = true;
-            int patternIndex = 0;
-            int basePatternIndex = 0;
-            int[] pattern = new int[inputSignalLength];
+            Dictionary<int, int> pattern = new Dictionary<int, int>();
+            int patternIndex = offset;
+            int basePatternIndex = offset > inputSignalLength / 2 ? 1 : 0;
 
-            while (patternIndex < inputSignalLength)
+            while (patternIndex <= inputSignalLength)
             {
                 for (int i = 0; i < repetitions; i++)
                 {
-                    // Skip the very first value exactly once
-                    if (firstValue)
-                    {
-                        firstValue = false;
-                        continue;
-                    }
-
                     // If last position is calculated
-                    if (patternIndex >= inputSignalLength)
+                    if (patternIndex > inputSignalLength)
                     {
-                        return pattern;
+                        break;
                     }
 
-                    pattern[patternIndex] = basePattern[basePatternIndex];
+                    // Skip the very first value exactly once
+                    pattern[patternIndex - 1] = basePattern[basePatternIndex];
                     patternIndex++;
                 }
 
@@ -125,12 +132,15 @@ namespace App.Tasks.Year2019.Day16
             return pattern;
         }
 
-        private int CalculateOutputDigit(int[] inputSignal, int[] pattern)
+        private int CalculateOutputDigit(Dictionary<int, int> outputList, Dictionary<int, int> pattern)
         {
+            int from = outputList.Keys.First();
+            int to = outputList.Keys.Last();
+
             int result = 0;
-            for (int i = 0; i < inputSignal.Length; i++)
+            for (int i = from; i <= to; i++)
             {
-                result += inputSignal[i] * pattern[i];
+                result += outputList[i] * pattern[i];
             }
 
             // Only the ones digit is kept
