@@ -58,16 +58,17 @@ namespace App.Tasks.Year2019.Day16
 
             if (inputSignal.Length > offset)
             {
-                Dictionary<int, Dictionary<int, int>> patternForEachPosition =
-                    GetPatternForEachPosition(inputSignal.Length, offset);
-
                 for (int phase = 1; phase <= PHASES; phase++)
                 {
+                    int result = 0;
+                    Dictionary<int, int> currentOutputList = new Dictionary<int, int>(outputList);
                     // Iteration for each digit
-                    for (int position = offset; position < inputSignal.Length; position++)
+                    for (int position = inputSignal.Length - 1; position >= offset; position--)
                     {
                         // Only the ones digit is kept
-                        outputList[position] = CalculateOutputDigit(outputList, patternForEachPosition[position]);
+                        result = CalculateResult(currentOutputList, position, inputSignal.Length, result);
+                        // Only the ones digit is kept
+                        outputList[position] = Math.Abs(result % 10);
                     }
                 }
             }
@@ -88,24 +89,12 @@ namespace App.Tasks.Year2019.Day16
             return outputList;
         }
 
-        private Dictionary<int, Dictionary<int, int>> GetPatternForEachPosition(int inputSignalLength, int offset)
-        {
-            Dictionary<int, Dictionary<int, int>> patternForEachPosition = new Dictionary<int, Dictionary<int, int>>();
-
-            for (int position = offset; position < inputSignalLength; position++)
-            {
-                Dictionary<int, int> pattern = GetPattern(position + 1, offset, inputSignalLength);
-                patternForEachPosition[position] = pattern;
-            }
-
-            return patternForEachPosition;
-        }
-
-        private Dictionary<int, int> GetPattern(int repetitions, int offset, int inputSignalLength)
+        private Dictionary<int, int> GetPattern(int repetitions, int inputSignalLength)
         {
             Dictionary<int, int> pattern = new Dictionary<int, int>();
-            int patternIndex = offset;
-            int basePatternIndex = offset > inputSignalLength / 2 ? 1 : 0;
+
+            int patternIndex = 0;
+            int basePatternIndex = 0;
 
             while (patternIndex <= inputSignalLength)
             {
@@ -117,8 +106,12 @@ namespace App.Tasks.Year2019.Day16
                         break;
                     }
 
-                    // Skip the very first value exactly once
-                    pattern[patternIndex - 1] = basePattern[basePatternIndex];
+                    if (patternIndex - 1 >= 0)
+                    {
+                        // Skip the very first value exactly once
+                        pattern[patternIndex - 1] = basePattern[basePatternIndex];
+                    }
+
                     patternIndex++;
                 }
 
@@ -132,21 +125,32 @@ namespace App.Tasks.Year2019.Day16
             return pattern;
         }
 
-        private int CalculateOutputDigit(Dictionary<int, int> outputList, Dictionary<int, int> pattern)
+        private int CalculateResult(
+            Dictionary<int, int> outputList,
+            int position,
+            int inputSignalLength,
+            int previousResult
+        )
         {
-            int from = outputList.Keys.First();
-            int to = outputList.Keys.Last();
-
             int result = 0;
-            for (int i = from; i <= to; i++)
+
+            if (position >= inputSignalLength / 2)
             {
-                result += outputList[i] * pattern[i];
+                result += previousResult + outputList[position] * basePattern[1];
+            }
+            else
+            {
+                int from = outputList.Keys.First();
+                int to = outputList.Keys.Last();
+                Dictionary<int, int> pattern = GetPattern(position + 1, inputSignalLength);
+
+                for (int i = from; i <= to; i++)
+                {
+                    result += outputList[i] * pattern[i];
+                }
             }
 
-            // Only the ones digit is kept
-            int digit = Math.Abs(result % 10);
-
-            return digit;
+            return result;
         }
     }
 }
