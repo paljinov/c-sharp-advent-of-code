@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace App.Tasks.Year2019.Day16
 {
@@ -32,7 +33,12 @@ namespace App.Tasks.Year2019.Day16
             int messageOffset
         )
         {
-            int offset = int.Parse(string.Join("", inputSignal[..messageOffset]));
+            StringBuilder offsetSb = new StringBuilder();
+            for (int i = 0; i < messageOffset; i++)
+            {
+                offsetSb.Append(inputSignal[i]);
+            }
+            int offset = int.Parse(offsetSb.ToString());
 
             int[] realInputSignal = new int[inputSignal.Length * inputSignalRepetitions];
             for (int i = 0; i < inputSignalRepetitions; i++)
@@ -68,7 +74,6 @@ namespace App.Tasks.Year2019.Day16
                     // Iteration for each digit
                     for (int position = inputSignal.Length - 1; position >= offset; position--)
                     {
-                        // Only the ones digit is kept
                         result = CalculateResult(currentOutputList, position, inputSignal.Length, result);
                         // Only the ones digit is kept
                         outputList[position] = Math.Abs(result % 10);
@@ -146,11 +151,8 @@ namespace App.Tasks.Year2019.Day16
             // For positions in first half of output list
             else
             {
-                int from = outputList.Keys.First();
-                int to = outputList.Keys.Last();
                 Dictionary<int, int> pattern = GetPattern(position + 1, inputSignalLength);
-
-                for (int i = from; i <= to; i++)
+                for (int i = 0; i < inputSignalLength; i++)
                 {
                     result += outputList[i] * pattern[i];
                 }
