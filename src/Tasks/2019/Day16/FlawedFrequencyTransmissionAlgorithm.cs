@@ -33,14 +33,17 @@ namespace App.Tasks.Year2019.Day16
         )
         {
             int offset = int.Parse(string.Join("", inputSignal[..messageOffset]));
-            List<int> realInputSignal = new List<int>();
 
+            int[] realInputSignal = new int[inputSignal.Length * inputSignalRepetitions];
             for (int i = 0; i < inputSignalRepetitions; i++)
             {
-                realInputSignal = realInputSignal.Concat(inputSignal.ToList()).ToList();
+                for (int j = 0; j < inputSignal.Length; j++)
+                {
+                    realInputSignal[i * inputSignal.Length + j] = inputSignal[j];
+                }
             }
 
-            Dictionary<int, int> outputList = CalculateFinalOutputList(realInputSignal.ToArray(), offset);
+            Dictionary<int, int> outputList = CalculateFinalOutputList(realInputSignal, offset);
             int from = outputList.Keys.First();
 
             string eightDigitMessageEmbeddedInTheFinalOutputList = string.Empty;
@@ -134,10 +137,13 @@ namespace App.Tasks.Year2019.Day16
         {
             int result = 0;
 
+            // For positions in upper half of output list pattern doesn't need to be calculated,
+            // it is always second position from base pattern
             if (position >= inputSignalLength / 2)
             {
                 result += previousResult + outputList[position] * basePattern[1];
             }
+            // For positions in first half of output list
             else
             {
                 int from = outputList.Keys.First();
