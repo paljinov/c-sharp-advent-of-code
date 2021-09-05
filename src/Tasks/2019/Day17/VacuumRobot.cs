@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace App.Tasks.Year2019.Day17
 {
-    public class VacuumRobot
+    public class Scaffold
     {
         private const char SCAFFOLD = '#';
 
@@ -42,14 +42,16 @@ namespace App.Tasks.Year2019.Day17
             return sumOfTheAlignmentParameters;
         }
 
-        public int CalculateDustCollectedByTheVacuumRobot(long[] integersArray)
+        public int CalculateDustCollectedByTheVacuumRobot(long[] integersArray, int addressZeroValue)
         {
             int dust = 0;
 
-            integersArray[0] = 2;
+            integersArray[0] = addressZeroValue;
             char[,] image = GetImage(integersArray);
 
             PrintImage(image);
+
+            VacuumRobot vacuumRobot = GetInitialVacuumRobotLocation(image);
 
             return dust;
         }
@@ -147,6 +149,53 @@ namespace App.Tasks.Year2019.Day17
             }
 
             return true;
+        }
+
+        private VacuumRobot GetInitialVacuumRobotLocation(char[,] image)
+        {
+            VacuumRobot vacuumRobot = null;
+            Direction facing = Direction.Up;
+            bool isFound = false;
+
+            for (int i = 0; i < image.GetLength(0); i++)
+            {
+                for (int j = 0; j < image.GetLength(1); j++)
+                {
+                    switch (image[i, j])
+                    {
+                        case DOWN:
+                            facing = Direction.Down;
+                            isFound = true;
+                            break;
+                        case LEFT:
+                            facing = Direction.Left;
+                            isFound = true;
+                            break;
+                        case RIGHT:
+                            facing = Direction.Right;
+                            isFound = true;
+                            break;
+                        case UP:
+                            facing = Direction.Up;
+                            isFound = true;
+                            break;
+                    }
+
+                    if (isFound)
+                    {
+                        vacuumRobot = new VacuumRobot
+                        {
+                            X = i,
+                            Y = j,
+                            Facing = facing
+                        };
+
+                        return vacuumRobot;
+                    }
+                }
+            }
+
+            return vacuumRobot;
         }
 
         private void PrintImage(char[,] image)
