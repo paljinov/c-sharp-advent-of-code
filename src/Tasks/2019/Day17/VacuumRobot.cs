@@ -75,10 +75,7 @@ namespace App.Tasks.Year2019.Day17
                 outputs.Add(outputSignal);
             }
 
-            int rows = outputs.Where(o => o == (int)CameraOutput.NewLine).Count();
-            int columns = outputs.IndexOf((int)CameraOutput.NewLine);
-
-            char[,] image = new char[rows, columns];
+            Dictionary<(int, int), char> imageDictionary = new Dictionary<(int, int), char>();
             foreach (int output in outputs)
             {
                 if (output == (int)CameraOutput.NewLine)
@@ -90,33 +87,42 @@ namespace App.Tasks.Year2019.Day17
                 {
                     if (output == (int)CameraOutput.Scaffold)
                     {
-                        image[i, j] = SCAFFOLD;
+                        imageDictionary[(i, j)] = SCAFFOLD;
                     }
                     else if (output == (int)CameraOutput.OpenSpace)
                     {
-                        image[i, j] = OPEN_SPACE;
+                        imageDictionary[(i, j)] = OPEN_SPACE;
                     }
                     else
                     {
                         switch (output)
                         {
                             case UP:
-                                image[i, j] = UP;
+                                imageDictionary[(i, j)] = UP;
                                 break;
                             case DOWN:
-                                image[i, j] = DOWN;
+                                imageDictionary[(i, j)] = DOWN;
                                 break;
                             case LEFT:
-                                image[i, j] = LEFT;
+                                imageDictionary[(i, j)] = LEFT;
                                 break;
                             case RIGHT:
-                                image[i, j] = RIGHT;
+                                imageDictionary[(i, j)] = RIGHT;
                                 break;
                         }
                     }
 
                     j++;
                 }
+            }
+
+            int rows = imageDictionary.Keys.Select(p => p.Item1).Max() + 1;
+            int columns = imageDictionary.Keys.Select(p => p.Item2).Max() + 1;
+            char[,] image = new char[rows, columns];
+
+            foreach (KeyValuePair<(int, int), char> pixel in imageDictionary)
+            {
+                image[pixel.Key.Item1, pixel.Key.Item2] = pixel.Value;
             }
 
             return image;
