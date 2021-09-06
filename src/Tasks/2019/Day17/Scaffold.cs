@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace App.Tasks.Year2019.Day17
 {
@@ -47,11 +49,12 @@ namespace App.Tasks.Year2019.Day17
             int dust = 0;
 
             integersArray[0] = addressZeroValue;
-            char[,] image = GetImage(integersArray);
 
+            char[,] image = GetImage(integersArray);
             PrintImage(image);
 
-            VacuumRobot vacuumRobot = GetInitialVacuumRobotLocation(image);
+            string path = FindVacuumRobotPath(image);
+            Console.WriteLine(path);
 
             return dust;
         }
@@ -151,6 +154,90 @@ namespace App.Tasks.Year2019.Day17
             return true;
         }
 
+        private string FindVacuumRobotPath(char[,] image)
+        {
+            StringBuilder path = new StringBuilder();
+
+            VacuumRobot vacuumRobot = GetInitialVacuumRobotLocation(image);
+
+            bool moved = true;
+            Direction facing = vacuumRobot.Facing;
+            int steps = 0;
+
+            while (moved)
+            {
+                moved = MoveVacuumRobot(vacuumRobot, image);
+                if (!moved)
+                {
+                    break;
+                }
+
+                // If direction changed
+                if (facing != vacuumRobot.Facing)
+                {
+                    if (steps > 0)
+                    {
+                        path.Append($",{steps},");
+                    }
+
+                    switch (facing)
+                    {
+                        case Direction.Up:
+                            if (vacuumRobot.Facing == Direction.Left)
+                            {
+                                path.Append('L');
+                            }
+                            else if (vacuumRobot.Facing == Direction.Right)
+                            {
+                                path.Append('R');
+                            }
+                            break;
+                        case Direction.Down:
+                            if (vacuumRobot.Facing == Direction.Left)
+                            {
+                                path.Append('R');
+                            }
+                            else if (vacuumRobot.Facing == Direction.Right)
+                            {
+                                path.Append('L');
+                            }
+                            break;
+                        case Direction.Left:
+                            if (vacuumRobot.Facing == Direction.Up)
+                            {
+                                path.Append('R');
+                            }
+                            else if (vacuumRobot.Facing == Direction.Down)
+                            {
+                                path.Append('L');
+                            }
+                            break;
+                        case Direction.Right:
+                            if (vacuumRobot.Facing == Direction.Up)
+                            {
+                                path.Append('L');
+                            }
+                            else if (vacuumRobot.Facing == Direction.Down)
+                            {
+                                path.Append('R');
+                            }
+                            break;
+                    }
+
+                    steps = 1;
+                    facing = vacuumRobot.Facing;
+                }
+                // If direction stayed the same
+                else
+                {
+                    steps++;
+                }
+            }
+            path.Append($",{steps}");
+
+            return path.ToString();
+        }
+
         private VacuumRobot GetInitialVacuumRobotLocation(char[,] image)
         {
             VacuumRobot vacuumRobot = null;
@@ -163,6 +250,10 @@ namespace App.Tasks.Year2019.Day17
                 {
                     switch (image[i, j])
                     {
+                        case UP:
+                            facing = Direction.Up;
+                            isFound = true;
+                            break;
                         case DOWN:
                             facing = Direction.Down;
                             isFound = true;
@@ -173,10 +264,6 @@ namespace App.Tasks.Year2019.Day17
                             break;
                         case RIGHT:
                             facing = Direction.Right;
-                            isFound = true;
-                            break;
-                        case UP:
-                            facing = Direction.Up;
                             isFound = true;
                             break;
                     }
@@ -196,6 +283,81 @@ namespace App.Tasks.Year2019.Day17
             }
 
             return vacuumRobot;
+        }
+
+        private bool MoveVacuumRobot(VacuumRobot vacuumRobot, char[,] image)
+        {
+            int i = vacuumRobot.X;
+            int j = vacuumRobot.Y;
+
+            // Try to continue without turning
+            switch (vacuumRobot.Facing)
+            {
+                case Direction.Up:
+                    if (i - 1 >= 0 && image[i - 1, j] == '#')
+                    {
+                        vacuumRobot.X--;
+                        return true;
+                    }
+                    break;
+                case Direction.Down:
+                    if (i + 1 < image.GetLength(0) && image[i + 1, j] == '#')
+                    {
+                        vacuumRobot.X++;
+                        return true;
+                    }
+                    break;
+                case Direction.Left:
+                    if (j - 1 >= 0 && image[i, j - 1] == '#')
+                    {
+                        vacuumRobot.Y--;
+                        return true;
+                    }
+                    break;
+                case Direction.Right:
+                    if (j + 1 < image.GetLength(1) && image[i, j + 1] == '#')
+                    {
+                        vacuumRobot.Y++;
+                        return true;
+                    }
+                    break;
+            }
+
+            // If current direction is left or right
+            if (vacuumRobot.Facing == Direction.Left || vacuumRobot.Facing == Direction.Right)
+            {
+                if (i - 1 >= 0 && image[i - 1, j] == '#')
+                {
+                    vacuumRobot.X--;
+                    vacuumRobot.Facing = Direction.Up;
+                    return true;
+                }
+                if (i + 1 < image.GetLength(0) && image[i + 1, j] == '#')
+                {
+                    vacuumRobot.X++;
+                    vacuumRobot.Facing = Direction.Down;
+                    return true;
+                }
+            }
+            // If current direction is up or down
+            else
+            {
+                if (j - 1 >= 0 && image[i, j - 1] == '#')
+                {
+                    vacuumRobot.Y--;
+                    vacuumRobot.Facing = Direction.Left;
+                    return true;
+                }
+                if (j + 1 < image.GetLength(1) && image[i, j + 1] == '#')
+                {
+                    vacuumRobot.Y++;
+                    vacuumRobot.Facing = Direction.Right;
+                    return true;
+                }
+            }
+
+            // End of the path
+            return false;
         }
 
         private void PrintImage(char[,] image)
