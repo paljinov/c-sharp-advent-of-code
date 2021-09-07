@@ -56,6 +56,18 @@ namespace App.Tasks.Year2019.Day17
             string path = FindVacuumRobotPath(image);
             Console.WriteLine(path);
 
+            Queue<Function> functionsNames = new Queue<Function>(Enum.GetValues(typeof(Function)).Cast<Function>());
+            Dictionary<Function, string> functions = new Dictionary<Function, string>();
+            FindFunctions(path, functionsNames, 0, string.Empty, functions);
+
+            string mainRoutine = path;
+            foreach (KeyValuePair<Function, string> function in functions)
+            {
+                mainRoutine = mainRoutine.Replace(function.Value, function.Key.ToString());
+                Console.WriteLine($"{function.Key}: {function.Value}");
+            }
+            Console.WriteLine($"Main routine: {mainRoutine}");
+
             return dust;
         }
 
@@ -236,6 +248,61 @@ namespace App.Tasks.Year2019.Day17
             path.Append($",{steps}");
 
             return path.ToString();
+        }
+
+        private void FindFunctions(
+            string path,
+            Queue<Function> functionsNames,
+            int position,
+            string lastValidFunction,
+            Dictionary<Function, string> functions
+        )
+        {
+            string function = path[..(position + 1)];
+            int occurrences = Regex.Matches(path, function).Count;
+
+            if (occurrences > 1 && function.Length <= MOVEMENT_FUNCTIONS_MAX_CHARACTERS)
+            {
+                if (char.IsDigit(path[position]) && path[position + 1] == ',')
+                {
+                    Console.WriteLine(path[position]);
+                    lastValidFunction = function;
+                }
+
+                FindFunctions(path, functionsNames, position + 1, lastValidFunction, functions);
+            }
+            else
+            {
+                Function functionName = functionsNames.Peek();
+                functions[functionName] = lastValidFunction;
+
+                functionsNames.Dequeue();
+                if (functionsNames.Count == 0)
+                {
+                    return;
+                }
+
+                string[] pathParts = path.Split(lastValidFunction, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string untrimmedPathPart in pathParts)
+                {
+                    string pathPart = untrimmedPathPart.Trim(',');
+                    if (pathPart.Length <= MOVEMENT_FUNCTIONS_MAX_CHARACTERS)
+                    {
+                        functionName = functionsNames.Peek();
+                        functions[functionName] = pathPart;
+                        functionsNames.Dequeue();
+                    }
+                    else
+                    {
+                        FindFunctions(pathPart, functionsNames, 0, string.Empty, functions);
+                    }
+
+                    if (functionsNames.Count == 0)
+                    {
+                        return;
+                    }
+                }
+            }
         }
 
         private VacuumRobot GetInitialVacuumRobotLocation(char[,] image)
