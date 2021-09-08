@@ -22,6 +22,8 @@ namespace App.Tasks.Year2019.Day17
 
         private const int MOVEMENT_FUNCTIONS_MAX_CHARACTERS = 20;
 
+        private const int ASCII_NEWLINE = 10;
+
         public int CalculateSumOfTheAlignmentParametersForTheScaffoldIntersections(long[] integersArray)
         {
             int sumOfTheAlignmentParameters = 0;
@@ -46,15 +48,12 @@ namespace App.Tasks.Year2019.Day17
 
         public int CalculateDustCollectedByTheVacuumRobot(long[] integersArray, int addressZeroValue)
         {
-            int dust = 0;
-
             integersArray[0] = addressZeroValue;
 
             char[,] image = GetImage(integersArray);
             PrintImage(image);
 
             string path = FindVacuumRobotPath(image);
-            Console.WriteLine(path);
 
             Queue<Function> functionsNames = new Queue<Function>(Enum.GetValues(typeof(Function)).Cast<Function>());
             Dictionary<Function, string> functions = new Dictionary<Function, string>();
@@ -64,9 +63,11 @@ namespace App.Tasks.Year2019.Day17
             foreach (KeyValuePair<Function, string> function in functions)
             {
                 mainRoutine = mainRoutine.Replace(function.Value, function.Key.ToString());
-                Console.WriteLine($"{function.Key}: {function.Value}");
             }
-            Console.WriteLine($"Main routine: {mainRoutine}");
+
+            List<int> asciiInputs = GetAsciiInputs(functions, mainRoutine);
+
+            int dust = 0;
 
             return dust;
         }
@@ -74,6 +75,7 @@ namespace App.Tasks.Year2019.Day17
         private char[,] GetImage(long[] integersArray)
         {
             Dictionary<long, long> integers = InitIntegersMemory(integersArray);
+            Queue<int> inputs = new Queue<int>();
 
             List<int> outputs = new List<int>();
             int outputSignal;
@@ -88,7 +90,7 @@ namespace App.Tasks.Year2019.Day17
 
             while (!halted)
             {
-                (outputSignal, halted) = CalculateOutputSignal(integers, 0, ref index, ref relativeBase);
+                (outputSignal, halted) = CalculateOutputSignal(integers, inputs, ref index, ref relativeBase);
                 outputs.Add(outputSignal);
             }
 
@@ -265,7 +267,7 @@ namespace App.Tasks.Year2019.Day17
             {
                 if (char.IsDigit(path[position]) && path[position + 1] == ',')
                 {
-                    Console.WriteLine(path[position]);
+
                     lastValidFunction = function;
                 }
 
@@ -440,9 +442,42 @@ namespace App.Tasks.Year2019.Day17
             }
         }
 
+        private List<int> ConvertFunctionToAsciiInputs(string function)
+        {
+            List<int> asciiInput = new List<int>();
+            for (int i = 0; i < function.Length; i++)
+            {
+                asciiInput.Add(function[i]);
+            }
+
+            return asciiInput;
+        }
+
+        private List<int> GetAsciiInputs(Dictionary<Function, string> functions, string mainRoutine)
+        {
+            List<int> asciiInputs = new List<int>();
+
+            List<string> functionStrings = new List<string>
+            {
+                mainRoutine
+            };
+            foreach (KeyValuePair<Function, string> function in functions)
+            {
+                functionStrings.Add(function.Value);
+            }
+
+            foreach (string function in functionStrings)
+            {
+                asciiInputs = asciiInputs.Concat(ConvertFunctionToAsciiInputs(function)).ToList();
+                asciiInputs.Add(ASCII_NEWLINE);
+            }
+
+            return asciiInputs;
+        }
+
         private (int, bool) CalculateOutputSignal(
             Dictionary<long, long> integers,
-            int input,
+            Queue<int> inputs,
             ref long i,
             ref long relativeBase
         )
@@ -520,7 +555,7 @@ namespace App.Tasks.Year2019.Day17
 
                         if (operation == (int)Operation.Input)
                         {
-                            integers[firstParameter] = input;
+                            integers[firstParameter] = inputs.Count > 0 ? inputs.Dequeue() : 0;
                         }
                         else if (operation == (int)Operation.Output)
                         {
