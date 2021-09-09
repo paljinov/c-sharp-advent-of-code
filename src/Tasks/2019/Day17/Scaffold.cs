@@ -24,6 +24,8 @@ namespace App.Tasks.Year2019.Day17
 
         private const int ASCII_NEWLINE = 10;
 
+        private const char CONTINUOUS_VIDEO_FEED = 'n';
+
         public int CalculateSumOfTheAlignmentParametersForTheScaffoldIntersections(long[] integersArray)
         {
             int sumOfTheAlignmentParameters = 0;
@@ -51,8 +53,6 @@ namespace App.Tasks.Year2019.Day17
             integersArray[0] = addressZeroValue;
 
             char[,] image = GetImage(integersArray);
-            PrintImage(image);
-
             string path = FindVacuumRobotPath(image);
 
             Queue<Function> functionsNames = new Queue<Function>(Enum.GetValues(typeof(Function)).Cast<Function>());
@@ -67,7 +67,7 @@ namespace App.Tasks.Year2019.Day17
 
             List<int> asciiInputs = GetAsciiInputs(functions, mainRoutine);
 
-            int dust = 0;
+            int dust = CalculateCollectedDust(integersArray, asciiInputs);
 
             return dust;
         }
@@ -267,7 +267,6 @@ namespace App.Tasks.Year2019.Day17
             {
                 if (char.IsDigit(path[position]) && path[position + 1] == ',')
                 {
-
                     lastValidFunction = function;
                 }
 
@@ -429,19 +428,6 @@ namespace App.Tasks.Year2019.Day17
             return false;
         }
 
-        private void PrintImage(char[,] image)
-        {
-            for (int i = 0; i < image.GetLength(0); i++)
-            {
-                for (int j = 0; j < image.GetLength(1); j++)
-                {
-                    Console.Write(image[i, j]);
-                }
-
-                Console.WriteLine();
-            }
-        }
-
         private List<int> ConvertFunctionToAsciiInputs(string function)
         {
             List<int> asciiInput = new List<int>();
@@ -457,22 +443,43 @@ namespace App.Tasks.Year2019.Day17
         {
             List<int> asciiInputs = new List<int>();
 
-            List<string> functionStrings = new List<string>
-            {
-                mainRoutine
-            };
+            // First, you will be prompted for the main movement routine
+            asciiInputs = asciiInputs.Concat(ConvertFunctionToAsciiInputs(mainRoutine)).ToList();
+            asciiInputs.Add(ASCII_NEWLINE);
+
+            // Then, you will be prompted for each movement function
             foreach (KeyValuePair<Function, string> function in functions)
             {
-                functionStrings.Add(function.Value);
-            }
-
-            foreach (string function in functionStrings)
-            {
-                asciiInputs = asciiInputs.Concat(ConvertFunctionToAsciiInputs(function)).ToList();
+                asciiInputs = asciiInputs.Concat(ConvertFunctionToAsciiInputs(function.Value)).ToList();
                 asciiInputs.Add(ASCII_NEWLINE);
             }
 
+            // Finally, you will be asked whether you want to see a continuous video feed;
+            // provide either y or n and a newline
+            asciiInputs.Add(CONTINUOUS_VIDEO_FEED);
+            asciiInputs.Add(ASCII_NEWLINE);
+
             return asciiInputs;
+        }
+
+        private int CalculateCollectedDust(long[] integersArray, List<int> asciiInputs)
+        {
+            Dictionary<long, long> integers = InitIntegersMemory(integersArray);
+            Queue<int> inputs = new Queue<int>(asciiInputs);
+
+            int dust = 0;
+            bool halted = false;
+
+            // IntCode program current index and relative base value
+            long index = 0;
+            long relativeBase = 0;
+
+            while (!halted)
+            {
+                (dust, halted) = CalculateOutputSignal(integers, inputs, ref index, ref relativeBase);
+            }
+
+            return dust;
         }
 
         private (int, bool) CalculateOutputSignal(
