@@ -260,10 +260,28 @@ namespace App.Tasks.Year2019.Day17
             Dictionary<Function, string> functions
         )
         {
+            // If all functions are found
+            if (functionsNames.Count == 0)
+            {
+                return;
+            }
+
+            int minFunctionRepetitions = (int)Math.Ceiling(
+                (double)path.Length / (functionsNames.Count * MOVEMENT_FUNCTIONS_MAX_CHARACTERS));
+
+            // If function repeats one time and can be valid
+            if (minFunctionRepetitions == 1 && string.IsNullOrEmpty(lastValidFunction)
+                && path.Length <= MOVEMENT_FUNCTIONS_MAX_CHARACTERS)
+            {
+                lastValidFunction = path;
+            }
+
             string function = path[..(position + 1)];
             int occurrences = Regex.Matches(path, function).Count;
 
-            if (occurrences > 1 && function.Length <= MOVEMENT_FUNCTIONS_MAX_CHARACTERS)
+            // If function repeats more than one time and minimum number of times try to expand it
+            if (minFunctionRepetitions > 1 && occurrences > minFunctionRepetitions
+                && function.Length <= MOVEMENT_FUNCTIONS_MAX_CHARACTERS)
             {
                 if (char.IsDigit(path[position]) && path[position + 1] == ',')
                 {
@@ -272,36 +290,44 @@ namespace App.Tasks.Year2019.Day17
 
                 FindFunctions(path, functionsNames, position + 1, lastValidFunction, functions);
             }
+            // Set found function and try to find rest of them
             else
             {
                 Function functionName = functionsNames.Peek();
                 functions[functionName] = lastValidFunction;
-
                 functionsNames.Dequeue();
-                if (functionsNames.Count == 0)
+
+                List<string> pathParts = path.Split(lastValidFunction, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(p => p.Trim(','))
+                    .Where(p => p != string.Empty && !functions.ContainsValue(p))
+                    .Distinct()
+                    .ToList();
+
+                // Remove path parts which are fully contained of smaller path parts
+                for (int i = 0; i < pathParts.Count; i++)
                 {
-                    return;
+                    string pathPart = pathParts[i];
+                    for (int j = 0; j < pathParts.Count; j++)
+                    {
+                        if (i != j)
+                        {
+                            if (pathPart.Contains(pathParts[j]))
+                            {
+                                pathPart = pathPart.Replace(pathParts[j], string.Empty);
+                                pathPart = pathPart.Replace(",,", ",").Trim(',');
+                            }
+                        }
+                    }
+
+                    if (string.IsNullOrEmpty(pathPart))
+                    {
+                        pathParts.RemoveAt(i);
+                    }
                 }
 
-                string[] pathParts = path.Split(lastValidFunction, StringSplitOptions.RemoveEmptyEntries);
-                foreach (string untrimmedPathPart in pathParts)
+                foreach (string pathPart in pathParts)
                 {
-                    string pathPart = untrimmedPathPart.Trim(',');
-                    if (pathPart.Length <= MOVEMENT_FUNCTIONS_MAX_CHARACTERS)
-                    {
-                        functionName = functionsNames.Peek();
-                        functions[functionName] = pathPart;
-                        functionsNames.Dequeue();
-                    }
-                    else
-                    {
-                        FindFunctions(pathPart, functionsNames, 0, string.Empty, functions);
-                    }
-
-                    if (functionsNames.Count == 0)
-                    {
-                        return;
-                    }
+                    FindFunctions(pathPart, functionsNames, 0, string.Empty, functions);
                 }
             }
         }
