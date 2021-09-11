@@ -4,7 +4,7 @@ namespace App.Tasks.Year2019.Day25
 {
     public class Ship
     {
-        public int FindThePasswordForTheMainAirlock(long[] integersArray)
+        public long FindThePasswordForTheMainAirlock(long[] integersArray)
         {
             return integersArray.Length;
         }

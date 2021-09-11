@@ -46,7 +46,7 @@ Look around the ship and see if you can find the password for the main airlock.
 
 namespace App.Tasks.Year2019.Day25
 {
-    public class Part1 : ITask<int>
+    public class Part1 : ITask<long>
     {
         private readonly IntegersRepository integersRepository;
 
@@ -58,10 +58,10 @@ namespace App.Tasks.Year2019.Day25
             ship = new Ship();
         }
 
-        public int Solution(string input)
+        public long Solution(string input)
         {
             long[] integers = integersRepository.GetIntegers(input);
-            int password = ship.FindThePasswordForTheMainAirlock(integers);
+            long password = ship.FindThePasswordForTheMainAirlock(integers);
 
             return password;
         }
