@@ -1,20 +1,72 @@
 using System.Collections.Generic;
+using System.Text;
 
 namespace App.Tasks.Year2019.Day25
 {
     public class Ship
     {
+        private const int ASCII_NEWLINE = 10;
+
+        private const string COMMAND_OUTPUT = "Command?";
+
         public long FindThePasswordForTheMainAirlock(long[] integersArray)
         {
+            Dictionary<long, long> integers = InitIntegersMemory(integersArray);
+            Queue<int> inputs = new Queue<int>();
+
+            int output;
+            bool halted = false;
+
+            // IntCode program current index and relative base value
+            long index = 0;
+            long relativeBase = 0;
+
+            StringBuilder command = new StringBuilder();
+
+            while (!halted)
+            {
+                if (command.Length == COMMAND_OUTPUT.Length)
+                {
+                    command.Remove(0, 1);
+                }
+
+                (output, halted) = CalculateOutputSignal(integers, inputs, ref index, ref relativeBase);
+                command.Append((char)output);
+                if (command.ToString() == COMMAND_OUTPUT)
+                {
+                    inputs.Enqueue(ASCII_NEWLINE);
+                }
+            }
+
             return integersArray.Length;
         }
 
-        private (int, bool) CalculateOutputSignal(Dictionary<long, long> integers, Queue<int> inputs)
+        private List<string> InitializeInstructions()
+        {
+            List<string> instructions = new List<string>();
+
+            return instructions;
+        }
+
+        private List<int> ConvertInstructionToAsciiInputs(string instruction)
+        {
+            List<int> asciiInput = new List<int>();
+            for (int i = 0; i < instruction.Length; i++)
+            {
+                asciiInput.Add(instruction[i]);
+            }
+
+            return asciiInput;
+        }
+
+        private (int, bool) CalculateOutputSignal(
+            Dictionary<long, long> integers,
+            Queue<int> inputs,
+            ref long i,
+            ref long relativeBase
+        )
         {
             int outputSignal = -1;
-
-            long i = 0;
-            long relativeBase = 0;
 
             while (integers[i] != (int)Operation.Halt)
             {
