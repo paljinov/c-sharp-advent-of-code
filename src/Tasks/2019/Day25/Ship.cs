@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -11,6 +12,9 @@ namespace App.Tasks.Year2019.Day25
 
         public long FindThePasswordForTheMainAirlock(long[] integersArray)
         {
+            StringBuilder password = new StringBuilder();
+            List<string> items = new List<string>();
+
             Dictionary<long, long> integers = InitIntegersMemory(integersArray);
             Queue<int> inputs = new Queue<int>();
 
@@ -25,20 +29,29 @@ namespace App.Tasks.Year2019.Day25
 
             while (!halted)
             {
-                if (command.Length == COMMAND_OUTPUT.Length)
-                {
-                    command.Remove(0, 1);
-                }
-
                 (output, halted) = CalculateOutputSignal(integers, inputs, ref index, ref relativeBase);
                 command.Append((char)output);
-                if (command.ToString() == COMMAND_OUTPUT)
+
+                if (command.Length >= COMMAND_OUTPUT.Length
+                    && command.ToString()[(command.Length - COMMAND_OUTPUT.Length)..] == COMMAND_OUTPUT)
                 {
+                    Console.WriteLine(command.ToString());
+                    command.Clear();
+
+                    string commandInput = Console.ReadLine();
+                    List<int> commandAsciiInput = ConvertInstructionToAsciiInputs(commandInput);
+                    inputs = new Queue<int>(commandAsciiInput);
                     inputs.Enqueue(ASCII_NEWLINE);
+
+                    if (commandInput.StartsWith(Instruction.TAKE_ITEM))
+                    {
+                        string item = commandInput.Split(Instruction.TAKE_ITEM)[1].Trim(' ');
+                        items.Add(item);
+                    }
                 }
             }
 
-            return integersArray.Length;
+            return long.Parse(password.ToString());
         }
 
         private List<string> InitializeInstructions()
