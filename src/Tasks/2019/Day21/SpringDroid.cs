@@ -1,21 +1,51 @@
 using System.Collections.Generic;
-using System.Linq;
 
 namespace App.Tasks.Year2019.Day21
 {
     public class SpringDroid
     {
+        private const char SCAFFOLD = '#';
+
+        private const char OPEN_SPACE = '.';
+
+        private const char UP = '^';
+
+        private const char DOWN = 'v';
+
+        private const char LEFT = '<';
+
+        private const char RIGHT = '>';
+
+        private const int MOVEMENT_FUNCTIONS_MAX_CHARACTERS = 20;
+
+        private const int ASCII_NEWLINE = 10;
+
+        private const char CONTINUOUS_VIDEO_FEED = 'n';
+
         public int CalculateAmountOfReportedHullDamage(long[] integersArray)
         {
             return integersArray.Length;
         }
 
-        private (int, bool) CalculateOutputSignal(Dictionary<long, long> integers, Queue<int> inputs)
+        private List<int> ConvertFunctionToAsciiInputs(string function)
+        {
+            List<int> asciiInput = new List<int>();
+            for (int i = 0; i < function.Length; i++)
+            {
+                asciiInput.Add(function[i]);
+            }
+
+            return asciiInput;
+        }
+
+        private (int, bool) CalculateOutputSignal(
+            Dictionary<long, long> integers,
+            Queue<int> inputs,
+            ref long i,
+            ref long relativeBase
+        )
         {
             int outputSignal = -1;
-
-            long i = 0;
-            long relativeBase = 0;
 
             while (integers[i] != (int)Operation.Halt)
             {
