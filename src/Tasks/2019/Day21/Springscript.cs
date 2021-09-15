@@ -1,41 +1,57 @@
 using System.Collections.Generic;
+using System.Text;
 
 namespace App.Tasks.Year2019.Day21
 {
-    public class SpringDroid
+    public class Springscript
     {
-        private const char SCAFFOLD = '#';
-
-        private const char OPEN_SPACE = '.';
-
-        private const char UP = '^';
-
-        private const char DOWN = 'v';
-
-        private const char LEFT = '<';
-
-        private const char RIGHT = '>';
-
-        private const int MOVEMENT_FUNCTIONS_MAX_CHARACTERS = 20;
-
         private const int ASCII_NEWLINE = 10;
 
-        private const char CONTINUOUS_VIDEO_FEED = 'n';
+        private readonly string[] commands = new string[] {
+            "NOT A J",
+            "NOT J J",
+            "AND B J",
+            "AND C J",
+            "NOT J J",
+            "AND D J",
+            "WALK"
+        };
 
         public int CalculateAmountOfReportedHullDamage(long[] integersArray)
         {
-            return integersArray.Length;
-        }
+            Dictionary<long, long> integers = InitIntegersMemory(integersArray);
+            Queue<int> inputs = GetInputs();
 
-        private List<int> ConvertFunctionToAsciiInputs(string function)
-        {
-            List<int> asciiInput = new List<int>();
-            for (int i = 0; i < function.Length; i++)
+            int outputSignal = 0;
+            bool halted = false;
+
+            // IntCode program current index and relative base value
+            long index = 0;
+            long relativeBase = 0;
+
+            while (!halted)
             {
-                asciiInput.Add(function[i]);
+                (outputSignal, halted) = CalculateOutputSignal(integers, inputs, ref index, ref relativeBase);
             }
 
-            return asciiInput;
+            return outputSignal;
+        }
+
+        private Queue<int> GetInputs()
+        {
+            Queue<int> inputs = new Queue<int>();
+
+            for (int i = 0; i < commands.Length; i++)
+            {
+                for (int j = 0; j < commands[i].Length; j++)
+                {
+                    inputs.Enqueue(commands[i][j]);
+                }
+
+                inputs.Enqueue(ASCII_NEWLINE);
+            }
+
+            return inputs;
         }
 
         private (int, bool) CalculateOutputSignal(
