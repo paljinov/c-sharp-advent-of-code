@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Text;
 
 namespace App.Tasks.Year2019.Day21
 {
@@ -7,20 +6,50 @@ namespace App.Tasks.Year2019.Day21
     {
         private const int ASCII_NEWLINE = 10;
 
-        private readonly string[] commands = new string[] {
-            "NOT A J",
-            "NOT J J",
-            "AND B J",
-            "AND C J",
-            "NOT J J",
-            "AND D J",
-            "WALK"
-        };
+        private const string WALK = "WALK";
+
+        private const string RUN = "RUN";
 
         public int CalculateAmountOfReportedHullDamage(long[] integersArray)
         {
+            string[] springscript = new string[] {
+                $"{SringscriptInstruction.NOT} {Register.A} {Register.J}",
+                $"{SringscriptInstruction.NOT} {Register.J} {Register.J}",
+                $"{SringscriptInstruction.AND} {Register.B} {Register.J}",
+                $"{SringscriptInstruction.AND} {Register.C} {Register.J}",
+                $"{SringscriptInstruction.NOT} {Register.J} {Register.J}",
+                $"{SringscriptInstruction.AND} {Register.D} {Register.J}",
+                WALK
+            };
+
+            Queue<int> inputs = GetInputs(springscript);
+            int amountOfReportedHullDamage = DoCalculateAmountOfReportedHullDamage(integersArray, inputs);
+
+            return amountOfReportedHullDamage;
+        }
+
+        public int CalculateAmountOfReportedHullDamageForExtendedSensorMode(long[] integersArray)
+        {
+            string[] springscript = new string[] {
+                $"{SringscriptInstruction.NOT} {Register.C} {Register.J}",
+                $"{SringscriptInstruction.AND} {Register.H} {Register.J}",
+                $"{SringscriptInstruction.NOT} {Register.B} {Register.T}",
+                $"{SringscriptInstruction.OR} {Register.T} {Register.J}",
+                $"{SringscriptInstruction.NOT} {Register.A} {Register.T}",
+                $"{SringscriptInstruction.OR} {Register.T} {Register.J}",
+                $"{SringscriptInstruction.AND} {Register.D} {Register.J}",
+                RUN
+            };
+
+            Queue<int> inputs = GetInputs(springscript);
+            int amountOfReportedHullDamage = DoCalculateAmountOfReportedHullDamage(integersArray, inputs);
+
+            return amountOfReportedHullDamage;
+        }
+
+        private int DoCalculateAmountOfReportedHullDamage(long[] integersArray, Queue<int> inputs)
+        {
             Dictionary<long, long> integers = InitIntegersMemory(integersArray);
-            Queue<int> inputs = GetInputs();
 
             int outputSignal = 0;
             bool halted = false;
@@ -37,15 +66,15 @@ namespace App.Tasks.Year2019.Day21
             return outputSignal;
         }
 
-        private Queue<int> GetInputs()
+        private Queue<int> GetInputs(string[] springscript)
         {
             Queue<int> inputs = new Queue<int>();
 
-            for (int i = 0; i < commands.Length; i++)
+            for (int i = 0; i < springscript.Length; i++)
             {
-                for (int j = 0; j < commands[i].Length; j++)
+                for (int j = 0; j < springscript[i].Length; j++)
                 {
-                    inputs.Enqueue(commands[i][j]);
+                    inputs.Enqueue(springscript[i][j]);
                 }
 
                 inputs.Enqueue(ASCII_NEWLINE);
