@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace App.Tasks.Year2019.Day25
@@ -8,7 +9,11 @@ namespace App.Tasks.Year2019.Day25
     {
         private const int ASCII_NEWLINE = 10;
 
-        private const string COMMAND_OUTPUT = "Command?";
+        private const string COMMAND = "Command?";
+
+        private const string DOORS = "Doors here lead";
+
+        private const string ITEMS = "Items here";
 
         public long FindThePasswordForTheMainAirlock(long[] integersArray)
         {
@@ -25,28 +30,33 @@ namespace App.Tasks.Year2019.Day25
             long index = 0;
             long relativeBase = 0;
 
-            StringBuilder command = new StringBuilder();
+            StringBuilder instructionSb = new StringBuilder();
 
             while (!halted)
             {
                 (output, halted) = CalculateOutputSignal(integers, inputs, ref index, ref relativeBase);
-                command.Append((char)output);
+                instructionSb.Append((char)output);
 
-                if (command.Length >= COMMAND_OUTPUT.Length
-                    && command.ToString()[(command.Length - COMMAND_OUTPUT.Length)..] == COMMAND_OUTPUT)
+                if (instructionSb.Length >= COMMAND.Length
+                    && instructionSb.ToString(instructionSb.Length - COMMAND.Length, COMMAND.Length) == COMMAND)
                 {
-                    Console.WriteLine(command.ToString());
-                    command.Clear();
+                    string instruction = instructionSb.ToString();
+                    instructionSb.Clear();
+                    Console.WriteLine(instruction);
 
-                    string commandInput = Console.ReadLine();
-                    List<int> commandAsciiInput = ConvertInstructionToAsciiInputs(commandInput);
-                    inputs = new Queue<int>(commandAsciiInput);
-                    inputs.Enqueue(ASCII_NEWLINE);
-
-                    if (commandInput.StartsWith(Instruction.TAKE_ITEM))
+                    List<string> possibleDirections = GetPossibleDirections(instruction);
+                    if (possibleDirections.Count > 0)
                     {
-                        string item = commandInput.Split(Instruction.TAKE_ITEM)[1].Trim(' ');
-                        items.Add(item);
+                        string commandInput = possibleDirections[0];
+                        List<int> commandAsciiInput = ConvertInstructionToAsciiInputs(commandInput);
+                        inputs = new Queue<int>(commandAsciiInput);
+                        inputs.Enqueue(ASCII_NEWLINE);
+
+                        if (commandInput.StartsWith(Instruction.TAKE_ITEM))
+                        {
+                            string item = commandInput.Split(Instruction.TAKE_ITEM)[1].Trim(' ');
+                            items.Add(item);
+                        }
                     }
                 }
             }
@@ -54,11 +64,34 @@ namespace App.Tasks.Year2019.Day25
             return long.Parse(password.ToString());
         }
 
-        private List<string> InitializeInstructions()
+        private List<string> GetPossibleDirections(string instruction)
         {
-            List<string> instructions = new List<string>();
+            List<string> possibleDirections = new List<string>();
 
-            return instructions;
+            if (!instruction.Contains(DOORS))
+            {
+                return possibleDirections;
+            }
+
+            StringReader strReader = new StringReader(instruction);
+            string line = strReader.ReadLine();
+
+            while (line != COMMAND)
+            {
+                if (line.Contains(DOORS))
+                {
+                    line = strReader.ReadLine();
+                    while (!string.IsNullOrEmpty(line))
+                    {
+                        possibleDirections.Add(line.TrimStart(' ', '-'));
+                        line = strReader.ReadLine();
+                    }
+                }
+
+                line = strReader.ReadLine();
+            }
+
+            return possibleDirections;
         }
 
         private List<int> ConvertInstructionToAsciiInputs(string instruction)
