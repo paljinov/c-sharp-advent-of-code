@@ -15,10 +15,22 @@ namespace App.Tasks.Year2019.Day25
 
         private const string ITEMS = "Items here";
 
+        private const string TAKE = "take";
+
+        private const string DROP = "drop";
+
+        private const string LIST_ITEMS = "inv";
+
+        private readonly Random random;
+
+        public Ship()
+        {
+            random = new Random();
+        }
+
         public long FindThePasswordForTheMainAirlock(long[] integersArray)
         {
             StringBuilder password = new StringBuilder();
-            List<string> items = new List<string>();
 
             Dictionary<long, long> integers = InitIntegersMemory(integersArray);
             Queue<int> inputs = new Queue<int>();
@@ -42,21 +54,33 @@ namespace App.Tasks.Year2019.Day25
                 {
                     string instruction = instructionSb.ToString();
                     instructionSb.Clear();
-                    Console.WriteLine(instruction);
+                    // Console.WriteLine(instruction);
 
-                    List<string> possibleDirections = GetPossibleDirections(instruction);
-                    if (possibleDirections.Count > 0)
+                    List<string> answers = new List<string>();
+                    if (instruction.Contains(DOORS))
                     {
-                        string commandInput = possibleDirections[0];
+                        answers = GetChoices(instruction, DOORS);
+                    }
+                    else if (instruction.Contains(ITEMS))
+                    {
+                        answers = GetChoices(instruction, ITEMS);
+                        for (int i = 0; i < answers.Count; i++)
+                        {
+                            answers[i] = $"{TAKE} {answers[i]}";
+                        }
+                    }
+                    else
+                    {
+
+                    }
+
+                    if (answers.Count > 0)
+                    {
+                        int answerIndex = random.Next(answers.Count);
+                        string commandInput = answers[answerIndex];
                         List<int> commandAsciiInput = ConvertInstructionToAsciiInputs(commandInput);
                         inputs = new Queue<int>(commandAsciiInput);
                         inputs.Enqueue(ASCII_NEWLINE);
-
-                        if (commandInput.StartsWith(Instruction.TAKE_ITEM))
-                        {
-                            string item = commandInput.Split(Instruction.TAKE_ITEM)[1].Trim(' ');
-                            items.Add(item);
-                        }
                     }
                 }
             }
@@ -64,26 +88,21 @@ namespace App.Tasks.Year2019.Day25
             return long.Parse(password.ToString());
         }
 
-        private List<string> GetPossibleDirections(string instruction)
+        private List<string> GetChoices(string instruction, string choiceType)
         {
-            List<string> possibleDirections = new List<string>();
-
-            if (!instruction.Contains(DOORS))
-            {
-                return possibleDirections;
-            }
+            List<string> choices = new List<string>();
 
             StringReader strReader = new StringReader(instruction);
             string line = strReader.ReadLine();
 
             while (line != COMMAND)
             {
-                if (line.Contains(DOORS))
+                if (line.Contains(choiceType))
                 {
                     line = strReader.ReadLine();
                     while (!string.IsNullOrEmpty(line))
                     {
-                        possibleDirections.Add(line.TrimStart(' ', '-'));
+                        choices.Add(line.TrimStart(' ', '-'));
                         line = strReader.ReadLine();
                     }
                 }
@@ -91,7 +110,7 @@ namespace App.Tasks.Year2019.Day25
                 line = strReader.ReadLine();
             }
 
-            return possibleDirections;
+            return choices;
         }
 
         private List<int> ConvertInstructionToAsciiInputs(string instruction)
