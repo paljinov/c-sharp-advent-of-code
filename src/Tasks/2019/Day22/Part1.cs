@@ -187,7 +187,7 @@ namespace App.Tasks.Year2019.Day22
         }
         public int Solution(string input)
         {
-            string[] shuffleTechniques = shuffleTechniquesRepository.GetShuffleTechniques(input);
+            IShuffleTechnique[] shuffleTechniques = shuffleTechniquesRepository.GetShuffleTechniques(input);
             int cardPositionAfterShufflingDeck = shuffleCardDeck
                 .CalculateCardPositionAfterShufflingDeck(shuffleTechniques, WANTED_CARD);
 
