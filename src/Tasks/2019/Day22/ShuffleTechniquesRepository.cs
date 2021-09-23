@@ -10,7 +10,7 @@ namespace App.Tasks.Year2019.Day22
             string[] shuffleTechniquesStrings = input.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
             IShuffleTechnique[] shuffleTechniques = new IShuffleTechnique[shuffleTechniquesStrings.Length];
 
-            Regex cutCardsRegex = new Regex(@"^cut\s(\d+)$");
+            Regex cutCardsRegex = new Regex(@"^cut\s(\-?\d+)$");
             Regex dealWithIncrementRegex = new Regex(@"^deal\swith\sincrement\s(\d+)$");
 
             for (int i = 0; i < shuffleTechniquesStrings.Length; i++)

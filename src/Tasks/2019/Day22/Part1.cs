@@ -174,7 +174,7 @@ namespace App.Tasks.Year2019.Day22
 {
     public class Part1 : ITask<int>
     {
-        private const int WANTED_CARD = 2019;
+        private readonly int wantedCard = 2019;
 
         private readonly ShuffleTechniquesRepository shuffleTechniquesRepository;
 
@@ -189,7 +189,7 @@ namespace App.Tasks.Year2019.Day22
         {
             IShuffleTechnique[] shuffleTechniques = shuffleTechniquesRepository.GetShuffleTechniques(input);
             int cardPositionAfterShufflingDeck = shuffleCardDeck
-                .CalculateCardPositionAfterShufflingDeck(shuffleTechniques, WANTED_CARD);
+                .CalculateCardPositionAfterShufflingDeck(shuffleTechniques, wantedCard);
 
             return cardPositionAfterShufflingDeck;
         }
