@@ -31,7 +31,9 @@ namespace App.Tasks.Year2019.Day22
                 }
             }
 
-            return cards[wantedCard];
+            int wantedCardPosition = cards.FirstOrDefault(c => c.Value == wantedCard).Key;
+
+            return wantedCardPosition;
         }
 
         private Dictionary<int, int> InitializeCards()
@@ -86,18 +88,18 @@ namespace App.Tasks.Year2019.Day22
         {
             Dictionary<int, int> newStack = new Dictionary<int, int>();
 
-            int i = 0;
-            int cardPosition = 0;
-            while (newStack.Count < cards.Count)
+            int newPosition = 0;
+            int oldPosition = 0;
+            while (oldPosition < cards.Count)
             {
-                newStack[i] = cards[cardPosition];
+                newStack[newPosition] = cards[oldPosition];
 
-                cardPosition++;
+                oldPosition++;
 
-                i += dealWithIncrement.Increment;
-                if (i >= cards.Count)
+                newPosition += dealWithIncrement.Increment;
+                if (newPosition >= cards.Count)
                 {
-                    i -= cards.Count;
+                    newPosition -= cards.Count;
                 }
             }
 

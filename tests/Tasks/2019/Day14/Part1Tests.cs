@@ -19,10 +19,10 @@ namespace Tests.Tasks.Year2019.Day14
         [ClassData(typeof(Reactions_MinimumAmountOfOreRequiredToProduceExactlyOneFuel_TestData))]
         public void Solution_ReactionsExample_MinimumAmountOfOreRequiredToProduceExactlyOneFuelEquals(
             string reactions,
-            int minimumAmountOfOreRequiredToProduceExactlyOneFuelEquals
+            int minimumAmountOfOreRequiredToProduceExactlyOneFuel
         )
         {
-            Assert.Equal(minimumAmountOfOreRequiredToProduceExactlyOneFuelEquals, task.Solution(reactions));
+            Assert.Equal(minimumAmountOfOreRequiredToProduceExactlyOneFuel, task.Solution(reactions));
         }
 
         public class Reactions_MinimumAmountOfOreRequiredToProduceExactlyOneFuel_TestData : IEnumerable<object[]>
