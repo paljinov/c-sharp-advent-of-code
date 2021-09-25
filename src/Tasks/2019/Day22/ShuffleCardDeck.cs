@@ -6,14 +6,13 @@ namespace App.Tasks.Year2019.Day22
 {
     public class ShuffleCardDeck
     {
-        private readonly int totalCards = 10007;
-
         public int CalculateCardPositionAfterShufflingDeck(
             IShuffleTechnique[] shuffleTechniques,
+            int totalCards,
             int wantedCard
         )
         {
-            Dictionary<int, int> cards = InitializeCards();
+            Dictionary<long, long> cards = InitializeCards(totalCards);
 
             foreach (IShuffleTechnique shuffleTechnique in shuffleTechniques)
             {
@@ -31,14 +30,26 @@ namespace App.Tasks.Year2019.Day22
                 }
             }
 
-            int wantedCardPosition = cards.FirstOrDefault(c => c.Value == wantedCard).Key;
+            int wantedCardPosition = (int)cards.FirstOrDefault(c => c.Value == wantedCard).Key;
 
             return wantedCardPosition;
         }
 
-        private Dictionary<int, int> InitializeCards()
+        public int CalculateCardNumberAfterShufflingDeck(
+            IShuffleTechnique[] shuffleTechniques,
+            long totalCards,
+            int wantedCardPosition,
+            long shuffleProcessRepetitions
+        )
         {
-            Dictionary<int, int> cards = new Dictionary<int, int>();
+            Dictionary<long, long> cards = InitializeCards(totalCards);
+
+            return cards.Count;
+        }
+
+        private Dictionary<long, long> InitializeCards(long totalCards)
+        {
+            Dictionary<long, long> cards = new Dictionary<long, long>();
 
             for (int i = 0; i < totalCards; i++)
             {
@@ -48,9 +59,9 @@ namespace App.Tasks.Year2019.Day22
             return cards;
         }
 
-        private Dictionary<int, int> DealIntoNewStack(Dictionary<int, int> cards)
+        private Dictionary<long, long> DealIntoNewStack(Dictionary<long, long> cards)
         {
-            Dictionary<int, int> newStack = new Dictionary<int, int>();
+            Dictionary<long, long> newStack = new Dictionary<long, long>();
 
             for (int i = 0; i < cards.Count; i++)
             {
@@ -60,10 +71,10 @@ namespace App.Tasks.Year2019.Day22
             return newStack;
         }
 
-        private Dictionary<int, int> CutCards(Dictionary<int, int> cards, CutCards cutCards)
+        private Dictionary<long, long> CutCards(Dictionary<long, long> cards, CutCards cutCards)
         {
-            Dictionary<int, int> newStack = new Dictionary<int, int>();
-            List<int> newStackList;
+            Dictionary<long, long> newStack = new Dictionary<long, long>();
+            List<long> newStackList;
 
             if (cutCards.Cut > 0)
             {
@@ -84,9 +95,11 @@ namespace App.Tasks.Year2019.Day22
             return newStack;
         }
 
-        private Dictionary<int, int> DealWithIncrement(Dictionary<int, int> cards, DealWithIncrement dealWithIncrement)
+        private Dictionary<long, long> DealWithIncrement(
+            Dictionary<long, long> cards,
+            DealWithIncrement dealWithIncrement)
         {
-            Dictionary<int, int> newStack = new Dictionary<int, int>();
+            Dictionary<long, long> newStack = new Dictionary<long, long>();
 
             int newPosition = 0;
             int oldPosition = 0;

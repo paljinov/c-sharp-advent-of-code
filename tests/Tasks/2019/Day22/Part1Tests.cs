@@ -20,16 +20,11 @@ namespace Tests.Tasks.Year2019.Day22
             task = new Part1();
 
             task.GetType()
+                .GetField("totalCards", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(task, TOTAL_CARDS);
+            task.GetType()
                 .GetField("wantedCard", BindingFlags.Instance | BindingFlags.NonPublic)
                 .SetValue(task, WANTED_CARD);
-
-            ShuffleCardDeck shuffleCardDeck = new ShuffleCardDeck();
-            typeof(ShuffleCardDeck)
-                .GetField("totalCards", BindingFlags.Instance | BindingFlags.NonPublic)
-                .SetValue(shuffleCardDeck, TOTAL_CARDS);
-            typeof(Part1)
-                .GetField("shuffleCardDeck", BindingFlags.Instance | BindingFlags.NonPublic)
-                .SetValue(task, shuffleCardDeck);
         }
 
         [Theory]

@@ -174,6 +174,8 @@ namespace App.Tasks.Year2019.Day22
 {
     public class Part1 : ITask<int>
     {
+        private readonly int totalCards = 10007;
+
         private readonly int wantedCard = 2019;
 
         private readonly ShuffleTechniquesRepository shuffleTechniquesRepository;
@@ -185,11 +187,12 @@ namespace App.Tasks.Year2019.Day22
             shuffleTechniquesRepository = new ShuffleTechniquesRepository();
             shuffleCardDeck = new ShuffleCardDeck();
         }
+
         public int Solution(string input)
         {
             IShuffleTechnique[] shuffleTechniques = shuffleTechniquesRepository.GetShuffleTechniques(input);
             int cardPositionAfterShufflingDeck = shuffleCardDeck
-                .CalculateCardPositionAfterShufflingDeck(shuffleTechniques, wantedCard);
+                .CalculateCardPositionAfterShufflingDeck(shuffleTechniques, totalCards, wantedCard);
 
             return cardPositionAfterShufflingDeck;
         }
