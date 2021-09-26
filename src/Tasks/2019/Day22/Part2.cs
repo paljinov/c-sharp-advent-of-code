@@ -24,7 +24,7 @@ is on the card that ends up in position 2020?
 
 namespace App.Tasks.Year2019.Day22
 {
-    public class Part2 : ITask<int>
+    public class Part2 : ITask<long>
     {
         private const long SHUFFLE_PROCESS_REPETITIONS = 101741582076661;
 
@@ -42,10 +42,10 @@ namespace App.Tasks.Year2019.Day22
             shuffleCardDeck = new ShuffleCardDeck();
         }
 
-        public int Solution(string input)
+        public long Solution(string input)
         {
             IShuffleTechnique[] shuffleTechniques = shuffleTechniquesRepository.GetShuffleTechniques(input);
-            int cardNumberAfterShufflingDeck = shuffleCardDeck.CalculateCardNumberAfterShufflingDeck(
+            long cardNumberAfterShufflingDeck = shuffleCardDeck.CalculateCardNumberAfterShufflingDeck(
                 shuffleTechniques, totalCards, wantedCardPosition, SHUFFLE_PROCESS_REPETITIONS);
 
             return cardNumberAfterShufflingDeck;

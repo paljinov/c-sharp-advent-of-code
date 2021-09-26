@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 
 namespace App.Tasks.Year2019.Day22
 {
@@ -35,16 +36,22 @@ namespace App.Tasks.Year2019.Day22
             return wantedCardPosition;
         }
 
-        public int CalculateCardNumberAfterShufflingDeck(
+        public long CalculateCardNumberAfterShufflingDeck(
             IShuffleTechnique[] shuffleTechniques,
             long totalCards,
             int wantedCardPosition,
             long shuffleProcessRepetitions
         )
         {
-            Dictionary<long, long> cards = InitializeCards(totalCards);
+            BigInteger start = 0;
+            BigInteger step = 1;
 
-            return cards.Count;
+            (start, step) = Shuffle(start, step, totalCards, shuffleTechniques);
+            (start, step) = RepeatShuffleProcess(start, step, totalCards, shuffleProcessRepetitions);
+
+            long cardNumberAfterShufflingDeck = (long)((start + step * wantedCardPosition) % totalCards);
+
+            return cardNumberAfterShufflingDeck;
         }
 
         private Dictionary<long, long> InitializeCards(long totalCards)
@@ -119,6 +126,44 @@ namespace App.Tasks.Year2019.Day22
             newStack = newStack.OrderBy(c => c.Key).ToDictionary(c => c.Key, c => c.Value);
 
             return newStack;
+        }
+
+        private (BigInteger, BigInteger) Shuffle(BigInteger start, BigInteger step, long totalCards, IShuffleTechnique[] shuffleTechniques)
+        {
+            for (long i = 0; i < shuffleTechniques.Length; i++)
+            {
+                IShuffleTechnique shuffleTechnique = shuffleTechniques[i];
+
+                if (shuffleTechnique is DealIntoNewStack)
+                {
+                    start = (start - step) % totalCards;
+                    step = -step % totalCards;
+                }
+                else if (shuffleTechnique is CutCards)
+                {
+                    if (i < 0)
+                    {
+                        i += totalCards;
+                    }
+
+                    start = (start + step * i) % totalCards;
+                }
+                else
+                {
+                    step = (step * BigInteger.Pow(i, (int)totalCards - 2) % totalCards) % totalCards;
+                }
+            }
+
+            return (start, step);
+        }
+
+        private (BigInteger, BigInteger) RepeatShuffleProcess(BigInteger start, BigInteger step, long totalCards, long shuffleProcessRepetitions)
+        {
+            BigInteger lastStep = BigInteger.Pow(step, (int)shuffleProcessRepetitions) % totalCards;
+            BigInteger lastStart = (start * (1 - lastStep) * BigInteger.Pow((1 - step), (int)totalCards - 2) % totalCards)
+                % totalCards;
+
+            return (lastStart, lastStep);
         }
     }
 }
