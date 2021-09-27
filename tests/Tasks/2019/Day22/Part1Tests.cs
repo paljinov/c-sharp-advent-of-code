@@ -28,16 +28,16 @@ namespace Tests.Tasks.Year2019.Day22
         }
 
         [Theory]
-        [ClassData(typeof(CardDeck_CardPositionAfterShufflingDeck_TestData))]
+        [ClassData(typeof(ShuffleTechniques_CardPositionAfterShufflingDeck_TestData))]
         public void Solution_CardDeckExample_CardPositionAfterShufflingDeckEquals(
-            string reactions,
+            string shuffleTechniques,
             int cardPositionAfterShufflingDeck
         )
         {
-            Assert.Equal(cardPositionAfterShufflingDeck, task.Solution(reactions));
+            Assert.Equal(cardPositionAfterShufflingDeck, task.Solution(shuffleTechniques));
         }
 
-        public class CardDeck_CardPositionAfterShufflingDeck_TestData : IEnumerable<object[]>
+        public class ShuffleTechniques_CardPositionAfterShufflingDeck_TestData : IEnumerable<object[]>
         {
             public IEnumerator<object[]> GetEnumerator()
             {

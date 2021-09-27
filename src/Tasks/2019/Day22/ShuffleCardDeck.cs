@@ -128,7 +128,12 @@ namespace App.Tasks.Year2019.Day22
             return newStack;
         }
 
-        private (BigInteger, BigInteger) Shuffle(BigInteger start, BigInteger step, long totalCards, IShuffleTechnique[] shuffleTechniques)
+        private (BigInteger, BigInteger) Shuffle(
+            BigInteger start,
+            BigInteger step,
+            long totalCards,
+            IShuffleTechnique[] shuffleTechniques
+        )
         {
             for (long i = 0; i < shuffleTechniques.Length; i++)
             {
@@ -139,31 +144,39 @@ namespace App.Tasks.Year2019.Day22
                     start = (start - step) % totalCards;
                     step = -step % totalCards;
                 }
-                else if (shuffleTechnique is CutCards)
+                else if (shuffleTechnique is CutCards cutCards)
                 {
-                    if (i < 0)
-                    {
-                        i += totalCards;
-                    }
-
-                    start = (start + step * i) % totalCards;
+                    long cut = cutCards.Cut < 0 ? cutCards.Cut + totalCards : cutCards.Cut;
+                    start = (start + step * cut) % totalCards;
                 }
                 else
                 {
-                    step = (step * BigInteger.Pow(i, (int)totalCards - 2) % totalCards) % totalCards;
+                    int increment = ((DealWithIncrement)shuffleTechnique).Increment;
+                    step = (step * ModPow(increment, totalCards - 2, totalCards) % totalCards);
                 }
             }
 
             return (start, step);
         }
 
-        private (BigInteger, BigInteger) RepeatShuffleProcess(BigInteger start, BigInteger step, long totalCards, long shuffleProcessRepetitions)
+        private (BigInteger, BigInteger) RepeatShuffleProcess(
+            BigInteger start,
+            BigInteger step,
+            long totalCards,
+            long shuffleProcessRepetitions
+        )
         {
-            BigInteger lastStep = BigInteger.Pow(step, (int)shuffleProcessRepetitions) % totalCards;
-            BigInteger lastStart = (start * (1 - lastStep) * BigInteger.Pow((1 - step), (int)totalCards - 2) % totalCards)
+            BigInteger lastStep = ModPow((long)step, shuffleProcessRepetitions, totalCards);
+            BigInteger lastStart = (start * (1 - lastStep) * ModPow((long)(1 - step), totalCards - 2, totalCards))
                 % totalCards;
 
             return (lastStart, lastStep);
+        }
+
+        private BigInteger ModPow(long @base, long exponent, long modulus)
+        {
+            BigInteger result = BigInteger.ModPow(@base, exponent, modulus);
+            return result;
         }
     }
 }
