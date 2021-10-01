@@ -86,18 +86,18 @@ namespace App.Tasks.Year2019.Day24
     {
         private readonly AreaGridRepository areaGridRepository;
 
-        private readonly BiodiversityRating biodiversityRating;
+        private readonly Bugs bugs;
 
         public Part1()
         {
             areaGridRepository = new AreaGridRepository();
-            biodiversityRating = new BiodiversityRating();
+            bugs = new Bugs();
         }
 
         public int Solution(string input)
         {
             bool[,] bugGrid = areaGridRepository.GetBugGrid(input);
-            int biodiversityRatingForTheFirstLayoutThatAppearsTwice = biodiversityRating
+            int biodiversityRatingForTheFirstLayoutThatAppearsTwice = bugs
                 .CalculateBiodiversityRatingForTheFirstLayoutThatAppearsTwice(bugGrid);
 
             return biodiversityRatingForTheFirstLayoutThatAppearsTwice;

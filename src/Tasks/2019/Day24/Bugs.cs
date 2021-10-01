@@ -4,7 +4,7 @@ using System.Text;
 
 namespace App.Tasks.Year2019.Day24
 {
-    public class BiodiversityRating
+    public class Bugs
     {
         public int CalculateBiodiversityRatingForTheFirstLayoutThatAppearsTwice(bool[,] bugGrid)
         {
@@ -45,6 +45,11 @@ namespace App.Tasks.Year2019.Day24
             int biodiversityRating = CalculateBiodiversityRatingForGridLayout(bugGrid);
 
             return biodiversityRating;
+        }
+
+        public int CountBugsWhichArePresentAfter(bool[,] bugGrid, int minutes)
+        {
+            return bugGrid.Length;
         }
 
         private string FlattenBugGridLayout(bool[,] bugGrid)
