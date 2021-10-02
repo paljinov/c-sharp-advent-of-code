@@ -187,7 +187,7 @@ namespace App.Tasks.Year2019.Day24
 {
     public class Part2 : ITask<int>
     {
-        private const int MINUTES = 200;
+        private readonly int totalMinutes = 10;
 
         private readonly AreaGridRepository areaGridRepository;
 
@@ -202,7 +202,7 @@ namespace App.Tasks.Year2019.Day24
         public int Solution(string input)
         {
             bool[,] bugGrid = areaGridRepository.GetBugGrid(input);
-            int totalBugs = bugs.CountBugsWhichArePresentAfter(bugGrid, MINUTES);
+            int totalBugs = bugs.CountBugsWhichArePresentAfter(bugGrid, totalMinutes);
 
             return totalBugs;
         }
