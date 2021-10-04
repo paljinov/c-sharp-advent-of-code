@@ -187,7 +187,7 @@ namespace App.Tasks.Year2019.Day24
 {
     public class Part2 : ITask<int>
     {
-        private readonly int totalMinutes = 10;
+        private readonly int totalMinutes = 200;
 
         private readonly AreaGridRepository areaGridRepository;
 

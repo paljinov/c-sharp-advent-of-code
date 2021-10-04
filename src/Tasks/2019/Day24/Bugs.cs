@@ -62,22 +62,25 @@ namespace App.Tasks.Year2019.Day24
 
             for (int minute = 1; minute <= totalMinutes; minute++)
             {
+                // Add outer grid
+                bugGrids[-minute] = new bool[rows, columns];
+                // Add inner grid
+                bugGrids[minute] = new bool[rows, columns];
+
                 int[] levels = bugGrids.Keys.ToArray();
+                SortedDictionary<int, bool[,]> nextBugGrids = new SortedDictionary<int, bool[,]>(bugGrids);
+
                 foreach (int depth in levels)
                 {
-                    // If outer grid level doesn't exists
-                    if (!bugGrids.ContainsKey(depth - 1))
-                    {
-                        bugGrids[depth - 1] = new bool[rows, columns];
-                    }
-                    // If inner grid level doesn't exists
-                    if (!bugGrids.ContainsKey(depth + 1))
-                    {
-                        bugGrids[depth + 1] = new bool[rows, columns];
-                    }
-
-                    UpdateBugGridForLevel(bugGrids, depth);
+                    nextBugGrids[depth] = UpdateBugGridForLevel(bugGrids, depth);
                 }
+
+                // Update outer grid
+                nextBugGrids[-minute] = UpdateBugGridForLevel(bugGrids, -minute);
+                // Update inner grid
+                nextBugGrids[minute] = UpdateBugGridForLevel(bugGrids, minute);
+
+                bugGrids = nextBugGrids;
             }
 
             int presentBugs = CountPresentBugs(bugGrids);
@@ -179,7 +182,7 @@ namespace App.Tasks.Year2019.Day24
             return biodiversityRating;
         }
 
-        private void UpdateBugGridForLevel(SortedDictionary<int, bool[,]> bugGrids, int depth)
+        private bool[,] UpdateBugGridForLevel(SortedDictionary<int, bool[,]> bugGrids, int depth)
         {
             int rows = bugGrids[0].GetLength(0);
             int columns = bugGrids[0].GetLength(1);
@@ -194,6 +197,7 @@ namespace App.Tasks.Year2019.Day24
                     // Center tile is skipped
                     if (x == midX && y == midY)
                     {
+                        nextBugGridLayout[x, y] = false;
                         continue;
                     }
 
@@ -218,7 +222,7 @@ namespace App.Tasks.Year2019.Day24
                 }
             }
 
-            bugGrids[depth] = nextBugGridLayout;
+            return nextBugGridLayout;
         }
 
         private int CountAdjacentBugsForNestedGrids(
@@ -230,14 +234,18 @@ namespace App.Tasks.Year2019.Day24
         {
             int adjacentBugs = 0;
 
-            bool[,] bugGrid = bugGrids[depth];
-            bool[,] innerBugGrid = bugGrids[depth + 1];
-            bool[,] outerBugGrid = bugGrids[depth - 1];
-
-            int rows = bugGrid.GetLength(0);
-            int columns = bugGrid.GetLength(1);
+            int rows = bugGrids[depth].GetLength(0);
+            int columns = bugGrids[depth].GetLength(1);
             (int midX, int midY) = (rows / 2, columns / 2);
 
+            bool[,] bugGrid = bugGrids[depth];
+            bool[,] innerBugGrid = bugGrids.ContainsKey(depth + 1) ? bugGrids[depth + 1] : new bool[rows, columns];
+            bool[,] outerBugGrid = bugGrids.ContainsKey(depth - 1) ? bugGrids[depth - 1] : new bool[rows, columns];
+
+            if (depth == 1)
+            {
+
+            }
             // Top is inner
             if (x - 1 == midX && y == midY)
             {
