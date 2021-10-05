@@ -8,12 +8,12 @@ namespace App.Tasks.Year2019.Day24
 
         public bool[,] GetBugGrid(string input)
         {
-            string[] bugGridString = input.Split(Environment.NewLine);
+            string[] bugGridString = input.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
 
             int rows = bugGridString.Length;
             int columns = bugGridString[0].Length;
 
-            bool[,] bugGrid = new bool[columns, rows];
+            bool[,] bugGrid = new bool[rows, columns];
 
             for (int x = 0; x < rows; x++)
             {
