@@ -96,6 +96,8 @@ In your maze, how many steps does it take to get from the open tile marked AA to
 the open tile marked ZZ?
 */
 
+using System.Collections.Generic;
+
 namespace App.Tasks.Year2019.Day20
 {
     public class Part1 : ITask<int>
@@ -112,8 +114,9 @@ namespace App.Tasks.Year2019.Day20
 
         public int Solution(string input)
         {
+            Dictionary<string, PortalPair> portalPairs = mazeMapRepository.GetPortalPairs(input);
             char[,] mazeMap = mazeMapRepository.GetMazeMap(input);
-            int steps = maze.CountStepsNeededToGetFromStartTileToEndTile(mazeMap);
+            int steps = maze.CountStepsNeededToGetFromStartTileToEndTile(portalPairs, mazeMap);
 
             return steps;
         }
