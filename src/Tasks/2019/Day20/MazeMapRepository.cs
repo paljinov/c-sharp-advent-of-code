@@ -39,8 +39,11 @@ namespace App.Tasks.Year2019.Day20
                             case OPEN_PASSAGE:
                                 mazeMapDictionary[(x, y)] = MazeElement.OpenPassage;
                                 break;
-                            default:
+                            case SOLID_WALL:
                                 mazeMapDictionary[(x, y)] = MazeElement.SolidWall;
+                                break;
+                            default:
+                                mazeMapDictionary[(x, y)] = MazeElement.EmptySpace;
                                 break;
                         }
 
@@ -74,6 +77,10 @@ namespace App.Tasks.Year2019.Day20
             Dictionary<string, PortalPair> portalPairs = new Dictionary<string, PortalPair>();
 
             string[] mazeMapString = input.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+            MazeElement[,] mazeMap = GetMazeMap(input);
+
+            int rowLengthDiff = mazeMapString.Max(r => r.Length) - mazeMap.GetLength(1);
+            int columnLengthDiff = mazeMapString.Length - mazeMap.GetLength(0);
 
             for (int i = 0; i < mazeMapString.Length; i++)
             {
@@ -90,8 +97,8 @@ namespace App.Tasks.Year2019.Day20
                         if (j + 1 < mazeMapString[i].Length && char.IsLetter(mazeMapString[i][j + 1]))
                         {
                             portal += mazeMapString[i][j + 1];
-                            x = i;
-                            y = j + 2;
+                            x = i - rowLengthDiff;
+                            y = j == 0 ? 0 : j - 1 - rowLengthDiff;
 
                             if (j - 1 < 0)
                             {
@@ -102,8 +109,18 @@ namespace App.Tasks.Year2019.Day20
                         else if (i + 1 < mazeMapString.Length && char.IsLetter(mazeMapString[i + 1][j]))
                         {
                             portal += mazeMapString[i + 1][j];
-                            x = i + 2;
-                            y = j;
+                            // If open space is below portal
+                            if (i + 2 < mazeMapString.Length && mazeMapString[i + 2][j] == OPEN_PASSAGE)
+                            {
+                                x = i == 0 ? 0 : i + 2 - columnLengthDiff / 2;
+                            }
+                            // If open space is above portal
+                            else
+                            {
+                                x = i == 0 ? 0 : i - 1 - columnLengthDiff / 2;
+                            }
+
+                            y = j - rowLengthDiff;
 
                             if (i - 1 < 0)
                             {
@@ -138,26 +155,6 @@ namespace App.Tasks.Year2019.Day20
             }
 
             return portalPairs;
-        }
-
-        private HashSet<(int, int)> GetPortalLocations(string input)
-        {
-            HashSet<(int, int)> portalLocations = new HashSet<(int, int)>();
-
-            Dictionary<string, PortalPair> portalPairs = GetPortalPairs(input);
-            foreach (KeyValuePair<string, PortalPair> portalPair in portalPairs)
-            {
-                if (portalPair.Value.Inner.X != int.MinValue)
-                {
-                    portalLocations.Add((portalPair.Value.Inner.X, portalPair.Value.Inner.Y));
-                }
-                if (portalPair.Value.Outer.X != int.MinValue)
-                {
-                    portalLocations.Add((portalPair.Value.Outer.X, portalPair.Value.Outer.Y));
-                }
-            }
-
-            return portalLocations;
         }
     }
 }
