@@ -114,9 +114,10 @@ namespace App.Tasks.Year2019.Day20
 
         public int Solution(string input)
         {
-            Dictionary<string, PortalPair> portalPairs = mazeMapRepository.GetPortalPairs(input);
             MazeElement[,] mazeMap = mazeMapRepository.GetMazeMap(input);
-            int steps = maze.CountStepsNeededToGetFromStartTileToEndTile(portalPairs, mazeMap);
+            Dictionary<string, PortalPair> portalPairs = mazeMapRepository.GetPortalPairs(input);
+
+            int steps = maze.CountStepsNeededToGetFromStartTileToEndTile(mazeMap, portalPairs);
 
             return steps;
         }
