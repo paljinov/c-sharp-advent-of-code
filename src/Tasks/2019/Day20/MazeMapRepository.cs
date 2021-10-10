@@ -65,16 +65,17 @@ namespace App.Tasks.Year2019.Day20
             {
                 for (int j = 0; j < columns; j++)
                 {
-                    mazeMap[i, j] = mazeMapDictionary[(i, j)];
+                    mazeMap[i, j] = mazeMapDictionary.ContainsKey((i, j))
+                        ? mazeMapDictionary[(i, j)] : MazeElement.EmptySpace;
                 }
             }
 
             return mazeMap;
         }
 
-        public Dictionary<string, PortalPair> GetPortalPairs(string input)
+        public Dictionary<(int x, int y), string> GetPortals(string input)
         {
-            Dictionary<string, PortalPair> portalPairs = new Dictionary<string, PortalPair>();
+            Dictionary<(int x, int y), string> portals = new Dictionary<(int x, int y), string>();
 
             string[] mazeMapString = input.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
             MazeElement[,] mazeMap = GetMazeMap(input);
@@ -89,7 +90,6 @@ namespace App.Tasks.Year2019.Day20
                     if (char.IsLetter(mazeMapString[i][j]))
                     {
                         string portal = mazeMapString[i][j].ToString();
-                        bool outer = false;
                         int x;
                         int y;
 
@@ -99,11 +99,6 @@ namespace App.Tasks.Year2019.Day20
                             portal += mazeMapString[i][j + 1];
                             x = i - rowLengthDiff;
                             y = j == 0 ? 0 : j - 1 - rowLengthDiff;
-
-                            if (j - 1 < 0)
-                            {
-                                outer = true;
-                            }
                         }
                         // Bottom
                         else if (i + 1 < mazeMapString.Length && char.IsLetter(mazeMapString[i + 1][j]))
@@ -121,11 +116,6 @@ namespace App.Tasks.Year2019.Day20
                             }
 
                             y = j - rowLengthDiff;
-
-                            if (i - 1 < 0)
-                            {
-                                outer = true;
-                            }
                         }
                         // If it is not valid portal
                         else
@@ -133,28 +123,12 @@ namespace App.Tasks.Year2019.Day20
                             continue;
                         }
 
-                        if (!portalPairs.ContainsKey(portal))
-                        {
-                            portalPairs.Add(portal, new PortalPair
-                            {
-                                Inner = (int.MinValue, int.MinValue),
-                                Outer = (int.MinValue, int.MinValue)
-                            });
-                        }
-
-                        if (!outer)
-                        {
-                            portalPairs[portal].Inner = (x, y);
-                        }
-                        else
-                        {
-                            portalPairs[portal].Outer = (x, y);
-                        }
+                        portals.Add((x, y), portal);
                     }
                 }
             }
 
-            return portalPairs;
+            return portals;
         }
     }
 }
