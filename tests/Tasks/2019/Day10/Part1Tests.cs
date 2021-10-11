@@ -18,7 +18,7 @@ namespace Tests.Tasks.Year2019.Day10
         [Theory]
         [ClassData(typeof(AsteroidMap_NumberOfAsteroidsWhichCanBeDetectedFromMonitoringStationCount_TestData))]
         public void Solution_AsteroidMapExample_NumberOfAsteroidsWhichCanBeDetectedFromMonitoringStationCountEquals(
-             string asteroidMap,
+            string asteroidMap,
             long numberOfAsteroidsWhichCanBeDetectedFromMonitoringStation
         )
         {
