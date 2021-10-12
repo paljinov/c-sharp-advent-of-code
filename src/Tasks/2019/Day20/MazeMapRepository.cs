@@ -51,6 +51,17 @@ namespace App.Tasks.Year2019.Day20
                     }
                 }
 
+                if (y > 0)
+                {
+                    y--;
+                    // Remove trailing empty spaces
+                    while (mazeMapDictionary[(x, y)] == MazeElement.EmptySpace)
+                    {
+                        mazeMapDictionary.Remove((x, y));
+                        y--;
+                    }
+                }
+
                 if (mazeMapDictionary.Count > 0)
                 {
                     x++;
@@ -80,8 +91,26 @@ namespace App.Tasks.Year2019.Day20
             string[] mazeMapString = input.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
             MazeElement[,] mazeMap = GetMazeMap(input);
 
-            int rowLengthDiff = mazeMapString.Max(r => r.Length) - mazeMap.GetLength(1);
-            int columnLengthDiff = mazeMapString.Length - mazeMap.GetLength(0);
+            string firstRow = string.Empty;
+            for (int j = 0; j < mazeMapString[0].Length; j++)
+            {
+                firstRow += mazeMapString[0][j];
+            }
+
+            string firstColumn = string.Empty;
+            for (int i = 0; i < mazeMapString[0].Length; i++)
+            {
+                firstColumn += mazeMapString[i][0];
+            }
+
+            string firstColumnMazeMap = string.Empty;
+            for (int i = 0; i < mazeMap.GetLength(0); i++)
+            {
+                firstColumnMazeMap += mazeMap[i, 0];
+            }
+
+            int leftOffset = firstColumn != firstColumnMazeMap ? 2 : 0;
+            int topOffset = mazeMapString[0].Contains(firstRow) ? 2 : 0;
 
             for (int i = 0; i < mazeMapString.Length; i++)
             {
@@ -97,25 +126,26 @@ namespace App.Tasks.Year2019.Day20
                         if (j + 1 < mazeMapString[i].Length && char.IsLetter(mazeMapString[i][j + 1]))
                         {
                             portal += mazeMapString[i][j + 1];
-                            x = i - rowLengthDiff;
-                            y = j == 0 ? 0 : j - 1 - rowLengthDiff;
+                            x = i - topOffset;
+                            y = j == 0 ? 0 : j + 2 - leftOffset;
                         }
                         // Bottom
-                        else if (i + 1 < mazeMapString.Length && char.IsLetter(mazeMapString[i + 1][j]))
+                        else if (i + 1 < mazeMapString.Length && j < mazeMapString[i + 1].Length
+                            && char.IsLetter(mazeMapString[i + 1][j]))
                         {
                             portal += mazeMapString[i + 1][j];
                             // If open space is below portal
                             if (i + 2 < mazeMapString.Length && mazeMapString[i + 2][j] == OPEN_PASSAGE)
                             {
-                                x = i == 0 ? 0 : i + 2 - columnLengthDiff / 2;
+                                x = i == 0 ? 0 : i + 2 - topOffset;
                             }
                             // If open space is above portal
                             else
                             {
-                                x = i == 0 ? 0 : i - 1 - columnLengthDiff / 2;
+                                x = i == 0 ? 0 : i - 1 - topOffset;
                             }
 
-                            y = j - rowLengthDiff;
+                            y = j - leftOffset;
                         }
                         // If it is not valid portal
                         else
