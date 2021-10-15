@@ -93,6 +93,47 @@ namespace Tests.Tasks.Year2019.Day20
                     + $"{Environment.NewLine}           U   P   P               ",
                     58
                 };
+
+                yield return new object[] {
+                    + "             Z L X W       C                 "
+                    + $"{Environment.NewLine}             Z P Q B       K                 "
+                    + $"{Environment.NewLine}  ###########.#.#.#.#######.###############  "
+                    + $"{Environment.NewLine}  #...#.......#.#.......#.#.......#.#.#...#  "
+                    + $"{Environment.NewLine}  ###.#.#.#.#.#.#.#.###.#.#.#######.#.#.###  "
+                    + $"{Environment.NewLine}  #.#...#.#.#...#.#.#...#...#...#.#.......#  "
+                    + $"{Environment.NewLine}  #.###.#######.###.###.#.###.###.#.#######  "
+                    + $"{Environment.NewLine}  #...#.......#.#...#...#.............#...#  "
+                    + $"{Environment.NewLine}  #.#########.#######.#.#######.#######.###  "
+                    + $"{Environment.NewLine}  #...#.#    F       R I       Z    #.#.#.#  "
+                    + $"{Environment.NewLine}  #.###.#    D       E C       H    #.#.#.#  "
+                    + $"{Environment.NewLine}  #.#...#                           #...#.#  "
+                    + $"{Environment.NewLine}  #.###.#                           #.###.#  "
+                    + $"{Environment.NewLine}  #.#....OA                       WB..#.#..ZH"
+                    + $"{Environment.NewLine}  #.###.#                           #.#.#.#  "
+                    + $"{Environment.NewLine}CJ......#                           #.....#  "
+                    + $"{Environment.NewLine}  #######                           #######  "
+                    + $"{Environment.NewLine}  #.#....CK                         #......IC"
+                    + $"{Environment.NewLine}  #.###.#                           #.###.#  "
+                    + $"{Environment.NewLine}  #.....#                           #...#.#  "
+                    + $"{Environment.NewLine}  ###.###                           #.#.#.#  "
+                    + $"{Environment.NewLine}XF....#.#                         RF..#.#.#  "
+                    + $"{Environment.NewLine}  #####.#                           #######  "
+                    + $"{Environment.NewLine}  #......CJ                       NM..#...#  "
+                    + $"{Environment.NewLine}  ###.#.#                           #.###.#  "
+                    + $"{Environment.NewLine}RE....#.#                           #......RF"
+                    + $"{Environment.NewLine}  ###.###        X   X       L      #.#.#.#  "
+                    + $"{Environment.NewLine}  #.....#        F   Q       P      #.#.#.#  "
+                    + $"{Environment.NewLine}  ###.###########.###.#######.#########.###  "
+                    + $"{Environment.NewLine}  #.....#...#.....#.......#...#.....#.#...#  "
+                    + $"{Environment.NewLine}  #####.#.###.#######.#######.###.###.#.#.#  "
+                    + $"{Environment.NewLine}  #.......#.......#.#.#.#.#...#...#...#.#.#  "
+                    + $"{Environment.NewLine}  #####.###.#####.#.#.#.#.###.###.#.###.###  "
+                    + $"{Environment.NewLine}  #.......#.....#.#...#...............#...#  "
+                    + $"{Environment.NewLine}  #############.#.#.###.###################  "
+                    + $"{Environment.NewLine}               A O F   N                     "
+                    + $"{Environment.NewLine}               A A D   M                     ",
+                    77
+                };
             }
 
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
