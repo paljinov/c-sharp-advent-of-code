@@ -157,12 +157,12 @@ namespace App.Tasks.Year2016.Day21
             if (rotateLeft)
             {
                 rotateSteps %= rotated.Length;
-                rotated = rotated[rotateSteps..] + rotated.Substring(0, rotateSteps);
+                rotated = rotated[rotateSteps..] + rotated[..rotateSteps];
             }
             else
             {
                 rotateSteps %= rotated.Length;
-                rotated = rotated[^rotateSteps..] + rotated.Substring(0, rotated.Length - rotateSteps);
+                rotated = rotated[^rotateSteps..] + rotated[..^rotateSteps];
             }
 
             password.Clear();

@@ -4,7 +4,7 @@ namespace App.Tasks.Year2018.Day16
 {
     public class SamplesRepository
     {
-        public string[] GetIntegers(string input)
+        public string[] GetSamples(string input)
         {
             string[] samples = input.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
 

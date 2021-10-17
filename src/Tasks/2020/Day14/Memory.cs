@@ -75,7 +75,7 @@ namespace App.Tasks.Year2020.Day14
                 i--;
             }
 
-            string bitmaskPrefix = bitmask.Substring(0, bitmask.Length - binary.Length);
+            string bitmaskPrefix = bitmask[..^binary.Length];
             binary.Insert(0, bitmaskPrefix);
             binary.Replace(BITMASK_BIT_X, BITMASK_BIT_ZERO);
 
@@ -103,7 +103,7 @@ namespace App.Tasks.Year2020.Day14
                 i--;
             }
 
-            string bitmaskPrefix = bitmask.Substring(0, bitmask.Length - binary.Length);
+            string bitmaskPrefix = bitmask[..^binary.Length];
             binary.Insert(0, bitmaskPrefix);
 
             List<string> memoryAddressesPermutations = new List<string>();

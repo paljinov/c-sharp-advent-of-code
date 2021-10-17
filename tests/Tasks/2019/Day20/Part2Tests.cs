@@ -54,7 +54,7 @@ namespace Tests.Tasks.Year2019.Day20
                 };
 
                 yield return new object[] {
-                    + "             Z L X W       C                 "
+                    "             Z L X W       C                 "
                     + $"{Environment.NewLine}             Z P Q B       K                 "
                     + $"{Environment.NewLine}  ###########.#.#.#.#######.###############  "
                     + $"{Environment.NewLine}  #...#.......#.#.......#.#.......#.#.#...#  "

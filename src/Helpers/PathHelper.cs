@@ -18,7 +18,7 @@ namespace App.Helpers
             // If bin directory index is found
             if (index >= 0)
             {
-                projectRoot = baseDirectory.Substring(0, index);
+                projectRoot = baseDirectory[..index];
             }
 
             return projectRoot;
