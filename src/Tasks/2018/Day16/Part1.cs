@@ -129,9 +129,8 @@ namespace App.Tasks.Year2018.Day16
 
         public int Solution(string input)
         {
-            string[] samples = samplesRepository.GetSamples(input);
-            int samplesThatBehaveLikeThreeOrMoreOpcodes =
-                device.CountSamplesThatBehaveLikeThreeOrMoreOpcodes(samples);
+            Sample[] samples = samplesRepository.GetSamples(input);
+            int samplesThatBehaveLikeThreeOrMoreOpcodes = device.CountSamplesThatBehaveLikeThreeOrMoreOpcodes(samples);
 
             return samplesThatBehaveLikeThreeOrMoreOpcodes;
         }
