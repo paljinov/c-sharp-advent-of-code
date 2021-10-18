@@ -6,6 +6,8 @@ namespace App.Tasks.Year2018.Day16
 {
     public class SamplesRepository
     {
+        private const int REGISTERS = 4;
+
         public Sample[] GetSamples(string input)
         {
             string[] samplesString = input.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
@@ -27,14 +29,12 @@ namespace App.Tasks.Year2018.Day16
 
                 if (beforeMatch.Success)
                 {
-                    sample = new Sample { };
-
-                    sample.Before = new RegistersValues
+                    sample.Before = new int[REGISTERS]
                     {
-                        Zero = int.Parse(beforeMatch.Groups[1].Value),
-                        One = int.Parse(beforeMatch.Groups[2].Value),
-                        Two = int.Parse(beforeMatch.Groups[3].Value),
-                        Three = int.Parse(beforeMatch.Groups[4].Value)
+                        int.Parse(beforeMatch.Groups[1].Value),
+                        int.Parse(beforeMatch.Groups[2].Value),
+                        int.Parse(beforeMatch.Groups[3].Value),
+                        int.Parse(beforeMatch.Groups[4].Value)
                     };
                 }
                 else if (instructionMatch.Success)
@@ -49,15 +49,16 @@ namespace App.Tasks.Year2018.Day16
                 }
                 else if (afterMatch.Success)
                 {
-                    sample.After = new RegistersValues
+                    sample.After = new int[REGISTERS]
                     {
-                        Zero = int.Parse(afterMatch.Groups[1].Value),
-                        One = int.Parse(afterMatch.Groups[2].Value),
-                        Two = int.Parse(afterMatch.Groups[3].Value),
-                        Three = int.Parse(afterMatch.Groups[4].Value)
+                        int.Parse(afterMatch.Groups[1].Value),
+                        int.Parse(afterMatch.Groups[2].Value),
+                        int.Parse(afterMatch.Groups[3].Value),
+                        int.Parse(afterMatch.Groups[4].Value)
                     };
 
                     samples.Add(sample);
+                    sample = new Sample { };
                 }
             }
 
