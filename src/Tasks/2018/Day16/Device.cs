@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace App.Tasks.Year2018.Day16
 {
     public class Device
@@ -8,89 +10,9 @@ namespace App.Tasks.Year2018.Day16
 
             foreach (Sample sample in samples)
             {
-                int behavesLikeOpcode = 0;
+                List<Opcode> behavesLikeOpcodes = GetOpcodesSampleBehavesAs(sample);
 
-                if (AddRegister(sample))
-                {
-                    behavesLikeOpcode++;
-                }
-
-                if (AddImmediate(sample))
-                {
-                    behavesLikeOpcode++;
-                }
-
-                if (MultiplyRegister(sample))
-                {
-                    behavesLikeOpcode++;
-                }
-
-                if (MultiplyImmediate(sample))
-                {
-                    behavesLikeOpcode++;
-                }
-
-                if (BitwiseAndRegister(sample))
-                {
-                    behavesLikeOpcode++;
-                }
-
-                if (BitwiseAndImmediate(sample))
-                {
-                    behavesLikeOpcode++;
-                }
-
-                if (BitwiseOrRegister(sample))
-                {
-                    behavesLikeOpcode++;
-                }
-
-                if (BitwiseOrImmediate(sample))
-                {
-                    behavesLikeOpcode++;
-                }
-
-                if (SetRegister(sample))
-                {
-                    behavesLikeOpcode++;
-                }
-
-                if (SetImmediate(sample))
-                {
-                    behavesLikeOpcode++;
-                }
-
-                if (GreaterThanImmediateRegister(sample))
-                {
-                    behavesLikeOpcode++;
-                }
-
-                if (GreaterThanRegisterImmediate(sample))
-                {
-                    behavesLikeOpcode++;
-                }
-
-                if (GreaterThanRegisterRegister(sample))
-                {
-                    behavesLikeOpcode++;
-                }
-
-                if (EqualImmediateRegister(sample))
-                {
-                    behavesLikeOpcode++;
-                }
-
-                if (EqualRegisterImmediate(sample))
-                {
-                    behavesLikeOpcode++;
-                }
-
-                if (EqualRegisterRegister(sample))
-                {
-                    behavesLikeOpcode++;
-                }
-
-                if (behavesLikeOpcode >= 3)
+                if (behavesLikeOpcodes.Count >= 3)
                 {
                     samplesThatBehaveLikeThreeOrMoreOpcodes++;
                 }
@@ -104,6 +26,93 @@ namespace App.Tasks.Year2018.Day16
             int registerZeroValue = 0;
 
             return registerZeroValue;
+        }
+
+        private List<Opcode> GetOpcodesSampleBehavesAs(Sample sample)
+        {
+            List<Opcode> behavesLikeOpcodes = new List<Opcode>();
+
+            if (AddRegister(sample))
+            {
+                behavesLikeOpcodes.Add(Opcode.AddRegister);
+            }
+
+            if (AddImmediate(sample))
+            {
+                behavesLikeOpcodes.Add(Opcode.AddImmediate);
+            }
+
+            if (MultiplyRegister(sample))
+            {
+                behavesLikeOpcodes.Add(Opcode.MultiplyRegister);
+            }
+
+            if (MultiplyImmediate(sample))
+            {
+                behavesLikeOpcodes.Add(Opcode.MultiplyImmediate);
+            }
+
+            if (BitwiseAndRegister(sample))
+            {
+                behavesLikeOpcodes.Add(Opcode.BitwiseAndRegister);
+            }
+
+            if (BitwiseAndImmediate(sample))
+            {
+                behavesLikeOpcodes.Add(Opcode.BitwiseAndImmediate);
+            }
+
+            if (BitwiseOrRegister(sample))
+            {
+                behavesLikeOpcodes.Add(Opcode.BitwiseOrRegister);
+            }
+
+            if (BitwiseOrImmediate(sample))
+            {
+                behavesLikeOpcodes.Add(Opcode.BitwiseOrImmediate);
+            }
+
+            if (SetRegister(sample))
+            {
+                behavesLikeOpcodes.Add(Opcode.SetRegister);
+            }
+
+            if (SetImmediate(sample))
+            {
+                behavesLikeOpcodes.Add(Opcode.SetImmediate);
+            }
+
+            if (GreaterThanImmediateRegister(sample))
+            {
+                behavesLikeOpcodes.Add(Opcode.GreaterThanImmediateRegister);
+            }
+
+            if (GreaterThanRegisterImmediate(sample))
+            {
+                behavesLikeOpcodes.Add(Opcode.GreaterThanRegisterImmediate);
+            }
+
+            if (GreaterThanRegisterRegister(sample))
+            {
+                behavesLikeOpcodes.Add(Opcode.GreaterThanRegisterRegister);
+            }
+
+            if (EqualImmediateRegister(sample))
+            {
+                behavesLikeOpcodes.Add(Opcode.EqualImmediateRegister);
+            }
+
+            if (EqualRegisterImmediate(sample))
+            {
+                behavesLikeOpcodes.Add(Opcode.EqualRegisterImmediate);
+            }
+
+            if (EqualRegisterRegister(sample))
+            {
+                behavesLikeOpcodes.Add(Opcode.EqualRegisterRegister);
+            }
+
+            return behavesLikeOpcodes;
         }
 
         private bool AddRegister(Sample sample)
