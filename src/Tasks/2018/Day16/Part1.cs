@@ -117,19 +117,19 @@ namespace App.Tasks.Year2018.Day16
 {
     public class Part1 : ITask<int>
     {
-        private readonly SamplesRepository samplesRepository;
+        private readonly SamplesAndTestProgramRepository samplesAndTestProgramRepository;
 
         private readonly Device device;
 
         public Part1()
         {
-            samplesRepository = new SamplesRepository();
+            samplesAndTestProgramRepository = new SamplesAndTestProgramRepository();
             device = new Device();
         }
 
         public int Solution(string input)
         {
-            Sample[] samples = samplesRepository.GetSamples(input);
+            Sample[] samples = samplesAndTestProgramRepository.GetSamples(input);
             int samplesThatBehaveLikeThreeOrMoreOpcodes = device.CountSamplesThatBehaveLikeThreeOrMoreOpcodes(samples);
 
             return samplesThatBehaveLikeThreeOrMoreOpcodes;

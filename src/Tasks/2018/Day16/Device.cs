@@ -99,6 +99,13 @@ namespace App.Tasks.Year2018.Day16
             return samplesThatBehaveLikeThreeOrMoreOpcodes;
         }
 
+        public int CalculateRegisterZeroValueAfterExecutingTestProgram(Sample[] samples, int[][] testProgram)
+        {
+            int registerZeroValue = 0;
+
+            return registerZeroValue;
+        }
+
         private bool AddRegister(Sample sample)
         {
             int outputC = sample.Before[sample.Instruction.InputA] + sample.Before[sample.Instruction.InputB];
