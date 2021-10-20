@@ -1,9 +1,14 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace App.Tasks.Year2018.Day16
 {
     public class Device
     {
+        private const int TOTAL_OPCODES = 16;
+
+        private const int TOTAL_REGISTERS = 4;
+
         public int CountSamplesThatBehaveLikeThreeOrMoreOpcodes(Sample[] samples)
         {
             int samplesThatBehaveLikeThreeOrMoreOpcodes = 0;
@@ -23,9 +28,18 @@ namespace App.Tasks.Year2018.Day16
 
         public int CalculateRegisterZeroValueAfterExecutingTestProgram(Sample[] samples, int[][] testProgram)
         {
-            int registerZeroValue = 0;
+            Dictionary<Sample, List<Opcode>> samplesBehaveLikeOpcodes = new Dictionary<Sample, List<Opcode>>();
+            foreach (Sample sample in samples)
+            {
+                samplesBehaveLikeOpcodes[sample] = GetOpcodesSampleBehavesAs(sample);
+            }
 
-            return registerZeroValue;
+            Dictionary<int, Opcode> opcodes = new Dictionary<int, Opcode>();
+            FindOpcodes(new Dictionary<Sample, List<Opcode>>(samplesBehaveLikeOpcodes), opcodes);
+
+            int[] registers = ExecuteTestProgram(opcodes, testProgram);
+
+            return registers[0];
         }
 
         private List<Opcode> GetOpcodesSampleBehavesAs(Sample sample)
@@ -113,6 +127,108 @@ namespace App.Tasks.Year2018.Day16
             }
 
             return behavesLikeOpcodes;
+        }
+
+        private void FindOpcodes(
+            Dictionary<Sample, List<Opcode>> samplesBehaveLikeOpcodes,
+            Dictionary<int, Opcode> opcodes)
+        {
+            Opcode? foundOpcode = null;
+
+            foreach (KeyValuePair<Sample, List<Opcode>> behavesLikeOpcodes in samplesBehaveLikeOpcodes)
+            {
+                if (behavesLikeOpcodes.Value.Count == 1)
+                {
+                    foundOpcode = behavesLikeOpcodes.Value.First();
+                    opcodes[behavesLikeOpcodes.Key.Instruction.Opcode] = foundOpcode.Value;
+                    break;
+                }
+            }
+
+            if (foundOpcode.HasValue)
+            {
+                // Remove found opcode
+                foreach (KeyValuePair<Sample, List<Opcode>> behavesLikeOpcodes in samplesBehaveLikeOpcodes)
+                {
+                    if (behavesLikeOpcodes.Value.Contains(foundOpcode.Value))
+                    {
+                        behavesLikeOpcodes.Value.Remove(foundOpcode.Value);
+                    }
+                }
+
+                if (opcodes.Count < TOTAL_OPCODES)
+                {
+                    FindOpcodes(samplesBehaveLikeOpcodes, opcodes);
+                }
+            }
+        }
+
+        private int[] ExecuteTestProgram(Dictionary<int, Opcode> opcodes, int[][] testProgram)
+        {
+            int[] registers = new int[TOTAL_REGISTERS];
+
+            foreach (int[] instruction in testProgram)
+            {
+                Opcode opcode = opcodes[instruction[0]];
+                int inputA = instruction[1];
+                int inputB = instruction[2];
+                int outputC = instruction[3];
+
+                switch (opcode)
+                {
+                    case Opcode.AddRegister:
+                        registers[outputC] = registers[inputA] + registers[inputB];
+                        break;
+                    case Opcode.AddImmediate:
+                        registers[outputC] = registers[inputA] + inputB;
+                        break;
+                    case Opcode.MultiplyRegister:
+                        registers[outputC] = registers[inputA] * registers[inputB];
+                        break;
+                    case Opcode.MultiplyImmediate:
+                        registers[outputC] = registers[inputA] * inputB;
+                        break;
+                    case Opcode.BitwiseAndRegister:
+
+                        registers[outputC] = registers[inputA] & registers[inputB];
+                        break;
+                    case Opcode.BitwiseAndImmediate:
+                        registers[outputC] = registers[inputA] & inputB;
+                        break;
+                    case Opcode.BitwiseOrRegister:
+                        registers[outputC] = registers[inputA] | registers[inputB];
+                        break;
+                    case Opcode.BitwiseOrImmediate:
+                        registers[outputC] = registers[inputA] | inputB;
+                        break;
+                    case Opcode.SetRegister:
+                        registers[outputC] = registers[inputA];
+                        break;
+                    case Opcode.SetImmediate:
+                        registers[outputC] = inputA;
+                        break;
+                    case Opcode.GreaterThanImmediateRegister:
+                        registers[outputC] = inputA > registers[inputB] ? 1 : 0;
+                        break;
+                    case Opcode.GreaterThanRegisterImmediate:
+                        registers[outputC] = registers[inputA] > inputB ? 1 : 0;
+                        break;
+                    case Opcode.GreaterThanRegisterRegister:
+                        registers[outputC] = registers[inputA] > registers[inputB] ? 1 : 0;
+                        break;
+                    case Opcode.EqualImmediateRegister:
+                        registers[outputC] = inputA == registers[inputB] ? 1 : 0;
+                        break;
+                    case Opcode.EqualRegisterImmediate:
+                        registers[outputC] = registers[inputA] == inputB ? 1 : 0;
+                        break;
+                    case Opcode.EqualRegisterRegister:
+                        registers[outputC] = registers[inputA] == registers[inputB] ? 1 : 0;
+                        break;
+                }
+            }
+
+            return registers;
         }
 
         private bool AddRegister(Sample sample)

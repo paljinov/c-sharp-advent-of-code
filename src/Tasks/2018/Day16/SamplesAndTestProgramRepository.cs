@@ -6,7 +6,7 @@ namespace App.Tasks.Year2018.Day16
 {
     public class SamplesAndTestProgramRepository
     {
-        private const int REGISTERS = 4;
+        private const int TOTAL_REGISTERS = 4;
 
         public Sample[] GetSamples(string input)
         {
@@ -31,7 +31,7 @@ namespace App.Tasks.Year2018.Day16
 
                 if (beforeMatch.Success)
                 {
-                    sample.Before = new int[REGISTERS]
+                    sample.Before = new int[TOTAL_REGISTERS]
                     {
                         int.Parse(beforeMatch.Groups[1].Value),
                         int.Parse(beforeMatch.Groups[2].Value),
@@ -51,7 +51,7 @@ namespace App.Tasks.Year2018.Day16
                 }
                 else if (afterMatch.Success)
                 {
-                    sample.After = new int[REGISTERS]
+                    sample.After = new int[TOTAL_REGISTERS]
                     {
                         int.Parse(afterMatch.Groups[1].Value),
                         int.Parse(afterMatch.Groups[2].Value),
