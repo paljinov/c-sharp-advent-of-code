@@ -189,7 +189,6 @@ namespace App.Tasks.Year2018.Day16
                         registers[outputC] = registers[inputA] * inputB;
                         break;
                     case Opcode.BitwiseAndRegister:
-
                         registers[outputC] = registers[inputA] & registers[inputB];
                         break;
                     case Opcode.BitwiseAndImmediate:
