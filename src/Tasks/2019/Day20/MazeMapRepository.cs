@@ -127,22 +127,47 @@ namespace App.Tasks.Year2019.Day20
                         {
                             portal += mazeMapString[i][j + 1];
                             x = i - topOffset;
-                            y = j == 0 ? 0 : j + 2 - leftOffset;
+                            if (j <= leftOffset)
+                            {
+                                y = 0;
+                            }
+                            else if (j >= mazeMap.GetLength(1) - 1)
+                            {
+                                y = mazeMap.GetLength(1) - 1;
+                            }
+                            // If open passage is right from portal
+                            else if (j + 2 < mazeMapString.Length && mazeMapString[i][j + 2] == OPEN_PASSAGE)
+                            {
+                                y = j + 2 - leftOffset;
+                            }
+                            // If open passage is left from portal
+                            else
+                            {
+                                y = j - 1 - leftOffset;
+                            }
                         }
                         // Bottom
                         else if (i + 1 < mazeMapString.Length && j < mazeMapString[i + 1].Length
                             && char.IsLetter(mazeMapString[i + 1][j]))
                         {
                             portal += mazeMapString[i + 1][j];
-                            // If open space is below portal
-                            if (i + 2 < mazeMapString.Length && mazeMapString[i + 2][j] == OPEN_PASSAGE)
+                            if (i <= topOffset)
                             {
-                                x = i == 0 ? 0 : i + 2 - topOffset;
+                                x = 0;
                             }
-                            // If open space is above portal
+                            else if (i >= mazeMap.GetLength(0) - 1)
+                            {
+                                x = mazeMap.GetLength(0) - 1;
+                            }
+                            // If open passage is below portal
+                            else if (i + 2 < mazeMapString.Length && mazeMapString[i + 2][j] == OPEN_PASSAGE)
+                            {
+                                x = i + 2 - topOffset;
+                            }
+                            // If open passage is above portal
                             else
                             {
-                                x = i == 0 ? 0 : i - 1 - topOffset;
+                                x = i - 1 - topOffset;
                             }
 
                             y = j - leftOffset;
