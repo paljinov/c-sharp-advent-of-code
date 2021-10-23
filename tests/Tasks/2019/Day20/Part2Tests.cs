@@ -50,7 +50,7 @@ namespace Tests.Tasks.Year2019.Day20
                     + $"{Environment.NewLine}  ###########.#####  "
                     + $"{Environment.NewLine}             Z       "
                     + $"{Environment.NewLine}             Z       ",
-                    23
+                    26
                 };
 
                 yield return new object[] {

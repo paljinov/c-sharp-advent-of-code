@@ -98,7 +98,7 @@ namespace App.Tasks.Year2019.Day20
             }
 
             string firstColumn = string.Empty;
-            for (int i = 0; i < mazeMapString[0].Length; i++)
+            for (int i = 0; i < mazeMapString.Length; i++)
             {
                 firstColumn += mazeMapString[i][0];
             }

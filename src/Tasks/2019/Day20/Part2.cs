@@ -164,7 +164,7 @@ namespace App.Tasks.Year2019.Day20
             MazeElement[,] mazeMap = mazeMapRepository.GetMazeMap(input);
             Dictionary<(int x, int y), string> portals = mazeMapRepository.GetPortals(input);
 
-            int steps = maze.CountStepsNeededToGetFromStartTileToEndTile(mazeMap, portals);
+            int steps = maze.CountStepsNeededToGetFromStartTileToEndTileForRecursiveSpaces(mazeMap, portals);
 
             return steps;
         }
