@@ -84,9 +84,9 @@ namespace App.Tasks.Year2019.Day20
             return mazeMap;
         }
 
-        public Dictionary<(int x, int y), string> GetPortals(string input)
+        public Dictionary<(int X, int Y), string> GetPortals(string input)
         {
-            Dictionary<(int x, int y), string> portals = new Dictionary<(int x, int y), string>();
+            Dictionary<(int X, int Y), string> portals = new Dictionary<(int X, int Y), string>();
 
             string[] mazeMapString = input.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
             MazeElement[,] mazeMap = GetMazeMap(input);

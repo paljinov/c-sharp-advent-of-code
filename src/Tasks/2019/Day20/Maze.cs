@@ -11,7 +11,7 @@ namespace App.Tasks.Year2019.Day20
 
         public int CountStepsNeededToGetFromStartTileToEndTile(
             MazeElement[,] mazeMap,
-            Dictionary<(int x, int y), string> portals
+            Dictionary<(int X, int Y), string> portals
         )
         {
             int minSteps = int.MaxValue;
@@ -25,7 +25,7 @@ namespace App.Tasks.Year2019.Day20
 
         public int CountStepsNeededToGetFromStartTileToEndTileForRecursiveSpaces(
             MazeElement[,] mazeMap,
-            Dictionary<(int x, int y), string> portals
+            Dictionary<(int X, int Y), string> portals
         )
         {
             int minSteps = int.MaxValue;
@@ -43,7 +43,7 @@ namespace App.Tasks.Year2019.Day20
         }
 
         private ((int X, int Y) start, (int X, int Y) end) GetStartAndEndTileLocations(
-            Dictionary<(int x, int y), string> portals
+            Dictionary<(int X, int Y), string> portals
         )
         {
             (int X, int Y) start = portals.First(p => p.Value == START).Key;
@@ -54,7 +54,7 @@ namespace App.Tasks.Year2019.Day20
 
         private void FindMinimumNeededSteps(
             MazeElement[,] mazeMap,
-            Dictionary<(int x, int y), string> portals,
+            Dictionary<(int X, int Y), string> portals,
             (int X, int Y) start,
             (int X, int Y) end,
             (int X, int Y) currentLocation,
@@ -126,7 +126,7 @@ namespace App.Tasks.Year2019.Day20
 
         private void MoveToNextLocation(
             MazeElement[,] mazeMap,
-            Dictionary<(int x, int y), string> portals,
+            Dictionary<(int X, int Y), string> portals,
             (int X, int Y) start,
             (int X, int Y) end,
             (int X, int Y) nextLocation,
@@ -137,9 +137,9 @@ namespace App.Tasks.Year2019.Day20
         {
             if (portals.ContainsKey((nextLocation.X, nextLocation.Y)))
             {
-                string portal = portals.First(p => p.Key.x == nextLocation.X && p.Key.y == nextLocation.Y).Value;
+                string portal = portals.First(p => p.Key.X == nextLocation.X && p.Key.Y == nextLocation.Y).Value;
                 (int X, int Y) portalExit = portals.FirstOrDefault(
-                    p => p.Value == portal && (p.Key.x != nextLocation.X || p.Key.y != nextLocation.Y)).Key;
+                    p => p.Value == portal && (p.Key.X != nextLocation.X || p.Key.Y != nextLocation.Y)).Key;
 
                 // If portal has exit
                 if (portalExit.X > 0 || portalExit.Y > 0)
@@ -157,7 +157,7 @@ namespace App.Tasks.Year2019.Day20
 
         private void FindMinimumNeededStepsForRecursiveSpaces(
             MazeElement[,] mazeMap,
-            Dictionary<(int x, int y), string> portals,
+            Dictionary<(int X, int Y), string> portals,
             (int X, int Y, int Level) start,
             (int X, int Y, int Level) end,
             (int X, int Y, int Level) currentLocation,
@@ -236,7 +236,7 @@ namespace App.Tasks.Year2019.Day20
 
         private void MoveToNextLocationForRecursiveSpaces(
             MazeElement[,] mazeMap,
-            Dictionary<(int x, int y), string> portals,
+            Dictionary<(int X, int Y), string> portals,
             (int X, int Y, int Level) start,
             (int X, int Y, int Level) end,
             (int X, int Y, int Level) nextLocation,
@@ -248,9 +248,9 @@ namespace App.Tasks.Year2019.Day20
         {
             if (portals.ContainsKey((nextLocation.X, nextLocation.Y)))
             {
-                string portal = portals.First(p => p.Key.x == nextLocation.X && p.Key.y == nextLocation.Y).Value;
+                string portal = portals.First(p => p.Key.X == nextLocation.X && p.Key.Y == nextLocation.Y).Value;
                 (int X, int Y) portalExit = portals.FirstOrDefault(
-                    p => p.Value == portal && (p.Key.x != nextLocation.X || p.Key.y != nextLocation.Y)).Key;
+                    p => p.Value == portal && (p.Key.X != nextLocation.X || p.Key.Y != nextLocation.Y)).Key;
 
                 // If portal has exit
                 if (portalExit.X > 0 || portalExit.Y > 0)
