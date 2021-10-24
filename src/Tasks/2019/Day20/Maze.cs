@@ -16,7 +16,7 @@ namespace App.Tasks.Year2019.Day20
         {
             int minSteps = int.MaxValue;
             ((int X, int Y) start, (int X, int Y) end) = GetStartAndEndTileLocations(portals);
-            HashSet<(int X, int Y)> visitedLocations = new HashSet<(int X, int Y)>();
+            Dictionary<(int X, int Y), int> visitedLocations = new Dictionary<(int X, int Y), int>();
 
             FindMinimumNeededSteps(mazeMap, portals, start, end, start, visitedLocations, 0, ref minSteps);
 
@@ -31,14 +31,14 @@ namespace App.Tasks.Year2019.Day20
             int minSteps = int.MaxValue;
             ((int X, int Y) start, (int X, int Y) end) = GetStartAndEndTileLocations(portals);
 
-            int maxDepth = 0;
-            while (minSteps == int.MaxValue)
-            {
-                HashSet<(int X, int Y, int Level)> visitedLocations = new HashSet<(int X, int Y, int Level)>();
-                FindMinimumNeededStepsForRecursiveSpaces(mazeMap, portals, (start.X, start.Y, 0), (end.X, end.Y, 0),
-                    (start.X, start.Y, 0), visitedLocations, 0, maxDepth, ref minSteps);
-                maxDepth++;
-            }
+            // Max depth depth equals portals count excluding start and end location, minus zero and last level depth
+            int maxDepth = (portals.Count - 2) / 2 - 2;
+            Dictionary<(int X, int Y, int Level), int> visitedLocations =
+                new Dictionary<(int X, int Y, int Level), int>();
+
+            FindMinimumNeededStepsForRecursiveSpaces(mazeMap, portals, (start.X, start.Y, 0), (end.X, end.Y, 0),
+                (start.X, start.Y, 0), visitedLocations, 0, maxDepth, ref minSteps);
+
             return minSteps;
         }
 
@@ -58,7 +58,7 @@ namespace App.Tasks.Year2019.Day20
             (int X, int Y) start,
             (int X, int Y) end,
             (int X, int Y) currentLocation,
-            HashSet<(int X, int Y)> visitedLocations,
+            Dictionary<(int X, int Y), int> visitedLocations,
             int steps,
             ref int minSteps
         )
@@ -76,13 +76,14 @@ namespace App.Tasks.Year2019.Day20
                 return;
             }
 
-            // If location is already visited
-            if (visitedLocations.Contains((currentLocation.X, currentLocation.Y)))
+            // If location is already visited in equal number or less steps
+            if (visitedLocations.ContainsKey((currentLocation.X, currentLocation.Y))
+                && steps >= visitedLocations[(currentLocation.X, currentLocation.Y)])
             {
                 return;
             }
 
-            visitedLocations.Add((currentLocation.X, currentLocation.Y));
+            visitedLocations[(currentLocation.X, currentLocation.Y)] = steps;
             List<(int X, int Y)> nextLocations = new List<(int X, int Y)>();
 
             if (currentLocation.X - 1 >= 0
@@ -119,8 +120,7 @@ namespace App.Tasks.Year2019.Day20
                     return;
                 }
 
-                MoveToNextLocation(mazeMap, portals, start, end, nextLocation,
-                    new HashSet<(int X, int Y)>(visitedLocations), steps, ref minSteps);
+                MoveToNextLocation(mazeMap, portals, start, end, nextLocation, visitedLocations, steps, ref minSteps);
             }
         }
 
@@ -130,7 +130,7 @@ namespace App.Tasks.Year2019.Day20
             (int X, int Y) start,
             (int X, int Y) end,
             (int X, int Y) nextLocation,
-            HashSet<(int X, int Y)> visitedLocations,
+            Dictionary<(int X, int Y), int> visitedLocations,
             int steps,
             ref int minSteps
         )
@@ -161,7 +161,7 @@ namespace App.Tasks.Year2019.Day20
             (int X, int Y, int Level) start,
             (int X, int Y, int Level) end,
             (int X, int Y, int Level) currentLocation,
-            HashSet<(int X, int Y, int Level)> visitedLocations,
+            Dictionary<(int X, int Y, int Level), int> visitedLocations,
             int steps,
             int maxDepth,
             ref int minSteps
@@ -169,6 +169,12 @@ namespace App.Tasks.Year2019.Day20
         {
             // If better solution is already found
             if (steps >= minSteps)
+            {
+                return;
+            }
+
+            // If max depth level is exceeded
+            if (currentLocation.Level > maxDepth)
             {
                 return;
             }
@@ -181,18 +187,14 @@ namespace App.Tasks.Year2019.Day20
                 return;
             }
 
-            // If location is already visited
-            if (visitedLocations.Contains((currentLocation.X, currentLocation.Y, currentLocation.Level)))
+            // If location is already visited in equal number or less steps
+            if (visitedLocations.ContainsKey((currentLocation.X, currentLocation.Y, currentLocation.Level))
+                && steps >= visitedLocations[(currentLocation.X, currentLocation.Y, currentLocation.Level)])
             {
                 return;
             }
 
-            if (currentLocation.Level > maxDepth)
-            {
-                return;
-            }
-
-            visitedLocations.Add((currentLocation.X, currentLocation.Y, currentLocation.Level));
+            visitedLocations[(currentLocation.X, currentLocation.Y, currentLocation.Level)] = steps;
             List<(int X, int Y, int Level)> nextLocations = new List<(int X, int Y, int Level)>();
 
             if (currentLocation.X - 1 >= 0
@@ -230,7 +232,7 @@ namespace App.Tasks.Year2019.Day20
                 }
 
                 MoveToNextLocationForRecursiveSpaces(mazeMap, portals, start, end, nextLocation,
-                    new HashSet<(int X, int Y, int Level)>(visitedLocations), steps, maxDepth, ref minSteps);
+                    visitedLocations, steps, maxDepth, ref minSteps);
             }
         }
 
@@ -240,7 +242,7 @@ namespace App.Tasks.Year2019.Day20
             (int X, int Y, int Level) start,
             (int X, int Y, int Level) end,
             (int X, int Y, int Level) nextLocation,
-            HashSet<(int X, int Y, int Level)> visitedLocations,
+            Dictionary<(int X, int Y, int Level), int> visitedLocations,
             int steps,
             int maxDepth,
             ref int minSteps
@@ -266,7 +268,6 @@ namespace App.Tasks.Year2019.Day20
                     {
                         level--;
                     }
-
 
                     FindMinimumNeededStepsForRecursiveSpaces(mazeMap, portals, start, end,
                         (portalExit.X, portalExit.Y, level), visitedLocations, steps + 1, maxDepth, ref minSteps);
