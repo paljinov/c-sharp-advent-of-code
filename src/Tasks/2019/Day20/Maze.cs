@@ -69,13 +69,6 @@ namespace App.Tasks.Year2019.Day20
                 return;
             }
 
-            // If outside maze map
-            if (currentLocation.X < 0 || currentLocation.Y < 0
-                || currentLocation.X >= mazeMap.GetLength(0) || currentLocation.Y >= mazeMap.GetLength(1))
-            {
-                return;
-            }
-
             // If location is already visited in equal number or less steps
             if (visitedLocations.ContainsKey((currentLocation.X, currentLocation.Y))
                 && steps >= visitedLocations[(currentLocation.X, currentLocation.Y)])
@@ -179,14 +172,6 @@ namespace App.Tasks.Year2019.Day20
                 return;
             }
 
-            // If outside maze map
-            if (currentLocation.X < 0 || currentLocation.Y < 0
-                || currentLocation.X >= mazeMap.GetLength(0) || currentLocation.Y >= mazeMap.GetLength(1)
-                || currentLocation.Level < 0)
-            {
-                return;
-            }
-
             // If location is already visited in equal number or less steps
             if (visitedLocations.ContainsKey((currentLocation.X, currentLocation.Y, currentLocation.Level))
                 && steps >= visitedLocations[(currentLocation.X, currentLocation.Y, currentLocation.Level)])
@@ -269,8 +254,11 @@ namespace App.Tasks.Year2019.Day20
                         level--;
                     }
 
-                    FindMinimumNeededStepsForRecursiveSpaces(mazeMap, portals, start, end,
-                        (portalExit.X, portalExit.Y, level), visitedLocations, steps + 1, maxDepth, ref minSteps);
+                    if (level >= 0)
+                    {
+                        FindMinimumNeededStepsForRecursiveSpaces(mazeMap, portals, start, end,
+                            (portalExit.X, portalExit.Y, level), visitedLocations, steps + 1, maxDepth, ref minSteps);
+                    }
                 }
             }
             else
