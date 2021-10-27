@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text;
 
 namespace App.Tasks.Year2019.Day18
 {
@@ -15,10 +16,12 @@ namespace App.Tasks.Year2019.Day18
             int minSteps = int.MaxValue;
             (int X, int Y)? entrance = GetCharacterLocation(ENTRANCE, tunnelsMap);
             tunnelsMap[entrance.Value.X, entrance.Value.Y] = OPEN_PASSAGE;
+
             Dictionary<(int X, int Y), int> visitedLocations = new Dictionary<(int X, int Y), int>();
+            Dictionary<string, int> cycles = new Dictionary<string, int>();
 
             DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(
-                tunnelsMap, (entrance.Value.X, entrance.Value.Y), visitedLocations, 0, ref minSteps);
+                tunnelsMap, (entrance.Value.X, entrance.Value.Y), visitedLocations, 0, ref minSteps, cycles);
 
             return minSteps;
         }
@@ -26,18 +29,35 @@ namespace App.Tasks.Year2019.Day18
         private void DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(
             char[,] tunnelsMap,
             (int X, int Y) currentLocation,
-             Dictionary<(int X, int Y), int> visitedLocations,
+            Dictionary<(int X, int Y), int> visitedLocations,
             int steps,
-            ref int minSteps
+            ref int minSteps,
+            Dictionary<string, int> cycles
         )
         {
+            string tunnelsMapString = StringifyTunnelsMap(tunnelsMap);
+            // If this solution already exists
+            if (cycles.ContainsKey(tunnelsMapString))
+            {
+                if (cycles[tunnelsMapString] > 100)
+                {
+                    return;
+                }
+
+                cycles[tunnelsMapString]++;
+            }
+            else
+            {
+                cycles[tunnelsMapString] = 1;
+            }
+
             // If better solution is already found
             if (steps >= minSteps)
             {
                 return;
             }
 
-            // If all keys are  collected
+            // If all keys are collected
             if (AreAllKeysCollected(tunnelsMap))
             {
                 minSteps = steps;
@@ -52,6 +72,7 @@ namespace App.Tasks.Year2019.Day18
             }
 
             visitedLocations[(currentLocation.X, currentLocation.Y)] = steps;
+
             List<(int X, int Y)> nextLocations = new List<(int X, int Y)>();
 
             if (currentLocation.X - 1 >= 0
@@ -90,10 +111,10 @@ namespace App.Tasks.Year2019.Day18
                     new Dictionary<(int X, int Y), int>(visitedLocations);
 
                 // If key is found
-                if (char.IsLower(tunnelsMap[nextLocation.X, nextLocation.Y]))
+                if (char.IsLower(tunnelsMapCopy[nextLocation.X, nextLocation.Y]))
                 {
                     (int X, int Y)? door = GetCharacterLocation(
-                        char.ToUpper(tunnelsMap[nextLocation.X, nextLocation.Y]), tunnelsMapCopy);
+                        char.ToUpper(tunnelsMapCopy[nextLocation.X, nextLocation.Y]), tunnelsMapCopy);
 
                     // Take key
                     tunnelsMapCopy[nextLocation.X, nextLocation.Y] = OPEN_PASSAGE;
@@ -103,11 +124,12 @@ namespace App.Tasks.Year2019.Day18
                         tunnelsMapCopy[door.Value.X, door.Value.Y] = OPEN_PASSAGE;
                     }
 
+                    // Clean visited locations because it possible to go back through opened doors
                     visitedLocationsCopy.Clear();
                 }
 
                 DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(
-                    tunnelsMapCopy, nextLocation, visitedLocationsCopy, steps, ref minSteps);
+                    tunnelsMapCopy, nextLocation, visitedLocationsCopy, steps, ref minSteps, cycles);
             }
         }
 
@@ -141,6 +163,21 @@ namespace App.Tasks.Year2019.Day18
             }
 
             return null;
+        }
+
+        private string StringifyTunnelsMap(char[,] tunnelsMap)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            for (int i = 0; i < tunnelsMap.GetLength(0); i++)
+            {
+                for (int j = 0; j < tunnelsMap.GetLength(1); j++)
+                {
+                    sb.Append(tunnelsMap[i, j]);
+                }
+            }
+
+            return sb.ToString();
         }
     }
 }
