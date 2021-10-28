@@ -18,12 +18,16 @@ namespace App.Tasks.Year2019.Day18
             tunnelsMap[entrance.Value.X, entrance.Value.Y] = OPEN_PASSAGE;
 
             Dictionary<(int X, int Y), int> visitedLocations = new Dictionary<(int X, int Y), int>();
-            Dictionary<string, int> cycles = new Dictionary<string, int>();
 
             DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(
-                tunnelsMap, (entrance.Value.X, entrance.Value.Y), visitedLocations, 0, ref minSteps, cycles);
+                tunnelsMap, (entrance.Value.X, entrance.Value.Y), visitedLocations, 0, ref minSteps);
 
             return minSteps;
+        }
+
+        public int CountFewestStepsNecessaryToCollectAllOfTheKeysForUpdatedMap(char[,] tunnelsMap)
+        {
+            return tunnelsMap.Length;
         }
 
         private void DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(
@@ -31,26 +35,9 @@ namespace App.Tasks.Year2019.Day18
             (int X, int Y) currentLocation,
             Dictionary<(int X, int Y), int> visitedLocations,
             int steps,
-            ref int minSteps,
-            Dictionary<string, int> cycles
+            ref int minSteps
         )
         {
-            string tunnelsMapString = StringifyTunnelsMap(tunnelsMap);
-            // If this solution already exists
-            if (cycles.ContainsKey(tunnelsMapString))
-            {
-                if (cycles[tunnelsMapString] > 100)
-                {
-                    return;
-                }
-
-                cycles[tunnelsMapString]++;
-            }
-            else
-            {
-                cycles[tunnelsMapString] = 1;
-            }
-
             // If better solution is already found
             if (steps >= minSteps)
             {
@@ -129,7 +116,7 @@ namespace App.Tasks.Year2019.Day18
                 }
 
                 DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(
-                    tunnelsMapCopy, nextLocation, visitedLocationsCopy, steps, ref minSteps, cycles);
+                    tunnelsMapCopy, nextLocation, visitedLocationsCopy, steps, ref minSteps);
             }
         }
 
@@ -163,21 +150,6 @@ namespace App.Tasks.Year2019.Day18
             }
 
             return null;
-        }
-
-        private string StringifyTunnelsMap(char[,] tunnelsMap)
-        {
-            StringBuilder sb = new StringBuilder();
-
-            for (int i = 0; i < tunnelsMap.GetLength(0); i++)
-            {
-                for (int j = 0; j < tunnelsMap.GetLength(1); j++)
-                {
-                    sb.Append(tunnelsMap[i, j]);
-                }
-            }
-
-            return sb.ToString();
         }
     }
 }
