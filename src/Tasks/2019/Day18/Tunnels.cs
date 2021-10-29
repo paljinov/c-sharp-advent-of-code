@@ -17,12 +17,11 @@ namespace App.Tasks.Year2019.Day18
             (int X, int Y)? entrance = GetCharacterLocation(ENTRANCE, tunnelsMap);
             tunnelsMap[entrance.Value.X, entrance.Value.Y] = OPEN_PASSAGE;
 
-            Dictionary<(int X, int Y), int> visitedLocations = new Dictionary<(int X, int Y), int>();
-            HashSet<string> statesCache = new HashSet<string>();
+            Dictionary<string, int> statesCache = new Dictionary<string, int>();
             string tunnelMapState = StringifyTunnelMapState(tunnelsMap);
 
             DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(tunnelsMap, (entrance.Value.X, entrance.Value.Y),
-                visitedLocations, statesCache, tunnelMapState, 0, ref minSteps);
+                statesCache, tunnelMapState, 0, ref minSteps);
 
             return minSteps;
         }
@@ -35,8 +34,7 @@ namespace App.Tasks.Year2019.Day18
         private void DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(
             char[,] tunnelsMap,
             (int X, int Y) currentLocation,
-            Dictionary<(int X, int Y), int> visitedLocations,
-            HashSet<string> statesCache,
+            Dictionary<string, int> statesCache,
             string tunnelMapState,
             int steps,
             ref int minSteps
@@ -48,25 +46,16 @@ namespace App.Tasks.Year2019.Day18
                 return;
             }
 
-            // If location is already visited in equal number or less steps
-            if (visitedLocations.ContainsKey((currentLocation.X, currentLocation.Y))
-                && steps >= visitedLocations[(currentLocation.X, currentLocation.Y)])
+            string state = StringifyState(tunnelMapState, currentLocation);
+            // If this tunnel map state and current position already exists in equal or less number of steps
+            if (statesCache.ContainsKey(state) && steps >= statesCache[state])
             {
                 return;
             }
-            visitedLocations[(currentLocation.X, currentLocation.Y)] = steps;
-
-            // If state repeats
-            string state = StringifyState(tunnelMapState, currentLocation, steps);
-            // If this state already exists
-            if (statesCache.Contains(state))
-            {
-                return;
-            }
-            statesCache.Add(state);
+            statesCache[state] = steps;
 
             // If all keys are collected
-            if (AreAllKeysCollected(tunnelsMap))
+            if (string.IsNullOrEmpty(tunnelMapState))
             {
                 minSteps = steps;
                 return;
@@ -106,8 +95,6 @@ namespace App.Tasks.Year2019.Day18
             foreach ((int X, int Y) nextLocation in nextLocations)
             {
                 char[,] tunnelsMapCopy = tunnelsMap.Clone() as char[,];
-                Dictionary<(int X, int Y), int> visitedLocationsCopy =
-                    new Dictionary<(int X, int Y), int>(visitedLocations);
                 string tunnelMapStateCopy = new string(tunnelMapState);
 
                 // If key is found
@@ -127,30 +114,11 @@ namespace App.Tasks.Year2019.Day18
                             tunnelsMapCopy[door.Value.X, door.Value.Y].ToString(), string.Empty);
                         tunnelsMapCopy[door.Value.X, door.Value.Y] = OPEN_PASSAGE;
                     }
-
-                    // Clean visited locations because it possible to go back through opened doors
-                    visitedLocationsCopy.Clear();
                 }
 
-                DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(tunnelsMapCopy, nextLocation, visitedLocationsCopy,
+                DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(tunnelsMapCopy, nextLocation,
                     statesCache, tunnelMapStateCopy, steps, ref minSteps);
             }
-        }
-
-        private bool AreAllKeysCollected(char[,] tunnelsMap)
-        {
-            for (int i = 0; i < tunnelsMap.GetLength(0); i++)
-            {
-                for (int j = 0; j < tunnelsMap.GetLength(1); j++)
-                {
-                    if (char.IsLower(tunnelsMap[i, j]))
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            return true;
         }
 
         private (int X, int Y)? GetCharacterLocation(char entrance, char[,] tunnelsMap)
@@ -187,9 +155,9 @@ namespace App.Tasks.Year2019.Day18
             return sb.ToString();
         }
 
-        private string StringifyState(string tunnelMapState, (int X, int Y) currentLocation, int steps)
+        private string StringifyState(string tunnelMapState, (int X, int Y) currentLocation)
         {
-            return $"({tunnelMapState}),({currentLocation.X},{currentLocation.Y}),({steps})";
+            return $"({tunnelMapState}),({currentLocation.X},{currentLocation.Y})";
         }
     }
 }
