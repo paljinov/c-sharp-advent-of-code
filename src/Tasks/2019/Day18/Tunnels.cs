@@ -18,9 +18,11 @@ namespace App.Tasks.Year2019.Day18
             tunnelsMap[entrance.Value.X, entrance.Value.Y] = OPEN_PASSAGE;
 
             Dictionary<(int X, int Y), int> visitedLocations = new Dictionary<(int X, int Y), int>();
+            HashSet<string> statesCache = new HashSet<string>();
+            string tunnelMapState = StringifyTunnelMapState(tunnelsMap);
 
-            DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(
-                tunnelsMap, (entrance.Value.X, entrance.Value.Y), visitedLocations, 0, ref minSteps);
+            DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(tunnelsMap, (entrance.Value.X, entrance.Value.Y),
+                visitedLocations, statesCache, tunnelMapState, 0, ref minSteps);
 
             return minSteps;
         }
@@ -34,6 +36,8 @@ namespace App.Tasks.Year2019.Day18
             char[,] tunnelsMap,
             (int X, int Y) currentLocation,
             Dictionary<(int X, int Y), int> visitedLocations,
+            HashSet<string> statesCache,
+            string tunnelMapState,
             int steps,
             ref int minSteps
         )
@@ -44,21 +48,29 @@ namespace App.Tasks.Year2019.Day18
                 return;
             }
 
-            // If all keys are collected
-            if (AreAllKeysCollected(tunnelsMap))
-            {
-                minSteps = steps;
-                return;
-            }
-
             // If location is already visited in equal number or less steps
             if (visitedLocations.ContainsKey((currentLocation.X, currentLocation.Y))
                 && steps >= visitedLocations[(currentLocation.X, currentLocation.Y)])
             {
                 return;
             }
-
             visitedLocations[(currentLocation.X, currentLocation.Y)] = steps;
+
+            // If state repeats
+            string state = StringifyState(tunnelMapState, currentLocation, steps);
+            // If this state already exists
+            if (statesCache.Contains(state))
+            {
+                return;
+            }
+            statesCache.Add(state);
+
+            // If all keys are collected
+            if (AreAllKeysCollected(tunnelsMap))
+            {
+                minSteps = steps;
+                return;
+            }
 
             List<(int X, int Y)> nextLocations = new List<(int X, int Y)>();
 
@@ -96,6 +108,7 @@ namespace App.Tasks.Year2019.Day18
                 char[,] tunnelsMapCopy = tunnelsMap.Clone() as char[,];
                 Dictionary<(int X, int Y), int> visitedLocationsCopy =
                     new Dictionary<(int X, int Y), int>(visitedLocations);
+                string tunnelMapStateCopy = new string(tunnelMapState);
 
                 // If key is found
                 if (char.IsLower(tunnelsMapCopy[nextLocation.X, nextLocation.Y]))
@@ -104,10 +117,14 @@ namespace App.Tasks.Year2019.Day18
                         char.ToUpper(tunnelsMapCopy[nextLocation.X, nextLocation.Y]), tunnelsMapCopy);
 
                     // Take key
+                    tunnelMapStateCopy = tunnelMapStateCopy.Replace(
+                        tunnelsMapCopy[nextLocation.X, nextLocation.Y].ToString(), string.Empty);
                     tunnelsMapCopy[nextLocation.X, nextLocation.Y] = OPEN_PASSAGE;
                     if (door.HasValue)
                     {
                         // Unlock door
+                        tunnelMapStateCopy = tunnelMapStateCopy.Replace(
+                            tunnelsMapCopy[door.Value.X, door.Value.Y].ToString(), string.Empty);
                         tunnelsMapCopy[door.Value.X, door.Value.Y] = OPEN_PASSAGE;
                     }
 
@@ -115,8 +132,8 @@ namespace App.Tasks.Year2019.Day18
                     visitedLocationsCopy.Clear();
                 }
 
-                DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(
-                    tunnelsMapCopy, nextLocation, visitedLocationsCopy, steps, ref minSteps);
+                DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(tunnelsMapCopy, nextLocation, visitedLocationsCopy,
+                    statesCache, tunnelMapStateCopy, steps, ref minSteps);
             }
         }
 
@@ -150,6 +167,29 @@ namespace App.Tasks.Year2019.Day18
             }
 
             return null;
+        }
+
+        private string StringifyTunnelMapState(char[,] tunnelsMap)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            for (int i = 0; i < tunnelsMap.GetLength(0); i++)
+            {
+                for (int j = 0; j < tunnelsMap.GetLength(1); j++)
+                {
+                    if (char.IsLetter(tunnelsMap[i, j]))
+                    {
+                        sb.Append(tunnelsMap[i, j]);
+                    }
+                }
+            }
+
+            return sb.ToString();
+        }
+
+        private string StringifyState(string tunnelMapState, (int X, int Y) currentLocation, int steps)
+        {
+            return $"({tunnelMapState}),({currentLocation.X},{currentLocation.Y}),({steps})";
         }
     }
 }
