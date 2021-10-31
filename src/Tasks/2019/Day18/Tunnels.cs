@@ -26,7 +26,7 @@ namespace App.Tasks.Year2019.Day18
             return minSteps;
         }
 
-        public int CountFewestStepsNecessaryToCollectAllOfTheKeysForUpdatedMap(char[,] tunnelsMap)
+        public int CountFewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobots(char[,] tunnelsMap)
         {
             return tunnelsMap.Length;
         }
@@ -94,12 +94,12 @@ namespace App.Tasks.Year2019.Day18
             steps++;
             foreach ((int X, int Y) nextLocation in nextLocations)
             {
-                char[,] tunnelsMapCopy = tunnelsMap.Clone() as char[,];
-                string tunnelMapStateCopy = new string(tunnelMapState);
-
                 // If key is found
-                if (char.IsLower(tunnelsMapCopy[nextLocation.X, nextLocation.Y]))
+                if (char.IsLower(tunnelsMap[nextLocation.X, nextLocation.Y]))
                 {
+                    char[,] tunnelsMapCopy = tunnelsMap.Clone() as char[,];
+                    string tunnelMapStateCopy = new string(tunnelMapState);
+
                     (int X, int Y)? door = GetCharacterLocation(
                         char.ToUpper(tunnelsMapCopy[nextLocation.X, nextLocation.Y]), tunnelsMapCopy);
 
@@ -114,10 +114,16 @@ namespace App.Tasks.Year2019.Day18
                             tunnelsMapCopy[door.Value.X, door.Value.Y].ToString(), string.Empty);
                         tunnelsMapCopy[door.Value.X, door.Value.Y] = OPEN_PASSAGE;
                     }
-                }
 
-                DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(tunnelsMapCopy, nextLocation,
-                    statesCache, tunnelMapStateCopy, steps, ref minSteps);
+                    DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(tunnelsMapCopy, nextLocation,
+                        statesCache, tunnelMapStateCopy, steps, ref minSteps);
+                }
+                // If next location is open passage
+                else
+                {
+                    DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(tunnelsMap, nextLocation,
+                        statesCache, tunnelMapState, steps, ref minSteps);
+                }
             }
         }
 

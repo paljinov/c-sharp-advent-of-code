@@ -16,16 +16,16 @@ namespace Tests.Tasks.Year2019.Day18
         }
 
         [Theory]
-        [ClassData(typeof(TunnelsMap_FewestStepsNecessaryToCollectAllOfTheKeysForUpdatedMapCount_TestData))]
-        public void Solution_TunnelsMapExample_FewestStepsNecessaryToCollectAllOfTheKeysForUpdatedMapCountEquals(
+        [ClassData(typeof(TunnelsMap_FewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobotsCount_TestData))]
+        public void Solution_TunnelsMapExample_FewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobotsCountEquals(
             string tunnelsMap,
-            int fewestStepsNecessaryToCollectAllOfTheKeysForUpdatedMap
+            int fewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobots
         )
         {
-            Assert.Equal(fewestStepsNecessaryToCollectAllOfTheKeysForUpdatedMap, task.Solution(tunnelsMap));
+            Assert.Equal(fewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobots, task.Solution(tunnelsMap));
         }
 
-        public class TunnelsMap_FewestStepsNecessaryToCollectAllOfTheKeysForUpdatedMapCount_TestData
+        public class TunnelsMap_FewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobotsCount_TestData
             : IEnumerable<object[]>
         {
             public IEnumerator<object[]> GetEnumerator()

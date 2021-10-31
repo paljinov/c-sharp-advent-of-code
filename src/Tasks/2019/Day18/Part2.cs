@@ -174,7 +174,7 @@ namespace App.Tasks.Year2019.Day18
         public int Solution(string input)
         {
             char[,] tunnelsMap = tunnelsMapRepository.GetTunnelsMap(input);
-            int steps = tunnels.CountFewestStepsNecessaryToCollectAllOfTheKeysForUpdatedMap(tunnelsMap);
+            int steps = tunnels.CountFewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobots(tunnelsMap);
 
             return steps;
         }
