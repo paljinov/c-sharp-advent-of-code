@@ -104,14 +104,14 @@ namespace App.Tasks.Year2019.Day18
                         char.ToUpper(tunnelsMapCopy[nextLocation.X, nextLocation.Y]), tunnelsMapCopy);
 
                     // Take key
-                    tunnelMapStateCopy = tunnelMapStateCopy.Replace(
-                        tunnelsMapCopy[nextLocation.X, nextLocation.Y].ToString(), string.Empty);
+                    tunnelMapStateCopy = tunnelMapStateCopy.Remove(
+                        tunnelMapStateCopy.IndexOf(tunnelsMapCopy[nextLocation.X, nextLocation.Y]), 1);
                     tunnelsMapCopy[nextLocation.X, nextLocation.Y] = OPEN_PASSAGE;
                     if (door.HasValue)
                     {
                         // Unlock door
-                        tunnelMapStateCopy = tunnelMapStateCopy.Replace(
-                            tunnelsMapCopy[door.Value.X, door.Value.Y].ToString(), string.Empty);
+                        tunnelMapStateCopy = tunnelMapStateCopy.Remove(
+                            tunnelMapStateCopy.IndexOf(tunnelsMapCopy[door.Value.X, door.Value.Y]), 1);
                         tunnelsMapCopy[door.Value.X, door.Value.Y] = OPEN_PASSAGE;
                     }
 
@@ -145,7 +145,7 @@ namespace App.Tasks.Year2019.Day18
 
         private string StringifyTunnelMapState(char[,] tunnelsMap)
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder state = new StringBuilder();
 
             for (int i = 0; i < tunnelsMap.GetLength(0); i++)
             {
@@ -153,12 +153,12 @@ namespace App.Tasks.Year2019.Day18
                 {
                     if (char.IsLetter(tunnelsMap[i, j]))
                     {
-                        sb.Append(tunnelsMap[i, j]);
+                        state.Append(tunnelsMap[i, j]);
                     }
                 }
             }
 
-            return sb.ToString();
+            return state.ToString();
         }
 
         private string StringifyState(string tunnelMapState, (int X, int Y) currentLocation)
