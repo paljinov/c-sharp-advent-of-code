@@ -11,6 +11,18 @@ namespace App.Tasks.Year2019.Day18
 
         private const char STONE_WALL = '#';
 
+        private readonly char[,] findArea = new char[,] {
+            { OPEN_PASSAGE, OPEN_PASSAGE, OPEN_PASSAGE },
+            { OPEN_PASSAGE, ENTRANCE, OPEN_PASSAGE },
+            { OPEN_PASSAGE, OPEN_PASSAGE, OPEN_PASSAGE }
+        };
+
+        private readonly char[,] updateArea = new char[,] {
+            { ENTRANCE, STONE_WALL, ENTRANCE },
+            { STONE_WALL, STONE_WALL, STONE_WALL },
+            { ENTRANCE, STONE_WALL, ENTRANCE }
+        };
+
         public int CountStepsOfShortestPathThatCollectsAllOfTheKeys(char[,] tunnelsMap)
         {
             int minSteps = int.MaxValue;
@@ -28,6 +40,7 @@ namespace App.Tasks.Year2019.Day18
 
         public int CountFewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobots(char[,] tunnelsMap)
         {
+            tunnelsMap = UpdateMap(tunnelsMap);
             return tunnelsMap.Length;
         }
 
@@ -164,6 +177,58 @@ namespace App.Tasks.Year2019.Day18
         private string StringifyState(string tunnelMapState, (int X, int Y) currentLocation)
         {
             return $"({tunnelMapState}),({currentLocation.X},{currentLocation.Y})";
+        }
+
+        private char[,] UpdateMap(char[,] tunnelsMap)
+        {
+            bool isAreaFound = true;
+
+            for (int i = 0; i < tunnelsMap.GetLength(0); i++)
+            {
+                for (int j = 0; j < tunnelsMap.GetLength(1); j++)
+                {
+                    isAreaFound = true;
+                    // Find area
+                    for (int k = 0; k < findArea.GetLength(0); k++)
+                    {
+                        for (int h = 0; h < findArea.GetLength(1); h++)
+                        {
+                            if (i + k < tunnelsMap.GetLength(0) && j + h < tunnelsMap.GetLength(1)
+                                && tunnelsMap[i + k, j + h] != findArea[k, h])
+                            {
+                                isAreaFound = false;
+                                break;
+                            }
+                        }
+
+                        if (!isAreaFound)
+                        {
+                            break;
+                        }
+                    }
+
+                    // Update map
+                    if (isAreaFound)
+                    {
+                        for (int k = 0; k < updateArea.GetLength(0); k++)
+                        {
+                            for (int h = 0; h < updateArea.GetLength(1); h++)
+                            {
+                                tunnelsMap[i + k, j + h] = updateArea[k, h];
+                            }
+                        }
+
+                        break;
+                    }
+                }
+
+                if (isAreaFound)
+                {
+                    break;
+                }
+            }
+
+            return tunnelsMap;
         }
     }
 }
