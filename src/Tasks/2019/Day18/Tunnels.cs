@@ -85,35 +85,7 @@ namespace App.Tasks.Year2019.Day18
                 return;
             }
 
-            List<(int X, int Y)> nextLocations = new List<(int X, int Y)>();
-
-            if (currentLocation.X - 1 >= 0
-                && tunnelsMap[currentLocation.X - 1, currentLocation.Y] != STONE_WALL
-                && !char.IsUpper(tunnelsMap[currentLocation.X - 1, currentLocation.Y]))
-            {
-                nextLocations.Add((currentLocation.X - 1, currentLocation.Y));
-            }
-
-            if (currentLocation.X + 1 < tunnelsMap.GetLength(0)
-                && tunnelsMap[currentLocation.X + 1, currentLocation.Y] != STONE_WALL
-                && !char.IsUpper(tunnelsMap[currentLocation.X + 1, currentLocation.Y]))
-            {
-                nextLocations.Add((currentLocation.X + 1, currentLocation.Y));
-            }
-
-            if (currentLocation.Y - 1 >= 0
-                && tunnelsMap[currentLocation.X, currentLocation.Y - 1] != STONE_WALL
-                && !char.IsUpper(tunnelsMap[currentLocation.X, currentLocation.Y - 1]))
-            {
-                nextLocations.Add((currentLocation.X, currentLocation.Y - 1));
-            }
-
-            if (currentLocation.Y + 1 < tunnelsMap.GetLength(1)
-                && tunnelsMap[currentLocation.X, currentLocation.Y + 1] != STONE_WALL
-                && !char.IsUpper(tunnelsMap[currentLocation.X, currentLocation.Y + 1]))
-            {
-                nextLocations.Add((currentLocation.X, currentLocation.Y + 1));
-            }
+            List<(int X, int Y)> nextLocations = GetNextStepLocations(tunnelsMap, currentLocation);
 
             steps++;
             foreach ((int X, int Y) nextLocation in nextLocations)
@@ -188,35 +160,7 @@ namespace App.Tasks.Year2019.Day18
             for (int i = 0; i < robotsLocations.Count; i++)
             {
                 (int X, int Y) currentLocation = robotsLocations[i];
-                List<(int X, int Y)> nextLocations = new List<(int X, int Y)>();
-
-                if (currentLocation.X - 1 >= 0
-                    && tunnelsMap[currentLocation.X - 1, currentLocation.Y] != STONE_WALL
-                    && !char.IsUpper(tunnelsMap[currentLocation.X - 1, currentLocation.Y]))
-                {
-                    nextLocations.Add((currentLocation.X - 1, currentLocation.Y));
-                }
-
-                if (currentLocation.X + 1 < tunnelsMap.GetLength(0)
-                    && tunnelsMap[currentLocation.X + 1, currentLocation.Y] != STONE_WALL
-                    && !char.IsUpper(tunnelsMap[currentLocation.X + 1, currentLocation.Y]))
-                {
-                    nextLocations.Add((currentLocation.X + 1, currentLocation.Y));
-                }
-
-                if (currentLocation.Y - 1 >= 0
-                    && tunnelsMap[currentLocation.X, currentLocation.Y - 1] != STONE_WALL
-                    && !char.IsUpper(tunnelsMap[currentLocation.X, currentLocation.Y - 1]))
-                {
-                    nextLocations.Add((currentLocation.X, currentLocation.Y - 1));
-                }
-
-                if (currentLocation.Y + 1 < tunnelsMap.GetLength(1)
-                    && tunnelsMap[currentLocation.X, currentLocation.Y + 1] != STONE_WALL
-                    && !char.IsUpper(tunnelsMap[currentLocation.X, currentLocation.Y + 1]))
-                {
-                    nextLocations.Add((currentLocation.X, currentLocation.Y + 1));
-                }
+                List<(int X, int Y)> nextLocations = GetNextStepLocations(tunnelsMap, currentLocation);
 
                 foreach ((int X, int Y) nextLocation in nextLocations)
                 {
@@ -259,6 +203,41 @@ namespace App.Tasks.Year2019.Day18
                     }
                 }
             }
+        }
+
+        private List<(int X, int Y)> GetNextStepLocations(char[,] tunnelsMap, (int X, int Y) currentLocation)
+        {
+            List<(int X, int Y)> nextLocations = new List<(int X, int Y)>();
+
+            if (currentLocation.X - 1 >= 0
+                && tunnelsMap[currentLocation.X - 1, currentLocation.Y] != STONE_WALL
+                && !char.IsUpper(tunnelsMap[currentLocation.X - 1, currentLocation.Y]))
+            {
+                nextLocations.Add((currentLocation.X - 1, currentLocation.Y));
+            }
+
+            if (currentLocation.X + 1 < tunnelsMap.GetLength(0)
+                && tunnelsMap[currentLocation.X + 1, currentLocation.Y] != STONE_WALL
+                && !char.IsUpper(tunnelsMap[currentLocation.X + 1, currentLocation.Y]))
+            {
+                nextLocations.Add((currentLocation.X + 1, currentLocation.Y));
+            }
+
+            if (currentLocation.Y - 1 >= 0
+                && tunnelsMap[currentLocation.X, currentLocation.Y - 1] != STONE_WALL
+                && !char.IsUpper(tunnelsMap[currentLocation.X, currentLocation.Y - 1]))
+            {
+                nextLocations.Add((currentLocation.X, currentLocation.Y - 1));
+            }
+
+            if (currentLocation.Y + 1 < tunnelsMap.GetLength(1)
+                && tunnelsMap[currentLocation.X, currentLocation.Y + 1] != STONE_WALL
+                && !char.IsUpper(tunnelsMap[currentLocation.X, currentLocation.Y + 1]))
+            {
+                nextLocations.Add((currentLocation.X, currentLocation.Y + 1));
+            }
+
+            return nextLocations;
         }
 
         private List<(int X, int Y)> GetCharacterLocations(char character, char[,] tunnelsMap)
