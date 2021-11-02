@@ -44,7 +44,7 @@ namespace App.Tasks.Year2019.Day18
             int minSteps = int.MaxValue;
 
             tunnelsMap = UpdateMap(tunnelsMap);
-            List<(int X, int Y)> robotsLocations = GetCharacterLocations(ENTRANCE, tunnelsMap);
+            (int X, int Y)[] robotsLocations = GetCharacterLocations(ENTRANCE, tunnelsMap).ToArray();
 
             Dictionary<string, int> statesCache = new Dictionary<string, int>();
             string tunnelMapState = StringifyTunnelMapState(tunnelsMap);
@@ -127,7 +127,7 @@ namespace App.Tasks.Year2019.Day18
 
         private void DoCountFewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobots(
             char[,] tunnelsMap,
-            List<(int X, int Y)> robotsLocations,
+            (int X, int Y)[] robotsLocations,
             Dictionary<string, int> statesCache,
             string tunnelMapState,
             int steps,
@@ -157,17 +157,14 @@ namespace App.Tasks.Year2019.Day18
 
             steps++;
             // Iterate by each robot
-            for (int i = 0; i < robotsLocations.Count; i++)
+            for (int i = 0; i < robotsLocations.Length; i++)
             {
                 (int X, int Y) currentLocation = robotsLocations[i];
                 List<(int X, int Y)> nextLocations = GetNextStepLocations(tunnelsMap, currentLocation);
 
                 foreach ((int X, int Y) nextLocation in nextLocations)
                 {
-                    List<(int X, int Y)> robotsLocationsCopy = new List<(int X, int Y)>(robotsLocations)
-                    {
-                        [i] = (nextLocation.X, nextLocation.Y)
-                    };
+                    robotsLocations[i] = (nextLocation.X, nextLocation.Y);
 
                     // If key is found
                     if (char.IsLower(tunnelsMap[nextLocation.X, nextLocation.Y]))
@@ -193,15 +190,17 @@ namespace App.Tasks.Year2019.Day18
                         }
 
                         DoCountFewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobots(
-                            tunnelsMapCopy, robotsLocationsCopy, statesCache, tunnelMapStateCopy, steps, ref minSteps);
+                            tunnelsMapCopy, robotsLocations, statesCache, tunnelMapStateCopy, steps, ref minSteps);
                     }
                     // If next location is open passage
                     else
                     {
                         DoCountFewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobots(
-                            tunnelsMap, robotsLocationsCopy, statesCache, tunnelMapState, steps, ref minSteps);
+                            tunnelsMap, robotsLocations, statesCache, tunnelMapState, steps, ref minSteps);
                     }
                 }
+
+                robotsLocations[i] = currentLocation;
             }
         }
 
@@ -283,7 +282,7 @@ namespace App.Tasks.Year2019.Day18
 
         private string StringifyStateForRemoteControlledRobots(
             string tunnelMapState,
-            List<(int X, int Y)> robotsLocations
+            (int X, int Y)[] robotsLocations
        )
         {
             StringBuilder state = new StringBuilder($"({tunnelMapState})");
