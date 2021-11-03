@@ -90,38 +90,17 @@ namespace App.Tasks.Year2019.Day18
             steps++;
             foreach ((int X, int Y) nextLocation in nextLocations)
             {
-                // If key is found
-                if (char.IsLower(tunnelsMap[nextLocation.X, nextLocation.Y]))
-                {
-                    char[,] tunnelsMapCopy = tunnelsMap.Clone() as char[,];
-                    string tunnelMapStateCopy = new string(tunnelMapState);
+                (char[,] TunnelsMap, string TunnelMapState) tunnelMapForNextStep =
+                    GetTunnelMapForNextStep(tunnelsMap, nextLocation, tunnelMapState);
 
-                    List<(int X, int Y)> doors = GetCharacterLocations(
-                        char.ToUpper(tunnelsMapCopy[nextLocation.X, nextLocation.Y]), tunnelsMapCopy);
-
-                    // Take key
-                    tunnelMapStateCopy = tunnelMapStateCopy.Remove(
-                        tunnelMapStateCopy.IndexOf(tunnelsMapCopy[nextLocation.X, nextLocation.Y]), 1);
-                    tunnelsMapCopy[nextLocation.X, nextLocation.Y] = OPEN_PASSAGE;
-                    if (doors.Count > 0)
-                    {
-                        (int X, int Y) door = doors.First();
-
-                        // Unlock door
-                        tunnelMapStateCopy = tunnelMapStateCopy.Remove(
-                            tunnelMapStateCopy.IndexOf(tunnelsMapCopy[door.X, door.Y]), 1);
-                        tunnelsMapCopy[door.X, door.Y] = OPEN_PASSAGE;
-                    }
-
-                    DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(
-                        tunnelsMapCopy, nextLocation, statesCache, tunnelMapStateCopy, steps, ref minSteps);
-                }
-                // If next location is open passage
-                else
-                {
-                    DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(
-                        tunnelsMap, nextLocation, statesCache, tunnelMapState, steps, ref minSteps);
-                }
+                DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(
+                    tunnelMapForNextStep.TunnelsMap,
+                    nextLocation,
+                    statesCache,
+                    tunnelMapForNextStep.TunnelMapState,
+                    steps,
+                    ref minSteps
+                );
             }
         }
 
@@ -166,38 +145,17 @@ namespace App.Tasks.Year2019.Day18
                 {
                     robotsLocations[i] = (nextLocation.X, nextLocation.Y);
 
-                    // If key is found
-                    if (char.IsLower(tunnelsMap[nextLocation.X, nextLocation.Y]))
-                    {
-                        char[,] tunnelsMapCopy = tunnelsMap.Clone() as char[,];
-                        string tunnelMapStateCopy = new string(tunnelMapState);
+                    (char[,] TunnelsMap, string TunnelMapState) tunnelMapForNextStep =
+                        GetTunnelMapForNextStep(tunnelsMap, nextLocation, tunnelMapState);
 
-                        List<(int X, int Y)> doors = GetCharacterLocations(
-                            char.ToUpper(tunnelsMapCopy[nextLocation.X, nextLocation.Y]), tunnelsMapCopy);
-
-                        // Take key
-                        tunnelMapStateCopy = tunnelMapStateCopy.Remove(
-                            tunnelMapStateCopy.IndexOf(tunnelsMapCopy[nextLocation.X, nextLocation.Y]), 1);
-                        tunnelsMapCopy[nextLocation.X, nextLocation.Y] = OPEN_PASSAGE;
-                        if (doors.Count > 0)
-                        {
-                            (int X, int Y) door = doors.First();
-
-                            // Unlock door
-                            tunnelMapStateCopy = tunnelMapStateCopy.Remove(
-                                tunnelMapStateCopy.IndexOf(tunnelsMapCopy[door.X, door.Y]), 1);
-                            tunnelsMapCopy[door.X, door.Y] = OPEN_PASSAGE;
-                        }
-
-                        DoCountFewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobots(
-                            tunnelsMapCopy, robotsLocations, statesCache, tunnelMapStateCopy, steps, ref minSteps);
-                    }
-                    // If next location is open passage
-                    else
-                    {
-                        DoCountFewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobots(
-                            tunnelsMap, robotsLocations, statesCache, tunnelMapState, steps, ref minSteps);
-                    }
+                    DoCountFewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobots(
+                        tunnelMapForNextStep.TunnelsMap,
+                        robotsLocations,
+                        statesCache,
+                        tunnelMapForNextStep.TunnelMapState,
+                        steps,
+                        ref minSteps
+                    );
                 }
 
                 robotsLocations[i] = currentLocation;
@@ -237,6 +195,44 @@ namespace App.Tasks.Year2019.Day18
             }
 
             return nextLocations;
+        }
+
+        private (char[,] TunnelsMap, string TunnelMapState) GetTunnelMapForNextStep(
+            char[,] tunnelsMap,
+            (int X, int Y) nextLocation,
+            string tunnelMapState
+        )
+        {
+            // If key is found
+            if (char.IsLower(tunnelsMap[nextLocation.X, nextLocation.Y]))
+            {
+                char[,] tunnelsMapCopy = tunnelsMap.Clone() as char[,];
+                string tunnelMapStateCopy = new string(tunnelMapState);
+
+                List<(int X, int Y)> doors = GetCharacterLocations(
+                    char.ToUpper(tunnelsMapCopy[nextLocation.X, nextLocation.Y]), tunnelsMapCopy);
+
+                // Take key
+                tunnelMapStateCopy = tunnelMapStateCopy.Remove(
+                    tunnelMapStateCopy.IndexOf(tunnelsMapCopy[nextLocation.X, nextLocation.Y]), 1);
+                tunnelsMapCopy[nextLocation.X, nextLocation.Y] = OPEN_PASSAGE;
+                if (doors.Count > 0)
+                {
+                    (int X, int Y) door = doors.First();
+
+                    // Unlock door
+                    tunnelMapStateCopy = tunnelMapStateCopy.Remove(
+                        tunnelMapStateCopy.IndexOf(tunnelsMapCopy[door.X, door.Y]), 1);
+                    tunnelsMapCopy[door.X, door.Y] = OPEN_PASSAGE;
+                }
+
+                return (tunnelsMapCopy, tunnelMapStateCopy);
+            }
+            // If next location is open passage
+            else
+            {
+                return (tunnelsMap, tunnelMapState);
+            }
         }
 
         private List<(int X, int Y)> GetCharacterLocations(char character, char[,] tunnelsMap)
