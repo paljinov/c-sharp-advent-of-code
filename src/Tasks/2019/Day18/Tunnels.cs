@@ -31,10 +31,10 @@ namespace App.Tasks.Year2019.Day18
             tunnelsMap[entrance.X, entrance.Y] = OPEN_PASSAGE;
 
             Dictionary<string, int> statesCache = new Dictionary<string, int>();
-            string tunnelMapState = StringifyTunnelMapState(tunnelsMap);
+            string keys = GetKeys(tunnelsMap);
 
             DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(
-                tunnelsMap, (entrance.X, entrance.Y), statesCache, tunnelMapState, 0, ref minSteps);
+                tunnelsMap, (entrance.X, entrance.Y), statesCache, keys, 0, ref minSteps);
 
             return minSteps;
         }
@@ -47,10 +47,10 @@ namespace App.Tasks.Year2019.Day18
             (int X, int Y)[] robotsLocations = GetCharacterLocations(ENTRANCE, tunnelsMap).ToArray();
 
             Dictionary<string, int> statesCache = new Dictionary<string, int>();
-            string tunnelMapState = StringifyTunnelMapState(tunnelsMap);
+            string keys = GetKeys(tunnelsMap);
 
             DoCountFewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobots(
-                tunnelsMap, robotsLocations, statesCache, tunnelMapState, 0, ref minSteps);
+                tunnelsMap, robotsLocations, statesCache, keys, 0, ref minSteps);
 
             return minSteps;
         }
@@ -59,7 +59,7 @@ namespace App.Tasks.Year2019.Day18
             char[,] tunnelsMap,
             (int X, int Y) currentLocation,
             Dictionary<string, int> statesCache,
-            string tunnelMapState,
+            string remainingKeys,
             int steps,
             ref int minSteps
         )
@@ -70,7 +70,7 @@ namespace App.Tasks.Year2019.Day18
                 return;
             }
 
-            string state = StringifyState(tunnelMapState, currentLocation);
+            string state = StringifyState(remainingKeys, currentLocation);
             // If this tunnel map state and current position already exists in equal or less number of steps
             if (statesCache.ContainsKey(state) && steps >= statesCache[state])
             {
@@ -79,7 +79,7 @@ namespace App.Tasks.Year2019.Day18
             statesCache[state] = steps;
 
             // If all keys are collected
-            if (string.IsNullOrEmpty(tunnelMapState))
+            if (string.IsNullOrEmpty(remainingKeys))
             {
                 minSteps = steps;
                 return;
@@ -90,14 +90,14 @@ namespace App.Tasks.Year2019.Day18
             steps++;
             foreach ((int X, int Y) nextLocation in nextLocations)
             {
-                (char[,] TunnelsMap, string TunnelMapState) tunnelMapForNextStep =
-                    GetTunnelMapForNextStep(tunnelsMap, nextLocation, tunnelMapState);
+                (char[,] TunnelsMap, string RemainingKeys) nextStepTunnelMap =
+                    GetNextStepTunnelMap(tunnelsMap, nextLocation, remainingKeys);
 
                 DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(
-                    tunnelMapForNextStep.TunnelsMap,
+                    nextStepTunnelMap.TunnelsMap,
                     nextLocation,
                     statesCache,
-                    tunnelMapForNextStep.TunnelMapState,
+                    nextStepTunnelMap.RemainingKeys,
                     steps,
                     ref minSteps
                 );
@@ -108,7 +108,7 @@ namespace App.Tasks.Year2019.Day18
             char[,] tunnelsMap,
             (int X, int Y)[] robotsLocations,
             Dictionary<string, int> statesCache,
-            string tunnelMapState,
+            string remainingKeys,
             int steps,
             ref int minSteps
         )
@@ -119,7 +119,7 @@ namespace App.Tasks.Year2019.Day18
                 return;
             }
 
-            string state = StringifyStateForRemoteControlledRobots(tunnelMapState, robotsLocations);
+            string state = StringifyStateForRemoteControlledRobots(remainingKeys, robotsLocations);
             // If this tunnel map state and current position already exists in equal or less number of steps
             if (statesCache.ContainsKey(state) && steps >= statesCache[state])
             {
@@ -128,7 +128,7 @@ namespace App.Tasks.Year2019.Day18
             statesCache[state] = steps;
 
             // If all keys are collected
-            if (string.IsNullOrEmpty(tunnelMapState))
+            if (string.IsNullOrEmpty(remainingKeys))
             {
                 minSteps = steps;
                 return;
@@ -145,14 +145,14 @@ namespace App.Tasks.Year2019.Day18
                 {
                     robotsLocations[i] = (nextLocation.X, nextLocation.Y);
 
-                    (char[,] TunnelsMap, string TunnelMapState) tunnelMapForNextStep =
-                        GetTunnelMapForNextStep(tunnelsMap, nextLocation, tunnelMapState);
+                    (char[,] TunnelsMap, string RemainingKeys) nextStepTunnelMap =
+                        GetNextStepTunnelMap(tunnelsMap, nextLocation, remainingKeys);
 
                     DoCountFewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobots(
-                        tunnelMapForNextStep.TunnelsMap,
+                        nextStepTunnelMap.TunnelsMap,
                         robotsLocations,
                         statesCache,
-                        tunnelMapForNextStep.TunnelMapState,
+                        nextStepTunnelMap.RemainingKeys,
                         steps,
                         ref minSteps
                     );
@@ -197,41 +197,37 @@ namespace App.Tasks.Year2019.Day18
             return nextLocations;
         }
 
-        private (char[,] TunnelsMap, string TunnelMapState) GetTunnelMapForNextStep(
+        private (char[,] TunnelsMap, string RemainingKeys) GetNextStepTunnelMap(
             char[,] tunnelsMap,
             (int X, int Y) nextLocation,
-            string tunnelMapState
+            string remainingKeys
         )
         {
             // If key is found
             if (char.IsLower(tunnelsMap[nextLocation.X, nextLocation.Y]))
             {
                 char[,] tunnelsMapCopy = tunnelsMap.Clone() as char[,];
-                string tunnelMapStateCopy = new string(tunnelMapState);
+                string remainingKeysCopy = new string(remainingKeys);
 
                 List<(int X, int Y)> doors = GetCharacterLocations(
                     char.ToUpper(tunnelsMapCopy[nextLocation.X, nextLocation.Y]), tunnelsMapCopy);
 
                 // Take key
-                tunnelMapStateCopy = tunnelMapStateCopy.Remove(
-                    tunnelMapStateCopy.IndexOf(tunnelsMapCopy[nextLocation.X, nextLocation.Y]), 1);
+                remainingKeysCopy = remainingKeysCopy.Remove(
+                    remainingKeysCopy.IndexOf(tunnelsMapCopy[nextLocation.X, nextLocation.Y]), 1);
                 tunnelsMapCopy[nextLocation.X, nextLocation.Y] = OPEN_PASSAGE;
                 if (doors.Count > 0)
                 {
                     (int X, int Y) door = doors.First();
-
-                    // Unlock door
-                    tunnelMapStateCopy = tunnelMapStateCopy.Remove(
-                        tunnelMapStateCopy.IndexOf(tunnelsMapCopy[door.X, door.Y]), 1);
                     tunnelsMapCopy[door.X, door.Y] = OPEN_PASSAGE;
                 }
 
-                return (tunnelsMapCopy, tunnelMapStateCopy);
+                return (tunnelsMapCopy, remainingKeysCopy);
             }
             // If next location is open passage
             else
             {
-                return (tunnelsMap, tunnelMapState);
+                return (tunnelsMap, remainingKeys);
             }
         }
 
@@ -253,35 +249,35 @@ namespace App.Tasks.Year2019.Day18
             return characterLocations;
         }
 
-        private string StringifyTunnelMapState(char[,] tunnelsMap)
+        private string GetKeys(char[,] tunnelsMap)
         {
-            StringBuilder tunnelMapState = new StringBuilder();
+            StringBuilder keys = new StringBuilder();
 
             for (int i = 0; i < tunnelsMap.GetLength(0); i++)
             {
                 for (int j = 0; j < tunnelsMap.GetLength(1); j++)
                 {
-                    if (char.IsLetter(tunnelsMap[i, j]))
+                    if (char.IsLower(tunnelsMap[i, j]))
                     {
-                        tunnelMapState.Append(tunnelsMap[i, j]);
+                        keys.Append(tunnelsMap[i, j]);
                     }
                 }
             }
 
-            return tunnelMapState.ToString();
+            return keys.ToString();
         }
 
-        private string StringifyState(string tunnelMapState, (int X, int Y) currentLocation)
+        private string StringifyState(string remainingKeys, (int X, int Y) currentLocation)
         {
-            return $"({tunnelMapState}),({currentLocation.X},{currentLocation.Y})";
+            return $"({remainingKeys}),({currentLocation.X},{currentLocation.Y})";
         }
 
         private string StringifyStateForRemoteControlledRobots(
-            string tunnelMapState,
+            string remainingKeys,
             (int X, int Y)[] robotsLocations
        )
         {
-            StringBuilder state = new StringBuilder($"({tunnelMapState})");
+            StringBuilder state = new StringBuilder($"({remainingKeys})");
             foreach ((int X, int Y) currentLocation in robotsLocations)
             {
                 state.Append($",({currentLocation.X},{currentLocation.Y})");
