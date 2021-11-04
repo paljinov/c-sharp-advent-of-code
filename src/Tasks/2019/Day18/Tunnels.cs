@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace App.Tasks.Year2019.Day18
 {
@@ -49,8 +50,13 @@ namespace App.Tasks.Year2019.Day18
             Dictionary<string, int> statesCache = new Dictionary<string, int>();
             string keys = GetKeys(tunnelsMap);
 
-            DoCountFewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobots(
-                tunnelsMap, robotsLocations, statesCache, keys, 0, ref minSteps);
+            Thread thread = new Thread(
+                new ThreadStart(() => DoCountFewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobots(
+                    tunnelsMap, robotsLocations, statesCache, keys, 0, ref minSteps)),
+                int.MaxValue
+            );
+            thread.Start();
+            thread.Join();
 
             return minSteps;
         }
