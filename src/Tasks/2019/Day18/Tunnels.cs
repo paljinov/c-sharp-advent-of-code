@@ -35,7 +35,7 @@ namespace App.Tasks.Year2019.Day18
             string keys = GetKeys(tunnelsMap);
 
             DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(
-                tunnelsMap, (entrance.X, entrance.Y), statesCache, keys, 0, ref minSteps);
+                tunnelsMap, (entrance.X, entrance.Y), null, statesCache, keys, 0, ref minSteps);
 
             return minSteps;
         }
@@ -52,7 +52,7 @@ namespace App.Tasks.Year2019.Day18
 
             Thread thread = new Thread(
                 new ThreadStart(() => DoCountFewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobots(
-                    tunnelsMap, robotsLocations, statesCache, keys, 0, ref minSteps)),
+                    tunnelsMap, robotsLocations, null, statesCache, keys, 0, ref minSteps)),
                 int.MaxValue
             );
             thread.Start();
@@ -64,6 +64,7 @@ namespace App.Tasks.Year2019.Day18
         private void DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(
             char[,] tunnelsMap,
             (int X, int Y) currentLocation,
+            Direction? currentDirection,
             Dictionary<string, int> statesCache,
             string remainingKeys,
             int steps,
@@ -91,17 +92,19 @@ namespace App.Tasks.Year2019.Day18
                 return;
             }
 
-            List<(int X, int Y)> nextLocations = GetNextStepLocations(tunnelsMap, currentLocation);
+            Dictionary<(int X, int Y), Direction> nextLocations =
+                   GetNextStepLocations(tunnelsMap, currentLocation, currentDirection);
 
             steps++;
-            foreach ((int X, int Y) nextLocation in nextLocations)
+            foreach (KeyValuePair<(int X, int Y), Direction> nextLocation in nextLocations)
             {
-                (char[,] TunnelsMap, string RemainingKeys) nextStepTunnelMap =
-                    GetNextStepTunnelMap(tunnelsMap, nextLocation, remainingKeys);
+                (char[,] TunnelsMap, string RemainingKeys, Direction? Direction) nextStepTunnelMap =
+                    GetNextStepTunnelMap(tunnelsMap, nextLocation.Key, nextLocation.Value, remainingKeys);
 
                 DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(
                     nextStepTunnelMap.TunnelsMap,
-                    nextLocation,
+                    nextLocation.Key,
+                    nextStepTunnelMap.Direction,
                     statesCache,
                     nextStepTunnelMap.RemainingKeys,
                     steps,
@@ -113,6 +116,7 @@ namespace App.Tasks.Year2019.Day18
         private void DoCountFewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobots(
             char[,] tunnelsMap,
             (int X, int Y)[] robotsLocations,
+            Direction? currentDirection,
             Dictionary<string, int> statesCache,
             string remainingKeys,
             int steps,
@@ -145,18 +149,20 @@ namespace App.Tasks.Year2019.Day18
             for (int i = 0; i < robotsLocations.Length; i++)
             {
                 (int X, int Y) currentLocation = robotsLocations[i];
-                List<(int X, int Y)> nextLocations = GetNextStepLocations(tunnelsMap, currentLocation);
+                Dictionary<(int X, int Y), Direction> nextLocations =
+                    GetNextStepLocations(tunnelsMap, currentLocation, currentDirection);
 
-                foreach ((int X, int Y) nextLocation in nextLocations)
+                foreach (KeyValuePair<(int X, int Y), Direction> nextLocation in nextLocations)
                 {
-                    robotsLocations[i] = (nextLocation.X, nextLocation.Y);
+                    robotsLocations[i] = (nextLocation.Key.X, nextLocation.Key.Y);
 
-                    (char[,] TunnelsMap, string RemainingKeys) nextStepTunnelMap =
-                        GetNextStepTunnelMap(tunnelsMap, nextLocation, remainingKeys);
+                    (char[,] TunnelsMap, string RemainingKeys, Direction? Direction) nextStepTunnelMap =
+                        GetNextStepTunnelMap(tunnelsMap, nextLocation.Key, nextLocation.Value, remainingKeys);
 
                     DoCountFewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobots(
                         nextStepTunnelMap.TunnelsMap,
                         robotsLocations,
+                        nextStepTunnelMap.Direction,
                         statesCache,
                         nextStepTunnelMap.RemainingKeys,
                         steps,
@@ -168,44 +174,63 @@ namespace App.Tasks.Year2019.Day18
             }
         }
 
-        private List<(int X, int Y)> GetNextStepLocations(char[,] tunnelsMap, (int X, int Y) currentLocation)
+        /// <summary>
+        ///  Get next step locations.
+        /// </summary>
+        /// <param name="X"></param>
+        /// <param name="Y)"></param>
+        /// <param name="tunnelsMap"></param>
+        /// <param name="X"></param>
+        /// <param name="currentLocation"></param>
+        /// <param name="currentDirection">Current direction is used to stop going backwards</param>
+        /// <returns></returns>
+        private Dictionary<(int X, int Y), Direction> GetNextStepLocations(
+            char[,] tunnelsMap,
+            (int X, int Y) currentLocation,
+            Direction? currentDirection
+        )
         {
-            List<(int X, int Y)> nextLocations = new List<(int X, int Y)>();
+            Dictionary<(int X, int Y), Direction> nextLocations = new Dictionary<(int X, int Y), Direction>();
 
-            if (currentLocation.X - 1 >= 0
+            if ((!currentDirection.HasValue || currentDirection.Value != Direction.Up)
+                && currentLocation.X - 1 >= 0
                 && tunnelsMap[currentLocation.X - 1, currentLocation.Y] != STONE_WALL
                 && !char.IsUpper(tunnelsMap[currentLocation.X - 1, currentLocation.Y]))
             {
-                nextLocations.Add((currentLocation.X - 1, currentLocation.Y));
+                nextLocations.Add((currentLocation.X - 1, currentLocation.Y), Direction.Down);
             }
 
-            if (currentLocation.X + 1 < tunnelsMap.GetLength(0)
+            if ((!currentDirection.HasValue || currentDirection.Value != Direction.Down)
+                && currentLocation.X + 1 < tunnelsMap.GetLength(0)
                 && tunnelsMap[currentLocation.X + 1, currentLocation.Y] != STONE_WALL
                 && !char.IsUpper(tunnelsMap[currentLocation.X + 1, currentLocation.Y]))
             {
-                nextLocations.Add((currentLocation.X + 1, currentLocation.Y));
+                nextLocations.Add((currentLocation.X + 1, currentLocation.Y), Direction.Up);
             }
 
-            if (currentLocation.Y - 1 >= 0
+            if ((!currentDirection.HasValue || currentDirection.Value != Direction.Right)
+                && currentLocation.Y - 1 >= 0
                 && tunnelsMap[currentLocation.X, currentLocation.Y - 1] != STONE_WALL
                 && !char.IsUpper(tunnelsMap[currentLocation.X, currentLocation.Y - 1]))
             {
-                nextLocations.Add((currentLocation.X, currentLocation.Y - 1));
+                nextLocations.Add((currentLocation.X, currentLocation.Y - 1), Direction.Left);
             }
 
-            if (currentLocation.Y + 1 < tunnelsMap.GetLength(1)
+            if ((!currentDirection.HasValue || currentDirection.Value != Direction.Left)
+                && currentLocation.Y + 1 < tunnelsMap.GetLength(1)
                 && tunnelsMap[currentLocation.X, currentLocation.Y + 1] != STONE_WALL
                 && !char.IsUpper(tunnelsMap[currentLocation.X, currentLocation.Y + 1]))
             {
-                nextLocations.Add((currentLocation.X, currentLocation.Y + 1));
+                nextLocations.Add((currentLocation.X, currentLocation.Y + 1), Direction.Right);
             }
 
             return nextLocations;
         }
 
-        private (char[,] TunnelsMap, string RemainingKeys) GetNextStepTunnelMap(
+        private (char[,] TunnelsMap, string RemainingKeys, Direction? Direction) GetNextStepTunnelMap(
             char[,] tunnelsMap,
             (int X, int Y) nextLocation,
+            Direction nextDirection,
             string remainingKeys
         )
         {
@@ -228,12 +253,12 @@ namespace App.Tasks.Year2019.Day18
                     tunnelsMapCopy[door.X, door.Y] = OPEN_PASSAGE;
                 }
 
-                return (tunnelsMapCopy, remainingKeysCopy);
+                return (tunnelsMapCopy, remainingKeysCopy, null);
             }
             // If next location is open passage
             else
             {
-                return (tunnelsMap, remainingKeys);
+                return (tunnelsMap, remainingKeys, nextDirection);
             }
         }
 
