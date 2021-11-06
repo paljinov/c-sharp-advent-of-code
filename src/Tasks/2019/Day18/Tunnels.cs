@@ -46,13 +46,14 @@ namespace App.Tasks.Year2019.Day18
 
             tunnelsMap = UpdateMap(tunnelsMap);
             (int X, int Y)[] robotsLocations = GetCharacterLocations(ENTRANCE, tunnelsMap).ToArray();
+            Direction?[] currentDirections = new Direction?[robotsLocations.Length];
 
             Dictionary<string, int> statesCache = new Dictionary<string, int>();
             string keys = GetKeys(tunnelsMap);
 
             Thread thread = new Thread(
                 new ThreadStart(() => DoCountFewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobots(
-                    tunnelsMap, robotsLocations, null, statesCache, keys, 0, ref minSteps)),
+                    tunnelsMap, robotsLocations, currentDirections, statesCache, keys, 0, ref minSteps)),
                 int.MaxValue
             );
             thread.Start();
@@ -116,7 +117,7 @@ namespace App.Tasks.Year2019.Day18
         private void DoCountFewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobots(
             char[,] tunnelsMap,
             (int X, int Y)[] robotsLocations,
-            Direction? currentDirection,
+            Direction?[] robotsDirections,
             Dictionary<string, int> statesCache,
             string remainingKeys,
             int steps,
@@ -149,20 +150,23 @@ namespace App.Tasks.Year2019.Day18
             for (int i = 0; i < robotsLocations.Length; i++)
             {
                 (int X, int Y) currentLocation = robotsLocations[i];
+                Direction? currentDirection = robotsDirections[i];
+
                 Dictionary<(int X, int Y), Direction> nextLocations =
                     GetNextStepLocations(tunnelsMap, currentLocation, currentDirection);
 
                 foreach (KeyValuePair<(int X, int Y), Direction> nextLocation in nextLocations)
                 {
-                    robotsLocations[i] = (nextLocation.Key.X, nextLocation.Key.Y);
-
                     (char[,] TunnelsMap, string RemainingKeys, Direction? Direction) nextStepTunnelMap =
                         GetNextStepTunnelMap(tunnelsMap, nextLocation.Key, nextLocation.Value, remainingKeys);
+
+                    robotsLocations[i] = (nextLocation.Key.X, nextLocation.Key.Y);
+                    robotsDirections[i] = nextStepTunnelMap.Direction;
 
                     DoCountFewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobots(
                         nextStepTunnelMap.TunnelsMap,
                         robotsLocations,
-                        nextStepTunnelMap.Direction,
+                        robotsDirections,
                         statesCache,
                         nextStepTunnelMap.RemainingKeys,
                         steps,
@@ -171,6 +175,7 @@ namespace App.Tasks.Year2019.Day18
                 }
 
                 robotsLocations[i] = currentLocation;
+                robotsDirections[i] = currentDirection;
             }
         }
 
