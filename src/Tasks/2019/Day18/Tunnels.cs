@@ -44,14 +44,107 @@ namespace App.Tasks.Year2019.Day18
             int minSteps = int.MaxValue;
 
             tunnelsMap = UpdateMap(tunnelsMap);
-            (int X, int Y)[] robotsLocations = GetCharacterLocations(ENTRANCE, tunnelsMap).ToArray();
-            Direction?[] currentDirections = new Direction?[robotsLocations.Length];
 
-            Dictionary<string, int> statesCache = new Dictionary<string, int>();
-            string keys = GetKeys(tunnelsMap);
+            char[][,] quadrantTunnelsMaps = new char[4][,];
+            char[,] quadrantMap = new char[tunnelsMap.GetLength(0) / 2, tunnelsMap.GetLength(1) / 2];
 
-            DoCountFewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobots(
-                tunnelsMap, robotsLocations, currentDirections, statesCache, keys, 0, ref minSteps);
+            int rowMid = tunnelsMap.GetLength(0) / 2;
+            int columnMid = tunnelsMap.GetLength(1) / 2;
+
+            int k = 0;
+            int h = 0;
+            for (int i = 0; i < rowMid; i++)
+            {
+                for (int j = 0; j < columnMid; j++)
+                {
+                    quadrantMap[k, h] = tunnelsMap[i, j];
+                    h++;
+                }
+                h = 0;
+                k++;
+
+                quadrantTunnelsMaps[0] = quadrantMap;
+            }
+
+            k = 0;
+            h = 0;
+            for (int i = 0; i < rowMid; i++)
+            {
+                for (int j = columnMid + 1; j < tunnelsMap.GetLength(1); j++)
+                {
+                    quadrantMap[k, h] = tunnelsMap[i, j];
+                    h++;
+                }
+                h = 0;
+                k++;
+
+                quadrantTunnelsMaps[1] = quadrantMap;
+            }
+
+            k = 0;
+            h = 0;
+            for (int i = rowMid + 1; i < tunnelsMap.GetLength(0); i++)
+            {
+                for (int j = 0; j < columnMid; j++)
+                {
+                    quadrantMap[k, h] = tunnelsMap[i, j];
+                    h++;
+                }
+                h = 0;
+                k++;
+
+                quadrantTunnelsMaps[2] = quadrantMap;
+            }
+
+            k = 0;
+            h = 0;
+            for (int i = rowMid + 1; i < tunnelsMap.GetLength(0); i++)
+            {
+                for (int j = columnMid + 1; j < tunnelsMap.GetLength(1); j++)
+                {
+                    quadrantMap[k, h] = tunnelsMap[i, j];
+                    h++;
+                }
+                h = 0;
+                k++;
+
+                quadrantTunnelsMaps[3] = quadrantMap;
+            }
+
+            int[] quadrantMinSteps = new int[4];
+            int quadrant = 0;
+            foreach (char[,] quadrantTunnelsMap in quadrantTunnelsMaps)
+            {
+                for (int i = 0; i < quadrantTunnelsMap.GetLength(0); i++)
+                {
+                    for (int j = 0; j < quadrantTunnelsMap.GetLength(0); j++)
+                    {
+                        if (char.IsUpper(quadrantTunnelsMap[i, j]))
+                        {
+                            List<(int X, int Y)> foundKeys = GetCharacterLocations(
+                                char.ToLower(quadrantTunnelsMap[i, j]), quadrantTunnelsMap);
+
+                            if (foundKeys.Count == 0)
+                            {
+                                quadrantTunnelsMap[i, j] = OPEN_PASSAGE;
+                            }
+                        }
+                    }
+                }
+
+                quadrantMinSteps[quadrant] = int.MaxValue;
+                (int X, int Y) entrance = GetCharacterLocations(ENTRANCE, quadrantTunnelsMap).First();
+                tunnelsMap[entrance.X, entrance.Y] = OPEN_PASSAGE;
+
+                Dictionary<string, int> statesCache = new Dictionary<string, int>();
+                string keys = GetKeys(quadrantTunnelsMap);
+
+                DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(
+                    quadrantTunnelsMap, (entrance.X, entrance.Y), null, statesCache, keys, 0, ref quadrantMinSteps[quadrant]);
+
+                minSteps += quadrantMinSteps[quadrant];
+                quadrant++;
+            }
 
             return minSteps;
         }
