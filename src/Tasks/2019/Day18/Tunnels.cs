@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -41,109 +42,17 @@ namespace App.Tasks.Year2019.Day18
 
         public int CountFewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobots(char[,] tunnelsMap)
         {
-            int minSteps = int.MaxValue;
+            int minSteps = 0;
 
             tunnelsMap = UpdateMap(tunnelsMap);
 
-            char[][,] quadrantTunnelsMaps = new char[4][,];
-            char[,] quadrantMap = new char[tunnelsMap.GetLength(0) / 2, tunnelsMap.GetLength(1) / 2];
-
-            int rowMid = tunnelsMap.GetLength(0) / 2;
-            int columnMid = tunnelsMap.GetLength(1) / 2;
-
-            int k = 0;
-            int h = 0;
-            for (int i = 0; i < rowMid; i++)
+            IEnumerable<Quadrant> quadrants = Enum.GetValues(typeof(Quadrant)).Cast<Quadrant>();
+            foreach (Quadrant quadrant in quadrants)
             {
-                for (int j = 0; j < columnMid; j++)
-                {
-                    quadrantMap[k, h] = tunnelsMap[i, j];
-                    h++;
-                }
-                h = 0;
-                k++;
-
-                quadrantTunnelsMaps[0] = quadrantMap;
-            }
-
-            k = 0;
-            h = 0;
-            for (int i = 0; i < rowMid; i++)
-            {
-                for (int j = columnMid + 1; j < tunnelsMap.GetLength(1); j++)
-                {
-                    quadrantMap[k, h] = tunnelsMap[i, j];
-                    h++;
-                }
-                h = 0;
-                k++;
-
-                quadrantTunnelsMaps[1] = quadrantMap;
-            }
-
-            k = 0;
-            h = 0;
-            for (int i = rowMid + 1; i < tunnelsMap.GetLength(0); i++)
-            {
-                for (int j = 0; j < columnMid; j++)
-                {
-                    quadrantMap[k, h] = tunnelsMap[i, j];
-                    h++;
-                }
-                h = 0;
-                k++;
-
-                quadrantTunnelsMaps[2] = quadrantMap;
-            }
-
-            k = 0;
-            h = 0;
-            for (int i = rowMid + 1; i < tunnelsMap.GetLength(0); i++)
-            {
-                for (int j = columnMid + 1; j < tunnelsMap.GetLength(1); j++)
-                {
-                    quadrantMap[k, h] = tunnelsMap[i, j];
-                    h++;
-                }
-                h = 0;
-                k++;
-
-                quadrantTunnelsMaps[3] = quadrantMap;
-            }
-
-            int[] quadrantMinSteps = new int[4];
-            int quadrant = 0;
-            foreach (char[,] quadrantTunnelsMap in quadrantTunnelsMaps)
-            {
-                for (int i = 0; i < quadrantTunnelsMap.GetLength(0); i++)
-                {
-                    for (int j = 0; j < quadrantTunnelsMap.GetLength(0); j++)
-                    {
-                        if (char.IsUpper(quadrantTunnelsMap[i, j]))
-                        {
-                            List<(int X, int Y)> foundKeys = GetCharacterLocations(
-                                char.ToLower(quadrantTunnelsMap[i, j]), quadrantTunnelsMap);
-
-                            if (foundKeys.Count == 0)
-                            {
-                                quadrantTunnelsMap[i, j] = OPEN_PASSAGE;
-                            }
-                        }
-                    }
-                }
-
-                quadrantMinSteps[quadrant] = int.MaxValue;
-                (int X, int Y) entrance = GetCharacterLocations(ENTRANCE, quadrantTunnelsMap).First();
-                tunnelsMap[entrance.X, entrance.Y] = OPEN_PASSAGE;
-
-                Dictionary<string, int> statesCache = new Dictionary<string, int>();
-                string keys = GetKeys(quadrantTunnelsMap);
-
-                DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(
-                    quadrantTunnelsMap, (entrance.X, entrance.Y), null, statesCache, keys, 0, ref quadrantMinSteps[quadrant]);
-
-                minSteps += quadrantMinSteps[quadrant];
-                quadrant++;
+                char[,] quadrantTunnelsMap = GetQuadrantTunnelsMap(tunnelsMap, quadrant);
+                // Optimal path for quadrant is found as keys for all other quadrants are already found
+                MarkDoorsWithoutKeyInQuadrantAsOpenPassage(quadrantTunnelsMap);
+                minSteps += CountStepsOfShortestPathThatCollectsAllOfTheKeys(quadrantTunnelsMap);
             }
 
             return minSteps;
@@ -198,71 +107,6 @@ namespace App.Tasks.Year2019.Day18
                     steps,
                     ref minSteps
                 );
-            }
-        }
-
-        private void DoCountFewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobots(
-            char[,] tunnelsMap,
-            (int X, int Y)[] robotsLocations,
-            Direction?[] robotsDirections,
-            Dictionary<string, int> statesCache,
-            string remainingKeys,
-            int steps,
-            ref int minSteps
-        )
-        {
-            // If better solution is already found
-            if (steps >= minSteps)
-            {
-                return;
-            }
-
-            string state = StringifyStateForRemoteControlledRobots(remainingKeys, robotsLocations);
-            // If this tunnel map state and current position already exists in equal or less number of steps
-            if (statesCache.ContainsKey(state) && steps >= statesCache[state])
-            {
-                return;
-            }
-            statesCache[state] = steps;
-
-            // If all keys are collected
-            if (string.IsNullOrEmpty(remainingKeys))
-            {
-                minSteps = steps;
-                return;
-            }
-
-            steps++;
-            // Iterate by each robot
-            for (int i = 0; i < robotsLocations.Length; i++)
-            {
-                (int X, int Y) currentLocation = robotsLocations[i];
-                Direction? currentDirection = robotsDirections[i];
-
-                Dictionary<(int X, int Y), Direction> nextLocations =
-                    GetNextStepLocations(tunnelsMap, currentLocation, currentDirection);
-
-                foreach (KeyValuePair<(int X, int Y), Direction> nextLocation in nextLocations)
-                {
-                    (char[,] TunnelsMap, string RemainingKeys, Direction? Direction) nextStepTunnelMap =
-                        GetNextStepTunnelMap(tunnelsMap, nextLocation.Key, nextLocation.Value, remainingKeys);
-
-                    robotsLocations[i] = (nextLocation.Key.X, nextLocation.Key.Y);
-                    robotsDirections[i] = nextStepTunnelMap.Direction;
-
-                    DoCountFewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobots(
-                        nextStepTunnelMap.TunnelsMap,
-                        robotsLocations,
-                        robotsDirections,
-                        statesCache,
-                        nextStepTunnelMap.RemainingKeys,
-                        steps,
-                        ref minSteps
-                    );
-                }
-
-                robotsLocations[i] = currentLocation;
-                robotsDirections[i] = currentDirection;
             }
         }
 
@@ -395,20 +239,6 @@ namespace App.Tasks.Year2019.Day18
             return $"({remainingKeys}),({currentLocation.X},{currentLocation.Y})";
         }
 
-        private string StringifyStateForRemoteControlledRobots(
-            string remainingKeys,
-            (int X, int Y)[] robotsLocations
-       )
-        {
-            StringBuilder state = new StringBuilder($"({remainingKeys})");
-            foreach ((int X, int Y) currentLocation in robotsLocations)
-            {
-                state.Append($",({currentLocation.X},{currentLocation.Y})");
-            }
-
-            return state.ToString();
-        }
-
         private char[,] UpdateMap(char[,] tunnelsMap)
         {
             bool isAreaFound = true;
@@ -459,6 +289,83 @@ namespace App.Tasks.Year2019.Day18
             }
 
             return tunnelsMap;
+        }
+
+        private char[,] GetQuadrantTunnelsMap(char[,] tunnelsMap, Quadrant quadrant)
+        {
+            int rowMid = tunnelsMap.GetLength(0) / 2;
+            int columnMid = tunnelsMap.GetLength(1) / 2;
+            char[,] quadrantMap = new char[rowMid + 1, columnMid + 1];
+
+            int rowFrom, rowTo, columnFrom, columnTo;
+
+            // Cartesian quadrants denotation is being used
+            switch (quadrant)
+            {
+                case Quadrant.First:
+                    rowFrom = 0;
+                    rowTo = rowMid + 1;
+                    columnFrom = columnMid;
+                    columnTo = tunnelsMap.GetLength(1);
+                    break;
+                case Quadrant.Second:
+                    rowFrom = 0;
+                    rowTo = rowMid + 1;
+                    columnFrom = 0;
+                    columnTo = columnMid + 1;
+                    break;
+                case Quadrant.Third:
+                    rowFrom = rowMid;
+                    rowTo = tunnelsMap.GetLength(0);
+                    columnFrom = 0;
+                    columnTo = columnMid + 1;
+                    break;
+                case Quadrant.Fourth:
+                default:
+                    rowFrom = rowMid;
+                    rowTo = tunnelsMap.GetLength(0);
+                    columnFrom = columnMid;
+                    columnTo = tunnelsMap.GetLength(1);
+                    break;
+            }
+
+            int k = 0;
+            int h = 0;
+            for (int i = rowFrom; i < rowTo; i++)
+            {
+                for (int j = columnFrom; j < columnTo; j++)
+                {
+                    quadrantMap[k, h] = tunnelsMap[i, j];
+                    h++;
+                }
+
+                h = 0;
+                k++;
+            }
+
+            return quadrantMap;
+        }
+
+        private void MarkDoorsWithoutKeyInQuadrantAsOpenPassage(char[,] quadrantTunnelsMap)
+        {
+            for (int i = 0; i < quadrantTunnelsMap.GetLength(0); i++)
+            {
+                for (int j = 0; j < quadrantTunnelsMap.GetLength(1); j++)
+                {
+                    // If door
+                    if (char.IsUpper(quadrantTunnelsMap[i, j]))
+                    {
+                        List<(int X, int Y)> foundKeys = GetCharacterLocations(
+                            char.ToLower(quadrantTunnelsMap[i, j]), quadrantTunnelsMap);
+
+                        // If door doesn't have key in this quadrant
+                        if (foundKeys.Count == 0)
+                        {
+                            quadrantTunnelsMap[i, j] = OPEN_PASSAGE;
+                        }
+                    }
+                }
+            }
         }
     }
 }
