@@ -299,28 +299,27 @@ namespace App.Tasks.Year2019.Day18
 
             int rowFrom, rowTo, columnFrom, columnTo;
 
-            // Cartesian quadrants denotation is being used
             switch (quadrant)
             {
-                case Quadrant.First:
+                case Quadrant.TopLeft:
+                    rowFrom = 0;
+                    rowTo = rowMid + 1;
+                    columnFrom = 0;
+                    columnTo = columnMid + 1;
+                    break;
+                case Quadrant.TopRight:
                     rowFrom = 0;
                     rowTo = rowMid + 1;
                     columnFrom = columnMid;
                     columnTo = tunnelsMap.GetLength(1);
                     break;
-                case Quadrant.Second:
-                    rowFrom = 0;
-                    rowTo = rowMid + 1;
-                    columnFrom = 0;
-                    columnTo = columnMid + 1;
-                    break;
-                case Quadrant.Third:
+                case Quadrant.BottomLeft:
                     rowFrom = rowMid;
                     rowTo = tunnelsMap.GetLength(0);
                     columnFrom = 0;
                     columnTo = columnMid + 1;
                     break;
-                case Quadrant.Fourth:
+                case Quadrant.BottomRight:
                 default:
                     rowFrom = rowMid;
                     rowTo = tunnelsMap.GetLength(0);
