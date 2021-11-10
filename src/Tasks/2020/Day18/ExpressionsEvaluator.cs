@@ -101,7 +101,7 @@ namespace App.Tasks.Year2020.Day18
             else
             {
                 // If there are additions which needs to be done first
-                while (expression.Contains("+"))
+                while (expression.Contains('+'))
                 {
                     Match additionMatch = additionRegex.Match(expression);
                     long sum = long.Parse(additionMatch.Groups[1].Value) + long.Parse(additionMatch.Groups[2].Value);

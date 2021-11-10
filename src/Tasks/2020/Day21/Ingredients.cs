@@ -15,7 +15,7 @@ namespace App.Tasks.Year2020.Day21
             {
                 foreach (string ingredient in food.Ingredients)
                 {
-                    if (!ingredientsWithTheirAllergen.Keys.Contains(ingredient))
+                    if (!ingredientsWithTheirAllergen.ContainsKey(ingredient))
                     {
                         appearancesOfIngredientsWithoutAllergens++;
                     }
