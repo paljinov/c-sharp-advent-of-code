@@ -45,13 +45,14 @@ namespace App.Tasks.Year2019.Day18
 
             tunnelsMap = UpdateMap(tunnelsMap);
             (int X, int Y)[] robotsLocations = GetCharacterLocations(ENTRANCE, tunnelsMap).ToArray();
-            Direction?[] currentDirections = new Direction?[robotsLocations.Length];
+            Direction?[] robotsDirections = new Direction?[robotsLocations.Length];
+            int[] robotsSteps = new int[robotsLocations.Length];
 
             Dictionary<string, int> statesCache = new Dictionary<string, int>();
             string keys = GetKeys(tunnelsMap);
 
             DoCountFewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobots(
-                tunnelsMap, robotsLocations, currentDirections, statesCache, keys, 0, ref minSteps);
+                tunnelsMap, robotsLocations, robotsDirections, statesCache, keys, robotsSteps, ref minSteps);
 
             return minSteps;
         }
@@ -114,23 +115,17 @@ namespace App.Tasks.Year2019.Day18
             Direction?[] robotsDirections,
             Dictionary<string, int> statesCache,
             string remainingKeys,
-            int steps,
+            int[] robotsSteps,
             ref int minSteps
         )
         {
+            int steps = robotsSteps.Sum();
+
             // If better solution is already found
             if (steps >= minSteps)
             {
                 return;
             }
-
-            string state = StringifyStateForRemoteControlledRobots(remainingKeys, robotsLocations);
-            // If this tunnel map state and current position already exists in equal or less number of steps
-            if (statesCache.ContainsKey(state) && steps >= statesCache[state])
-            {
-                return;
-            }
-            statesCache[state] = steps;
 
             // If all keys are collected
             if (string.IsNullOrEmpty(remainingKeys))
@@ -139,16 +134,24 @@ namespace App.Tasks.Year2019.Day18
                 return;
             }
 
-            steps++;
             // Iterate by each robot
             for (int i = 0; i < robotsLocations.Length; i++)
             {
                 (int X, int Y) currentLocation = robotsLocations[i];
                 Direction? currentDirection = robotsDirections[i];
 
+                string state = StringifyState(remainingKeys, currentLocation);
+                // If this tunnel map state and current position already exists in equal or less number of steps
+                if (statesCache.ContainsKey(state) && robotsSteps[i] >= statesCache[state])
+                {
+                    continue;
+                }
+                statesCache[state] = robotsSteps[i];
+
                 Dictionary<(int X, int Y), Direction> nextLocations =
                     GetNextStepLocations(tunnelsMap, currentLocation, currentDirection);
 
+                robotsSteps[i]++;
                 foreach (KeyValuePair<(int X, int Y), Direction> nextLocation in nextLocations)
                 {
                     (char[,] TunnelsMap, string RemainingKeys, Direction? Direction) nextStepTunnelMap =
@@ -163,7 +166,7 @@ namespace App.Tasks.Year2019.Day18
                         robotsDirections,
                         statesCache,
                         nextStepTunnelMap.RemainingKeys,
-                        steps,
+                        robotsSteps,
                         ref minSteps
                     );
                 }
@@ -174,7 +177,7 @@ namespace App.Tasks.Year2019.Day18
         }
 
         /// <summary>
-        ///  Get next step locations.
+        ///     Get next step locations.
         /// </summary>
         /// <param name="X"></param>
         /// <param name="Y)"></param>
@@ -300,20 +303,6 @@ namespace App.Tasks.Year2019.Day18
         private string StringifyState(string remainingKeys, (int X, int Y) currentLocation)
         {
             return $"({remainingKeys}),({currentLocation.X},{currentLocation.Y})";
-        }
-
-        private string StringifyStateForRemoteControlledRobots(
-            string remainingKeys,
-            (int X, int Y)[] robotsLocations
-       )
-        {
-            StringBuilder state = new StringBuilder($"({remainingKeys})");
-            foreach ((int X, int Y) currentLocation in robotsLocations)
-            {
-                state.Append($",({currentLocation.X},{currentLocation.Y})");
-            }
-
-            return state.ToString();
         }
 
         private char[,] UpdateMap(char[,] tunnelsMap)
