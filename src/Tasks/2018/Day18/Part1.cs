@@ -181,7 +181,7 @@ namespace App.Tasks.Year2018.Day18
 {
     public class Part1 : ITask<int>
     {
-        private const int AFTER_MINUTES = 10;
+        private const int TOTAL_MINUTES = 10;
 
         private readonly AreaRepository areaRepository;
 
@@ -196,7 +196,7 @@ namespace App.Tasks.Year2018.Day18
         {
             char[,] area = areaRepository.GetArea(input);
             int totalResourceValue = resources
-                .CalculateTotalResourceValueOfTheLumberCollectionAreaAfterMinutes(area, AFTER_MINUTES);
+                .CalculateTotalResourceValueOfTheLumberCollectionAreaAfterMinutes(area, TOTAL_MINUTES);
 
             return totalResourceValue;
         }
