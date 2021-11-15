@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text;
 
 namespace App.Tasks.Year2018.Day18
 {
@@ -12,9 +13,31 @@ namespace App.Tasks.Year2018.Day18
 
         public int CalculateTotalResourceValueOfTheLumberCollectionAreaAfterMinutes(char[,] area, int totalMinutes)
         {
-            for (int minute = 0; minute < totalMinutes; minute++)
+            // Cache of area states
+            Dictionary<string, int> areaStatesCache = new Dictionary<string, int>();
+
+            for (int minute = 1; minute <= totalMinutes; minute++)
             {
-                area = ChangeArea(area);
+                string flatArea = FlattenArea(area);
+
+                // If area state repeats
+                if (areaStatesCache.ContainsKey(flatArea))
+                {
+                    int cycleStart = areaStatesCache[flatArea];
+                    // Cycle ended in the previous minute
+                    int cycleEnd = minute - 1;
+                    int cycleLength = cycleEnd - cycleStart + 1;
+                    // Cache is not used anymore
+                    areaStatesCache.Clear();
+
+                    // Skip to minute when last cycle fully completes
+                    minute = totalMinutes - (totalMinutes - cycleEnd) % cycleLength;
+                }
+                else
+                {
+                    areaStatesCache.Add(flatArea, minute);
+                    area = ChangeArea(area);
+                }
             }
 
             Dictionary<char, int> acres = CountAcres(area);
@@ -132,6 +155,21 @@ namespace App.Tasks.Year2018.Day18
             }
 
             return acres;
+        }
+
+        private string FlattenArea(char[,] area)
+        {
+            StringBuilder flatArea = new StringBuilder();
+
+            for (int i = 0; i < area.GetLength(0); i++)
+            {
+                for (int j = 0; j < area.GetLength(1); j++)
+                {
+                    flatArea.Append(area[i, j]);
+                }
+            }
+
+            return flatArea.ToString();
         }
     }
 }
