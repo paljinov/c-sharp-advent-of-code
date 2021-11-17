@@ -34,7 +34,7 @@ namespace App.Tasks.Year2019.Day18
             string keys = GetKeys(tunnelsMap);
 
             DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(
-                tunnelsMap, (entrance.X, entrance.Y), null, statesCache, keys, 0, ref minSteps);
+                tunnelsMap, entrance, null, statesCache, keys, 0, ref minSteps);
 
             return minSteps;
         }
@@ -46,13 +46,13 @@ namespace App.Tasks.Year2019.Day18
             tunnelsMap = UpdateMap(tunnelsMap);
             (int X, int Y)[] robotsLocations = GetCharacterLocations(ENTRANCE, tunnelsMap).ToArray();
             Direction?[] robotsDirections = new Direction?[robotsLocations.Length];
-            int[] robotsSteps = new int[robotsLocations.Length];
+            int[] robotsStepsToNextKey = new int[robotsLocations.Length];
 
             Dictionary<string, int> statesCache = new Dictionary<string, int>();
             string keys = GetKeys(tunnelsMap);
 
-            DoCountFewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobots(
-                tunnelsMap, robotsLocations, robotsDirections, statesCache, keys, robotsSteps, ref minSteps);
+            DoCountFewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobots(tunnelsMap, robotsLocations,
+                robotsDirections, statesCache, keys, 0, ref minSteps, robotsStepsToNextKey, 0);
 
             return minSteps;
         }
@@ -115,17 +115,29 @@ namespace App.Tasks.Year2019.Day18
             Direction?[] robotsDirections,
             Dictionary<string, int> statesCache,
             string remainingKeys,
-            int[] robotsSteps,
-            ref int minSteps
+            int steps,
+            ref int minSteps,
+            int[] robotsStepsToNextKey,
+            int currentRobot
         )
         {
-            int steps = robotsSteps.Sum();
+            int currentSteps = steps + robotsStepsToNextKey[currentRobot];
+            (int X, int Y) currentLocation = robotsLocations[currentRobot];
+            Direction? currentDirection = robotsDirections[currentRobot];
 
             // If better solution is already found
-            if (steps >= minSteps)
+            if (currentSteps >= minSteps)
             {
                 return;
             }
+
+            string state = StringifyStateForRemoteControlledRobots(remainingKeys, currentRobot, robotsLocations);
+            // If this tunnel map state and current position already exists in equal or less number of steps
+            if (statesCache.ContainsKey(state) && currentSteps >= statesCache[state])
+            {
+                return;
+            }
+            statesCache[state] = currentSteps;
 
             // If all keys are collected
             if (string.IsNullOrEmpty(remainingKeys))
@@ -134,31 +146,50 @@ namespace App.Tasks.Year2019.Day18
                 return;
             }
 
-            // Iterate by each robot
-            for (int i = 0; i < robotsLocations.Length; i++)
+            System.Console.WriteLine(currentRobot);
+
+            Dictionary<(int X, int Y), Direction> nextLocations =
+                GetNextStepLocations(tunnelsMap, currentLocation, currentDirection);
+
+            // If robot can't go anywhere change robot
+            if (nextLocations.Count == 0)
             {
-                (int X, int Y) currentLocation = robotsLocations[i];
-                Direction? currentDirection = robotsDirections[i];
-
-                string state = StringifyState(remainingKeys, currentLocation);
-                // If this tunnel map state and current position already exists in equal or less number of steps
-                if (statesCache.ContainsKey(state) && robotsSteps[i] >= statesCache[state])
+                currentRobot += 1;
+                if (currentRobot == robotsLocations.Length)
                 {
-                    continue;
+                    currentRobot = 0;
                 }
-                statesCache[state] = robotsSteps[i];
 
-                Dictionary<(int X, int Y), Direction> nextLocations =
-                    GetNextStepLocations(tunnelsMap, currentLocation, currentDirection);
-
-                robotsSteps[i]++;
+                DoCountFewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobots(
+                    tunnelsMap,
+                    robotsLocations,
+                    robotsDirections,
+                    statesCache,
+                    remainingKeys,
+                    steps,
+                    ref minSteps,
+                    robotsStepsToNextKey,
+                    currentRobot
+                );
+            }
+            else
+            {
+                robotsStepsToNextKey[currentRobot]++;
                 foreach (KeyValuePair<(int X, int Y), Direction> nextLocation in nextLocations)
                 {
+                    currentSteps = steps;
+
                     (char[,] TunnelsMap, string RemainingKeys, Direction? Direction) nextStepTunnelMap =
                         GetNextStepTunnelMap(tunnelsMap, nextLocation.Key, nextLocation.Value, remainingKeys);
 
-                    robotsLocations[i] = (nextLocation.Key.X, nextLocation.Key.Y);
-                    robotsDirections[i] = nextStepTunnelMap.Direction;
+                    // If key is found
+                    if (!nextStepTunnelMap.Direction.HasValue)
+                    {
+                        currentSteps += robotsStepsToNextKey[currentRobot];
+                    }
+
+                    robotsLocations[currentRobot] = (nextLocation.Key.X, nextLocation.Key.Y);
+                    robotsDirections[currentRobot] = nextStepTunnelMap.Direction;
 
                     DoCountFewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobots(
                         nextStepTunnelMap.TunnelsMap,
@@ -166,13 +197,12 @@ namespace App.Tasks.Year2019.Day18
                         robotsDirections,
                         statesCache,
                         nextStepTunnelMap.RemainingKeys,
-                        robotsSteps,
-                        ref minSteps
+                        currentSteps,
+                        ref minSteps,
+                        robotsStepsToNextKey,
+                        currentRobot
                     );
                 }
-
-                robotsLocations[i] = currentLocation;
-                robotsDirections[i] = currentDirection;
             }
         }
 
@@ -303,6 +333,21 @@ namespace App.Tasks.Year2019.Day18
         private string StringifyState(string remainingKeys, (int X, int Y) currentLocation)
         {
             return $"({remainingKeys}),({currentLocation.X},{currentLocation.Y})";
+        }
+
+        private string StringifyStateForRemoteControlledRobots(
+            string remainingKeys,
+            int currentRobot,
+            (int X, int Y)[] robotsLocations
+        )
+        {
+            StringBuilder state = new StringBuilder($"({remainingKeys}),({currentRobot})");
+            foreach ((int X, int Y) currentLocation in robotsLocations)
+            {
+                state.Append($",({currentLocation.X},{currentLocation.Y})");
+            }
+
+            return state.ToString();
         }
 
         private char[,] UpdateMap(char[,] tunnelsMap)
