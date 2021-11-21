@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+
 namespace App.Tasks.Year2018.Day22
 {
     public class Cave
@@ -10,12 +13,23 @@ namespace App.Tasks.Year2018.Day22
 
         private const int REGION_TYPE_MODULO = 3;
 
+        private const int MOVE_MINUTES = 1;
+
+        private const int SWITCH_TOOL_MINUTES = 7;
+
+        private readonly Dictionary<Region, List<Tool>> regionTools = new Dictionary<Region, List<Tool>>()
+        {
+             { Region.Rocky, new List<Tool>() { Tool.ClimbingGear, Tool.Torch } },
+             { Region.Wet, new List<Tool>() { Tool.ClimbingGear, Tool.Neither } },
+             { Region.Narrow, new List<Tool>() { Tool.Torch, Tool.Neither } },
+        };
+
         public int CalculateTotalRiskLevelForTheSmallestRectangleThatIncludesCaveMouthAndTargetCoordinates(
             int depth,
-            (int X, int Y) targetCoordinates
+            (int X, int Y) targetPosition
         )
         {
-            int[,] caveErosionIndex = GetCaveErosionIndex(depth, targetCoordinates);
+            int[,] caveErosionIndex = GetCaveErosionIndex(depth, targetPosition);
             Region[,] caveRegions = GetCaveRegions(caveErosionIndex);
 
             int totalRiskLevel = CalculateTotalRiskLevel(caveRegions);
@@ -23,10 +37,26 @@ namespace App.Tasks.Year2018.Day22
             return totalRiskLevel;
         }
 
-        private int[,] GetCaveErosionIndex(int depth, (int X, int Y) targetCoordinates)
+        public int CalculateFewestNumberOfMinutesNeededToReachTheTarget(int depth, (int X, int Y) targetPosition)
         {
-            int rows = targetCoordinates.X + 1;
-            int columns = targetCoordinates.Y + 1;
+            int fewestNumberOfMinutes = int.MaxValue;
+
+            int[,] caveErosionIndex = GetCaveErosionIndex(depth, targetPosition);
+            Region[,] caveRegions = GetCaveRegions(caveErosionIndex);
+
+            // Key is position and tool, value is best minute in which position is reached
+            Dictionary<string, int> positionStateCache = new Dictionary<string, int>();
+
+            DoCalculateFewestNumberOfMinutesNeededToReachTheTarget(
+                caveRegions, targetPosition, (0, 0), Tool.Torch, positionStateCache, 0, ref fewestNumberOfMinutes);
+
+            return fewestNumberOfMinutes;
+        }
+
+        private int[,] GetCaveErosionIndex(int depth, (int X, int Y) targetPosition)
+        {
+            int rows = targetPosition.X + 1;
+            int columns = targetPosition.Y + 1;
 
             long[,] caveGeologicIndex = new long[rows, columns];
             int[,] caveErosionIndex = new int[rows, columns];
@@ -35,7 +65,7 @@ namespace App.Tasks.Year2018.Day22
             {
                 for (int y = 0; y < columns; y++)
                 {
-                    if ((x == 0 && y == 0) || (x == targetCoordinates.X && y == targetCoordinates.Y))
+                    if ((x == 0 && y == 0) || (x == targetPosition.X && y == targetPosition.Y))
                     {
                         caveGeologicIndex[x, y] = 0;
                     }
@@ -87,6 +117,109 @@ namespace App.Tasks.Year2018.Day22
             }
 
             return totalRiskLevel;
+        }
+
+        private void DoCalculateFewestNumberOfMinutesNeededToReachTheTarget(
+            Region[,] caveRegions,
+            (int X, int Y) targetPosition,
+            (int X, int Y) currentPosition,
+            Tool currentTool,
+            Dictionary<string, int> positionStateCache,
+            int minutes,
+            ref int fewestNumberOfMinutes)
+        {
+            // If better solution is already found
+            if (minutes >= fewestNumberOfMinutes)
+            {
+                return;
+            }
+
+            string positionState = StringifyPositionState(currentPosition, currentTool);
+            // If this position is already reached with same tool in equal or less minutes
+            if (positionStateCache.ContainsKey(positionState) && minutes >= positionStateCache[positionState])
+            {
+                return;
+            }
+            positionStateCache[positionState] = minutes;
+
+            // If target position is reached
+            if (currentPosition == targetPosition)
+            {
+                if (currentTool != Tool.Torch)
+                {
+                    minutes += SWITCH_TOOL_MINUTES;
+                }
+
+                fewestNumberOfMinutes = minutes;
+                return;
+            }
+
+            List<(int X, int Y)> adjacentPositions = GetAdjacentPositions(caveRegions, currentPosition);
+            List<Tool> currentRegionTools = regionTools[caveRegions[currentPosition.X, currentPosition.Y]];
+
+            foreach ((int X, int Y) adjacentPosition in adjacentPositions)
+            {
+                List<Tool> nextRegionTools = regionTools[caveRegions[adjacentPosition.X, adjacentPosition.Y]];
+                IEnumerable<Tool> commonTools = currentRegionTools.Intersect(nextRegionTools);
+
+                // Iterate through possible tools in next region
+                foreach (Tool nextRegionTool in commonTools)
+                {
+                    int nextMinutes = minutes + MOVE_MINUTES;
+
+                    // If current tool is different than next region tool
+                    if (currentTool != nextRegionTool)
+                    {
+                        nextMinutes += SWITCH_TOOL_MINUTES;
+                    }
+
+                    DoCalculateFewestNumberOfMinutesNeededToReachTheTarget(
+                        caveRegions,
+                        targetPosition,
+                        adjacentPosition,
+                        nextRegionTool,
+                        positionStateCache,
+                        nextMinutes,
+                        ref fewestNumberOfMinutes
+                    );
+                }
+            }
+        }
+
+        private string StringifyPositionState((int X, int Y) currentPosition, Tool currentTool)
+        {
+            return $"Position:({currentPosition.X},{currentPosition.Y}),Tool:{currentTool}";
+        }
+
+        private List<(int X, int Y)> GetAdjacentPositions(Region[,] caveRegions, (int X, int Y) currentPosition)
+        {
+            List<(int X, int Y)> adjacentPositions = new List<(int X, int Y)>();
+
+            // Up
+            if (currentPosition.X - 1 >= 0)
+            {
+                adjacentPositions.Add((currentPosition.X - 1, currentPosition.Y));
+            }
+
+            // Down
+            if (currentPosition.X + 1 < caveRegions.GetLength(0))
+            {
+                adjacentPositions.Add((currentPosition.X + 1, currentPosition.Y));
+            }
+
+            // Left
+            if (currentPosition.Y - 1 >= 0)
+            {
+                adjacentPositions.Add((currentPosition.X, currentPosition.Y - 1));
+            }
+
+            // Right
+            if (currentPosition.Y + 1 < caveRegions.GetLength(1))
+            {
+                adjacentPositions.Add((currentPosition.X, currentPosition.Y + 1));
+            }
+
+            return adjacentPositions;
         }
     }
 }
