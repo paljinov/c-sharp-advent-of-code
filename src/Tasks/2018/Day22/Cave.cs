@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -29,7 +30,10 @@ namespace App.Tasks.Year2018.Day22
             (int X, int Y) targetPosition
         )
         {
-            Region[,] caveRegions = GetCaveRegions(depth, targetPosition);
+            int rows = targetPosition.X + 1;
+            int columns = targetPosition.Y + 1;
+
+            Region[,] caveRegions = GetCaveRegions(depth, targetPosition, rows, columns);
 
             int totalRiskLevel = CalculateTotalRiskLevel(caveRegions, targetPosition.Y, targetPosition.X);
 
@@ -38,9 +42,11 @@ namespace App.Tasks.Year2018.Day22
 
         public int CalculateFewestNumberOfMinutesNeededToReachTheTarget(int depth, (int X, int Y) targetPosition)
         {
-            int fewestNumberOfMinutes = int.MaxValue;
+            int rows = targetPosition.X * 2;
+            int columns = targetPosition.Y * 2;
+            int fewestNumberOfMinutes = 2 * (int)Math.Sqrt(Math.Pow(rows, 2) + Math.Pow(columns, 2));
 
-            Region[,] caveRegions = GetCaveRegions(depth, targetPosition);
+            Region[,] caveRegions = GetCaveRegions(depth, targetPosition, rows, columns);
 
             // Key is position and tool, value is best minute in which position is reached
             Dictionary<string, int> stateCache = new Dictionary<string, int>();
@@ -51,29 +57,25 @@ namespace App.Tasks.Year2018.Day22
             return fewestNumberOfMinutes;
         }
 
-        private Region[,] GetCaveRegions(int depth, (int X, int Y) targetPosition)
+        private Region[,] GetCaveRegions(int depth, (int X, int Y) targetPosition, int rows, int columns)
         {
-            int[,] caveErosionIndex = GetCaveErosionIndex(depth, targetPosition);
+            int[,] caveErosionIndex = GetCaveErosionIndex(depth, targetPosition, rows, columns);
 
-            // X increasing to the right, and Y increasing downward
-            Region[,] caveRegions = new Region[caveErosionIndex.GetLength(1), caveErosionIndex.GetLength(0)];
+            Region[,] caveRegions = new Region[caveErosionIndex.GetLength(0), caveErosionIndex.GetLength(1)];
 
-            for (int x = 0; x < caveRegions.GetLength(1); x++)
+            for (int x = 0; x < caveRegions.GetLength(0); x++)
             {
-                for (int y = 0; y < caveRegions.GetLength(0); y++)
+                for (int y = 0; y < caveRegions.GetLength(1); y++)
                 {
-                    caveRegions[y, x] = (Region)(caveErosionIndex[x, y] % REGION_TYPE_MODULO);
+                    caveRegions[x, y] = (Region)(caveErosionIndex[x, y] % REGION_TYPE_MODULO);
                 }
             }
 
             return caveRegions;
         }
 
-        private int[,] GetCaveErosionIndex(int depth, (int X, int Y) targetPosition)
+        private int[,] GetCaveErosionIndex(int depth, (int X, int Y) targetPosition, int rows, int columns)
         {
-            int rows = (targetPosition.X + 1) * 2;
-            int columns = (targetPosition.Y + 1) * 2;
-
             long[,] caveGeologicIndex = new long[rows, columns];
             int[,] caveErosionIndex = new int[rows, columns];
 
@@ -196,16 +198,16 @@ namespace App.Tasks.Year2018.Day22
         {
             List<(int X, int Y)> adjacentPositions = new List<(int X, int Y)>();
 
-            // Up
-            if (currentPosition.X - 1 >= 0)
-            {
-                adjacentPositions.Add((currentPosition.X - 1, currentPosition.Y));
-            }
-
             // Down
             if (currentPosition.X + 1 < caveRegions.GetLength(0))
             {
                 adjacentPositions.Add((currentPosition.X + 1, currentPosition.Y));
+            }
+
+            // Right
+            if (currentPosition.Y + 1 < caveRegions.GetLength(1))
+            {
+                adjacentPositions.Add((currentPosition.X, currentPosition.Y + 1));
             }
 
             // Left
@@ -214,10 +216,10 @@ namespace App.Tasks.Year2018.Day22
                 adjacentPositions.Add((currentPosition.X, currentPosition.Y - 1));
             }
 
-            // Right
-            if (currentPosition.Y + 1 < caveRegions.GetLength(1))
+            // Up
+            if (currentPosition.X - 1 >= 0)
             {
-                adjacentPositions.Add((currentPosition.X, currentPosition.Y + 1));
+                adjacentPositions.Add((currentPosition.X - 1, currentPosition.Y));
             }
 
             return adjacentPositions;
