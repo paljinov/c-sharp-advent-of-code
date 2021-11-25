@@ -67,7 +67,7 @@ namespace App
             var result = solutionMethod.Invoke(task, new object[] { input });
             stopwatch.Stop();
 
-            Console.WriteLine($"Execution time: {stopwatch.ElapsedMilliseconds} miliseconds");
+            Console.WriteLine($"Execution time: {stopwatch.ElapsedMilliseconds} milliseconds");
             Console.WriteLine($"Result: {result}");
         }
 
