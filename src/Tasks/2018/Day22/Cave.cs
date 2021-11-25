@@ -45,11 +45,22 @@ namespace App.Tasks.Year2018.Day22
 
             Region[,] caveRegions = GetCaveRegions(depth, targetPosition);
 
+            Dictionary<(int X, int Y), List<(int X, int Y)>> caveRegionsWithNeighbors =
+                GetCaveRegionsWithNeighbors(caveRegions, targetPosition);
+
             // Key is position and tool, value is best minute in which position is reached
             Dictionary<string, int> stateCache = new Dictionary<string, int>();
 
             DoCalculateFewestNumberOfMinutesNeededToReachTheTarget(
-                caveRegions, targetPosition, (0, 0), Tool.Torch, stateCache, 0, ref fewestNumberOfMinutes);
+                caveRegions,
+                caveRegionsWithNeighbors,
+                targetPosition,
+                (0, 0),
+                Tool.Torch,
+                stateCache,
+                0,
+                ref fewestNumberOfMinutes
+            );
 
             return fewestNumberOfMinutes;
         }
@@ -131,8 +142,31 @@ namespace App.Tasks.Year2018.Day22
             return totalRiskLevel;
         }
 
+        private Dictionary<(int X, int Y), List<(int X, int Y)>> GetCaveRegionsWithNeighbors(
+            Region[,] caveRegions, (int X, int Y) targetPosition)
+        {
+            Dictionary<(int X, int Y), List<(int X, int Y)>> caveRegionsWithNeighbors =
+            new Dictionary<(int X, int Y), List<(int X, int Y)>>();
+
+            for (int x = 0; x < caveRegions.GetLength(0); x++)
+            {
+                for (int y = 0; y < caveRegions.GetLength(1); y++)
+                {
+                    (int X, int Y) currentPosition = (x, y);
+
+                    List<(int X, int Y)> adjacentPositions = GetAdjacentPositionsSortedByDistanceToTargetPosition(
+                        caveRegions, (x, y), targetPosition);
+
+                    caveRegionsWithNeighbors.Add(currentPosition, adjacentPositions);
+                }
+            }
+
+            return caveRegionsWithNeighbors;
+        }
+
         private void DoCalculateFewestNumberOfMinutesNeededToReachTheTarget(
             Region[,] caveRegions,
+            Dictionary<(int X, int Y), List<(int X, int Y)>> caveRegionsWithNeighbors,
             (int X, int Y) targetPosition,
             (int X, int Y) currentPosition,
             Tool currentTool,
@@ -167,8 +201,7 @@ namespace App.Tasks.Year2018.Day22
                 return;
             }
 
-            List<(int X, int Y)> adjacentPositions = GetAdjacentPositionsSortedByDistanceToTargetPosition(
-                caveRegions, currentPosition, targetPosition);
+            List<(int X, int Y)> adjacentPositions = caveRegionsWithNeighbors[currentPosition];
             List<Tool> currentRegionTools = regionTools[caveRegions[currentPosition.X, currentPosition.Y]];
 
             foreach ((int X, int Y) adjacentPosition in adjacentPositions)
@@ -188,6 +221,7 @@ namespace App.Tasks.Year2018.Day22
 
                     DoCalculateFewestNumberOfMinutesNeededToReachTheTarget(
                         caveRegions,
+                        caveRegionsWithNeighbors,
                         targetPosition,
                         adjacentPosition,
                         adjacentPositionTool,
