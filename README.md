@@ -7,6 +7,7 @@
 * [2018](https://github.com/paljinov/c-sharp-advent-of-code/tree/master/src/Tasks/2018)
 * [2019](https://github.com/paljinov/c-sharp-advent-of-code/tree/master/src/Tasks/2019)
 * [2020](https://github.com/paljinov/c-sharp-advent-of-code/tree/master/src/Tasks/2020)
+* [2021](https://github.com/paljinov/c-sharp-advent-of-code/tree/master/src/Tasks/2021)
 
 ## Prerequisites for running project
 Copy `./src/.env.example` to `./src/.env` file and set year, day and part for task you wish to debug or run.
