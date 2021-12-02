@@ -63,10 +63,10 @@ namespace App.Tasks.Year2021.Day1
         public int Solution(string input)
         {
             int[] depths = depthsRepository.GetDepths(input);
-            int measurementsWhichAreLargerThanThePreviousMeasurement =
+            int threeMeasurementSlidingWindowSumsWhichAreLargerThanThePreviousSum =
                 measurements.CountThreeMeasurementSlidingWindowSumsWhichAreLargerThanThePreviousSum(depths);
 
-            return measurementsWhichAreLargerThanThePreviousMeasurement;
+            return threeMeasurementSlidingWindowSumsWhichAreLargerThanThePreviousSum;
         }
     }
 }

@@ -6,7 +6,7 @@ namespace App.Tasks.Year2021.Day1
     {
         public int[] GetDepths(string input)
         {
-            string[] depthsString = input.Split(Environment.NewLine);
+            string[] depthsString = input.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
             int[] depths = new int[depthsString.Length];
 
             for (int i = 0; i < depthsString.Length; i++)
