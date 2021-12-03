@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace App.Tasks.Year2021.Day3
 {
@@ -17,19 +19,41 @@ namespace App.Tasks.Year2021.Day3
             return submarinePowerConsumption;
         }
 
+        public int CalculateSubmarineLifeSupportRating(string[] diagnosticReport)
+        {
+            string oxygenGeneratorRating = PruneRatings(diagnosticReport, true);
+            string carbonDioxideScrubberRating = PruneRatings(diagnosticReport, false);
+
+            int submarineLifeSupportRating =
+                Convert.ToInt32(oxygenGeneratorRating, 2) * Convert.ToInt32(carbonDioxideScrubberRating, 2);
+
+            return submarineLifeSupportRating;
+        }
+
         private int[] CountBitsEqualToOne(string[] diagnosticReport)
         {
-            int[] bitsEqualToOne = new int[diagnosticReport[0].Length];
+            int binaryNumberLength = diagnosticReport[0].Length;
 
-            for (int i = 0; i < diagnosticReport.Length; i++)
+            int[] bitsEqualToOne = new int[binaryNumberLength];
+
+            for (int position = 0; position < binaryNumberLength; position++)
             {
-                string binaryBumber = diagnosticReport[i];
-                for (int j = 0; j < binaryBumber.Length; j++)
+                bitsEqualToOne[position] = CountBitsEqualToOneForPosition(diagnosticReport, position);
+            }
+
+            return bitsEqualToOne;
+        }
+
+        private int CountBitsEqualToOneForPosition(string[] binaryNumbers, int position)
+        {
+            int bitsEqualToOne = 0;
+
+            for (int i = 0; i < binaryNumbers.Length; i++)
+            {
+                string binaryBumber = binaryNumbers[i];
+                if (binaryBumber[position] == '1')
                 {
-                    if (binaryBumber[j] == '1')
-                    {
-                        bitsEqualToOne[j]++;
-                    }
+                    bitsEqualToOne++;
                 }
             }
 
@@ -69,6 +93,51 @@ namespace App.Tasks.Year2021.Day3
             }
 
             return new string(invertedBinaryNumber);
+        }
+
+        private string PruneRatings(string[] diagnosticReport, bool mostCommonValue)
+        {
+            int binaryNumberLength = diagnosticReport[0].Length;
+
+            Dictionary<int, string> ratings = diagnosticReport.ToDictionary(x => Array.IndexOf(diagnosticReport, x));
+
+            for (int position = 0; position < binaryNumberLength; position++)
+            {
+                int bitsEqualToOneCount = CountBitsEqualToOneForPosition(ratings.Values.ToArray(), position);
+                var halfRatings = (float)ratings.Count / 2;
+
+                if (bitsEqualToOneCount >= halfRatings)
+                {
+                    char removeBit = mostCommonValue ? '0' : '1';
+
+                    foreach (int i in ratings.Keys)
+                    {
+                        if (ratings[i][position] == removeBit)
+                        {
+                            ratings.Remove(i);
+                        }
+                    }
+                }
+                else
+                {
+                    char removeBit = mostCommonValue ? '1' : '0';
+
+                    foreach (int i in ratings.Keys)
+                    {
+                        if (ratings[i][position] == removeBit)
+                        {
+                            ratings.Remove(i);
+                        }
+                    }
+                }
+
+                if (ratings.Count == 1)
+                {
+                    break;
+                }
+            }
+
+            return ratings.First().Value;
         }
     }
 }
