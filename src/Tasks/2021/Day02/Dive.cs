@@ -2,7 +2,7 @@ namespace App.Tasks.Year2021.Day2
 {
     public class Dive
     {
-        public int CalculateProductOfFinalHorizontalPositionAndDept(Instruction[] instructions)
+        public int CalculateProductOfFinalHorizontalPositionAndDepth(Instruction[] instructions)
         {
             int horizontalPosition = 0;
             int depth = 0;
@@ -28,7 +28,7 @@ namespace App.Tasks.Year2021.Day2
             return productOfFinalHorizontalPositionAndDept;
         }
 
-        public int CalculateProductOfFinalHorizontalPositionAndDeptWhenTrackingAim(Instruction[] instructions)
+        public int CalculateProductOfFinalHorizontalPositionAndDepthWhenTrackingAim(Instruction[] instructions)
         {
             int horizontalPosition = 0;
             int depth = 0;

@@ -56,7 +56,7 @@ namespace App.Tasks.Year2021.Day2
         {
             Instruction[] instructions = instructionsRepository.GetInstructions(input);
             int productOfFinalHorizontalPositionAndDeptWhenTrackingAim =
-                dive.CalculateProductOfFinalHorizontalPositionAndDeptWhenTrackingAim(instructions);
+                dive.CalculateProductOfFinalHorizontalPositionAndDepthWhenTrackingAim(instructions);
 
             return productOfFinalHorizontalPositionAndDeptWhenTrackingAim;
         }
