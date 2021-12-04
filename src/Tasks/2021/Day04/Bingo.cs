@@ -1,23 +1,48 @@
+using System.Collections.Generic;
+using System.Linq;
+
 namespace App.Tasks.Year2021.Day4
 {
     public class Bingo
     {
-        public int CalculateWinningBoardFinalScore(int[] drawnNumbers, int[][,] boards)
+        public int CalculateBoardFinalScore(int[] drawnNumbers, int[][,] boards, bool lastBoard = false)
         {
             int winningBoardFinalScore = 0;
 
             bool[][,] markedBoardsNumbers = InitializeMarkedBoardsNumbers(boards);
+            List<int> winnerBoardsIndexes = new List<int>();
+            int previousWinnersCount = 0;
 
             foreach (int drawnNumber in drawnNumbers)
             {
-                MarkDrawnBoardsNumbers(drawnNumber, boards, markedBoardsNumbers);
-                int? winnerBoardIndex = FindWinnerBoardIndex(markedBoardsNumbers);
+                MarkDrawnBoardsNumbers(drawnNumber, boards, markedBoardsNumbers, winnerBoardsIndexes);
+                FindWinnerBoardsIndexes(markedBoardsNumbers, winnerBoardsIndexes);
 
-                if (winnerBoardIndex.HasValue)
+                // If new winner boards are found
+                if (winnerBoardsIndexes.Count > previousWinnersCount)
                 {
+                    int winnerBoardIndex = winnerBoardsIndexes.First();
+                    if (lastBoard)
+                    {
+                        winnerBoardIndex = winnerBoardsIndexes.Last();
+                    }
+
                     int sumOfAllUnmarkedNumbers = CalculateSumOfAllUnmarkedNumbers(
-                        boards[winnerBoardIndex.Value], markedBoardsNumbers[winnerBoardIndex.Value]);
+                        boards[winnerBoardIndex], markedBoardsNumbers[winnerBoardIndex]);
                     winningBoardFinalScore = drawnNumber * sumOfAllUnmarkedNumbers;
+
+                    previousWinnersCount = winnerBoardsIndexes.Count;
+
+                    // If interested in winning board
+                    if (lastBoard == false)
+                    {
+                        break;
+                    }
+                }
+
+                // If all boards are winners
+                if (winnerBoardsIndexes.Count == boards.Length)
+                {
                     break;
                 }
             }
@@ -38,10 +63,21 @@ namespace App.Tasks.Year2021.Day4
             return markedBoardsNumbers;
         }
 
-        private void MarkDrawnBoardsNumbers(int drawnNumber, int[][,] boards, bool[][,] markedBoardsNumbers)
+        private void MarkDrawnBoardsNumbers(
+            int drawnNumber,
+            int[][,] boards,
+            bool[][,] markedBoardsNumbers,
+            List<int> winnerBoardsIndexes
+        )
         {
             for (int i = 0; i < boards.Length; i++)
             {
+                // Skip winner boards
+                if (winnerBoardsIndexes.Contains(i))
+                {
+                    continue;
+                }
+
                 int[,] board = boards[i];
 
                 for (int j = 0; j < board.GetLength(0); j++)
@@ -57,10 +93,16 @@ namespace App.Tasks.Year2021.Day4
             }
         }
 
-        private int? FindWinnerBoardIndex(bool[][,] markedBoardsNumbers)
+        private void FindWinnerBoardsIndexes(bool[][,] markedBoardsNumbers, List<int> winnerBoardsIndexes)
         {
             for (int i = 0; i < markedBoardsNumbers.Length; i++)
             {
+                // Skip winner boards
+                if (winnerBoardsIndexes.Contains(i))
+                {
+                    continue;
+                }
+
                 bool[,] markedBoardNumbers = markedBoardsNumbers[i];
                 bool[] allNumbersInColumnsMarked = new bool[markedBoardNumbers.GetLength(1)];
                 for (int k = 0; k < markedBoardNumbers.GetLength(1); k++)
@@ -83,7 +125,11 @@ namespace App.Tasks.Year2021.Day4
                     // If all numbers in a row are marked
                     if (allNumbersInRowMarked)
                     {
-                        return i;
+                        if (!winnerBoardsIndexes.Contains(i))
+                        {
+                            winnerBoardsIndexes.Add(i);
+                        }
+                        break;
                     }
                 }
 
@@ -92,12 +138,14 @@ namespace App.Tasks.Year2021.Day4
                     // If all numbers in a column are marked
                     if (allNumbersInColumnsMarked[k])
                     {
-                        return i;
+                        if (!winnerBoardsIndexes.Contains(i))
+                        {
+                            winnerBoardsIndexes.Add(i);
+                        }
+                        break;
                     }
                 }
             }
-
-            return null;
         }
 
         private int CalculateSumOfAllUnmarkedNumbers(int[,] board, bool[,] markedBoardNumbers)

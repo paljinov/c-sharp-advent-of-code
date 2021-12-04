@@ -95,7 +95,7 @@ namespace App.Tasks.Year2021.Day4
         {
             int[] drawnNumbers = bingoRepository.GetDrawnNumbers(input);
             int[][,] boards = bingoRepository.GetBoards(input);
-            int winningBoardFinalScore = bingo.CalculateWinningBoardFinalScore(drawnNumbers, boards);
+            int winningBoardFinalScore = bingo.CalculateBoardFinalScore(drawnNumbers, boards);
 
             return winningBoardFinalScore;
         }
