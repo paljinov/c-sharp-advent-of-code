@@ -8,30 +8,53 @@ namespace App.Tasks.Year2021.Day5
     {
         public int CountPointsWhereAtLeastTwoLinesOverlap(LineSegment[] lineSegments)
         {
-            Dictionary<(int X, int Y), int> pointsTimesCovered = CountPointsTimesCovered(lineSegments);
+            Dictionary<(int X, int Y), int> pointsTimesCovered = CountPointsTimesCovered(lineSegments, false);
 
             int pointsWhereAtLeastTwoLinesOverlap = pointsTimesCovered.Count(p => p.Value > 1);
 
             return pointsWhereAtLeastTwoLinesOverlap;
         }
 
-        private Dictionary<(int X, int Y), int> CountPointsTimesCovered(LineSegment[] lineSegments)
+        public int CountPointsWhereAtLeastTwoLinesOverlapWhenConsideringDiagonalLines(LineSegment[] lineSegments)
+        {
+            Dictionary<(int X, int Y), int> pointsTimesCovered = CountPointsTimesCovered(lineSegments, true);
+
+            int pointsWhereAtLeastTwoLinesOverlap = pointsTimesCovered.Count(p => p.Value > 1);
+
+            return pointsWhereAtLeastTwoLinesOverlap;
+        }
+
+        private Dictionary<(int X, int Y), int> CountPointsTimesCovered(
+            LineSegment[] lineSegments,
+            bool considerDiagonalLines
+        )
         {
             Dictionary<(int X, int Y), int> pointsTimesCovered = new Dictionary<(int X, int Y), int>();
 
             foreach (LineSegment lineSegment in lineSegments)
             {
-                // Only consider horizontal and vertical lines
-                if (lineSegment.Start.X == lineSegment.End.X || lineSegment.Start.Y == lineSegment.End.Y)
+                bool isLineDiagonal = false;
+                if (lineSegment.Start.X != lineSegment.End.X && lineSegment.Start.Y != lineSegment.End.Y)
                 {
-                    int startX = Math.Min(lineSegment.Start.X, lineSegment.End.X);
-                    int endX = Math.Max(lineSegment.Start.X, lineSegment.End.X);
-                    int startY = Math.Min(lineSegment.Start.Y, lineSegment.End.Y);
-                    int endY = Math.Max(lineSegment.Start.Y, lineSegment.End.Y);
+                    isLineDiagonal = true;
+                }
 
-                    for (int x = startX; x <= endX; x++)
+                bool isAngleFortyFiveDegrees = Math.Abs(lineSegment.End.X - lineSegment.Start.X)
+                    == Math.Abs(lineSegment.End.Y - lineSegment.Start.Y);
+
+                int x = lineSegment.Start.X;
+                int y = lineSegment.Start.Y;
+                int xIncrement = lineSegment.Start.X < lineSegment.End.X ? 1 : -1;
+                int yIncrement = lineSegment.Start.Y < lineSegment.End.Y ? 1 : -1;
+
+                // Count for horizontal and vertical lines
+                if (!isLineDiagonal)
+                {
+                    while ((xIncrement == 1 && x <= lineSegment.End.X)
+                        || (xIncrement == -1 && x >= lineSegment.End.X))
                     {
-                        for (int y = startY; y <= endY; y++)
+                        while ((yIncrement == 1 && y <= lineSegment.End.Y)
+                            || (yIncrement == -1 && y >= lineSegment.End.Y))
                         {
                             if (pointsTimesCovered.ContainsKey((x, y)))
                             {
@@ -41,7 +64,31 @@ namespace App.Tasks.Year2021.Day5
                             {
                                 pointsTimesCovered[(x, y)] = 1;
                             }
+
+                            y += yIncrement;
                         }
+
+                        y = lineSegment.Start.Y;
+                        x += xIncrement;
+                    }
+                }
+                // Count for diagonal lines where angle is exactly 45 degrees
+                else if (considerDiagonalLines && isAngleFortyFiveDegrees)
+                {
+                    while ((xIncrement == 1 && x <= lineSegment.End.X) || (xIncrement == -1 && x >= lineSegment.End.X)
+                        || (yIncrement == 1 && y <= lineSegment.End.Y) || (yIncrement == -1 && y >= lineSegment.End.Y))
+                    {
+                        if (pointsTimesCovered.ContainsKey((x, y)))
+                        {
+                            pointsTimesCovered[(x, y)]++;
+                        }
+                        else
+                        {
+                            pointsTimesCovered[(x, y)] = 1;
+                        }
+
+                        x += xIncrement;
+                        y += yIncrement;
                     }
                 }
             }
