@@ -14,7 +14,7 @@ namespace Tests.Tasks.Year2021.Day5
         }
 
         [Fact]
-        public void Solution_LineSegmentsAndBoardsExample_PointsWhereAtLeastTwoLinesOverlapWhenConsideringDiagonalLinesCountEquals()
+        public void Solution_LineSegmentsExample_PointsWhereAtLeastTwoLinesOverlapWhenConsideringDiagonalLinesCountEquals()
         {
             string lineSegments = "0,9 -> 5,9"
                 + $"{Environment.NewLine}8,0 -> 0,8"
