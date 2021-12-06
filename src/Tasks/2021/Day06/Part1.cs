@@ -95,7 +95,7 @@ namespace App.Tasks.Year2021.Day6
         {
             int[] lanternfishInternalTimers = lanternfishInternalTimersRepository.GetLanternfishInternalTimers(input);
             int totalLanternfish =
-                lanternfishSimulation.CountLanternfishAfterGivenDays(lanternfishInternalTimers, TOTAL_DAYS);
+                (int)lanternfishSimulation.CountLanternfishAfterGivenDays(lanternfishInternalTimers, TOTAL_DAYS);
 
             return totalLanternfish;
         }

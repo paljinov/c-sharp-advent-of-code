@@ -9,26 +9,42 @@ namespace App.Tasks.Year2021.Day6
 
         private const int NEW_LANTERNFISH_INTERNAL_TIMER = 8;
 
-        public int CountLanternfishAfterGivenDays(int[] lanternfishInternalTimers, int totalDays)
+        public long CountLanternfishAfterGivenDays(int[] lanternfishInternalTimers, int totalDays)
         {
-            List<int> lanternfish = lanternfishInternalTimers.ToList();
+            Dictionary<int, long> lanternfish = GetLanternfishInternalTimersOccurrences(lanternfishInternalTimers);
 
             for (int day = 1; day <= totalDays; day++)
             {
-                int lanternfishCount = lanternfish.Count;
-                for (int i = 0; i < lanternfishCount; i++)
+                long zeroInternalTimerOccurrences = lanternfish[0];
+
+                for (int i = 0; i < NEW_LANTERNFISH_INTERNAL_TIMER; i++)
                 {
-                    lanternfish[i]--;
-                    // Create new lanternfish
-                    if (lanternfish[i] < 0)
-                    {
-                        lanternfish[i] = CREATOR_LANTERNFISH_INTERNAL_TIMER;
-                        lanternfish.Add(NEW_LANTERNFISH_INTERNAL_TIMER);
-                    }
+                    lanternfish[i] = lanternfish[i + 1];
                 }
+
+                lanternfish[CREATOR_LANTERNFISH_INTERNAL_TIMER] += zeroInternalTimerOccurrences;
+                lanternfish[NEW_LANTERNFISH_INTERNAL_TIMER] = zeroInternalTimerOccurrences;
             }
 
-            return lanternfish.Count;
+            long totalLanternfish = lanternfish.Values.Sum();
+
+            return totalLanternfish;
+        }
+
+        private Dictionary<int, long> GetLanternfishInternalTimersOccurrences(int[] lanternfishInternalTimers)
+        {
+            Dictionary<int, long> lanternfish = new Dictionary<int, long>();
+            for (int i = 0; i <= NEW_LANTERNFISH_INTERNAL_TIMER; i++)
+            {
+                lanternfish[i] = 0;
+            }
+
+            foreach (int lanternfishInternalTimer in lanternfishInternalTimers)
+            {
+                lanternfish[lanternfishInternalTimer]++;
+            }
+
+            return lanternfish;
         }
     }
 }
