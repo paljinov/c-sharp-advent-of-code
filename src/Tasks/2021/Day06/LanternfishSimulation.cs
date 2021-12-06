@@ -5,46 +5,51 @@ namespace App.Tasks.Year2021.Day6
 {
     public class LanternfishSimulation
     {
+        private const int ZERO_INTERNAL_TIMER = 0;
+
         private const int CREATOR_LANTERNFISH_INTERNAL_TIMER = 6;
 
         private const int NEW_LANTERNFISH_INTERNAL_TIMER = 8;
 
         public long CountLanternfishAfterGivenDays(int[] lanternfishInternalTimers, int totalDays)
         {
-            Dictionary<int, long> lanternfish = GetLanternfishInternalTimersOccurrences(lanternfishInternalTimers);
+            Dictionary<int, long> lanternfishInternalTimersOccurrences =
+                GetLanternfishInternalTimersOccurrences(lanternfishInternalTimers);
 
             for (int day = 1; day <= totalDays; day++)
             {
-                long zeroInternalTimerOccurrences = lanternfish[0];
+                long zeroOccurrences = lanternfishInternalTimersOccurrences[ZERO_INTERNAL_TIMER];
 
+                // Update lanternfish internal timers
                 for (int i = 0; i < NEW_LANTERNFISH_INTERNAL_TIMER; i++)
                 {
-                    lanternfish[i] = lanternfish[i + 1];
+                    lanternfishInternalTimersOccurrences[i] = lanternfishInternalTimersOccurrences[i + 1];
                 }
 
-                lanternfish[CREATOR_LANTERNFISH_INTERNAL_TIMER] += zeroInternalTimerOccurrences;
-                lanternfish[NEW_LANTERNFISH_INTERNAL_TIMER] = zeroInternalTimerOccurrences;
+                // Lanternfish with internal timer equal to zero is creator which will reset and create new lanternfish
+                lanternfishInternalTimersOccurrences[CREATOR_LANTERNFISH_INTERNAL_TIMER] += zeroOccurrences;
+                lanternfishInternalTimersOccurrences[NEW_LANTERNFISH_INTERNAL_TIMER] = zeroOccurrences;
             }
 
-            long totalLanternfish = lanternfish.Values.Sum();
+            long totalLanternfish = lanternfishInternalTimersOccurrences.Values.Sum();
 
             return totalLanternfish;
         }
 
         private Dictionary<int, long> GetLanternfishInternalTimersOccurrences(int[] lanternfishInternalTimers)
         {
-            Dictionary<int, long> lanternfish = new Dictionary<int, long>();
+            Dictionary<int, long> lanternfishInternalTimersOccurrences = new Dictionary<int, long>();
             for (int i = 0; i <= NEW_LANTERNFISH_INTERNAL_TIMER; i++)
             {
-                lanternfish[i] = 0;
+                lanternfishInternalTimersOccurrences[i] = 0;
             }
 
             foreach (int lanternfishInternalTimer in lanternfishInternalTimers)
             {
-                lanternfish[lanternfishInternalTimer]++;
+                lanternfishInternalTimersOccurrences[lanternfishInternalTimer]++;
             }
 
-            return lanternfish;
+            return lanternfishInternalTimersOccurrences;
         }
     }
 }
