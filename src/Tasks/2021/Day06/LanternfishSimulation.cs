@@ -18,7 +18,8 @@ namespace App.Tasks.Year2021.Day6
 
             for (int day = 1; day <= totalDays; day++)
             {
-                long zeroOccurrences = lanternfishInternalTimersOccurrences[ZERO_INTERNAL_TIMER];
+                long lanternfishZeroInternalTimerOccurrences =
+                    lanternfishInternalTimersOccurrences[ZERO_INTERNAL_TIMER];
 
                 // Update lanternfish internal timers
                 for (int i = 0; i < NEW_LANTERNFISH_INTERNAL_TIMER; i++)
@@ -27,8 +28,10 @@ namespace App.Tasks.Year2021.Day6
                 }
 
                 // Lanternfish with internal timer equal to zero is creator which will reset and create new lanternfish
-                lanternfishInternalTimersOccurrences[CREATOR_LANTERNFISH_INTERNAL_TIMER] += zeroOccurrences;
-                lanternfishInternalTimersOccurrences[NEW_LANTERNFISH_INTERNAL_TIMER] = zeroOccurrences;
+                lanternfishInternalTimersOccurrences[CREATOR_LANTERNFISH_INTERNAL_TIMER] +=
+                    lanternfishZeroInternalTimerOccurrences;
+                lanternfishInternalTimersOccurrences[NEW_LANTERNFISH_INTERNAL_TIMER] =
+                    lanternfishZeroInternalTimerOccurrences;
             }
 
             long totalLanternfish = lanternfishInternalTimersOccurrences.Values.Sum();
