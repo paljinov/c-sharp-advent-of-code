@@ -7,6 +7,23 @@ namespace App.Tasks.Year2021.Day7
     {
         public int CalculateLeastSpentFuelWhichIsNeededToAlign(int[] crabHorizontalPositions)
         {
+            int leastSpentFuel = DoCalculateLeastSpentFuelWhichIsNeededToAlign(crabHorizontalPositions, false);
+
+            return leastSpentFuel;
+        }
+
+        public int CalculateLeastSpentFuelWhichIsNeededToAlignForIncreasingFuelCost(int[] crabHorizontalPositions)
+        {
+            int leastSpentFuel = DoCalculateLeastSpentFuelWhichIsNeededToAlign(crabHorizontalPositions, true);
+
+            return leastSpentFuel;
+        }
+
+        private int DoCalculateLeastSpentFuelWhichIsNeededToAlign(
+            int[] crabHorizontalPositions,
+            bool increasingFuelCost
+        )
+        {
             int leastSpentFuel = int.MaxValue;
 
             int minHorizontalPosition = crabHorizontalPositions.Min();
@@ -17,7 +34,16 @@ namespace App.Tasks.Year2021.Day7
                 int spentFuel = 0;
                 foreach (int crabHorizontalPosition in crabHorizontalPositions)
                 {
-                    spentFuel += Math.Abs(crabHorizontalPosition - hp);
+                    int steps = Math.Abs(crabHorizontalPosition - hp);
+                    if (!increasingFuelCost)
+                    {
+                        spentFuel += steps;
+                    }
+                    else
+                    {
+                        spentFuel += steps * (steps + 1) / 2;
+                    }
+
                 }
 
                 leastSpentFuel = Math.Min(leastSpentFuel, spentFuel);
