@@ -15,7 +15,7 @@ namespace App.Tasks.Year2021.Day8
                 SignalNote signalNote = new SignalNote
                 {
                     SignalPatterns = signalNotesParts[0].Split(' ', StringSplitOptions.RemoveEmptyEntries),
-                    Output = signalNotesParts[0].Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                    OutputValues = signalNotesParts[1].Split(' ', StringSplitOptions.RemoveEmptyEntries)
                 };
 
                 signalNotes[i] = signalNote;

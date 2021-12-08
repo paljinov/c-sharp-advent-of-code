@@ -113,20 +113,20 @@ namespace App.Tasks.Year2021.Day8
     {
         private readonly SignalNotesRepository signalNotesRepository;
 
-        private readonly Signals signals;
+        private readonly Digits digits;
 
         public Part1()
         {
             signalNotesRepository = new SignalNotesRepository();
-            signals = new Signals();
+            digits = new Digits();
         }
 
         public int Solution(string input)
         {
             SignalNote[] signalNotes = signalNotesRepository.GetSignalNotes(input);
-            int leastSpentFuel = signals.CalculateDigitsWithUniqueNumberOfSegments(signalNotes);
+            int easyDigitsAppearances = digits.CalculateEasyDigitsAppearances(signalNotes);
 
-            return leastSpentFuel;
+            return easyDigitsAppearances;
         }
     }
 }
