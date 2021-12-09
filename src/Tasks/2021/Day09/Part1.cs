@@ -57,9 +57,9 @@ namespace App.Tasks.Year2021.Day9
         public int Solution(string input)
         {
             int[,] heightmap = heightmapRepository.GetHeightmap(input);
-            int easyDigitsAppearances = this.heightmap.CalculateRiskLevelsSumOfAllHeightmapLowPoints(heightmap);
+            int riskLevelsSum = this.heightmap.CalculateRiskLevelsSumOfAllHeightmapLowPoints(heightmap);
 
-            return easyDigitsAppearances;
+            return riskLevelsSum;
         }
     }
 }
