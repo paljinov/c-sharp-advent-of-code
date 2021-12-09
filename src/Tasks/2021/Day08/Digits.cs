@@ -5,7 +5,7 @@ namespace App.Tasks.Year2021.Day8
 {
     public class Digits
     {
-        private readonly Dictionary<int, int> digitsSegments = new Dictionary<int, int>()
+        private readonly Dictionary<int, int> digitsTotalSegments = new Dictionary<int, int>()
         {
             { 0, 6},
             { 1, 2},
@@ -50,7 +50,7 @@ namespace App.Tasks.Year2021.Day8
                 string outputValue = string.Empty;
                 foreach (string output in signalNote.OutputValues)
                 {
-                    int digit = signalsMapping[string.Concat(output.OrderBy(c => c))];
+                    int digit = signalsMapping[SortStringLetters(output)];
                     outputValue += digit;
                 }
 
@@ -64,7 +64,7 @@ namespace App.Tasks.Year2021.Day8
         {
             foreach (int easyDigit in easyDigits)
             {
-                if (digit.Length == digitsSegments[easyDigit])
+                if (digit.Length == digitsTotalSegments[easyDigit])
                 {
                     return true;
                 }
@@ -75,20 +75,20 @@ namespace App.Tasks.Year2021.Day8
 
         private Dictionary<string, int> GetSignalsToDigitsMappings(SignalNote signalNote)
         {
-            string one = signalNote.SignalPatterns.Where(sp => sp.Length == digitsSegments[1]).First();
-            string four = signalNote.SignalPatterns.Where(sp => sp.Length == digitsSegments[4]).First();
-            string seven = signalNote.SignalPatterns.Where(sp => sp.Length == digitsSegments[7]).First();
-            string eight = signalNote.SignalPatterns.Where(sp => sp.Length == digitsSegments[8]).First();
+            string one = signalNote.SignalPatterns.Where(sp => sp.Length == digitsTotalSegments[1]).First();
+            string four = signalNote.SignalPatterns.Where(sp => sp.Length == digitsTotalSegments[4]).First();
+            string seven = signalNote.SignalPatterns.Where(sp => sp.Length == digitsTotalSegments[7]).First();
+            string eight = signalNote.SignalPatterns.Where(sp => sp.Length == digitsTotalSegments[8]).First();
 
-            char a = string.Join("", seven.Split(one.ToCharArray()))[0];
+            char a = RemoveCharsFromString(seven, one.ToCharArray())[0];
 
             char[] removeLettersForNine = four.ToCharArray().Concat(new char[] { a }).ToArray();
             (char g, string nine) = FindLetterAndDigitSignal(signalNote, removeLettersForNine, 9, 1);
 
             char e = eight.Except(nine).First();
             (char b, string zero) = FindLetterAndDigitSignal(signalNote, new char[] { a, one[0], one[1], g, e }, 0, 1);
-            string six = signalNote.SignalPatterns.Where(sp => sp.Length == digitsSegments[6]
-                && sp != zero && sp != nine).First();
+            string six = signalNote.SignalPatterns.Where(
+                sp => sp.Length == digitsTotalSegments[6] && sp != zero && sp != nine).First();
 
             char d = eight.Except(zero).First();
             char c = eight.Except(six).First();
@@ -100,33 +100,37 @@ namespace App.Tasks.Year2021.Day8
 
             return new Dictionary<string, int>()
             {
-                { string.Concat(zero.OrderBy(c => c)), 0},
-                { string.Concat(one.OrderBy(c => c)), 1},
-                { string.Concat(two.OrderBy(c => c)), 2},
-                { string.Concat(three.OrderBy(c => c)), 3},
-                { string.Concat(four.OrderBy(c => c)), 4},
-                { string.Concat(five.OrderBy(c => c)), 5},
-                { string.Concat(six.OrderBy(c => c)), 6},
-                { string.Concat(seven.OrderBy(c => c)), 7},
-                { string.Concat(eight.OrderBy(c => c)), 8},
-                { string.Concat(nine.OrderBy(c => c)), 9},
+                { SortStringLetters(zero), 0},
+                { SortStringLetters(one), 1},
+                { SortStringLetters(two), 2},
+                { SortStringLetters(three), 3},
+                { SortStringLetters(four), 4},
+                { SortStringLetters(five), 5},
+                { SortStringLetters(six), 6},
+                { SortStringLetters(seven), 7},
+                { SortStringLetters(eight), 8},
+                { SortStringLetters(nine), 9},
             };
-
         }
 
-        private (char, string) FindLetterAndDigitSignal(SignalNote signalNote, char[] removeChars, int digit, int length)
+        private (char, string) FindLetterAndDigitSignal(
+            SignalNote signalNote,
+            char[] removeChars,
+            int digit,
+            int remainingLength
+        )
         {
             char letter = '\0';
             string digitSignal = string.Empty;
 
             foreach (string signalPattern in signalNote.SignalPatterns)
             {
-                if (signalPattern.Length == digitsSegments[digit])
+                if (signalPattern.Length == digitsTotalSegments[digit])
                 {
-                    digitSignal = string.Join("", signalPattern.Split(removeChars));
-                    if (digitSignal.Length == length)
+                    digitSignal = RemoveCharsFromString(signalPattern, removeChars);
+                    if (digitSignal.Length == remainingLength)
                     {
-                        if (length > 0)
+                        if (remainingLength > 0)
                         {
                             letter = digitSignal[0];
                         }
@@ -138,6 +142,16 @@ namespace App.Tasks.Year2021.Day8
             }
 
             return (letter, digitSignal);
+        }
+
+        private string SortStringLetters(string @string)
+        {
+            return string.Concat(@string.OrderBy(c => c));
+        }
+
+        private string RemoveCharsFromString(string @string, char[] removeChars)
+        {
+            return string.Join("", @string.Split(removeChars));
         }
     }
 }
