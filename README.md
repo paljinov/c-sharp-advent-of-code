@@ -29,6 +29,13 @@ dotnet run --project ./src/AdventOfCode.csproj
 ### Run watcher, run source code on file change:
 1. Build and compose project
     ```sh
+    docker-compose -f docker-compose.yml -f docker-compose.watch.yml build \
+        --build-arg USER_NAME=$(whoami) --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)
+
+    docker-compose -f docker-compose.yml -f docker-compose.watch.yml up -d --force-recreate
+    ```
+    or
+    ```sh
     docker-compose -f docker-compose.yml -f docker-compose.watch.yml up -d --force-recreate --build
     ```
 2. Get a bash shell in the app running container: 
