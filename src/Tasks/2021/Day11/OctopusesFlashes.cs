@@ -16,7 +16,8 @@ namespace App.Tasks.Year2021.Day11
 
             for (int i = 1; i <= totalSteps; i++)
             {
-                totalFlashes += DoStep(octopusesEnergyLevels);
+                (int stepFlashes, _) = DoStep(octopusesEnergyLevels);
+                totalFlashes += stepFlashes;
             }
 
             return totalFlashes;
@@ -24,10 +25,19 @@ namespace App.Tasks.Year2021.Day11
 
         public int FindFirstStepDuringWhichAllOctopusesFlash(int[,] octopusesEnergyLevels)
         {
-            return 0;
+            int firstStepDuringWhichAllOctopusesFlash = 0;
+
+            bool allFlashed = false;
+            while (!allFlashed)
+            {
+                (_, allFlashed) = DoStep(octopusesEnergyLevels);
+                firstStepDuringWhichAllOctopusesFlash++;
+            }
+
+            return firstStepDuringWhichAllOctopusesFlash;
         }
 
-        private int DoStep(int[,] octopusesEnergyLevels)
+        private (int StepFlashes, bool AllFlashed) DoStep(int[,] octopusesEnergyLevels)
         {
             int stepFlashes = 0;
 
@@ -48,7 +58,13 @@ namespace App.Tasks.Year2021.Day11
                 octopusesEnergyLevels[i, j] = ENERGY_LEVEL_AFTER_FLASH;
             }
 
-            return stepFlashes;
+            bool allFlashed = false;
+            if (octopusesWhichFlashed.Count == octopusesEnergyLevels.GetLength(0) * octopusesEnergyLevels.GetLength(1))
+            {
+                allFlashed = true;
+            }
+
+            return (stepFlashes, allFlashed);
         }
 
         private int IncreaseOctopusEnergyLevel(
