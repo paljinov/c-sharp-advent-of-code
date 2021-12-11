@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace App.Tasks.Year2021.Day11
 {
-    public class Octopuses
+    public class OctopusesFlashes
     {
         private const int ENERGY_LEVEL_INCREMENT = 1;
 
@@ -20,6 +20,11 @@ namespace App.Tasks.Year2021.Day11
             }
 
             return totalFlashes;
+        }
+
+        public int FindFirstStepDuringWhichAllOctopusesFlash(int[,] octopusesEnergyLevels)
+        {
+            return 0;
         }
 
         private int DoStep(int[,] octopusesEnergyLevels)

@@ -325,18 +325,18 @@ namespace App.Tasks.Year2021.Day11
 
         private readonly OctopusesEnergyLevelsRepository octopusesEnergyLevelsRepository;
 
-        private readonly Octopuses octopuses;
+        private readonly OctopusesFlashes octopusesFlashes;
 
         public Part1()
         {
             octopusesEnergyLevelsRepository = new OctopusesEnergyLevelsRepository();
-            octopuses = new Octopuses();
+            octopusesFlashes = new OctopusesFlashes();
         }
 
         public int Solution(string input)
         {
             int[,] octopusesEnergyLevels = octopusesEnergyLevelsRepository.GetOctopusesEnergyLevels(input);
-            int totalFlashes = octopuses.CountTotalFlashesAfterGivenSteps(octopusesEnergyLevels, TOTAL_STEPS);
+            int totalFlashes = octopusesFlashes.CountTotalFlashesAfterGivenSteps(octopusesEnergyLevels, TOTAL_STEPS);
 
             return totalFlashes;
         }
