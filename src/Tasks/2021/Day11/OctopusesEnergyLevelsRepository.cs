@@ -17,7 +17,6 @@ namespace App.Tasks.Year2021.Day11
             {
                 for (int j = 0; j < octopusesEnergyLevelsString[i].Length; j++)
                 {
-
                     octopusesEnergyLevels[i, j] = (int)char.GetNumericValue(octopusesEnergyLevelsString[i][j]);
                 }
             }
