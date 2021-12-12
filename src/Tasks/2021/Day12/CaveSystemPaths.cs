@@ -12,31 +12,31 @@ namespace App.Tasks.Year2021.Day12
         public int CountCaveSystemPathsThatVisitSmallCavesAtMostOnce((string, string)[] caveSystem)
         {
             List<string> currentPath = new List<string>();
-            HashSet<string> pathsCache = new HashSet<string>();
             int caveSystemPathsThatVisitSmallCavesAtMostOnce =
-                DoCountCaveSystemPathsThatVisitSmallCavesAtMostOnce(caveSystem, currentPath, START, pathsCache);
+                DoCountCaveSystemPaths(caveSystem, 1, currentPath, START);
 
             return caveSystemPathsThatVisitSmallCavesAtMostOnce;
         }
 
-        private int DoCountCaveSystemPathsThatVisitSmallCavesAtMostOnce(
+        public int CountCaveSystemPathsThatVisitSmallCavesAtMostTwice((string, string)[] caveSystem)
+        {
+            List<string> currentPath = new List<string>();
+            int caveSystemPathsThatVisitSmallCavesAtMostTwice =
+                DoCountCaveSystemPaths(caveSystem, 2, currentPath, START);
+
+            return caveSystemPathsThatVisitSmallCavesAtMostTwice;
+        }
+
+        private int DoCountCaveSystemPaths(
             (string, string)[] caveSystem,
+            int singleSmallCaveMaxVisits,
             List<string> currentPath,
-            string currentCave,
-            HashSet<string> pathsCache
+            string currentCave
         )
         {
-            int caveSystemPathsThatVisitSmallCavesAtMostOnce = 0;
+            int totalPaths = 0;
 
             currentPath.Add(currentCave);
-
-            string pathString = string.Join(',', currentPath);
-            // If this path is already reached
-            if (pathsCache.Contains(pathString))
-            {
-                return 0;
-            }
-            pathsCache.Add(pathString);
 
             foreach ((string First, string Second) caves in caveSystem)
             {
@@ -49,27 +49,26 @@ namespace App.Tasks.Year2021.Day12
                     }
 
                     // If small cave is not already visited
-                    if (!IsCaveSmallAndAlreadyVisited(nextCave, currentPath))
+                    if (!IsCaveSmallAndAlreadyVisitedMaxTimes(nextCave, currentPath, singleSmallCaveMaxVisits))
                     {
                         // If end is reached
                         if (nextCave == END)
                         {
-                            caveSystemPathsThatVisitSmallCavesAtMostOnce++;
+                            totalPaths++;
                         }
                         else
                         {
-                            caveSystemPathsThatVisitSmallCavesAtMostOnce +=
-                                DoCountCaveSystemPathsThatVisitSmallCavesAtMostOnce(
-                                    caveSystem, currentPath.ToList(), nextCave, pathsCache);
+                            totalPaths += DoCountCaveSystemPaths(
+                                caveSystem, singleSmallCaveMaxVisits, currentPath.ToList(), nextCave);
                         }
                     }
                 }
             }
 
-            return caveSystemPathsThatVisitSmallCavesAtMostOnce;
+            return totalPaths;
         }
 
-        private bool IsCaveSmallAndAlreadyVisited(string cave, List<string> path)
+        private bool IsCaveSmallAndAlreadyVisitedMaxTimes(string cave, List<string> path, int singleSmallCaveMaxVisits)
         {
             // Big caves are written in uppercase
             if (char.IsUpper(cave[0]))
@@ -77,13 +76,28 @@ namespace App.Tasks.Year2021.Day12
                 return false;
             }
 
-            // If path already contains small cave
-            if (!path.Contains(cave))
+            int caveOccurencesInPath = path.Count(c => c == cave);
+
+            // The small caves named start and end can only be visited exactly once
+            if ((cave == START || cave == END) && caveOccurencesInPath >= 1)
             {
-                return false;
+                return true;
             }
 
-            return true;
+            int maxSmallCaveOccurencesInPath = path.Where(c => char.IsLower(c[0]))
+                .GroupBy(c => c)
+                .OrderByDescending(c => c.Count())
+                .First()
+                .Count();
+
+            // If small cave is already visited max times
+            if ((maxSmallCaveOccurencesInPath <= 1 && caveOccurencesInPath >= singleSmallCaveMaxVisits)
+                || (maxSmallCaveOccurencesInPath >= 2 && caveOccurencesInPath >= 1))
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }
