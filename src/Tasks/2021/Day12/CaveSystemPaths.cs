@@ -48,7 +48,7 @@ namespace App.Tasks.Year2021.Day12
                         nextCave = caves.Second;
                     }
 
-                    // If small cave is not already visited
+                    // If it is not small cave or it is not already visited max times
                     if (!IsCaveSmallAndAlreadyVisitedMaxTimes(nextCave, currentPath, singleSmallCaveMaxVisits))
                     {
                         // If end is reached
