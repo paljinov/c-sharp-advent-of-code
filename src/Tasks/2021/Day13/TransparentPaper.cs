@@ -1,22 +1,36 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace App.Tasks.Year2021.Day13
 {
     public class TransparentPaper
     {
+        private const char EMPTY_POSITION = '.';
+
+        private const char DOT_POSITION = '#';
+
         public int CountDotsAfterCompletingFirstFoldInstruction((int, int)[] dots, (char, int)[] foldInstructions)
+        {
+            HashSet<(int, int)> dotsAfterFolding = FoldTransparentPaper(dots.ToHashSet(), foldInstructions[0]);
+
+            return dotsAfterFolding.Count;
+        }
+
+        public string FindCodeNeededToActivateTheInfraredThermalImagingCameraSystem(
+            (int, int)[] dots,
+            (char, int)[] foldInstructions
+        )
         {
             HashSet<(int, int)> dotsAfterFolding = dots.ToHashSet();
             foreach ((char, int) foldInstruction in foldInstructions)
             {
                 dotsAfterFolding = FoldTransparentPaper(dotsAfterFolding, foldInstruction);
-                break;
             }
 
-            int dotsAfterCompletingFirstFoldInstruction = dotsAfterFolding.Count();
+            string codeNeededToActivateTheInfraredThermalImagingCameraSystem = PrepareCodeForPrint(dotsAfterFolding);
 
-            return dotsAfterCompletingFirstFoldInstruction;
+            return codeNeededToActivateTheInfraredThermalImagingCameraSystem;
         }
 
         private HashSet<(int, int)> FoldTransparentPaper(
@@ -44,7 +58,7 @@ namespace App.Tasks.Year2021.Day13
                     int y = i;
                     if (i > foldInstruction.Line)
                     {
-                        y = y - 2 * (y - foldInstruction.Line);
+                        y -= 2 * (y - foldInstruction.Line);
                     }
 
                     for (int j = minX; j <= maxX; j++)
@@ -74,7 +88,7 @@ namespace App.Tasks.Year2021.Day13
                         int x = j;
                         if (j > foldInstruction.Line)
                         {
-                            x = x - 2 * (x - foldInstruction.Line);
+                            x -= 2 * (x - foldInstruction.Line);
                         }
 
                         if (dots.Contains((j, i)))
@@ -86,6 +100,34 @@ namespace App.Tasks.Year2021.Day13
             }
 
             return dotsAfterFolding;
+        }
+
+        private string PrepareCodeForPrint(HashSet<(int X, int Y)> dots)
+        {
+            StringBuilder codeNeededToActivateTheInfraredThermalImagingCameraSystem = new StringBuilder();
+
+            int minX = dots.Select(d => d.X).Min();
+            int maxX = dots.Select(d => d.X).Max();
+            int minY = dots.Select(d => d.Y).Min();
+            int maxY = dots.Select(d => d.Y).Max();
+
+            for (int i = minY; i <= maxY; i++)
+            {
+                codeNeededToActivateTheInfraredThermalImagingCameraSystem.AppendLine();
+                for (int j = minX; j <= maxX; j++)
+                {
+                    if (dots.Contains((j, i)))
+                    {
+                        codeNeededToActivateTheInfraredThermalImagingCameraSystem.Append(DOT_POSITION);
+                    }
+                    else
+                    {
+                        codeNeededToActivateTheInfraredThermalImagingCameraSystem.Append(EMPTY_POSITION);
+                    }
+                }
+            }
+
+            return codeNeededToActivateTheInfraredThermalImagingCameraSystem.ToString();
         }
     }
 }
