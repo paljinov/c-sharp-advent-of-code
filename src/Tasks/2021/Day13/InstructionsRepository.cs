@@ -24,44 +24,29 @@ namespace App.Tasks.Year2021.Day13
             return dots;
         }
 
-        public (int, int)[] GetFoldAlongCoordinates(string input)
+        public (char, int)[] GetFoldInstructions(string input)
         {
             string[] inputParts = ParseInput(input);
 
-            string[] foldAlongCoordinatesString =
+            string[] foldInstructionsString =
                 inputParts[1].Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
 
-            int foldAlongCoordinatesLength = foldAlongCoordinatesString.Length / 2;
-            (int, int)[] foldAlongCoordinates = new (int, int)[foldAlongCoordinatesLength];
+            (char, int)[] foldInstructions = new (char, int)[foldInstructionsString.Length];
 
-            Regex foldAlongCoordinateRegex = new Regex(@"^fold\salong\s(x|y)=(\d+)$");
+            Regex foldInstructionRegex = new Regex(@"^fold\salong\s(x|y)=(\d+)$");
 
-            int x = 0;
-            int y = 0;
-            for (int i = 0; i < foldAlongCoordinatesLength; i += 2)
+            for (int i = 0; i < foldInstructionsString.Length; i++)
             {
-                for (int j = 0; j < 2; j++)
-                {
-                    Match foldAlongCoordinateMatch = foldAlongCoordinateRegex.Match(foldAlongCoordinatesString[j]);
-                    GroupCollection foldAlongCoordinateGroups = foldAlongCoordinateMatch.Groups;
+                Match foldInstructionMatch = foldInstructionRegex.Match(foldInstructionsString[i]);
+                GroupCollection foldInstructionGroups = foldInstructionMatch.Groups;
 
-                    if (foldAlongCoordinateGroups[1].Value == "x")
-                    {
-                        x = int.Parse(foldAlongCoordinateGroups[2].Value);
-                    }
-                    else
-                    {
-                        y = int.Parse(foldAlongCoordinateGroups[2].Value);
-                    }
-
-                    if (j > 0)
-                    {
-                        foldAlongCoordinates[i / 2] = (x, y);
-                    }
-                }
+                foldInstructions[i] = (
+                    foldInstructionGroups[1].Value[0],
+                    int.Parse(foldInstructionGroups[2].Value)
+                );
             }
 
-            return foldAlongCoordinates;
+            return foldInstructions;
         }
 
         private string[] ParseInput(string input)

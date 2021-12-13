@@ -152,10 +152,10 @@ namespace App.Tasks.Year2021.Day13
         public int Solution(string input)
         {
             (int, int)[] dots = instructionsRepository.GetDots(input);
-            (int, int)[] foldAlongCoordinates = instructionsRepository.GetFoldAlongCoordinates(input);
+            (char, int)[] foldInstructions = instructionsRepository.GetFoldInstructions(input);
 
             int dotsAfterCompletingFirstFoldInstruction =
-                transparentPaper.CountDotsAfterCompletingFirstFoldInstruction(dots, foldAlongCoordinates);
+                transparentPaper.CountDotsAfterCompletingFirstFoldInstruction(dots, foldInstructions);
 
             return dotsAfterCompletingFirstFoldInstruction;
         }
