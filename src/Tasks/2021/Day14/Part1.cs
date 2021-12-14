@@ -95,7 +95,7 @@ namespace App.Tasks.Year2021.Day14
             string polymerTemplate = polymerInstructionsRepository.GetPolymerTemplate(input);
             Dictionary<string, char> pairInsertionRules = polymerInstructionsRepository.GetPairInsertionRules(input);
 
-            int differenceBetweenMostAndLeastCommonElement = polymer
+            int differenceBetweenMostAndLeastCommonElement = (int)polymer
                 .CalculateDifferenceBetweenMostAndLeastCommonElement(polymerTemplate, pairInsertionRules, TOTAL_STEPS);
 
             return differenceBetweenMostAndLeastCommonElement;
