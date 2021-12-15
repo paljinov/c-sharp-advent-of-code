@@ -8,11 +8,16 @@ namespace App.Tasks.Year2021.Day15
 
         public int CalculateLowestTotalRiskOfAnyPathFromTopLeftToBottomRight(int[,] riskLevelMap)
         {
-            int lowestTotalRisk = InitializeLowestTotalRisk(riskLevelMap);
+            int lowestTotalRisk = int.MaxValue;
 
             (int X, int Y) startPosition = (0, 0);
             Dictionary<(int X, int Y), int> positionRiskCache = new Dictionary<(int X, int Y), int>();
 
+            // Go just down and right
+            DoFindPathWithLowestTotalRisk(riskLevelMap, startPosition, positionRiskCache, 0, ref lowestTotalRisk, true);
+            // Check potentially better solution with up and left paths too
+            // when lowest total risk is already initialized
+            positionRiskCache.Clear();
             DoFindPathWithLowestTotalRisk(riskLevelMap, startPosition, positionRiskCache, 0, ref lowestTotalRisk);
 
             return lowestTotalRisk;
@@ -34,7 +39,8 @@ namespace App.Tasks.Year2021.Day15
             (int X, int Y) currentPosition,
             Dictionary<(int X, int Y), int> positionRiskCache,
             int risk,
-            ref int lowestTotalRisk
+            ref int lowestTotalRisk,
+            bool justDownAndRight = false
         )
         {
             // The starting position is never entered, so its risk is not counted
@@ -63,7 +69,9 @@ namespace App.Tasks.Year2021.Day15
                 return;
             }
 
-            List<(int X, int Y)> nextStepPositions = GetNextStepPositions(riskLevelMap, currentPosition);
+            List<(int X, int Y)> nextStepPositions =
+                GetNextStepPositions(riskLevelMap, currentPosition, justDownAndRight);
+
             foreach ((int X, int Y) nextPosition in nextStepPositions)
             {
                 DoFindPathWithLowestTotalRisk(
@@ -71,41 +79,17 @@ namespace App.Tasks.Year2021.Day15
                     nextPosition,
                     positionRiskCache,
                     risk,
-                    ref lowestTotalRisk
+                    ref lowestTotalRisk,
+                    justDownAndRight
                 );
             }
         }
 
-        private int InitializeLowestTotalRisk(int[,] riskLevelMap)
-        {
-            int totalRisk = 0;
-
-            // Go by left edge
-            for (int i = 0; i < riskLevelMap.GetLength(0); i++)
-            {
-                for (int j = 0; j < 1; j++)
-                {
-                    if (i > 0 || j > 0)
-                    {
-                        totalRisk += riskLevelMap[i, j];
-                    }
-                }
-            }
-
-            // Go by bottom edge
-            for (int i = riskLevelMap.GetLength(0) - 1; i < riskLevelMap.GetLength(0); i++)
-            {
-                // Exclude bottom left which is already counted
-                for (int j = 1; j < riskLevelMap.GetLength(1); j++)
-                {
-                    totalRisk += riskLevelMap[i, j];
-                }
-            }
-
-            return totalRisk;
-        }
-
-        private List<(int X, int Y)> GetNextStepPositions(int[,] riskLevelMap, (int X, int Y) currentPosition)
+        private List<(int X, int Y)> GetNextStepPositions(
+            int[,] riskLevelMap,
+            (int X, int Y) currentPosition,
+            bool justDownAndRight
+        )
         {
             List<(int X, int Y)> nextPositions = new List<(int X, int Y)>();
 
@@ -121,16 +105,19 @@ namespace App.Tasks.Year2021.Day15
                 nextPositions.Add((currentPosition.X, currentPosition.Y + 1));
             }
 
-            // Up
-            if (currentPosition.X - 1 >= 0)
+            if (!justDownAndRight)
             {
-                nextPositions.Add((currentPosition.X - 1, currentPosition.Y));
-            }
+                // Up
+                if (currentPosition.X - 1 >= 0)
+                {
+                    nextPositions.Add((currentPosition.X - 1, currentPosition.Y));
+                }
 
-            // Left
-            if (currentPosition.Y - 1 >= 0)
-            {
-                nextPositions.Add((currentPosition.X, currentPosition.Y - 1));
+                // Left
+                if (currentPosition.Y - 1 >= 0)
+                {
+                    nextPositions.Add((currentPosition.X, currentPosition.Y - 1));
+                }
             }
 
             return nextPositions;
