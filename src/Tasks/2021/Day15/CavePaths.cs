@@ -6,19 +6,25 @@ namespace App.Tasks.Year2021.Day15
     {
         private const int WRAP_BACK_RISK_LEVEL = 9;
 
+        private static readonly (int X, int Y)[] steps = new (int X, int Y)[] {
+            (1, 0),     // Down
+            (0, 1),     // Right
+            (-1, 0),    // Up
+            (0, -1)     // Left
+        };
+
         public int CalculateLowestTotalRiskOfAnyPathFromTopLeftToBottomRight(int[,] riskLevelMap)
         {
             int lowestTotalRisk = int.MaxValue;
 
             (int X, int Y) startPosition = (0, 0);
-            Dictionary<(int X, int Y), int> positionRiskCache = new Dictionary<(int X, int Y), int>();
+            Dictionary<(int X, int Y), int> positionsLowestRisk = new Dictionary<(int X, int Y), int>
+            {
+                // The starting position is never entered, so its risk is not counted
+                { startPosition, 0 }
+            };
 
-            // Go just down and right
-            DoFindPathWithLowestTotalRisk(riskLevelMap, startPosition, positionRiskCache, 0, ref lowestTotalRisk, true);
-            // Check potentially better solution with up and left paths too
-            // when lowest total risk is already initialized
-            positionRiskCache.Clear();
-            DoFindPathWithLowestTotalRisk(riskLevelMap, startPosition, positionRiskCache, 0, ref lowestTotalRisk);
+            DoFindPathWithLowestTotalRisk(riskLevelMap, startPosition, positionsLowestRisk, ref lowestTotalRisk);
 
             return lowestTotalRisk;
         }
@@ -37,90 +43,47 @@ namespace App.Tasks.Year2021.Day15
         private void DoFindPathWithLowestTotalRisk(
             int[,] riskLevelMap,
             (int X, int Y) currentPosition,
-            Dictionary<(int X, int Y), int> positionRiskCache,
-            int risk,
-            ref int lowestTotalRisk,
-            bool justDownAndRight = false
+            Dictionary<(int X, int Y), int> positionsLowestRisk,
+            ref int lowestTotalRisk
         )
         {
-            // The starting position is never entered, so its risk is not counted
-            if (currentPosition != (0, 0))
+            foreach ((int X, int Y) step in steps)
             {
-                risk += riskLevelMap[currentPosition.X, currentPosition.Y];
-            }
+                (int X, int Y) nextPosition = (currentPosition.X + step.X, currentPosition.Y + step.Y);
 
-            // If better solution is already found
-            if (risk >= lowestTotalRisk)
-            {
-                return;
-            }
+                // If next position is outside map boundaries
+                if (nextPosition.X < 0 || nextPosition.X >= riskLevelMap.GetLength(0)
+                    || nextPosition.Y < 0 || nextPosition.Y >= riskLevelMap.GetLength(1))
+                {
+                    continue;
+                }
 
-            // If this position is already reached with equal or less risk
-            if (positionRiskCache.ContainsKey(currentPosition) && risk >= positionRiskCache[currentPosition])
-            {
-                return;
-            }
-            positionRiskCache[currentPosition] = risk;
+                int nextPositionRisk =
+                    positionsLowestRisk[currentPosition] + riskLevelMap[nextPosition.X, nextPosition.Y];
 
-            // If end location is reached
-            if (currentPosition == (riskLevelMap.GetLength(0) - 1, riskLevelMap.GetLength(1) - 1))
-            {
-                lowestTotalRisk = risk;
-                return;
-            }
+                // If next position is already visited with lower risk
+                if (positionsLowestRisk.ContainsKey(nextPosition)
+                    && nextPositionRisk >= positionsLowestRisk[nextPosition])
+                {
+                    continue;
+                }
 
-            List<(int X, int Y)> nextStepPositions =
-                GetNextStepPositions(riskLevelMap, currentPosition, justDownAndRight);
+                positionsLowestRisk[nextPosition] = nextPositionRisk;
 
-            foreach ((int X, int Y) nextPosition in nextStepPositions)
-            {
+                // If end location is reached
+                if (nextPosition == (riskLevelMap.GetLength(0) - 1, riskLevelMap.GetLength(1) - 1))
+                {
+                    lowestTotalRisk = nextPositionRisk;
+                    continue;
+                }
+
                 DoFindPathWithLowestTotalRisk(
                     riskLevelMap,
                     nextPosition,
-                    positionRiskCache,
-                    risk,
-                    ref lowestTotalRisk,
-                    justDownAndRight
+                    positionsLowestRisk,
+                    ref lowestTotalRisk
                 );
             }
-        }
-
-        private List<(int X, int Y)> GetNextStepPositions(
-            int[,] riskLevelMap,
-            (int X, int Y) currentPosition,
-            bool justDownAndRight
-        )
-        {
-            List<(int X, int Y)> nextPositions = new List<(int X, int Y)>();
-
-            // Down
-            if (currentPosition.X + 1 < riskLevelMap.GetLength(0))
-            {
-                nextPositions.Add((currentPosition.X + 1, currentPosition.Y));
-            }
-
-            // Right
-            if (currentPosition.Y + 1 < riskLevelMap.GetLength(1))
-            {
-                nextPositions.Add((currentPosition.X, currentPosition.Y + 1));
-            }
-
-            if (!justDownAndRight)
-            {
-                // Up
-                if (currentPosition.X - 1 >= 0)
-                {
-                    nextPositions.Add((currentPosition.X - 1, currentPosition.Y));
-                }
-
-                // Left
-                if (currentPosition.Y - 1 >= 0)
-                {
-                    nextPositions.Add((currentPosition.X, currentPosition.Y - 1));
-                }
-            }
-
-            return nextPositions;
         }
 
         private int[,] GetLargerRiskLevelMap(int[,] riskLevelMap, int timesLarger)
