@@ -16,7 +16,6 @@ namespace App.Tasks.Year2021.Day9
             {
                 for (int j = 0; j < heightmapString[i].Length; j++)
                 {
-
                     heightmap[i, j] = (int)char.GetNumericValue(heightmapString[i][j]);
                 }
             }
