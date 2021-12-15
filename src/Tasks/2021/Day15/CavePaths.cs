@@ -1,10 +1,11 @@
 using System.Collections.Generic;
-using System.Linq;
 
 namespace App.Tasks.Year2021.Day15
 {
     public class CavePaths
     {
+        private const int WRAP_BACK_RISK_LEVEL = 9;
+
         public int CalculateLowestTotalRiskOfAnyPathFromTopLeftToBottomRight(int[,] riskLevelMap)
         {
             int lowestTotalRisk = InitializeLowestTotalRisk(riskLevelMap);
@@ -154,10 +155,10 @@ namespace App.Tasks.Year2021.Day15
 
                     // All of the risk levels are 1 higher than the tile immediately up or left of it
                     int riskLevel = riskLevelMap[k, h] + (i / rows) + (j / columns);
-                    // Risk levels above 9 wrap back around to 1
-                    if (riskLevel > 9)
+                    // Risk levels above 9 wrap back
+                    if (riskLevel > WRAP_BACK_RISK_LEVEL)
                     {
-                        riskLevel -= 9;
+                        riskLevel -= WRAP_BACK_RISK_LEVEL;
                     }
 
                     largerRiskLevelMap[i, j] = riskLevel;
