@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace App.Tasks.Year2021.Day15
 {
-    public class CavePaths
+    public class CaveRiskLevel
     {
         private const int WRAP_BACK_RISK_LEVEL = 9;
 

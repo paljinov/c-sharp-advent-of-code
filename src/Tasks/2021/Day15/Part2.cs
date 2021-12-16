@@ -147,18 +147,18 @@ namespace App.Tasks.Year2021.Day15
 
         private readonly RiskLevelMapRepository riskLevelMapRepository;
 
-        private readonly CavePaths cavePaths;
+        private readonly CaveRiskLevel caveRiskLevel;
 
         public Part2()
         {
             riskLevelMapRepository = new RiskLevelMapRepository();
-            cavePaths = new CavePaths();
+            caveRiskLevel = new CaveRiskLevel();
         }
 
         public int Solution(string input)
         {
             int[,] riskLevelMap = riskLevelMapRepository.GetRiskLevelMap(input);
-            int lowestTotalRisk = cavePaths
+            int lowestTotalRisk = caveRiskLevel
                 .CalculateLowestTotalRiskOfAnyPathFromTopLeftToBottomRightForLargerMap(riskLevelMap, TIMES_LARGER);
 
             return lowestTotalRisk;
