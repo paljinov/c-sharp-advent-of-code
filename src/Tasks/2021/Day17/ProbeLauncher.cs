@@ -34,9 +34,10 @@ namespace App.Tasks.Year2021.Day17
                     (int highestPositionForVelocity, bool probeToBeWithinTargetArea) =
                         DoProbeLaunchWithVelocity(targetArea, initialVelocityX, initialVelocityY);
 
-                    highestPosition = Math.Max(highestPosition, highestPositionForVelocity);
+                    // If probe was within the target area after any step
                     if (probeToBeWithinTargetArea)
                     {
+                        highestPosition = Math.Max(highestPosition, highestPositionForVelocity);
                         distinctInitialVelocitiesWhichCauseProbeToBeWithinTargetArea++;
                     }
                 }
@@ -53,7 +54,6 @@ namespace App.Tasks.Year2021.Day17
             // The probe's x,y position starts at 0,0
             int x = 0;
             int y = 0;
-            int height = 0;
 
             // While target is reachable
             while (xVelocity > 0 || y > targetArea.Y.From)
@@ -61,7 +61,7 @@ namespace App.Tasks.Year2021.Day17
                 // Update position and height
                 x += xVelocity;
                 y += yVelocity;
-                height = Math.Max(height, y);
+                highestPosition = Math.Max(highestPosition, y);
 
                 // Due to drag, the probe's x velocity changes by 1 toward the value 0;
                 // that is, it decreases by 1 if it is greater than 0,increases by 1 if
@@ -74,7 +74,6 @@ namespace App.Tasks.Year2021.Day17
                 if (x >= targetArea.X.From && x <= targetArea.X.To
                     && y >= targetArea.Y.From && y <= targetArea.Y.To)
                 {
-                    highestPosition = Math.Max(highestPosition, height);
                     probeToBeWithinTargetArea = true;
                     break;
                 }
