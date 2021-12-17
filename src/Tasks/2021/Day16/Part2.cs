@@ -61,9 +61,9 @@ namespace App.Tasks.Year2021.Day16
 
         public long Solution(string input)
         {
-            long expressionValue = packetDecoder.CalculateExpressionValue(input);
+            long evaluatedExpressionResult = packetDecoder.CalculateEvaluatedExpressionResult(input);
 
-            return expressionValue;
+            return evaluatedExpressionResult;
         }
     }
 }

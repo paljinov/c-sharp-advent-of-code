@@ -8,61 +8,54 @@ namespace App.Tasks.Year2021.Day16
     {
         private const int HEXADECIMAL_TOTAL_BITS = 4;
 
+        private const int LENGTH_TYPE_ID_BITS = 1;
+
+        private const char LITERAL_VALUE_LAST_GROUP_PREFIX = '0';
+
+        private const int LITERAL_VALUE_BINARY_NUMBER_BITS = 4;
+
+        private const int LITERAL_VALUE_PREFIX_BITS = 1;
+
         private const int PACKET_TYPE_BITS = 3;
 
         private const int PACKET_VERSION_BITS = 3;
 
-        private const int LITERAL_VALUE_PACKETS = 4;
-
-        private const char LITERAL_VALUE_LAST_GROUP_PREFIX = '0';
-
-        private const int LITERAL_VALUE_GROUP_SIZE = 5;
+        private const int SUB_PACKETS_NUMBER_BITS = 11;
 
         private const int SUB_PACKETS_TOTAL_LENGTH_BITS = 15;
-
-        private const int CONTAINED_SUB_PACKETS_NUMBER_BITS = 11;
 
         public int CalculateSumOfAllPacketsVersionNumbers(string hexadecimalTransmission)
         {
             string binaryTransmission = ConvertHexadecimalToBinary(hexadecimalTransmission);
-            int sumOfAllPacketsVersionNumbers = 0;
-            long expressionValue = 0;
-            List<long> subPackets = new List<long>();
-            DoCalculateSumOfAllPacketsVersionNumbers(
-                binaryTransmission, ref sumOfAllPacketsVersionNumbers, ref expressionValue, subPackets);
+            (_, int sumOfAllPacketsVersionNumbers, _) =
+                DoCalculateSumOfAllPacketsVersionNumbers(binaryTransmission, new List<long>());
 
             return sumOfAllPacketsVersionNumbers;
         }
 
-        public long CalculateExpressionValue(string hexadecimalTransmission)
+        public long CalculateEvaluatedExpressionResult(string hexadecimalTransmission)
         {
             string binaryTransmission = ConvertHexadecimalToBinary(hexadecimalTransmission);
-            int sumOfAllPacketsVersionNumbers = 0;
-            long expressionValue = 0;
-            List<long> subPackets = new List<long>();
-            DoCalculateSumOfAllPacketsVersionNumbers(
-                binaryTransmission, ref sumOfAllPacketsVersionNumbers, ref expressionValue, subPackets);
+            (_, _, long evaluatedExpressionResult) =
+                DoCalculateSumOfAllPacketsVersionNumbers(binaryTransmission, new List<long>());
 
-            return expressionValue;
+            return evaluatedExpressionResult;
         }
 
-        private string DoCalculateSumOfAllPacketsVersionNumbers(
-            string binaryNumber,
-            ref int sumOfAllPacketsVersionNumbers,
-            ref long expressionValue,
-            List<long> subPackets
-        )
+        private (string, int, long) DoCalculateSumOfAllPacketsVersionNumbers(string binaryNumber, List<long> subPackets)
         {
+            int sumOfAllPacketsVersionNumbers = 0;
+            long evaluatedExpressionResult = 0;
+
             int packetVersion = ConvertBinaryToInteger(binaryNumber[..PACKET_VERSION_BITS]);
             sumOfAllPacketsVersionNumbers += packetVersion;
-
             binaryNumber = binaryNumber[PACKET_VERSION_BITS..];
 
-            int packetType = ConvertBinaryToInteger(binaryNumber[..PACKET_TYPE_BITS]);
+            PacketType packetType = GetPacketType(binaryNumber[..PACKET_TYPE_BITS]);
             binaryNumber = binaryNumber[PACKET_TYPE_BITS..];
 
             // If packet represents a literal value
-            if (packetType == LITERAL_VALUE_PACKETS)
+            if (packetType == PacketType.LiteralValue)
             {
                 (binaryNumber, long literalValue) = GetLiteralValue(binaryNumber);
                 subPackets.Add(literalValue);
@@ -70,69 +63,60 @@ namespace App.Tasks.Year2021.Day16
             // If packet represents operator
             else
             {
-                string lengthTypeId = binaryNumber[..1];
-                binaryNumber = binaryNumber[1..];
+                LengthType lengthType = GetLengthType(binaryNumber[..LENGTH_TYPE_ID_BITS]);
+                binaryNumber = binaryNumber[LENGTH_TYPE_ID_BITS..];
 
-                long newExpressionValue = 0;
                 List<long> newSubPackets = new List<long>();
+                int sumOfSubPacketsVersionNumbers;
 
                 // Total length in bits of the sub-packets contained by this packet
-                if (lengthTypeId == "0")
+                if (lengthType == LengthType.TotalLengthInBits)
                 {
-                    binaryNumber = GetLengthTypeZeroSubPackets(
-                        binaryNumber, ref sumOfAllPacketsVersionNumbers, ref newExpressionValue, newSubPackets);
+                    (binaryNumber, sumOfSubPacketsVersionNumbers) =
+                        GetLengthTypeZeroSubPackets(binaryNumber, newSubPackets);
                 }
                 // Number of sub-packets immediately contained by this packet
                 else
                 {
-                    binaryNumber = GetLengthTypeOneSubPackets(
-                        binaryNumber, ref sumOfAllPacketsVersionNumbers, ref newExpressionValue, newSubPackets);
+                    (binaryNumber, sumOfSubPacketsVersionNumbers) =
+                        GetLengthTypeOneSubPackets(binaryNumber, newSubPackets);
                 }
 
-                long result = 0;
-                switch (packetType)
-                {
-                    case 0:
-                        result = newSubPackets.Sum();
-                        break;
-                    case 1:
-                        result = newSubPackets.Aggregate((x, y) => x * y);
-                        break;
-                    case 2:
-                        result = newSubPackets.Min();
-                        break;
-                    case 3:
-                        result = newSubPackets.Max();
-                        break;
-                    case 5:
-                        result = newSubPackets[0] > newSubPackets[1] ? 1 : 0;
-                        break;
-                    case 6:
-                        result = newSubPackets[0] < newSubPackets[1] ? 1 : 0;
-                        break;
-                    case 7:
-                        result = newSubPackets[0] == newSubPackets[1] ? 1 : 0;
-                        break;
-                }
+                sumOfAllPacketsVersionNumbers += sumOfSubPacketsVersionNumbers;
 
-                expressionValue += result;
-                subPackets.Add(result);
+                long expressionResult = CalculateSubPacketsExpressionResult(packetType, newSubPackets);
+                evaluatedExpressionResult += expressionResult;
+                subPackets.Add(expressionResult);
             }
 
-            return binaryNumber;
+            return (binaryNumber, sumOfAllPacketsVersionNumbers, evaluatedExpressionResult);
+        }
+
+        private PacketType GetPacketType(string binaryPacketType)
+        {
+            PacketType packetType = (PacketType)ConvertBinaryToInteger(binaryPacketType);
+            return packetType;
+        }
+
+        private LengthType GetLengthType(string binaryLengthType)
+        {
+            LengthType lengthType = (LengthType)ConvertBinaryToInteger(binaryLengthType);
+            return lengthType;
         }
 
         private (string, long) GetLiteralValue(string binaryNumber)
         {
             string literalValueString = string.Empty;
+            int packetSize = LITERAL_VALUE_PREFIX_BITS + LITERAL_VALUE_BINARY_NUMBER_BITS;
 
             char startWith = '\0';
-            // Each group is prefixed by a 1 bit except the last group, which is prefixed by a 0 bit
+            // Each group is ixed by a 1 bit except the last group, which is ixed by a 0 bit
             while (startWith != LITERAL_VALUE_LAST_GROUP_PREFIX)
             {
+                literalValueString += binaryNumber[LITERAL_VALUE_PREFIX_BITS..packetSize];
+
                 startWith = binaryNumber[0];
-                literalValueString += binaryNumber[1..LITERAL_VALUE_GROUP_SIZE];
-                binaryNumber = binaryNumber[LITERAL_VALUE_GROUP_SIZE..];
+                binaryNumber = binaryNumber[packetSize..];
             }
 
             long literalValue = ConvertBinaryToLongInteger(literalValueString);
@@ -140,47 +124,72 @@ namespace App.Tasks.Year2021.Day16
             return (binaryNumber, literalValue);
         }
 
-        private string GetLengthTypeZeroSubPackets(
-            string binaryNumber,
-            ref int sumOfAllPacketsVersionNumbers,
-            ref long expressionValue,
-            List<long> subPackets
-        )
+        private (string, int) GetLengthTypeZeroSubPackets(string binaryNumber, List<long> subPackets)
         {
             int subPacketsLength = ConvertBinaryToInteger(binaryNumber[..SUB_PACKETS_TOTAL_LENGTH_BITS]);
             binaryNumber = binaryNumber[SUB_PACKETS_TOTAL_LENGTH_BITS..];
             string rest = binaryNumber[subPacketsLength..];
             binaryNumber = binaryNumber[..subPacketsLength];
 
+            int sumOfSubPacketsVersionNumbers = 0;
             while (binaryNumber.Length > 0)
             {
-                string newBinaryNumber = DoCalculateSumOfAllPacketsVersionNumbers(
-                    binaryNumber, ref sumOfAllPacketsVersionNumbers, ref expressionValue, subPackets);
-
-                binaryNumber = newBinaryNumber;
+                (binaryNumber, int sumOfSubPacketVersionNumbers, _) =
+                    DoCalculateSumOfAllPacketsVersionNumbers(binaryNumber, subPackets);
+                sumOfSubPacketsVersionNumbers += sumOfSubPacketVersionNumbers;
             }
 
-            return rest;
+            return (rest, sumOfSubPacketsVersionNumbers);
         }
 
-        private string GetLengthTypeOneSubPackets(
-            string binaryNumber,
-            ref int sumOfAllPacketsVersionNumbers,
-            ref long expressionValue,
-            List<long> subPackets
-        )
+        private (string, int) GetLengthTypeOneSubPackets(string binaryNumber, List<long> subPackets)
         {
-            int subPacketsNumber = ConvertBinaryToInteger(binaryNumber[..CONTAINED_SUB_PACKETS_NUMBER_BITS]);
-            binaryNumber = binaryNumber[CONTAINED_SUB_PACKETS_NUMBER_BITS..];
+            int subPacketsNumber = ConvertBinaryToInteger(binaryNumber[..SUB_PACKETS_NUMBER_BITS]);
+            binaryNumber = binaryNumber[SUB_PACKETS_NUMBER_BITS..];
 
+            int sumOfSubPacketsVersionNumbers = 0;
             while (subPacketsNumber > 0)
             {
-                binaryNumber = DoCalculateSumOfAllPacketsVersionNumbers(
-                    binaryNumber, ref sumOfAllPacketsVersionNumbers, ref expressionValue, subPackets);
+                (binaryNumber, int sumOfSubPacketVersionNumbers, _) =
+                    DoCalculateSumOfAllPacketsVersionNumbers(binaryNumber, subPackets);
+                sumOfSubPacketsVersionNumbers += sumOfSubPacketVersionNumbers;
+
                 subPacketsNumber--;
             }
 
-            return binaryNumber;
+            return (binaryNumber, sumOfSubPacketsVersionNumbers);
+        }
+
+        private long CalculateSubPacketsExpressionResult(PacketType packetType, List<long> subPackets)
+        {
+            long expressionResult = 0;
+
+            switch (packetType)
+            {
+                case PacketType.Sum:
+                    expressionResult = subPackets.Sum();
+                    break;
+                case PacketType.Product:
+                    expressionResult = subPackets.Aggregate((x, y) => x * y);
+                    break;
+                case PacketType.Minimum:
+                    expressionResult = subPackets.Min();
+                    break;
+                case PacketType.Maximum:
+                    expressionResult = subPackets.Max();
+                    break;
+                case PacketType.GreaterThan:
+                    expressionResult = subPackets[0] > subPackets[1] ? 1 : 0;
+                    break;
+                case PacketType.LessThan:
+                    expressionResult = subPackets[0] < subPackets[1] ? 1 : 0;
+                    break;
+                case PacketType.EqualTo:
+                    expressionResult = subPackets[0] == subPackets[1] ? 1 : 0;
+                    break;
+            }
+
+            return expressionResult;
         }
 
         private string ConvertHexadecimalToBinary(string hex)
