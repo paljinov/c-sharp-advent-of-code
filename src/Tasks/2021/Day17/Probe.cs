@@ -2,33 +2,53 @@ using System;
 
 namespace App.Tasks.Year2021.Day17
 {
-    public class Probe
+    public class ProbeLauncher
     {
         public int CalculateHighestPositionProbeReachesOnThisTrajectory(TargetArea targetArea)
         {
+            (int highestPosition, _) = DoProbesLaunchWithDistinctVelocities(targetArea);
+            return highestPosition;
+        }
+
+        public int CountDistinctInitialVelocitiesWhichCauseProbeToBeWithinTargetArea(TargetArea targetArea)
+        {
+            (_, int distinctInitialVelocitiesWhichCauseProbeToBeWithinTargetArea) =
+                DoProbesLaunchWithDistinctVelocities(targetArea);
+            return distinctInitialVelocitiesWhichCauseProbeToBeWithinTargetArea;
+        }
+
+        private (int, int) DoProbesLaunchWithDistinctVelocities(TargetArea targetArea)
+        {
             int highestPosition = 0;
+            int distinctInitialVelocitiesWhichCauseProbeToBeWithinTargetArea = 0;
 
             int xMinVelocity = (int)Math.Sqrt(2 * targetArea.X.From);
             int xMaxVelocity = targetArea.X.To;
             int yMinVelocity = targetArea.Y.From;
             int yMaxVelocity = targetArea.X.To - targetArea.Y.To;
 
-            for (int xVelocity = xMinVelocity; xVelocity <= xMaxVelocity; xVelocity++)
+            for (int initialVelocityX = xMinVelocity; initialVelocityX <= xMaxVelocity; initialVelocityX++)
             {
-                for (int yVelocity = yMinVelocity; yVelocity <= yMaxVelocity; yVelocity++)
+                for (int initialVelocityY = yMinVelocity; initialVelocityY <= yMaxVelocity; initialVelocityY++)
                 {
-                    int highestPositionForVelocity =
-                        GetHighestPositionForInitialVelocity(targetArea, xVelocity, yVelocity);
+                    (int highestPositionForVelocity, bool probeToBeWithinTargetArea) =
+                        DoProbeLaunchWithVelocity(targetArea, initialVelocityX, initialVelocityY);
+
                     highestPosition = Math.Max(highestPosition, highestPositionForVelocity);
+                    if (probeToBeWithinTargetArea)
+                    {
+                        distinctInitialVelocitiesWhichCauseProbeToBeWithinTargetArea++;
+                    }
                 }
             }
 
-            return highestPosition;
+            return (highestPosition, distinctInitialVelocitiesWhichCauseProbeToBeWithinTargetArea);
         }
 
-        private int GetHighestPositionForInitialVelocity(TargetArea targetArea, int xVelocity, int yVelocity)
+        private (int, bool) DoProbeLaunchWithVelocity(TargetArea targetArea, int xVelocity, int yVelocity)
         {
             int highestPosition = 0;
+            bool probeToBeWithinTargetArea = false;
 
             // The probe's x,y position starts at 0,0
             int x = 0;
@@ -55,11 +75,12 @@ namespace App.Tasks.Year2021.Day17
                     && y >= targetArea.Y.From && y <= targetArea.Y.To)
                 {
                     highestPosition = Math.Max(highestPosition, height);
+                    probeToBeWithinTargetArea = true;
                     break;
                 }
             }
 
-            return highestPosition;
+            return (highestPosition, probeToBeWithinTargetArea);
         }
     }
 }

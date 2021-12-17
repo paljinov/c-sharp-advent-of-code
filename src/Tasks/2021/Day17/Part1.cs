@@ -143,19 +143,19 @@ namespace App.Tasks.Year2021.Day17
     {
         private readonly TargetAreaRepository targetAreaRepository;
 
-        private readonly Probe caveRiskLevel;
+        private readonly ProbeLauncher probeLauncher;
 
         public Part1()
         {
             targetAreaRepository = new TargetAreaRepository();
-            caveRiskLevel = new Probe();
+            probeLauncher = new ProbeLauncher();
         }
 
         public int Solution(string input)
         {
             TargetArea targetArea = targetAreaRepository.GetTargetArea(input);
             int highestPositionProbeReachesOnThisTrajectory =
-                caveRiskLevel.CalculateHighestPositionProbeReachesOnThisTrajectory(targetArea);
+                probeLauncher.CalculateHighestPositionProbeReachesOnThisTrajectory(targetArea);
 
             return highestPositionProbeReachesOnThisTrajectory;
         }
