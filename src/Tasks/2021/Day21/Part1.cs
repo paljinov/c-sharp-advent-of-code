@@ -77,10 +77,10 @@ namespace App.Tasks.Year2021.Day21
         public int Solution(string input)
         {
             Dictionary<int, int> playersStartingPositions = playersRepository.GetPlayersStartingPositions(input);
-            int litPixels =
+            int productOfLosingPlayerScoreMultipliedByNumberOfDieRolls =
                 diracDice.CalculateProductOfLosingPlayerScoreMultipliedByNumberOfDieRolls(playersStartingPositions);
 
-            return litPixels;
+            return productOfLosingPlayerScoreMultipliedByNumberOfDieRolls;
         }
     }
 }
