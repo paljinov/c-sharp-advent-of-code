@@ -11,18 +11,17 @@ namespace App.Tasks.Year2021.Day21
 
         private const int WRAP_ROLL_TO = 1;
 
-        private const int MINIMUM_WINNER_SCORE = 1000;
-
         private const int WRAP_AFTER = 10;
 
         public int CalculateProductOfLosingPlayerScoreMultipliedByNumberOfDieRolls(
-            Dictionary<int, int> playersStartingPositions
+            Dictionary<int, int> playersStartingPositions,
+            int minimumWinnerScore
         )
         {
             Dictionary<int, (int, int)> playersScores = InitializePlayersScores(playersStartingPositions);
 
             bool winnerFound = false;
-            int dice = 1;
+            int rollOutcome = 1;
             int totalRolls = 0;
 
             while (!winnerFound)
@@ -32,21 +31,17 @@ namespace App.Tasks.Year2021.Day21
                     int space = playersScores[playerId].Item1;
                     int score = playersScores[playerId].Item2;
 
-                    List<int> rolls = new List<int>();
+                    List<int> rollsOutcomes = new List<int>();
                     for (int j = 0; j < ROLL_TIMES; j++)
                     {
-                        if (dice > MAX_ROLL)
+                        if (rollOutcome > MAX_ROLL)
                         {
-                            dice = WRAP_ROLL_TO;
+                            rollOutcome = WRAP_ROLL_TO;
                         }
 
-                        rolls.Add(dice);
-                        dice++;
-                    }
-
-                    foreach (int roll in rolls)
-                    {
-                        space += roll;
+                        rollsOutcomes.Add(rollOutcome);
+                        space += rollOutcome;
+                        rollOutcome++;
                     }
 
                     if (space > WRAP_AFTER)
@@ -62,7 +57,7 @@ namespace App.Tasks.Year2021.Day21
                     playersScores[playerId] = (space, score);
                     totalRolls += ROLL_TIMES;
 
-                    if (score >= MINIMUM_WINNER_SCORE)
+                    if (score >= minimumWinnerScore)
                     {
                         winnerFound = true;
                         break;
@@ -74,6 +69,14 @@ namespace App.Tasks.Year2021.Day21
             int productOfLosingPlayerScoreMultipliedByNumberOfDieRolls = totalRolls * loserScore;
 
             return productOfLosingPlayerScoreMultipliedByNumberOfDieRolls;
+        }
+
+        public long CalculateNumberOfUniversesInWhichWinningPlayerWins(
+            Dictionary<int, int> playersStartingPositions,
+            int minimumWinnerScore
+       )
+        {
+            return 0;
         }
 
         private Dictionary<int, (int, int)> InitializePlayersScores(
