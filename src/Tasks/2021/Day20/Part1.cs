@@ -141,8 +141,6 @@ twice, being careful to account for the infinite size of the images. How many
 pixels are lit in the resulting image?
 */
 
-using System.Collections.Generic;
-
 namespace App.Tasks.Year2021.Day20
 {
     public class Part1 : ITask<int>
