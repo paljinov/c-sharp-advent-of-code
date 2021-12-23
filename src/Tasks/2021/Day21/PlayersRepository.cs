@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace App.Tasks.Year2021.Day21
 {
-    public class NewBaseType
+    public class PlayersRepository
     {
         public Dictionary<int, int> GetPlayersStartingPositions(string input)
         {
@@ -28,9 +28,5 @@ namespace App.Tasks.Year2021.Day21
 
             return playersStartingPositions;
         }
-    }
-
-    public class PlayersRepository : NewBaseType
-    {
     }
 }
