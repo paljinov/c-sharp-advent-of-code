@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace App.Tasks.Year2021.Day22
 {
-    public class Cubes
+    public class ReactorReboot
     {
         public int CountTurnedOnCubesInRegion(RebootStep[] rebootSteps, Cuboid region)
         {

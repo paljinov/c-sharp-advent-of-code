@@ -82,18 +82,18 @@ namespace App.Tasks.Year2021.Day22
     {
         private readonly RebootStepsRepository rebootStepsRepository;
 
-        private readonly Cubes cubes;
+        private readonly ReactorReboot reactorReboot;
 
         public Part2()
         {
             rebootStepsRepository = new RebootStepsRepository();
-            cubes = new Cubes();
+            reactorReboot = new ReactorReboot();
         }
 
         public long Solution(string input)
         {
             RebootStep[] rebootSteps = rebootStepsRepository.GetRebootSteps(input);
-            long turnedOnCubes = cubes.CountTurnedOnCubes(rebootSteps);
+            long turnedOnCubes = reactorReboot.CountTurnedOnCubes(rebootSteps);
 
             return turnedOnCubes;
         }
