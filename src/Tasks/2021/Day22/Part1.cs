@@ -147,9 +147,9 @@ namespace App.Tasks.Year2021.Day22
         {
             RebootStep[] rebootSteps = rebootStepsRepository.GetRebootSteps(input);
             Cuboid region = rebootStepsRepository.GetCuboid(REGION);
-            int turnedOnCubes = cubes.CalculateTurnedOnCubesInRegion(rebootSteps, region);
+            int turnedOnCubesInRegion = cubes.CountTurnedOnCubesInRegion(rebootSteps, region);
 
-            return turnedOnCubes;
+            return turnedOnCubesInRegion;
         }
     }
 }

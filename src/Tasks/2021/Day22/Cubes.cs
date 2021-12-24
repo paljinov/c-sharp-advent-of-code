@@ -6,26 +6,36 @@ namespace App.Tasks.Year2021.Day22
 {
     public class Cubes
     {
-        public int CalculateTurnedOnCubesInRegion(RebootStep[] rebootSteps, Cuboid region)
+        public int CountTurnedOnCubesInRegion(RebootStep[] rebootSteps, Cuboid region)
+        {
+            int turnedOnCubesInRegion = (int)DoCountTurnedOnCubes(rebootSteps, region);
+            return turnedOnCubesInRegion;
+        }
+
+        public long CountTurnedOnCubes(RebootStep[] rebootSteps)
+        {
+            long turnedOnCubes = DoCountTurnedOnCubes(rebootSteps);
+            return turnedOnCubes;
+        }
+
+        private long DoCountTurnedOnCubes(RebootStep[] rebootSteps, Cuboid region = null)
         {
             Dictionary<(int X, int Y, int Z), bool> regionCubes = new Dictionary<(int X, int Y, int Z), bool>();
 
             foreach (RebootStep rebootStep in rebootSteps)
             {
-                (int From, int To) xRange = (
-                    Math.Max(region.X.From, rebootStep.Cuboid.X.From),
-                    Math.Min(region.X.To, rebootStep.Cuboid.X.To)
-                );
+                Cuboid cuboid = rebootStep.Cuboid;
+                (int From, int To) xRange = (cuboid.X.From, cuboid.X.To);
+                (int From, int To) yRange = (cuboid.Y.From, cuboid.Y.To);
+                (int From, int To) zRange = (cuboid.Z.From, cuboid.Z.To);
 
-                (int From, int To) yRange = (
-                    Math.Max(region.Y.From, rebootStep.Cuboid.Y.From),
-                    Math.Min(region.Y.To, rebootStep.Cuboid.Y.To)
-                );
-
-                (int From, int To) zRange = (
-                    Math.Max(region.Z.From, rebootStep.Cuboid.Z.From),
-                    Math.Min(region.Z.To, rebootStep.Cuboid.Z.To)
-                );
+                // If considering only cubes in the region
+                if (region != null)
+                {
+                    xRange = (Math.Max(region.X.From, cuboid.X.From), Math.Min(region.X.To, cuboid.X.To));
+                    yRange = (Math.Max(region.Y.From, cuboid.Y.From), Math.Min(region.Y.To, cuboid.Y.To));
+                    zRange = (Math.Max(region.Z.From, cuboid.Z.From), Math.Min(region.Z.To, cuboid.Z.To));
+                }
 
                 for (int x = xRange.From; x <= xRange.To; x++)
                 {
