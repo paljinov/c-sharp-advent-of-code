@@ -28,14 +28,6 @@ namespace Tests.Tasks.Year2021.Day22
             public IEnumerator<object[]> GetEnumerator()
             {
                 yield return new object[] {
-                    "on x=10..12,y=10..12,z=10..12"
-                    + $"{Environment.NewLine}on x=11..13,y=11..13,z=11..13"
-                    + $"{Environment.NewLine}off x=9..11,y=9..11,z=9..11"
-                    + $"{Environment.NewLine}on x=10..10,y=10..10,z=10..10",
-                    39
-                };
-
-                yield return new object[] {
                     "on x=-20..26,y=-36..17,z=-47..7"
                     + $"{Environment.NewLine}on x=-20..33,y=-21..23,z=-26..28"
                     + $"{Environment.NewLine}on x=-22..28,y=-29..23,z=-38..16"
@@ -58,7 +50,7 @@ namespace Tests.Tasks.Year2021.Day22
                     + $"{Environment.NewLine}on x=-41..9,y=-7..43,z=-33..15"
                     + $"{Environment.NewLine}on x=-54112..-39298,y=-85059..-49293,z=-27449..7877"
                     + $"{Environment.NewLine}on x=967..23432,y=45373..81175,z=27513..53682",
-                    590784
+                    39769202357779
                 };
 
                 yield return new object[] {
