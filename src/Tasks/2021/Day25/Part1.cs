@@ -319,21 +319,22 @@ namespace App.Tasks.Year2021.Day25
 {
     public class Part1 : ITask<int>
     {
-        private readonly SeaCucumbersMapRepository seaCucumbersMapRepository;
+        private readonly SeaCucumbersLocationsMapRepository seaCucumbersLocationsMapRepository;
 
         private readonly SeaCucumbers seaCucumbers;
 
         public Part1()
         {
-            seaCucumbersMapRepository = new SeaCucumbersMapRepository();
+            seaCucumbersLocationsMapRepository = new SeaCucumbersLocationsMapRepository();
             seaCucumbers = new SeaCucumbers();
         }
 
         public int Solution(string input)
         {
-            char[,] seaCucumbersMap = seaCucumbersMapRepository.GetSeaCucumbersMap(input);
+            SeaCucumberLocation[,] seaCucumbersLocationsMap =
+                seaCucumbersLocationsMapRepository.GetSeaCucumbersLocationsMap(input);
             int firstStepOnWhichNoSeaCucumbersMove =
-                seaCucumbers.FindFirstStepOnWhichNoSeaCucumbersMove(seaCucumbersMap);
+                seaCucumbers.FindFirstStepOnWhichNoSeaCucumbersMove(seaCucumbersLocationsMap);
 
             return firstStepOnWhichNoSeaCucumbersMove;
         }

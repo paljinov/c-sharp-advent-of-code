@@ -2,25 +2,41 @@ using System;
 
 namespace App.Tasks.Year2021.Day25
 {
-    public class SeaCucumbersMapRepository
+    public class SeaCucumbersLocationsMapRepository
     {
-        public char[,] GetSeaCucumbersMap(string input)
-        {
-            string[] seaCucumbersMapString = input.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+        private const char MOVES_EAST = '>';
 
-            int rows = seaCucumbersMapString.Length;
-            int columns = seaCucumbersMapString[0].Length;
-            char[,] seaCucumbersMap = new char[rows, columns];
+        private const char MOVES_SOUTH = 'v';
+
+        public SeaCucumberLocation[,] GetSeaCucumbersLocationsMap(string input)
+        {
+            string[] seaCucumbersLocationsMapString =
+                input.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+
+            int rows = seaCucumbersLocationsMapString.Length;
+            int columns = seaCucumbersLocationsMapString[0].Length;
+            SeaCucumberLocation[,] seaCucumbersLocationsMap = new SeaCucumberLocation[rows, columns];
 
             for (int i = 0; i < rows; i++)
             {
                 for (int j = 0; j < columns; j++)
                 {
-                    seaCucumbersMap[i, j] = seaCucumbersMapString[i][j];
+                    SeaCucumberLocation seaCucumberLocation = SeaCucumberLocation.Empty;
+                    switch (seaCucumbersLocationsMapString[i][j])
+                    {
+                        case MOVES_EAST:
+                            seaCucumberLocation = SeaCucumberLocation.MovesEast;
+                            break;
+                        case MOVES_SOUTH:
+                            seaCucumberLocation = SeaCucumberLocation.MovesSouth;
+                            break;
+                    }
+
+                    seaCucumbersLocationsMap[i, j] = seaCucumberLocation;
                 }
             }
 
-            return seaCucumbersMap;
+            return seaCucumbersLocationsMap;
         }
     }
 }
