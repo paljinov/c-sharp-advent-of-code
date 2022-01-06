@@ -108,8 +108,8 @@ namespace App.Tasks.Year2021.Day18
 
         private Pair Add(Pair left, Pair right)
         {
-            Console.WriteLine(GetPairString(left));
-            Console.WriteLine(GetPairString(right));
+            Console.WriteLine($"Left: {GetPairString(left)}");
+            Console.WriteLine($"Right: {GetPairString(right)}");
 
             // To add two snailfish numbers, form a pair from the left and right parameters of the addition operator
             Pair sumPair = new Pair
@@ -120,72 +120,74 @@ namespace App.Tasks.Year2021.Day18
             sumPair.LeftPair.Parent = sumPair;
             sumPair.RightPair.Parent = sumPair;
 
-            Console.WriteLine(GetPairString(sumPair));
-
             Reduce(sumPair);
-            Console.WriteLine(GetPairString(sumPair));
+            Console.WriteLine($"Sum: {GetPairString(sumPair)}");
 
             return sumPair;
         }
 
         private void Reduce(Pair pair)
         {
-            bool splitted = true;
-            while (splitted)
+            bool exploded = true;
+            while (exploded)
             {
-                Explode(pair);
-                Console.WriteLine(GetPairString(pair));
-                splitted = Split(pair);
-                Console.WriteLine(GetPairString(pair));
+                exploded = Explode(pair);
+                if (exploded)
+                {
+                    Split(pair);
+                }
             }
         }
 
-        private void Explode(Pair pair, int depth = 0)
+        private bool Explode(Pair pair, int depth = 0)
         {
+            bool exploded = false;
+
             // Explode
             if (depth >= EXPLODE_NESTED_INSIDE_PAIRS)
             {
-                int leftNumber = 0;
-                if (pair.Parent.LeftNumber.HasValue)
+                AddValueLeft(pair, pair.LeftNumber.Value);
+                AddValueRight(pair, pair.RightNumber.Value);
+
+                // If this is parent's left pair
+                if (pair.Parent.LeftPair == pair)
                 {
-                    leftNumber = pair.LeftNumber.Value + pair.Parent.LeftNumber.Value;
+                    pair.Parent.LeftPair = null;
+                    pair.Parent.LeftNumber = 0;
+                }
+                // If this is parent's right pair
+                else if (pair.Parent.RightPair == pair)
+                {
+                    pair.Parent.RightPair = null;
+                    pair.Parent.RightNumber = 0;
                 }
 
-                int rightNumber = 0;
-                if (pair.Parent.RightNumber.HasValue)
-                {
-                    rightNumber = pair.RightNumber.Value + pair.Parent.RightNumber.Value;
-                }
-
-                pair.Parent.LeftPair = null;
-                pair.Parent.RightPair = null;
-
-                pair.Parent.LeftNumber = leftNumber;
-                pair.Parent.RightNumber = rightNumber;
+                exploded = true;
             }
             else
             {
+                depth++;
+
                 if (pair.LeftPair != null)
                 {
-                    Console.WriteLine($"Left: {GetPairString(pair)}");
-                    Explode(pair.LeftPair, depth + 1);
+                    exploded = Explode(pair.LeftPair, depth);
                 }
-                if (pair.RightPair != null)
+
+                if (!exploded && pair.RightPair != null)
                 {
-                    Console.WriteLine($"Right: {GetPairString(pair)}");
-                    Explode(pair.RightPair, depth + 1);
+                    exploded = Explode(pair.RightPair, depth);
                 }
             }
+
+            return exploded;
         }
 
-        private bool Split(Pair pair)
+        private void Split(Pair pair)
         {
-            bool isSplitted = false;
-
             if (pair.LeftNumber.HasValue && pair.LeftNumber.Value >= SPLIT_NUMBER_GREATER_THAN)
             {
-                int leftNumber = (int)Math.Floor((double)pair.LeftNumber.Value);
-                int rightNumber = (int)Math.Ceiling((double)pair.LeftNumber.Value);
+                int leftNumber = (int)Math.Floor((double)pair.LeftNumber.Value / 2);
+                int rightNumber = (int)Math.Ceiling((double)pair.LeftNumber.Value / 2);
 
                 Pair leftPair = new Pair
                 {
@@ -196,13 +198,15 @@ namespace App.Tasks.Year2021.Day18
 
                 pair.LeftNumber = null;
                 pair.LeftPair = leftPair;
-
-                isSplitted = true;
             }
-            else if (pair.RightNumber.HasValue && pair.RightNumber.Value >= SPLIT_NUMBER_GREATER_THAN)
+            if (pair.LeftPair != null)
             {
-                int leftNumber = (int)Math.Floor((double)pair.RightNumber.Value);
-                int rightNumber = (int)Math.Ceiling((double)pair.RightNumber.Value);
+                Split(pair.LeftPair);
+            }
+            if (pair.RightNumber.HasValue && pair.RightNumber.Value >= SPLIT_NUMBER_GREATER_THAN)
+            {
+                int leftNumber = (int)Math.Floor((double)pair.RightNumber.Value / 2);
+                int rightNumber = (int)Math.Ceiling((double)pair.RightNumber.Value / 2);
 
                 Pair rightPair = new Pair
                 {
@@ -213,19 +217,88 @@ namespace App.Tasks.Year2021.Day18
 
                 pair.RightNumber = null;
                 pair.RightPair = rightPair;
-
-                isSplitted = true;
             }
-            else if (pair.LeftPair != null)
+            if (pair.RightPair != null)
             {
-                isSplitted = Split(pair.LeftPair);
+                Split(pair.RightPair);
             }
-            else if (pair.RightPair != null)
+        }
+
+        private void AddValueLeft(Pair pair, int value)
+        {
+            // The pair's left value is added to the first regular number
+            // to the left of the exploding pair (if any)
+            Pair parent = pair.Parent;
+
+            while (parent != null)
             {
-                isSplitted = Split(pair.RightPair);
+                if (parent.LeftNumber.HasValue)
+                {
+                    parent.LeftNumber += value;
+                    break;
+                }
+
+                parent = parent.Parent;
+            }
+        }
+
+        private void AddValueRight(Pair pair, int value)
+        {
+            bool firstNumberToTheRightFound = false;
+
+            // The pair's right value is added to the first regular number
+            // to the right of the exploding pair (if any)
+            Pair parent = pair.Parent;
+
+            while (parent != null)
+            {
+                if (parent.RightNumber.HasValue)
+                {
+                    parent.RightNumber += value;
+                    firstNumberToTheRightFound = true;
+                    break;
+                }
+
+                parent = parent.Parent;
             }
 
-            return isSplitted;
+            if (!firstNumberToTheRightFound)
+            {
+                int i = 0;
+                Pair section = null;
+                while (pair != null && i < EXPLODE_NESTED_INSIDE_PAIRS)
+                {
+                    pair = pair.Parent;
+                    if (i == EXPLODE_NESTED_INSIDE_PAIRS - 2)
+                    {
+                        section = pair;
+                    }
+                    i++;
+                }
+
+                // If this pair is on left section
+                if (pair != null && pair.LeftPair == section)
+                {
+                    Pair rightPair = pair.RightPair;
+
+                    if (rightPair.LeftNumber.HasValue)
+                    {
+                        rightPair.LeftNumber += value;
+                    }
+                    else if (rightPair.LeftPair != null)
+                    {
+                        AddValueRight(rightPair.LeftPair, value);
+                    }
+                    else if (rightPair.RightNumber.HasValue)
+                    {
+                        rightPair.RightNumber += value;
+                    }
+                    else if (rightPair.RightPair != null)
+                    {
+                        AddValueRight(rightPair.RightPair, value);
+                    }
+                }
+            }
         }
 
         private int CalculateMagnitude(Pair pair)
@@ -256,28 +329,28 @@ namespace App.Tasks.Year2021.Day18
         {
             string pairString = "";
 
+            // Left elements
+            pairString += OPENING_BRACKET;
             if (pair.LeftNumber.HasValue)
             {
-                pairString += OPENING_BRACKET;
                 pairString += pair.LeftNumber.Value;
-                pairString += COMMA;
             }
+            else if (pair.LeftPair != null)
+            {
+                pairString += GetPairString(pair.LeftPair);
+            }
+            pairString += COMMA;
+
+            // Right elements
             if (pair.RightNumber.HasValue)
             {
                 pairString += pair.RightNumber.Value;
-                pairString += CLOSING_BRACKET;
             }
-            if (pair.LeftPair != null)
-            {
-                pairString += OPENING_BRACKET;
-                pairString += GetPairString(pair.LeftPair);
-                pairString += COMMA;
-            }
-            if (pair.RightPair != null)
+            else if (pair.RightPair != null)
             {
                 pairString += GetPairString(pair.RightPair);
-                pairString += CLOSING_BRACKET;
             }
+            pairString += CLOSING_BRACKET;
 
             return pairString;
         }
