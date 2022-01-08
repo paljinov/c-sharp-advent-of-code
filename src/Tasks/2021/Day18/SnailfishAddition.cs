@@ -48,7 +48,7 @@ namespace App.Tasks.Year2021.Day18
                 {
                     if (i != j)
                     {
-                        Pair snailfishSum = Add(snailfishNumbers[i], snailfishNumbers[j]);
+                        Pair snailfishSum = Add(snailfishNumbers[i].Clone(), snailfishNumbers[j].Clone());
                         int magnitude = CalculateMagnitude(snailfishSum);
 
                         largestMagnitude = Math.Max(magnitude, largestMagnitude);
@@ -150,17 +150,18 @@ namespace App.Tasks.Year2021.Day18
         private void Reduce(Pair pair)
         {
             bool exploded = true;
-
-            Console.WriteLine($"Pair: {GetPairString(pair)}");
-            while (exploded)
+            bool splitted = true;
+            while (exploded || splitted)
             {
+                // Explode leftmost pair which is nested required number of times
                 exploded = Explode(pair);
                 if (exploded)
                 {
-                    Console.WriteLine($"After explode: {GetPairString(pair)}");
+                    continue;
                 }
-                Split(pair);
-                Console.WriteLine($"After split: {GetPairString(pair)}");
+
+                // Split leftmost two digit number
+                splitted = Split(pair);
             }
         }
 
@@ -211,8 +212,10 @@ namespace App.Tasks.Year2021.Day18
             return exploded;
         }
 
-        private void Split(Pair pair)
+        private bool Split(Pair pair)
         {
+            bool splitted = false;
+
             if (pair.LeftNumber.HasValue && pair.LeftNumber.Value >= SPLIT_NUMBER_GREATER_THAN)
             {
                 double quotient = (double)pair.LeftNumber.Value / 2;
@@ -228,12 +231,14 @@ namespace App.Tasks.Year2021.Day18
 
                 pair.LeftNumber = null;
                 pair.LeftPair = leftPair;
+
+                splitted = true;
             }
-            if (pair.LeftPair != null)
+            if (!splitted && pair.LeftPair != null)
             {
-                Split(pair.LeftPair);
+                splitted = Split(pair.LeftPair);
             }
-            if (pair.RightNumber.HasValue && pair.RightNumber.Value >= SPLIT_NUMBER_GREATER_THAN)
+            if (!splitted && pair.RightNumber.HasValue && pair.RightNumber.Value >= SPLIT_NUMBER_GREATER_THAN)
             {
                 double quotient = (double)pair.RightNumber.Value / 2;
                 int leftNumber = (int)Math.Floor(quotient);
@@ -248,39 +253,37 @@ namespace App.Tasks.Year2021.Day18
 
                 pair.RightNumber = null;
                 pair.RightPair = rightPair;
+
+                splitted = true;
             }
-            if (pair.RightPair != null)
+            if (!splitted && pair.RightPair != null)
             {
-                Split(pair.RightPair);
+                splitted = Split(pair.RightPair);
             }
+
+            return splitted;
         }
 
         private void AddValueLeft(Pair pair, int value)
         {
             Pair parent = pair.Parent;
-
-            int depth = EXPLODE_WHEN_NESTED_INSIDE_TOTAL_PAIRS;
-            Pair side = null;
-
             while (parent != null)
             {
+                // If parent has left number
                 if (parent.LeftNumber.HasValue)
                 {
                     parent.LeftNumber += value;
                     break;
                 }
 
-                depth--;
-                if (depth == 1)
-                {
-                    side = parent;
-                }
-                if (depth == 0 && parent.RightPair == side)
+                // If current pair is parent's right pair
+                if (parent.RightPair == pair)
                 {
                     AddToPairRightmostNumber(parent.LeftPair, value);
                     break;
                 }
 
+                pair = parent;
                 parent = parent.Parent;
             }
         }
@@ -288,29 +291,23 @@ namespace App.Tasks.Year2021.Day18
         private void AddValueRight(Pair pair, int value)
         {
             Pair parent = pair.Parent;
-
-            int depth = EXPLODE_WHEN_NESTED_INSIDE_TOTAL_PAIRS;
-            Pair side = null;
-
             while (parent != null)
             {
+                // If parent has right number
                 if (parent.RightNumber.HasValue)
                 {
                     parent.RightNumber += value;
                     break;
                 }
 
-                depth--;
-                if (depth == 1)
-                {
-                    side = parent;
-                }
-                if (depth == 0 && parent.LeftPair == side)
+                // If current pair is parent's left pair
+                if (parent.LeftPair == pair)
                 {
                     AddToPairLeftmostNumber(parent.RightPair, value);
                     break;
                 }
 
+                pair = parent;
                 parent = parent.Parent;
             }
         }
@@ -361,36 +358,6 @@ namespace App.Tasks.Year2021.Day18
             }
 
             return magnitude;
-        }
-
-        private string GetPairString(Pair pair)
-        {
-            string pairString = "";
-
-            // Left elements
-            pairString += OPENING_BRACKET;
-            if (pair.LeftNumber.HasValue)
-            {
-                pairString += pair.LeftNumber.Value;
-            }
-            else if (pair.LeftPair != null)
-            {
-                pairString += GetPairString(pair.LeftPair);
-            }
-            pairString += COMMA;
-
-            // Right elements
-            if (pair.RightNumber.HasValue)
-            {
-                pairString += pair.RightNumber.Value;
-            }
-            else if (pair.RightPair != null)
-            {
-                pairString += GetPairString(pair.RightPair);
-            }
-            pairString += CLOSING_BRACKET;
-
-            return pairString;
         }
     }
 }
