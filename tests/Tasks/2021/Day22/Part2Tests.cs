@@ -17,13 +17,12 @@ namespace Tests.Tasks.Year2021.Day22
 
         [Theory]
         [ClassData(typeof(RebootSteps_TurnedOnCubesCount_TestData))]
-        public void Solution_RebootStepsExample_TurnedOnCubesCountEquals(string rebootSteps, int turnedOnCubes)
+        public void Solution_RebootStepsExample_TurnedOnCubesCountEquals(string rebootSteps, long turnedOnCubes)
         {
             Assert.Equal(turnedOnCubes, task.Solution(rebootSteps));
         }
 
-        public class RebootSteps_TurnedOnCubesCount_TestData
-            : IEnumerable<object[]>
+        public class RebootSteps_TurnedOnCubesCount_TestData : IEnumerable<object[]>
         {
             public IEnumerator<object[]> GetEnumerator()
             {
