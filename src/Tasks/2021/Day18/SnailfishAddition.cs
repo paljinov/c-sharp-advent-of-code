@@ -40,15 +40,15 @@ namespace App.Tasks.Year2021.Day18
         {
             int largestMagnitude = 0;
 
-            for (int i = 0; i < snailfishNumbersString.Length; i++)
+            List<Pair> snailfishNumbers = GetParsedSnailfishNumbers(snailfishNumbersString);
+
+            for (int i = 0; i < snailfishNumbers.Count; i++)
             {
-                for (int j = 0; j < snailfishNumbersString.Length; j++)
+                for (int j = 0; j < snailfishNumbers.Count; j++)
                 {
                     if (i != j)
                     {
-                        Pair first = Parse(snailfishNumbersString[i]);
-                        Pair second = Parse(snailfishNumbersString[j]);
-                        Pair snailfishSum = Add(first, second);
+                        Pair snailfishSum = Add(snailfishNumbers[i].Clone(), snailfishNumbers[j].Clone());
                         int magnitude = CalculateMagnitude(snailfishSum);
 
                         largestMagnitude = Math.Max(magnitude, largestMagnitude);
