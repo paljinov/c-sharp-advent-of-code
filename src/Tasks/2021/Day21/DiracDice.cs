@@ -5,11 +5,11 @@ namespace App.Tasks.Year2021.Day21
 {
     public class DiracDice
     {
-        private const int ROLL_TIMES = 3;
+        private const int TOTAL_NUMBER_OF_DIE_ROLLS_PER_TURN = 3;
 
-        private const int MAX_ROLL = 100;
+        private const int DIE_MAX_NUMBER = 100;
 
-        private const int WRAP_ROLL_TO = 1;
+        private const int DIE_MIN_NUMBER = 1;
 
         private const int WRAP_AFTER = 10;
 
@@ -18,32 +18,34 @@ namespace App.Tasks.Year2021.Day21
             int minimumWinnerScore
         )
         {
-            Dictionary<int, (int, int)> playersScores = InitializePlayersScores(playersStartingPositions);
+            Dictionary<int, (int Space, int Score)> playersScores = InitializePlayersScores(playersStartingPositions);
 
-            bool winnerFound = false;
-            int rollOutcome = 1;
-            int totalRolls = 0;
+            bool gameEnd = false;
+            int dieNumber = 1;
+            int totalNumberOfDieRolls = 0;
 
-            while (!winnerFound)
+            while (!gameEnd)
             {
                 for (int playerId = 1; playerId <= playersScores.Count; playerId++)
                 {
-                    int space = playersScores[playerId].Item1;
-                    int score = playersScores[playerId].Item2;
+                    int space = playersScores[playerId].Space;
+                    int score = playersScores[playerId].Score;
 
-                    List<int> rollsOutcomes = new List<int>();
-                    for (int j = 0; j < ROLL_TIMES; j++)
+                    // The player rolls the die three times and adds up the results
+                    List<int> numbers = new List<int>();
+                    for (int i = 0; i < TOTAL_NUMBER_OF_DIE_ROLLS_PER_TURN; i++)
                     {
-                        if (rollOutcome > MAX_ROLL)
+                        if (dieNumber > DIE_MAX_NUMBER)
                         {
-                            rollOutcome = WRAP_ROLL_TO;
+                            dieNumber = DIE_MIN_NUMBER;
                         }
 
-                        rollsOutcomes.Add(rollOutcome);
-                        space += rollOutcome;
-                        rollOutcome++;
+                        numbers.Add(dieNumber);
+                        space += dieNumber;
+                        dieNumber++;
                     }
 
+                    // Check wrap back
                     if (space > WRAP_AFTER)
                     {
                         space %= WRAP_AFTER;
@@ -55,18 +57,19 @@ namespace App.Tasks.Year2021.Day21
 
                     score += space;
                     playersScores[playerId] = (space, score);
-                    totalRolls += ROLL_TIMES;
+                    totalNumberOfDieRolls += TOTAL_NUMBER_OF_DIE_ROLLS_PER_TURN;
 
+                    // Check if player won and end the game
                     if (score >= minimumWinnerScore)
                     {
-                        winnerFound = true;
+                        gameEnd = true;
                         break;
                     }
                 }
             }
 
-            int loserScore = playersScores.Select(ps => ps.Value.Item2).Min();
-            int productOfLosingPlayerScoreMultipliedByNumberOfDieRolls = totalRolls * loserScore;
+            int losingPlayerScore = playersScores.Select(ps => ps.Value.Score).Min();
+            int productOfLosingPlayerScoreMultipliedByNumberOfDieRolls = losingPlayerScore * totalNumberOfDieRolls;
 
             return productOfLosingPlayerScoreMultipliedByNumberOfDieRolls;
         }
@@ -79,11 +82,11 @@ namespace App.Tasks.Year2021.Day21
             return 0;
         }
 
-        private Dictionary<int, (int, int)> InitializePlayersScores(
+        private Dictionary<int, (int Space, int Score)> InitializePlayersScores(
             Dictionary<int, int> playersStartingPositions
         )
         {
-            Dictionary<int, (int, int)> playersScores = new Dictionary<int, (int, int)>();
+            Dictionary<int, (int Space, int Score)> playersScores = new Dictionary<int, (int Space, int Score)>();
             foreach (KeyValuePair<int, int> player in playersStartingPositions)
             {
                 playersScores[player.Key] = (player.Value, 0);
