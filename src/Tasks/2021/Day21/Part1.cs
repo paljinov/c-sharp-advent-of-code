@@ -64,6 +64,8 @@ namespace App.Tasks.Year2021.Day21
 {
     public class Part1 : ITask<int>
     {
+        private const int DIE_MAX_NUMBER = 100;
+
         private const int MINIMUM_WINNER_SCORE = 1000;
 
         private readonly PlayersRepository playersRepository;
@@ -81,7 +83,7 @@ namespace App.Tasks.Year2021.Day21
             Dictionary<int, int> playersStartingPositions = playersRepository.GetPlayersStartingPositions(input);
             int productOfLosingPlayerScoreMultipliedByNumberOfDieRolls =
                 diracDice.CalculateProductOfLosingPlayerScoreMultipliedByNumberOfDieRolls(
-                    playersStartingPositions, MINIMUM_WINNER_SCORE);
+                    playersStartingPositions, DIE_MAX_NUMBER, MINIMUM_WINNER_SCORE);
 
             return productOfLosingPlayerScoreMultipliedByNumberOfDieRolls;
         }

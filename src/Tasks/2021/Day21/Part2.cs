@@ -31,7 +31,9 @@ namespace App.Tasks.Year2021.Day21
 {
     public class Part2 : ITask<long>
     {
-        private const int MINIMUM_WINNER_SCORE = 21;
+        private const int DIE_MAX_NUMBER = 3;
+
+        private const int MINIMUM_WINNER_SCORE = 11;
 
         private readonly PlayersRepository playersRepository;
 
@@ -46,10 +48,11 @@ namespace App.Tasks.Year2021.Day21
         public long Solution(string input)
         {
             Dictionary<int, int> playersStartingPositions = playersRepository.GetPlayersStartingPositions(input);
-            long productOfLosingPlayerScoreMultipliedByNumberOfDieRolls = diracDice
-                .CalculateNumberOfUniversesInWhichWinningPlayerWins(playersStartingPositions, MINIMUM_WINNER_SCORE);
+            long numberOfUniversesInWhichWinningPlayerWins = diracDice
+                .CalculateNumberOfUniversesInWhichWinningPlayerWins(
+                    playersStartingPositions, DIE_MAX_NUMBER, MINIMUM_WINNER_SCORE);
 
-            return productOfLosingPlayerScoreMultipliedByNumberOfDieRolls;
+            return numberOfUniversesInWhichWinningPlayerWins;
         }
     }
 }

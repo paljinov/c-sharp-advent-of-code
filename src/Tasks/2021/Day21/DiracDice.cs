@@ -7,14 +7,13 @@ namespace App.Tasks.Year2021.Day21
     {
         private const int TOTAL_NUMBER_OF_DIE_ROLLS_PER_TURN = 3;
 
-        private const int DIE_MAX_NUMBER = 100;
-
         private const int DIE_MIN_NUMBER = 1;
 
         private const int WRAP_AFTER = 10;
 
         public int CalculateProductOfLosingPlayerScoreMultipliedByNumberOfDieRolls(
             Dictionary<int, int> playersStartingPositions,
+            int dieMaxNumber,
             int minimumWinnerScore
         )
         {
@@ -32,15 +31,13 @@ namespace App.Tasks.Year2021.Day21
                     int score = playersScores[playerId].Score;
 
                     // The player rolls the die three times and adds up the results
-                    List<int> numbers = new List<int>();
                     for (int i = 0; i < TOTAL_NUMBER_OF_DIE_ROLLS_PER_TURN; i++)
                     {
-                        if (dieNumber > DIE_MAX_NUMBER)
+                        if (dieNumber > dieMaxNumber)
                         {
                             dieNumber = DIE_MIN_NUMBER;
                         }
 
-                        numbers.Add(dieNumber);
                         space += dieNumber;
                         dieNumber++;
                     }
@@ -54,8 +51,8 @@ namespace App.Tasks.Year2021.Day21
                             space = 10;
                         }
                     }
-
                     score += space;
+
                     playersScores[playerId] = (space, score);
                     totalNumberOfDieRolls += TOTAL_NUMBER_OF_DIE_ROLLS_PER_TURN;
 
@@ -76,10 +73,73 @@ namespace App.Tasks.Year2021.Day21
 
         public long CalculateNumberOfUniversesInWhichWinningPlayerWins(
             Dictionary<int, int> playersStartingPositions,
+            int dieMaxNumber,
             int minimumWinnerScore
-       )
+        )
         {
-            return 0;
+            Dictionary<int, (int Space, int Score)> playersScores = InitializePlayersScores(playersStartingPositions);
+            Dictionary<int, long> playersWins = new Dictionary<int, long>();
+            foreach (int playerId in playersScores.Keys)
+            {
+                playersWins[playerId] = 0;
+            }
+            List<int> diracDiceNumbersTurnSums = GetDiracDiceNumbersTurnSums(dieMaxNumber);
+
+            DoCalculatePlayerWinsInMultipleUniverses(1, diracDiceNumbersTurnSums, minimumWinnerScore, playersScores, playersWins);
+
+            long numberOfUniversesInWhichWinningPlayerWins = playersWins.Select(ps => ps.Value).Max();
+
+            return numberOfUniversesInWhichWinningPlayerWins;
+        }
+
+        private void DoCalculatePlayerWinsInMultipleUniverses(
+            int playerIdTurn,
+            List<int> diracDiceNumbersTurnSums,
+            int minimumWinnerScore,
+            Dictionary<int, (int Space, int Score)> playersScores,
+            Dictionary<int, long> playersWins
+        )
+        {
+            int nextPlayerIdTurn = playersScores.ContainsKey(playerIdTurn + 1) ? playerIdTurn + 1 : 1;
+
+            foreach (int diracDiceNumbersTurnSum in diracDiceNumbersTurnSums)
+            {
+                Dictionary<int, (int Space, int Score)> playersScoresCopy =
+                    playersScores.ToDictionary(ps => ps.Key, ps => ps.Value);
+
+                int space = playersScoresCopy[playerIdTurn].Space;
+                int score = playersScoresCopy[playerIdTurn].Score;
+
+                space += diracDiceNumbersTurnSum;
+
+                // Check wrap back
+                if (space > WRAP_AFTER)
+                {
+                    space %= WRAP_AFTER;
+                    if (space == 0)
+                    {
+                        space = 10;
+                    }
+                }
+
+                score += space;
+                playersScoresCopy[playerIdTurn] = (space, score);
+
+                // Check if player won and end the game
+                if (score >= minimumWinnerScore)
+                {
+                    playersWins[playerIdTurn] += 1;
+                    if (playersWins[playerIdTurn] % 10000000 == 0)
+                    {
+                        System.Console.WriteLine($"Player {playerIdTurn} wins: {playersWins[playerIdTurn]}");
+                    }
+                }
+                else
+                {
+                    DoCalculatePlayerWinsInMultipleUniverses(
+                        nextPlayerIdTurn, diracDiceNumbersTurnSums, minimumWinnerScore, playersScoresCopy, playersWins);
+                }
+            }
         }
 
         private Dictionary<int, (int Space, int Score)> InitializePlayersScores(
@@ -93,6 +153,42 @@ namespace App.Tasks.Year2021.Day21
             }
 
             return playersScores;
+        }
+
+        private List<int> GetDiracDiceNumbersTurnSums(int dieMaxNumber)
+        {
+            List<int> diracDiceNumbers = new List<int>()
+            {
+                (new List<int>(){1,1,1}).Sum(),
+                (new List<int>(){1,1,2}).Sum(),
+                (new List<int>(){1,1,3}).Sum(),
+                (new List<int>(){1,2,1}).Sum(),
+                (new List<int>(){1,2,2}).Sum(),
+                (new List<int>(){1,2,3}).Sum(),
+                (new List<int>(){1,3,1}).Sum(),
+                (new List<int>(){1,3,2}).Sum(),
+                (new List<int>(){1,3,3}).Sum(),
+                (new List<int>(){2,1,1}).Sum(),
+                (new List<int>(){2,1,2}).Sum(),
+                (new List<int>(){2,1,3}).Sum(),
+                (new List<int>(){2,2,1}).Sum(),
+                (new List<int>(){2,2,2}).Sum(),
+                (new List<int>(){2,2,3}).Sum(),
+                (new List<int>(){2,3,1}).Sum(),
+                (new List<int>(){2,3,2}).Sum(),
+                (new List<int>(){2,3,3}).Sum(),
+                (new List<int>(){3,1,1}).Sum(),
+                (new List<int>(){3,1,2}).Sum(),
+                (new List<int>(){3,1,3}).Sum(),
+                (new List<int>(){3,2,1}).Sum(),
+                (new List<int>(){3,2,2}).Sum(),
+                (new List<int>(){3,2,3}).Sum(),
+                (new List<int>(){3,3,1}).Sum(),
+                (new List<int>(){3,3,2}).Sum(),
+                (new List<int>(){3,3,3}).Sum()
+            };
+
+            return diracDiceNumbers;
         }
     }
 }
