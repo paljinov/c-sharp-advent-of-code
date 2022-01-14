@@ -83,9 +83,15 @@ namespace App.Tasks.Year2021.Day21
             {
                 playersWins[playerId] = 0;
             }
-            List<int> diracDiceNumbersTurnSums = GetDiracDiceNumbersTurnSums(dieMaxNumber);
 
-            DoCalculatePlayerWinsInMultipleUniverses(1, diracDiceNumbersTurnSums, minimumWinnerScore, playersScores, playersWins);
+            List<List<int>> diracDiceNumbers = GetDiracDiceNumbers(dieMaxNumber, 0, new List<int>());
+            List<int> diracDiceNumbersSums = new List<int>();
+            foreach (List<int> diracDieNumbers in diracDiceNumbers)
+            {
+                diracDiceNumbersSums.Add(diracDieNumbers.Sum());
+            }
+
+            DoCalculatePlayerWinsInMultipleUniverses(1, diracDiceNumbersSums, minimumWinnerScore, playersScores, playersWins);
 
             long numberOfUniversesInWhichWinningPlayerWins = playersWins.Select(ps => ps.Value).Max();
 
@@ -94,7 +100,7 @@ namespace App.Tasks.Year2021.Day21
 
         private void DoCalculatePlayerWinsInMultipleUniverses(
             int playerIdTurn,
-            List<int> diracDiceNumbersTurnSums,
+            List<int> diracDiceNumbersSums,
             int minimumWinnerScore,
             Dictionary<int, (int Space, int Score)> playersScores,
             Dictionary<int, long> playersWins
@@ -102,7 +108,7 @@ namespace App.Tasks.Year2021.Day21
         {
             int nextPlayerIdTurn = playersScores.ContainsKey(playerIdTurn + 1) ? playerIdTurn + 1 : 1;
 
-            foreach (int diracDiceNumbersTurnSum in diracDiceNumbersTurnSums)
+            foreach (int diracDieNumbersSum in diracDiceNumbersSums)
             {
                 Dictionary<int, (int Space, int Score)> playersScoresCopy =
                     playersScores.ToDictionary(ps => ps.Key, ps => ps.Value);
@@ -110,7 +116,7 @@ namespace App.Tasks.Year2021.Day21
                 int space = playersScoresCopy[playerIdTurn].Space;
                 int score = playersScoresCopy[playerIdTurn].Score;
 
-                space += diracDiceNumbersTurnSum;
+                space += diracDieNumbersSum;
 
                 // Check wrap back
                 if (space > WRAP_AFTER)
@@ -137,7 +143,7 @@ namespace App.Tasks.Year2021.Day21
                 else
                 {
                     DoCalculatePlayerWinsInMultipleUniverses(
-                        nextPlayerIdTurn, diracDiceNumbersTurnSums, minimumWinnerScore, playersScoresCopy, playersWins);
+                        nextPlayerIdTurn, diracDiceNumbersSums, minimumWinnerScore, playersScoresCopy, playersWins);
                 }
             }
         }
@@ -155,38 +161,27 @@ namespace App.Tasks.Year2021.Day21
             return playersScores;
         }
 
-        private List<int> GetDiracDiceNumbersTurnSums(int dieMaxNumber)
+        private List<List<int>> GetDiracDiceNumbers(int dieMaxNumber, int depth, List<int> diracDieNumbers)
         {
-            List<int> diracDiceNumbers = new List<int>()
+            List<List<int>> diracDiceNumbers = new List<List<int>>();
+
+            if (depth >= TOTAL_NUMBER_OF_DIE_ROLLS_PER_TURN)
             {
-                (new List<int>(){1,1,1}).Sum(),
-                (new List<int>(){1,1,2}).Sum(),
-                (new List<int>(){1,1,3}).Sum(),
-                (new List<int>(){1,2,1}).Sum(),
-                (new List<int>(){1,2,2}).Sum(),
-                (new List<int>(){1,2,3}).Sum(),
-                (new List<int>(){1,3,1}).Sum(),
-                (new List<int>(){1,3,2}).Sum(),
-                (new List<int>(){1,3,3}).Sum(),
-                (new List<int>(){2,1,1}).Sum(),
-                (new List<int>(){2,1,2}).Sum(),
-                (new List<int>(){2,1,3}).Sum(),
-                (new List<int>(){2,2,1}).Sum(),
-                (new List<int>(){2,2,2}).Sum(),
-                (new List<int>(){2,2,3}).Sum(),
-                (new List<int>(){2,3,1}).Sum(),
-                (new List<int>(){2,3,2}).Sum(),
-                (new List<int>(){2,3,3}).Sum(),
-                (new List<int>(){3,1,1}).Sum(),
-                (new List<int>(){3,1,2}).Sum(),
-                (new List<int>(){3,1,3}).Sum(),
-                (new List<int>(){3,2,1}).Sum(),
-                (new List<int>(){3,2,2}).Sum(),
-                (new List<int>(){3,2,3}).Sum(),
-                (new List<int>(){3,3,1}).Sum(),
-                (new List<int>(){3,3,2}).Sum(),
-                (new List<int>(){3,3,3}).Sum()
-            };
+                diracDiceNumbers.Add(diracDieNumbers);
+            }
+            else
+            {
+                for (int dieNumber = 1; dieNumber <= dieMaxNumber; dieNumber++)
+                {
+                    List<int> diracDieNumbersCopy = diracDieNumbers.ToList();
+                    diracDieNumbersCopy.Add(dieNumber);
+
+                    if (depth < TOTAL_NUMBER_OF_DIE_ROLLS_PER_TURN)
+                    {
+                        diracDiceNumbers.AddRange(GetDiracDiceNumbers(dieMaxNumber, depth + 1, diracDieNumbersCopy));
+                    }
+                }
+            }
 
             return diracDiceNumbers;
         }

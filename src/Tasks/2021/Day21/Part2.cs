@@ -33,7 +33,7 @@ namespace App.Tasks.Year2021.Day21
     {
         private const int DIE_MAX_NUMBER = 3;
 
-        private const int MINIMUM_WINNER_SCORE = 11;
+        private const int MINIMUM_WINNER_SCORE = 21;
 
         private readonly PlayersRepository playersRepository;
 
