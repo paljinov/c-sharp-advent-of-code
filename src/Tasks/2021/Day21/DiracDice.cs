@@ -78,20 +78,19 @@ namespace App.Tasks.Year2021.Day21
         )
         {
             Dictionary<int, (int Space, int Score)> playersScores = InitializePlayersScores(playersStartingPositions);
-            Dictionary<int, long> playersWins = new Dictionary<int, long>();
-            foreach (int playerId in playersScores.Keys)
-            {
-                playersWins[playerId] = 0;
-            }
+            Dictionary<int, long> playersWins = playersStartingPositions.Keys.ToDictionary(p => p, p => (long)0);
 
             List<List<int>> diracDiceNumbers = GetDiracDiceNumbers(dieMaxNumber, 0, new List<int>());
-            List<int> diracDiceNumbersSums = new List<int>();
-            foreach (List<int> diracDieNumbers in diracDiceNumbers)
-            {
-                diracDiceNumbersSums.Add(diracDieNumbers.Sum());
-            }
+            Dictionary<int, int> diracDiceNumbersSumsOccurrences = GetDiracDiceNumbersSumsOccurrences(diracDiceNumbers);
 
-            DoCalculatePlayerWinsInMultipleUniverses(1, diracDiceNumbersSums, minimumWinnerScore, playersScores, playersWins);
+            DoCalculatePlayerWinsInMultipleUniverses(
+                1,
+                diracDiceNumbersSumsOccurrences,
+                minimumWinnerScore,
+                1,
+                playersScores,
+                playersWins
+            );
 
             long numberOfUniversesInWhichWinningPlayerWins = playersWins.Select(ps => ps.Value).Max();
 
@@ -100,23 +99,22 @@ namespace App.Tasks.Year2021.Day21
 
         private void DoCalculatePlayerWinsInMultipleUniverses(
             int playerIdTurn,
-            List<int> diracDiceNumbersSums,
+            Dictionary<int, int> diracDiceNumbersSumsOccurrences,
             int minimumWinnerScore,
+            long universes,
             Dictionary<int, (int Space, int Score)> playersScores,
             Dictionary<int, long> playersWins
         )
         {
             int nextPlayerIdTurn = playersScores.ContainsKey(playerIdTurn + 1) ? playerIdTurn + 1 : 1;
+            Dictionary<int, (int Space, int Score)> playersScoresCopy =
+                new Dictionary<int, (int Space, int Score)>(playersScores);
 
-            foreach (int diracDieNumbersSum in diracDiceNumbersSums)
+            foreach (KeyValuePair<int, int> diracDieNumbersSum in diracDiceNumbersSumsOccurrences)
             {
-                Dictionary<int, (int Space, int Score)> playersScoresCopy =
-                    playersScores.ToDictionary(ps => ps.Key, ps => ps.Value);
-
-                int space = playersScoresCopy[playerIdTurn].Space;
-                int score = playersScoresCopy[playerIdTurn].Score;
-
-                space += diracDieNumbersSum;
+                int space = playersScores[playerIdTurn].Space + diracDieNumbersSum.Key;
+                int score = playersScores[playerIdTurn].Score;
+                long universesAfterSplit = universes * diracDieNumbersSum.Value;
 
                 // Check wrap back
                 if (space > WRAP_AFTER)
@@ -129,21 +127,23 @@ namespace App.Tasks.Year2021.Day21
                 }
 
                 score += space;
-                playersScoresCopy[playerIdTurn] = (space, score);
 
                 // Check if player won and end the game
                 if (score >= minimumWinnerScore)
                 {
-                    playersWins[playerIdTurn] += 1;
-                    if (playersWins[playerIdTurn] % 10000000 == 0)
-                    {
-                        System.Console.WriteLine($"Player {playerIdTurn} wins: {playersWins[playerIdTurn]}");
-                    }
+                    playersWins[playerIdTurn] += universesAfterSplit;
                 }
                 else
                 {
+                    playersScoresCopy[playerIdTurn] = (space, score);
                     DoCalculatePlayerWinsInMultipleUniverses(
-                        nextPlayerIdTurn, diracDiceNumbersSums, minimumWinnerScore, playersScoresCopy, playersWins);
+                        nextPlayerIdTurn,
+                        diracDiceNumbersSumsOccurrences,
+                        minimumWinnerScore,
+                        universesAfterSplit,
+                        playersScoresCopy,
+                        playersWins
+                    );
                 }
             }
         }
@@ -184,6 +184,26 @@ namespace App.Tasks.Year2021.Day21
             }
 
             return diracDiceNumbers;
+        }
+
+        private Dictionary<int, int> GetDiracDiceNumbersSumsOccurrences(List<List<int>> diracDiceNumbers)
+        {
+            Dictionary<int, int> diracDiceNumbersSumsOccurrences = new Dictionary<int, int>();
+
+            foreach (List<int> diracDieNumbers in diracDiceNumbers)
+            {
+                int sum = diracDieNumbers.Sum();
+                if (!diracDiceNumbersSumsOccurrences.ContainsKey(sum))
+                {
+                    diracDiceNumbersSumsOccurrences[sum] = 1;
+                }
+                else
+                {
+                    diracDiceNumbersSumsOccurrences[sum]++;
+                }
+            }
+
+            return diracDiceNumbersSumsOccurrences;
         }
     }
 }
