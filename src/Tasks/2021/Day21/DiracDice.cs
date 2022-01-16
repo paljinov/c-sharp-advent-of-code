@@ -17,7 +17,7 @@ namespace App.Tasks.Year2021.Day21
             int minimumWinnerScore
         )
         {
-            Dictionary<int, (int Space, int Score)> playersScores = InitializePlayersScores(playersStartingPositions);
+            Dictionary<int, (int Space, int Score)> players = InitializePlayers(playersStartingPositions);
 
             bool gameEnd = false;
             int dieNumber = 1;
@@ -25,10 +25,10 @@ namespace App.Tasks.Year2021.Day21
 
             while (!gameEnd)
             {
-                for (int playerId = 1; playerId <= playersScores.Count; playerId++)
+                for (int playerId = 1; playerId <= players.Count; playerId++)
                 {
-                    int space = playersScores[playerId].Space;
-                    int score = playersScores[playerId].Score;
+                    int space = players[playerId].Space;
+                    int score = players[playerId].Score;
 
                     // The player rolls the die three times and adds up the results
                     for (int i = 0; i < TOTAL_NUMBER_OF_DIE_ROLLS_PER_TURN; i++)
@@ -42,18 +42,10 @@ namespace App.Tasks.Year2021.Day21
                         dieNumber++;
                     }
 
-                    // Check wrap back
-                    if (space > WRAP_AFTER)
-                    {
-                        space %= WRAP_AFTER;
-                        if (space == 0)
-                        {
-                            space = 10;
-                        }
-                    }
+                    space = WrapBackIfNeeded(space);
                     score += space;
 
-                    playersScores[playerId] = (space, score);
+                    players[playerId] = (space, score);
                     totalNumberOfDieRolls += TOTAL_NUMBER_OF_DIE_ROLLS_PER_TURN;
 
                     // Check if player won and end the game
@@ -65,7 +57,7 @@ namespace App.Tasks.Year2021.Day21
                 }
             }
 
-            int losingPlayerScore = playersScores.Select(ps => ps.Value.Score).Min();
+            int losingPlayerScore = players.Select(ps => ps.Value.Score).Min();
             int productOfLosingPlayerScoreMultipliedByNumberOfDieRolls = losingPlayerScore * totalNumberOfDieRolls;
 
             return productOfLosingPlayerScoreMultipliedByNumberOfDieRolls;
@@ -77,19 +69,20 @@ namespace App.Tasks.Year2021.Day21
             int minimumWinnerScore
         )
         {
-            Dictionary<int, (int Space, int Score)> playersScores = InitializePlayersScores(playersStartingPositions);
-            Dictionary<int, long> playersWins = playersStartingPositions.Keys.ToDictionary(p => p, p => (long)0);
+            Dictionary<int, (int Space, int Score)> players = InitializePlayers(playersStartingPositions);
 
             List<List<int>> diracDiceNumbers = GetDiracDiceNumbers(dieMaxNumber, 0, new List<int>());
             Dictionary<int, int> diracDiceNumbersSumsOccurrences = GetDiracDiceNumbersSumsOccurrences(diracDiceNumbers);
 
-            DoCalculatePlayerWinsInMultipleUniverses(
+            Dictionary<string, Dictionary<int, long>> playersWinsCache =
+                new Dictionary<string, Dictionary<int, long>>();
+
+            Dictionary<int, long> playersWins = DoCalculatePlayersWinsInMultipleUniverses(
                 1,
                 diracDiceNumbersSumsOccurrences,
                 minimumWinnerScore,
-                1,
-                playersScores,
-                playersWins
+                players,
+                playersWinsCache
             );
 
             long numberOfUniversesInWhichWinningPlayerWins = playersWins.Select(ps => ps.Value).Max();
@@ -97,68 +90,92 @@ namespace App.Tasks.Year2021.Day21
             return numberOfUniversesInWhichWinningPlayerWins;
         }
 
-        private void DoCalculatePlayerWinsInMultipleUniverses(
+        private Dictionary<int, long> DoCalculatePlayersWinsInMultipleUniverses(
             int playerIdTurn,
             Dictionary<int, int> diracDiceNumbersSumsOccurrences,
             int minimumWinnerScore,
-            long universes,
-            Dictionary<int, (int Space, int Score)> playersScores,
-            Dictionary<int, long> playersWins
+            Dictionary<int, (int Space, int Score)> players,
+            Dictionary<string, Dictionary<int, long>> playersWinsCache
         )
         {
-            int nextPlayerIdTurn = playersScores.ContainsKey(playerIdTurn + 1) ? playerIdTurn + 1 : 1;
-            Dictionary<int, (int Space, int Score)> playersScoresCopy =
-                new Dictionary<int, (int Space, int Score)>(playersScores);
+            Dictionary<int, long> playersWins = players.Keys.ToDictionary(p => p, p => (long)0);
 
-            foreach (KeyValuePair<int, int> diracDieNumbersSum in diracDiceNumbersSumsOccurrences)
+            string playersWinsCacheKey = StringifyPlayers(players, playerIdTurn);
+            // If players wins are found in cache
+            if (playersWinsCache.ContainsKey(playersWinsCacheKey))
             {
-                int space = playersScores[playerIdTurn].Space + diracDieNumbersSum.Key;
-                int score = playersScores[playerIdTurn].Score;
-                long universesAfterSplit = universes * diracDieNumbersSum.Value;
+                playersWins = playersWinsCache[playersWinsCacheKey];
+            }
+            // If players wins are not found in cache
+            else
+            {
+                int nextPlayerIdTurn = players.ContainsKey(playerIdTurn + 1) ? playerIdTurn + 1 : 1;
 
-                // Check wrap back
-                if (space > WRAP_AFTER)
+                foreach (KeyValuePair<int, int> diracDieNumbersSum in diracDiceNumbersSumsOccurrences)
                 {
-                    space %= WRAP_AFTER;
-                    if (space == 0)
+                    Dictionary<int, (int Space, int Score)> updatedPlayers =
+                        new Dictionary<int, (int Space, int Score)>(players);
+
+                    int space = WrapBackIfNeeded(players[playerIdTurn].Space + diracDieNumbersSum.Key);
+                    int score = players[playerIdTurn].Score + space;
+                    long universes = diracDieNumbersSum.Value;
+
+                    // Check if player won and end the game
+                    if (score >= minimumWinnerScore)
                     {
-                        space = 10;
+                        playersWins[playerIdTurn] += universes;
+                    }
+                    else
+                    {
+                        updatedPlayers[playerIdTurn] = (space, score);
+                        playersWinsCacheKey = StringifyPlayers(updatedPlayers, nextPlayerIdTurn);
+
+                        // Cache stores players wins starting from single universe
+                        playersWinsCache[playersWinsCacheKey] = DoCalculatePlayersWinsInMultipleUniverses(
+                            nextPlayerIdTurn,
+                            diracDiceNumbersSumsOccurrences,
+                            minimumWinnerScore,
+                            updatedPlayers,
+                            playersWinsCache
+                        );
+
+                        playersWins = playersWins
+                            // Multiply wins by number of universes
+                            .Concat(playersWinsCache[playersWinsCacheKey]
+                                .ToDictionary(pw => pw.Key, pw => universes * pw.Value))
+                            .GroupBy(pw => pw.Key)
+                            .ToDictionary(pw => pw.Key, pw => pw.Sum(pw => pw.Value));
                     }
                 }
-
-                score += space;
-
-                // Check if player won and end the game
-                if (score >= minimumWinnerScore)
-                {
-                    playersWins[playerIdTurn] += universesAfterSplit;
-                }
-                else
-                {
-                    playersScoresCopy[playerIdTurn] = (space, score);
-                    DoCalculatePlayerWinsInMultipleUniverses(
-                        nextPlayerIdTurn,
-                        diracDiceNumbersSumsOccurrences,
-                        minimumWinnerScore,
-                        universesAfterSplit,
-                        playersScoresCopy,
-                        playersWins
-                    );
-                }
             }
+
+            return playersWins;
         }
 
-        private Dictionary<int, (int Space, int Score)> InitializePlayersScores(
-            Dictionary<int, int> playersStartingPositions
-        )
+        private Dictionary<int, (int Space, int Score)> InitializePlayers(Dictionary<int, int> playersStartingPositions)
         {
-            Dictionary<int, (int Space, int Score)> playersScores = new Dictionary<int, (int Space, int Score)>();
+            Dictionary<int, (int Space, int Score)> players = new Dictionary<int, (int Space, int Score)>();
             foreach (KeyValuePair<int, int> player in playersStartingPositions)
             {
-                playersScores[player.Key] = (player.Value, 0);
+                players[player.Key] = (player.Value, 0);
             }
 
-            return playersScores;
+            return players;
+        }
+
+        private int WrapBackIfNeeded(int space)
+        {
+            // Check if wrap back is needed
+            if (space > WRAP_AFTER)
+            {
+                space %= WRAP_AFTER;
+                if (space == 0)
+                {
+                    space = 10;
+                }
+            }
+
+            return space;
         }
 
         private List<List<int>> GetDiracDiceNumbers(int dieMaxNumber, int depth, List<int> diracDieNumbers)
@@ -204,6 +221,18 @@ namespace App.Tasks.Year2021.Day21
             }
 
             return diracDiceNumbersSumsOccurrences;
+        }
+
+        private string StringifyPlayers(Dictionary<int, (int Space, int Score)> players, int playerTurn)
+        {
+            string playersString = string.Empty;
+            foreach (KeyValuePair<int, (int Space, int Score)> player in players)
+            {
+                playersString += $"{player.Key},{player.Value.Space},{player.Value.Score};";
+            }
+            playersString += playerTurn;
+
+            return playersString;
         }
     }
 }
