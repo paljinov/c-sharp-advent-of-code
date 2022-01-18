@@ -4,14 +4,6 @@ namespace App.Tasks.Year2021.Day20
 {
     public class ImageRepository
     {
-        public char[] GetImageEnhancementAlgorithm(string input)
-        {
-            string[] inputParts = ParseInput(input);
-            char[] imageEnhancementAlgorithm = inputParts[0].ToCharArray();
-
-            return imageEnhancementAlgorithm;
-        }
-
         public char[,] GetInputImage(string input)
         {
             string[] inputParts = ParseInput(input);
@@ -31,6 +23,14 @@ namespace App.Tasks.Year2021.Day20
             }
 
             return inputImage;
+        }
+
+        public string GetImageEnhancementAlgorithm(string input)
+        {
+            string[] inputParts = ParseInput(input);
+            string imageEnhancementAlgorithm = inputParts[0].Replace(Environment.NewLine, string.Empty);
+
+            return imageEnhancementAlgorithm;
         }
 
         private string[] ParseInput(string input)

@@ -145,6 +145,8 @@ namespace App.Tasks.Year2021.Day20
 {
     public class Part1 : ITask<int>
     {
+        private const int TOTAL_IMAGE_ENHANCEMENTS = 2;
+
         private readonly ImageRepository imageRepository;
 
         private readonly OutputImage outputImage;
@@ -157,10 +159,11 @@ namespace App.Tasks.Year2021.Day20
 
         public int Solution(string input)
         {
-            char[] imageEnhancementAlgorithm = imageRepository.GetImageEnhancementAlgorithm(input);
             char[,] inputImage = imageRepository.GetInputImage(input);
+            string imageEnhancementAlgorithm = imageRepository.GetImageEnhancementAlgorithm(input);
 
-            int litPixels = outputImage.CountLitPixelsInTheResultingImage(imageEnhancementAlgorithm, inputImage);
+            int litPixels = outputImage.CountLitPixelsInTheResultingImage(
+                inputImage, imageEnhancementAlgorithm, TOTAL_IMAGE_ENHANCEMENTS);
 
             return litPixels;
         }
