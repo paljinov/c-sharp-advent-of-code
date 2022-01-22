@@ -58,8 +58,9 @@ namespace App.Tasks.Year2019.Day18
                 doorsLocations[door] = doorLocation;
             }
 
-            Dictionary<char, Dictionary<char, (int, string)>> stepsToKey =
-                 new Dictionary<char, Dictionary<char, (int, string)>>();
+            Dictionary<char, Dictionary<char, (int Steps, string DoorsBetween)>> stepsToKey =
+                new Dictionary<char, Dictionary<char, (int Steps, string DoorsBetween)>>();
+
             foreach (char key in $"{ENTRANCE}{keys}")
             {
                 (int X, int Y) keyLocation = entrance;
@@ -68,7 +69,7 @@ namespace App.Tasks.Year2019.Day18
                     keyLocation = keysLocations[key];
                 }
 
-                Dictionary<char, (int, string)> reachedKeys = new Dictionary<char, (int, string)>();
+                Dictionary<char, (int Steps, string DoorsBetween)> reachedKeys = new Dictionary<char, (int Steps, string DoorsBetween)>();
                 GetStepsToKey(tunnelsMap, keyLocation, 0, string.Empty, new Dictionary<string, int>(), reachedKeys);
                 reachedKeys.Remove(key);
                 stepsToKey[key] = reachedKeys;
@@ -83,7 +84,7 @@ namespace App.Tasks.Year2019.Day18
                 stepsToKey,
                 new Dictionary<string,
                 int>(),
-                keys,
+                keys.ToHashSet(),
                 0,
                 ref minSteps
             );
@@ -116,9 +117,9 @@ namespace App.Tasks.Year2019.Day18
             (int X, int Y) currentLocation,
             Dictionary<char, (int X, int Y)> keysLocations,
             Dictionary<char, (int X, int Y)> doorsLocations,
-            Dictionary<char, Dictionary<char, (int, string)>> stepsToKey,
+            Dictionary<char, Dictionary<char, (int Steps, string DoorsBetween)>> stepsToKey,
             Dictionary<string, int> statesCache,
-            string remainingKeys,
+            HashSet<char> remainingKeys,
             int steps,
             ref int minSteps
         )
@@ -129,7 +130,8 @@ namespace App.Tasks.Year2019.Day18
                 return;
             }
 
-            string state = StringifyState(remainingKeys, currentLocation);
+            string remainingKeysString = string.Concat(remainingKeys);
+            string state = StringifyState(remainingKeysString, currentLocation);
             // If this tunnel map state and current position already exists in equal or less number of steps
             if (statesCache.ContainsKey(state) && steps >= statesCache[state])
             {
@@ -138,12 +140,14 @@ namespace App.Tasks.Year2019.Day18
             statesCache[state] = steps;
 
             Dictionary<char, int> reachableKeys = new Dictionary<char, int>();
-            foreach (KeyValuePair<char, (int, string)> stepsToKeyFromKey in stepsToKey[currentKey])
+            foreach (KeyValuePair<char, (int Steps, string DoorsBetween)> stepsToKeyFromKey in stepsToKey[currentKey])
             {
+                string lowercaseDoorsBetween = stepsToKeyFromKey.Value.DoorsBetween.ToLower();
+
                 bool doorStillExists = false;
-                foreach (char door in stepsToKeyFromKey.Value.Item2)
+                foreach (char door in lowercaseDoorsBetween)
                 {
-                    doorStillExists = remainingKeys.IndexOf(door, StringComparison.OrdinalIgnoreCase) >= 0;
+                    doorStillExists = remainingKeys.Contains(door);
                     if (doorStillExists)
                     {
                         break;
@@ -152,32 +156,29 @@ namespace App.Tasks.Year2019.Day18
 
                 if (!doorStillExists)
                 {
-                    reachableKeys.Add(stepsToKeyFromKey.Key, stepsToKeyFromKey.Value.Item1);
+                    reachableKeys.Add(stepsToKeyFromKey.Key, stepsToKeyFromKey.Value.Steps);
                 }
             }
 
             foreach (KeyValuePair<char, int> reachableKey in reachableKeys)
             {
                 char[,] tunnelsMapCopy = tunnelsMap.Clone() as char[,];
-                string remainingKeysCopy = new string(remainingKeys);
+                HashSet<char> remainingKeysCopy = remainingKeys.ToHashSet();
                 int newSteps = steps + reachableKey.Value;
 
                 char nextKey = reachableKey.Key;
                 (int X, int Y) nextKeyLocation = keysLocations[nextKey];
                 char nextDoor = char.ToUpper(nextKey);
 
-                int index = remainingKeysCopy.IndexOf(tunnelsMapCopy[nextKeyLocation.X, nextKeyLocation.Y]);
-                if (index != -1)
+                remainingKeysCopy.Remove(nextKey);
+
+                // If all keys are collected
+                if (remainingKeysCopy.Count == 0 && newSteps < minSteps)
                 {
-                    // Take key
-                    remainingKeysCopy = remainingKeysCopy.Remove(index, 1);
-                    // If all keys are collected
-                    if (string.IsNullOrEmpty(remainingKeysCopy) && newSteps < minSteps)
-                    {
-                        minSteps = newSteps;
-                        return;
-                    }
+                    minSteps = newSteps;
+                    return;
                 }
+
                 tunnelsMapCopy[nextKeyLocation.X, nextKeyLocation.Y] = OPEN_PASSAGE;
                 if (doorsLocations.ContainsKey(nextDoor))
                 {
@@ -388,7 +389,7 @@ namespace App.Tasks.Year2019.Day18
             int steps,
             string doors,
             Dictionary<string, int> statesCache,
-            Dictionary<char, (int, string)> reachableKeys
+            Dictionary<char, (int Steps, string DoorsBetween)> reachableKeys
         )
         {
             string state = $"{currentLocation.X},{currentLocation.Y}";
