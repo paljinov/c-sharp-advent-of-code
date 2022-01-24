@@ -103,7 +103,7 @@ number accepted by MONAD?
 
 namespace App.Tasks.Year2021.Day24
 {
-    public class Part1 : ITask<int>
+    public class Part1 : ITask<long>
     {
         private readonly InstructionsRepository instructionsRepository;
 
@@ -115,10 +115,10 @@ namespace App.Tasks.Year2021.Day24
             arithmeticLogicUnit = new ArithmeticLogicUnit();
         }
 
-        public int Solution(string input)
+        public long Solution(string input)
         {
             Instruction[] instructions = instructionsRepository.GetInstructions(input);
-            int largestModelNumberAcceptedByMonad =
+            long largestModelNumberAcceptedByMonad =
                 arithmeticLogicUnit.CalculateLargestModelNumberAcceptedByMonad(instructions);
 
             return largestModelNumberAcceptedByMonad;
