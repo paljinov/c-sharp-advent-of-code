@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -69,22 +68,23 @@ namespace App.Tasks.Year2019.Day18
                     keyLocation = keysLocations[key];
                 }
 
-                Dictionary<char, (int Steps, string DoorsBetween)> reachedKeys = new Dictionary<char, (int Steps, string DoorsBetween)>();
+                Dictionary<char, (int Steps, string DoorsBetween)> reachedKeys =
+                    new Dictionary<char, (int Steps, string DoorsBetween)>();
                 GetStepsToKey(tunnelsMap, keyLocation, 0, string.Empty, new Dictionary<string, int>(), reachedKeys);
                 reachedKeys.Remove(key);
                 stepsToKey[key] = reachedKeys;
             }
 
+            Dictionary<char, bool> foundKeys = keysLocations.ToDictionary(kl => kl.Key, kl => false);
+
             DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(
-                tunnelsMap,
                 ENTRANCE,
                 entrance,
                 keysLocations,
                 doorsLocations,
                 stepsToKey,
-                new Dictionary<string,
-                int>(),
-                keys.ToHashSet(),
+                new Dictionary<string, int>(),
+                foundKeys,
                 0,
                 ref minSteps
             );
@@ -97,8 +97,7 @@ namespace App.Tasks.Year2019.Day18
             int minSteps = int.MaxValue;
 
             tunnelsMap = UpdateMap(tunnelsMap);
-            (int X,
-            int Y)[] robotsLocations = GetCharacterLocations(ENTRANCE, tunnelsMap).ToArray();
+            (int X, int Y)[] robotsLocations = GetCharacterLocations(ENTRANCE, tunnelsMap).ToArray();
             Direction?[] robotsDirections = new Direction?[robotsLocations.Length];
             int[] robotsStepsToNextKey = new int[robotsLocations.Length];
 
@@ -112,14 +111,13 @@ namespace App.Tasks.Year2019.Day18
         }
 
         private void DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(
-            char[,] tunnelsMap,
             char currentKey,
             (int X, int Y) currentLocation,
             Dictionary<char, (int X, int Y)> keysLocations,
             Dictionary<char, (int X, int Y)> doorsLocations,
             Dictionary<char, Dictionary<char, (int Steps, string DoorsBetween)>> stepsToKey,
             Dictionary<string, int> statesCache,
-            HashSet<char> remainingKeys,
+            Dictionary<char, bool> foundKeys,
             int steps,
             ref int minSteps
         )
@@ -130,8 +128,8 @@ namespace App.Tasks.Year2019.Day18
                 return;
             }
 
-            string remainingKeysString = string.Concat(remainingKeys);
-            string state = StringifyState(remainingKeysString, currentLocation);
+            string foundKeysString = string.Concat(foundKeys.Where(fk => fk.Value == true).Select(fk => fk.Key));
+            string state = StringifyState(foundKeysString, currentLocation);
             // If this tunnel map state and current position already exists in equal or less number of steps
             if (statesCache.ContainsKey(state) && steps >= statesCache[state])
             {
@@ -139,61 +137,31 @@ namespace App.Tasks.Year2019.Day18
             }
             statesCache[state] = steps;
 
-            Dictionary<char, int> reachableKeys = new Dictionary<char, int>();
-            foreach (KeyValuePair<char, (int Steps, string DoorsBetween)> stepsToKeyFromKey in stepsToKey[currentKey])
+            // If all keys are collected in minimum number of steps
+            if (steps < minSteps && !foundKeys.Where(fk => fk.Value == false).Any())
             {
-                string lowercaseDoorsBetween = stepsToKeyFromKey.Value.DoorsBetween.ToLower();
-
-                bool doorStillExists = false;
-                foreach (char door in lowercaseDoorsBetween)
-                {
-                    doorStillExists = remainingKeys.Contains(door);
-                    if (doorStillExists)
-                    {
-                        break;
-                    }
-                }
-
-                if (!doorStillExists)
-                {
-                    reachableKeys.Add(stepsToKeyFromKey.Key, stepsToKeyFromKey.Value.Steps);
-                }
+                minSteps = steps;
+                return;
             }
+
+            Dictionary<char, int> reachableKeys = GetKeysReachableFromKey(stepsToKey[currentKey], foundKeys);
 
             foreach (KeyValuePair<char, int> reachableKey in reachableKeys)
             {
-                char[,] tunnelsMapCopy = tunnelsMap.Clone() as char[,];
-                HashSet<char> remainingKeysCopy = remainingKeys.ToHashSet();
+                char nextKey = reachableKey.Key;
                 int newSteps = steps + reachableKey.Value;
 
-                char nextKey = reachableKey.Key;
-                (int X, int Y) nextKeyLocation = keysLocations[nextKey];
-                char nextDoor = char.ToUpper(nextKey);
-
-                remainingKeysCopy.Remove(nextKey);
-
-                // If all keys are collected
-                if (remainingKeysCopy.Count == 0 && newSteps < minSteps)
-                {
-                    minSteps = newSteps;
-                    return;
-                }
-
-                tunnelsMapCopy[nextKeyLocation.X, nextKeyLocation.Y] = OPEN_PASSAGE;
-                if (doorsLocations.ContainsKey(nextDoor))
-                {
-                    tunnelsMapCopy[doorsLocations[nextDoor].X, doorsLocations[nextDoor].Y] = OPEN_PASSAGE;
-                }
+                Dictionary<char, bool> nextFoundKeys = foundKeys.ToDictionary(fk => fk.Key, fk => fk.Value);
+                nextFoundKeys[nextKey] = true;
 
                 DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(
-                    tunnelsMapCopy,
                     nextKey,
-                    nextKeyLocation,
+                    keysLocations[nextKey],
                     keysLocations,
                     doorsLocations,
                     stepsToKey,
                     statesCache,
-                    remainingKeysCopy,
+                    nextFoundKeys,
                     newSteps,
                     ref minSteps
                 );
@@ -293,6 +261,42 @@ namespace App.Tasks.Year2019.Day18
                     );
                 }
             }
+        }
+
+        private Dictionary<char, int> GetKeysReachableFromKey(
+            Dictionary<char, (int Steps, string DoorsBetween)> stepsToKey,
+            Dictionary<char, bool> foundKeys
+        )
+        {
+            Dictionary<char, int> reachableKeys = new Dictionary<char, int>();
+
+            foreach (KeyValuePair<char, (int Steps, string DoorsBetween)> stepsToKeyFromKey in stepsToKey)
+            {
+                // If key is already found
+                if (foundKeys[stepsToKeyFromKey.Key])
+                {
+                    continue;
+                }
+
+                string lowercaseDoorsBetween = stepsToKeyFromKey.Value.DoorsBetween.ToLower();
+
+                bool doorStillExists = false;
+                foreach (char door in lowercaseDoorsBetween)
+                {
+                    if (!foundKeys[door])
+                    {
+                        doorStillExists = true;
+                        break;
+                    }
+                }
+
+                if (!doorStillExists)
+                {
+                    reachableKeys.Add(stepsToKeyFromKey.Key, stepsToKeyFromKey.Value.Steps);
+                }
+            }
+
+            return reachableKeys;
         }
 
         /// <summary>
