@@ -120,7 +120,7 @@ namespace App.Tasks.Year2019.Day18
             statesCache[state] = steps;
 
             // If all keys are collected in minimum number of steps
-            if (steps < minSteps && !foundKeys.Where(fk => fk.Value == false).Any())
+            if (!foundKeys.Where(fk => fk.Value == false).Any())
             {
                 minSteps = steps;
                 return;
@@ -181,7 +181,7 @@ namespace App.Tasks.Year2019.Day18
             statesCache[state] = steps;
 
             // If all keys are collected in minimum number of steps
-            if (steps < minSteps && !foundKeys.Where(fk => fk.Value == false).Any())
+            if (!foundKeys.Where(fk => fk.Value == false).Any())
             {
                 minSteps = steps;
                 return;
@@ -219,6 +219,9 @@ namespace App.Tasks.Year2019.Day18
             // If there is no reachable keys switch robot
             else
             {
+                // Update current robot location
+                robotsLocations[currentRobot] = (currentLocation.X, currentLocation.Y);
+
                 int nextRobot = currentRobot + 1 >= robotsLocations.Count ? 0 : currentRobot + 1;
                 stepsFromKeyToKeys = GetStepsFromKeysToOtherKeys(tunnelsMap, robotsLocations[nextRobot]);
 
