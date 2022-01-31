@@ -39,18 +39,18 @@ namespace App.Tasks.Year2019.Day18
         {
             int minSteps = int.MaxValue;
 
-            (int X, int Y) entrance = GetCharacterLocations(ENTRANCE, tunnelsMap).First();
-            Dictionary<char, (int X, int Y)> keysLocations = GetKeysLocations(tunnelsMap);
-            Dictionary<char, (int X, int Y)> doorsLocations = GetDoorsLocations(tunnelsMap);
+            (int X, int Y) entrance = GetCharacterPositions(ENTRANCE, tunnelsMap).First();
+            Dictionary<char, (int X, int Y)> keysPositions = GetKeysPositions(tunnelsMap);
+            Dictionary<char, (int X, int Y)> doorsPositions = GetDoorsPositions(tunnelsMap);
             Dictionary<char, Dictionary<char, (int Steps, string DoorsBetween)>> stepsFromKeyToKeys =
                 GetStepsFromKeysToOtherKeys(tunnelsMap, entrance);
-            Dictionary<char, bool> foundKeys = keysLocations.ToDictionary(kl => kl.Key, kl => false);
+            Dictionary<char, bool> foundKeys = keysPositions.ToDictionary(kl => kl.Key, kl => false);
 
             DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(
                 tunnelsMap,
                 entrance,
-                keysLocations,
-                doorsLocations,
+                keysPositions,
+                doorsPositions,
                 stepsFromKeyToKeys,
                 new Dictionary<string, int>(),
                 foundKeys,
@@ -66,22 +66,28 @@ namespace App.Tasks.Year2019.Day18
             int minSteps = int.MaxValue;
 
             tunnelsMap = UpdateMap(tunnelsMap);
-            List<(int X, int Y)> robotsLocations = GetCharacterLocations(ENTRANCE, tunnelsMap);
+            List<(int X, int Y)> robotsPositions = GetCharacterPositions(ENTRANCE, tunnelsMap);
 
-            (int X, int Y) entrance = GetCharacterLocations(ENTRANCE, tunnelsMap).First();
-            Dictionary<char, (int X, int Y)> keysLocations = GetKeysLocations(tunnelsMap);
-            Dictionary<char, (int X, int Y)> doorsLocations = GetDoorsLocations(tunnelsMap);
-            Dictionary<char, Dictionary<char, (int Steps, string DoorsBetween)>> stepsFromKeyToKeys =
-                GetStepsFromKeysToOtherKeys(tunnelsMap, robotsLocations[0]);
-            Dictionary<char, bool> foundKeys = keysLocations.ToDictionary(kl => kl.Key, kl => false);
+            (int X, int Y) entrance = GetCharacterPositions(ENTRANCE, tunnelsMap).First();
+            Dictionary<char, (int X, int Y)> keysPositions = GetKeysPositions(tunnelsMap);
+            Dictionary<char, (int X, int Y)> doorsPositions = GetDoorsPositions(tunnelsMap);
+            Dictionary<char, bool> foundKeys = keysPositions.ToDictionary(kl => kl.Key, kl => false);
 
-            DoCountStepsOfShortestPathThatCollectsAllOfTheKeysForRobots(
+            Dictionary<int, Dictionary<char, Dictionary<char, (int Steps, string DoorsBetween)>>> stepsFromKeyToKeys =
+                new Dictionary<int, Dictionary<char, Dictionary<char, (int Steps, string DoorsBetween)>>>();
+
+            for (int robot = 0; robot < robotsPositions.Count; robot++)
+            {
+                stepsFromKeyToKeys[robot] = GetStepsFromKeysToOtherKeys(tunnelsMap, robotsPositions[robot]);
+            }
+
+            DoCountStepsOfShortestPathThatCollectsAllOfTheKeysForRemoteControlledRobots(
                 tunnelsMap,
-                robotsLocations[0],
+                robotsPositions[0],
                 0,
-                robotsLocations,
-                keysLocations,
-                doorsLocations,
+                robotsPositions,
+                keysPositions,
+                doorsPositions,
                 stepsFromKeyToKeys,
                 new Dictionary<string, int>(),
                 foundKeys,
@@ -94,9 +100,9 @@ namespace App.Tasks.Year2019.Day18
 
         private void DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(
             char[,] tunnelsMap,
-            (int X, int Y) currentLocation,
-            Dictionary<char, (int X, int Y)> keysLocations,
-            Dictionary<char, (int X, int Y)> doorsLocations,
+            (int X, int Y) currentPosition,
+            Dictionary<char, (int X, int Y)> keysPositions,
+            Dictionary<char, (int X, int Y)> doorsPositions,
             Dictionary<char, Dictionary<char, (int Steps, string DoorsBetween)>> stepsFromKeyToKeys,
             Dictionary<string, int> statesCache,
             Dictionary<char, bool> foundKeys,
@@ -111,7 +117,7 @@ namespace App.Tasks.Year2019.Day18
             }
 
             string foundKeysString = string.Concat(foundKeys.Where(fk => fk.Value == true).Select(fk => fk.Key));
-            string state = StringifyState(foundKeysString, currentLocation);
+            string state = StringifyState(foundKeysString, currentPosition);
             // If this tunnel map state and current position already exists in equal or less number of steps
             if (statesCache.ContainsKey(state) && steps >= statesCache[state])
             {
@@ -126,7 +132,7 @@ namespace App.Tasks.Year2019.Day18
                 return;
             }
 
-            char currentKey = tunnelsMap[currentLocation.X, currentLocation.Y];
+            char currentKey = tunnelsMap[currentPosition.X, currentPosition.Y];
             Dictionary<char, int> reachableKeys = GetKeysReachableFromKey(stepsFromKeyToKeys[currentKey], foundKeys);
 
             foreach (KeyValuePair<char, int> reachableKey in reachableKeys)
@@ -139,9 +145,9 @@ namespace App.Tasks.Year2019.Day18
 
                 DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(
                     tunnelsMap,
-                    keysLocations[nextKey],
-                    keysLocations,
-                    doorsLocations,
+                    keysPositions[nextKey],
+                    keysPositions,
+                    doorsPositions,
                     stepsFromKeyToKeys,
                     statesCache,
                     nextFoundKeys,
@@ -151,14 +157,14 @@ namespace App.Tasks.Year2019.Day18
             }
         }
 
-        private void DoCountStepsOfShortestPathThatCollectsAllOfTheKeysForRobots(
+        private void DoCountStepsOfShortestPathThatCollectsAllOfTheKeysForRemoteControlledRobots(
             char[,] tunnelsMap,
-            (int X, int Y) currentLocation,
+            (int X, int Y) currentPosition,
             int currentRobot,
-            List<(int X, int Y)> robotsLocations,
-            Dictionary<char, (int X, int Y)> keysLocations,
-            Dictionary<char, (int X, int Y)> doorsLocations,
-            Dictionary<char, Dictionary<char, (int Steps, string DoorsBetween)>> stepsFromKeyToKeys,
+            List<(int X, int Y)> robotsPositions,
+            Dictionary<char, (int X, int Y)> keysPositions,
+            Dictionary<char, (int X, int Y)> doorsPositions,
+            Dictionary<int, Dictionary<char, Dictionary<char, (int Steps, string DoorsBetween)>>> stepsFromKeyToKeys,
             Dictionary<string, int> statesCache,
             Dictionary<char, bool> foundKeys,
             int steps,
@@ -172,7 +178,7 @@ namespace App.Tasks.Year2019.Day18
             }
 
             string foundKeysString = string.Concat(foundKeys.Where(fk => fk.Value == true).Select(fk => fk.Key));
-            string state = StringifyState(foundKeysString, currentLocation);
+            string state = StringifyState(foundKeysString, currentPosition);
             // If this tunnel map state and current position already exists in equal or less number of steps
             if (statesCache.ContainsKey(state) && steps >= statesCache[state])
             {
@@ -187,8 +193,9 @@ namespace App.Tasks.Year2019.Day18
                 return;
             }
 
-            char currentKey = tunnelsMap[currentLocation.X, currentLocation.Y];
-            Dictionary<char, int> reachableKeys = GetKeysReachableFromKey(stepsFromKeyToKeys[currentKey], foundKeys);
+            char currentKey = tunnelsMap[currentPosition.X, currentPosition.Y];
+            Dictionary<char, int> reachableKeys = GetKeysReachableFromKey(
+                stepsFromKeyToKeys[currentRobot][currentKey], foundKeys);
 
             // If there is reachable keys
             if (reachableKeys.Count > 0)
@@ -201,13 +208,13 @@ namespace App.Tasks.Year2019.Day18
                     Dictionary<char, bool> nextFoundKeys = foundKeys.ToDictionary(fk => fk.Key, fk => fk.Value);
                     nextFoundKeys[nextKey] = true;
 
-                    DoCountStepsOfShortestPathThatCollectsAllOfTheKeysForRobots(
+                    DoCountStepsOfShortestPathThatCollectsAllOfTheKeysForRemoteControlledRobots(
                         tunnelsMap,
-                        keysLocations[nextKey],
+                        keysPositions[nextKey],
                         currentRobot,
-                        robotsLocations,
-                        keysLocations,
-                        doorsLocations,
+                        robotsPositions,
+                        keysPositions,
+                        doorsPositions,
                         stepsFromKeyToKeys,
                         statesCache,
                         nextFoundKeys,
@@ -219,19 +226,18 @@ namespace App.Tasks.Year2019.Day18
             // If there is no reachable keys switch robot
             else
             {
-                // Update current robot location
-                robotsLocations[currentRobot] = (currentLocation.X, currentLocation.Y);
+                // Update current robot position
+                robotsPositions[currentRobot] = (currentPosition.X, currentPosition.Y);
 
-                int nextRobot = currentRobot + 1 >= robotsLocations.Count ? 0 : currentRobot + 1;
-                stepsFromKeyToKeys = GetStepsFromKeysToOtherKeys(tunnelsMap, robotsLocations[nextRobot]);
+                int nextRobot = currentRobot + 1 >= robotsPositions.Count ? 0 : currentRobot + 1;
 
-                DoCountStepsOfShortestPathThatCollectsAllOfTheKeysForRobots(
+                DoCountStepsOfShortestPathThatCollectsAllOfTheKeysForRemoteControlledRobots(
                     tunnelsMap,
-                    robotsLocations[nextRobot],
+                    robotsPositions[nextRobot],
                     nextRobot,
-                    robotsLocations,
-                    keysLocations,
-                    doorsLocations,
+                    robotsPositions,
+                    keysPositions,
+                    doorsPositions,
                     stepsFromKeyToKeys,
                     statesCache,
                     foundKeys,
@@ -277,26 +283,26 @@ namespace App.Tasks.Year2019.Day18
 
         private Dictionary<char, Dictionary<char, (int Steps, string DoorsBetween)>> GetStepsFromKeysToOtherKeys(
             char[,] tunnelsMap,
-            (int X, int Y) currentLocation
+            (int X, int Y) currentPosition
         )
         {
             Dictionary<char, Dictionary<char, (int Steps, string DoorsBetween)>> stepsFromKeyToKeys =
                 new Dictionary<char, Dictionary<char, (int Steps, string DoorsBetween)>>();
 
             Queue<(int X, int Y)> nonProcessedPositions = new Queue<(int X, int Y)>();
-            nonProcessedPositions.Enqueue(currentLocation);
+            nonProcessedPositions.Enqueue(currentPosition);
 
             while (nonProcessedPositions.Count > 0)
             {
-                (int X, int Y) keyLocation = nonProcessedPositions.Dequeue();
-                char key = tunnelsMap[keyLocation.X, keyLocation.Y];
+                (int X, int Y) keyPosition = nonProcessedPositions.Dequeue();
+                char key = tunnelsMap[keyPosition.X, keyPosition.Y];
 
                 Dictionary<char, (int Steps, string DoorsBetween)> reachedKeys =
                     new Dictionary<char, (int Steps, string DoorsBetween)>();
 
                 GetStepsFromKeyToKeys(
                     tunnelsMap,
-                    keyLocation,
+                    keyPosition,
                     0,
                     string.Empty,
                     new Dictionary<string, int>(),
@@ -310,7 +316,7 @@ namespace App.Tasks.Year2019.Day18
                 {
                     if (!stepsFromKeyToKeys.ContainsKey(reachedKey))
                     {
-                        nonProcessedPositions.Enqueue(GetCharacterLocations(reachedKey, tunnelsMap).First());
+                        nonProcessedPositions.Enqueue(GetCharacterPositions(reachedKey, tunnelsMap).First());
                     }
                 }
             }
@@ -320,14 +326,14 @@ namespace App.Tasks.Year2019.Day18
 
         private void GetStepsFromKeyToKeys(
             char[,] tunnelsMap,
-            (int X, int Y) currentLocation,
+            (int X, int Y) currentPosition,
             int steps,
             string doors,
             Dictionary<string, int> statesCache,
             Dictionary<char, (int Steps, string DoorsBetween)> reachableKeys
         )
         {
-            string state = $"{currentLocation.X},{currentLocation.Y}";
+            string state = $"{currentPosition.X},{currentPosition.Y}";
             // If this tunnel map state and current position already exists in equal or less number of steps
             if (statesCache.ContainsKey(state) && steps >= statesCache[state])
             {
@@ -336,30 +342,30 @@ namespace App.Tasks.Year2019.Day18
             statesCache[state] = steps;
 
             // If key is found
-            if (char.IsLower(tunnelsMap[currentLocation.X, currentLocation.Y]))
+            if (char.IsLower(tunnelsMap[currentPosition.X, currentPosition.Y]))
             {
-                reachableKeys[tunnelsMap[currentLocation.X, currentLocation.Y]] = (steps, doors.ToLower());
+                reachableKeys[tunnelsMap[currentPosition.X, currentPosition.Y]] = (steps, doors.ToLower());
             }
 
             steps++;
             foreach ((int X, int Y) step in Tunnels.steps)
             {
-                (int X, int Y) nextLocation = (currentLocation.X + step.X, currentLocation.Y + step.Y);
+                (int X, int Y) nextPosition = (currentPosition.X + step.X, currentPosition.Y + step.Y);
 
                 // If next position is inside tunnels map boundaries, and it is not stone wall or closed doors
-                if (nextLocation.X >= 0 && nextLocation.X < tunnelsMap.GetLength(0)
-                    && nextLocation.Y >= 0 && nextLocation.Y < tunnelsMap.GetLength(1)
-                    && tunnelsMap[nextLocation.X, nextLocation.Y] != STONE_WALL)
+                if (nextPosition.X >= 0 && nextPosition.X < tunnelsMap.GetLength(0)
+                    && nextPosition.Y >= 0 && nextPosition.Y < tunnelsMap.GetLength(1)
+                    && tunnelsMap[nextPosition.X, nextPosition.Y] != STONE_WALL)
                 {
                     string newDoors = doors;
-                    if (char.IsUpper(tunnelsMap[nextLocation.X, nextLocation.Y]))
+                    if (char.IsUpper(tunnelsMap[nextPosition.X, nextPosition.Y]))
                     {
-                        newDoors += tunnelsMap[nextLocation.X, nextLocation.Y];
+                        newDoors += tunnelsMap[nextPosition.X, nextPosition.Y];
                     }
 
                     GetStepsFromKeyToKeys(
                         tunnelsMap,
-                        nextLocation,
+                        nextPosition,
                         steps,
                         newDoors,
                         statesCache,
@@ -369,9 +375,9 @@ namespace App.Tasks.Year2019.Day18
             }
         }
 
-        private List<(int X, int Y)> GetCharacterLocations(char character, char[,] tunnelsMap)
+        private List<(int X, int Y)> GetCharacterPositions(char character, char[,] tunnelsMap)
         {
-            List<(int X, int Y)> characterLocations = new List<(int X, int Y)>();
+            List<(int X, int Y)> characterPositions = new List<(int X, int Y)>();
 
             for (int i = 0; i < tunnelsMap.GetLength(0); i++)
             {
@@ -379,40 +385,40 @@ namespace App.Tasks.Year2019.Day18
                 {
                     if (tunnelsMap[i, j] == character)
                     {
-                        characterLocations.Add((i, j));
+                        characterPositions.Add((i, j));
                     }
                 }
             }
 
-            return characterLocations;
+            return characterPositions;
         }
 
-        private Dictionary<char, (int X, int Y)> GetKeysLocations(char[,] tunnelsMap)
+        private Dictionary<char, (int X, int Y)> GetKeysPositions(char[,] tunnelsMap)
         {
-            Dictionary<char, (int X, int Y)> keysLocations = new Dictionary<char, (int X, int Y)>();
+            Dictionary<char, (int X, int Y)> keysPositions = new Dictionary<char, (int X, int Y)>();
 
             string keys = GetKeys(tunnelsMap);
             foreach (char key in keys)
             {
-                (int X, int Y) keyLocation = GetCharacterLocations(key, tunnelsMap).First();
-                keysLocations[key] = keyLocation;
+                (int X, int Y) keyPosition = GetCharacterPositions(key, tunnelsMap).First();
+                keysPositions[key] = keyPosition;
             }
 
-            return keysLocations;
+            return keysPositions;
         }
 
-        private Dictionary<char, (int X, int Y)> GetDoorsLocations(char[,] tunnelsMap)
+        private Dictionary<char, (int X, int Y)> GetDoorsPositions(char[,] tunnelsMap)
         {
-            Dictionary<char, (int X, int Y)> doorsLocations = new Dictionary<char, (int X, int Y)>();
+            Dictionary<char, (int X, int Y)> doorsPositions = new Dictionary<char, (int X, int Y)>();
 
             string doors = GetDoors(tunnelsMap).ToLower();
             foreach (char door in doors)
             {
-                (int X, int Y) doorLocation = GetCharacterLocations(door, tunnelsMap).First();
-                doorsLocations[door] = doorLocation;
+                (int X, int Y) doorPosition = GetCharacterPositions(door, tunnelsMap).First();
+                doorsPositions[door] = doorPosition;
             }
 
-            return doorsLocations;
+            return doorsPositions;
         }
 
         private string GetKeys(char[,] tunnelsMap)
@@ -451,9 +457,9 @@ namespace App.Tasks.Year2019.Day18
             return keys.ToString();
         }
 
-        private string StringifyState(string remainingKeys, (int X, int Y) currentLocation)
+        private string StringifyState(string remainingKeys, (int X, int Y) currentPosition)
         {
-            return $"({remainingKeys}),({currentLocation.X},{currentLocation.Y})";
+            return $"({remainingKeys}),({currentPosition.X},{currentPosition.Y})";
         }
 
         private char[,] UpdateMap(char[,] tunnelsMap)
