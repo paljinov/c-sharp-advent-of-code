@@ -91,6 +91,7 @@ namespace App.Tasks.Year2019.Day18
                 stepsFromKeyToKeys,
                 new Dictionary<string, int>(),
                 foundKeys,
+                new HashSet<int>(),
                 0,
                 ref minSteps
             );
@@ -167,6 +168,7 @@ namespace App.Tasks.Year2019.Day18
             Dictionary<int, Dictionary<char, Dictionary<char, (int Steps, string DoorsBetween)>>> stepsFromKeyToKeys,
             Dictionary<string, int> statesCache,
             Dictionary<char, bool> foundKeys,
+            HashSet<int> movedRobotsForCurrentStep,
             int steps,
             ref int minSteps
         )
@@ -193,44 +195,15 @@ namespace App.Tasks.Year2019.Day18
                 return;
             }
 
-            char currentKey = tunnelsMap[currentPosition.X, currentPosition.Y];
-            Dictionary<char, int> reachableKeys = GetKeysReachableFromKey(
-                stepsFromKeyToKeys[currentRobot][currentKey], foundKeys);
+            // Update current robot position
+            robotsPositions[currentRobot] = (currentPosition.X, currentPosition.Y);
 
-            // If there is reachable keys
-            if (reachableKeys.Count > 0)
+            movedRobotsForCurrentStep.Add(currentRobot);
+            int nextRobot = currentRobot + 1 >= robotsPositions.Count ? 0 : currentRobot + 1;
+
+            // Move next robot if it is not already moved
+            if (!movedRobotsForCurrentStep.Contains(nextRobot))
             {
-                foreach (KeyValuePair<char, int> reachableKey in reachableKeys)
-                {
-                    char nextKey = reachableKey.Key;
-                    int newSteps = steps + reachableKey.Value;
-
-                    Dictionary<char, bool> nextFoundKeys = foundKeys.ToDictionary(fk => fk.Key, fk => fk.Value);
-                    nextFoundKeys[nextKey] = true;
-
-                    DoCountStepsOfShortestPathThatCollectsAllOfTheKeysForRemoteControlledRobots(
-                        tunnelsMap,
-                        keysPositions[nextKey],
-                        currentRobot,
-                        robotsPositions,
-                        keysPositions,
-                        doorsPositions,
-                        stepsFromKeyToKeys,
-                        statesCache,
-                        nextFoundKeys,
-                        newSteps,
-                        ref minSteps
-                    );
-                }
-            }
-            // If there is no reachable keys switch robot
-            else
-            {
-                // Update current robot position
-                robotsPositions[currentRobot] = (currentPosition.X, currentPosition.Y);
-
-                int nextRobot = currentRobot + 1 >= robotsPositions.Count ? 0 : currentRobot + 1;
-
                 DoCountStepsOfShortestPathThatCollectsAllOfTheKeysForRemoteControlledRobots(
                     tunnelsMap,
                     robotsPositions[nextRobot],
@@ -241,7 +214,37 @@ namespace App.Tasks.Year2019.Day18
                     stepsFromKeyToKeys,
                     statesCache,
                     foundKeys,
+                    movedRobotsForCurrentStep,
                     steps,
+                    ref minSteps
+                );
+            }
+
+            movedRobotsForCurrentStep = new HashSet<int>();
+            char currentKey = tunnelsMap[currentPosition.X, currentPosition.Y];
+            Dictionary<char, int> reachableKeys = GetKeysReachableFromKey(
+                stepsFromKeyToKeys[currentRobot][currentKey], foundKeys);
+
+            foreach (KeyValuePair<char, int> reachableKey in reachableKeys)
+            {
+                char nextKey = reachableKey.Key;
+                int newSteps = steps + reachableKey.Value;
+
+                Dictionary<char, bool> nextFoundKeys = foundKeys.ToDictionary(fk => fk.Key, fk => fk.Value);
+                nextFoundKeys[nextKey] = true;
+
+                DoCountStepsOfShortestPathThatCollectsAllOfTheKeysForRemoteControlledRobots(
+                    tunnelsMap,
+                    keysPositions[nextKey],
+                    currentRobot,
+                    robotsPositions,
+                    keysPositions,
+                    doorsPositions,
+                    stepsFromKeyToKeys,
+                    statesCache,
+                    nextFoundKeys,
+                    movedRobotsForCurrentStep,
+                    newSteps,
                     ref minSteps
                 );
             }
