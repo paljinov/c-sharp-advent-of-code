@@ -8,5 +8,10 @@ namespace App.Tasks.Year2021.Day23
         {
             return amphipodsBurrow.Length;
         }
+
+        public int CalculateLeastEnergyRequiredToOrganizeTheAmphipodsForFullDiagram(char[,] amphipodsBurrow)
+        {
+            return amphipodsBurrow.Length;
+        }
     }
 }
