@@ -1,6 +1,6 @@
 namespace App.Tasks.Year2018.Day19
 {
-    public enum Opcode
+    public enum InstructionType
     {
         AddRegister,
         AddImmediate,

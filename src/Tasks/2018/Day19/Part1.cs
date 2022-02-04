@@ -97,23 +97,25 @@ namespace App.Tasks.Year2018.Day19
 {
     public class Part1 : ITask<int>
     {
-        private readonly SamplesAndTestProgramRepository samplesAndTestProgramRepository;
+        private readonly InstructionsRepository instructionsRepository;
 
-        private readonly Device device;
+        private readonly Program program;
 
         public Part1()
         {
-            samplesAndTestProgramRepository = new SamplesAndTestProgramRepository();
-            device = new Device();
+            instructionsRepository = new InstructionsRepository();
+            program = new Program();
         }
 
         public int Solution(string input)
         {
-            Sample[] samples = samplesAndTestProgramRepository.GetSamples(input);
-            int samplesThatBehaveLikeThreeOrMoreOpcodes =
-                device.CalculateRegisterZeroValueWhenTheBackgroundProcessHalts(samples);
+            int instructionPointer = instructionsRepository.GetInstructionPointer(input);
+            Instruction[] instructions = instructionsRepository.GetInstructions(input);
 
-            return samplesThatBehaveLikeThreeOrMoreOpcodes;
+            int registerZeroValueWhenTheBackgroundProcessHalts =
+                program.CalculateRegisterZeroValueWhenTheBackgroundProcessHalts(instructionPointer, instructions);
+
+            return registerZeroValueWhenTheBackgroundProcessHalts;
         }
     }
 }
