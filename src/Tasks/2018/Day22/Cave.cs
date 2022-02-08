@@ -55,7 +55,7 @@ namespace App.Tasks.Year2018.Day22
 
             (int X, int Y) caveMouth = (0, 0);
 
-            // Fewest minutes of every visited region
+            // Fewest minutes needed to visit each region
             Dictionary<((int X, int Y) Region, Tool Tool), int> regionsFewestMinutes =
                 new Dictionary<((int X, int Y) Region, Tool Tool), int>()
             {
@@ -70,9 +70,11 @@ namespace App.Tasks.Year2018.Day22
                 // Visit region with fewest minutes
                 ((int X, int Y) Region, Tool Tool) currentRegionWithTool =
                     adjacentRegionsToVisit.MinBy(ap => ap.Value).Key;
+
                 (int X, int Y) currentRegion = currentRegionWithTool.Region;
                 Tool currentTool = currentRegionWithTool.Tool;
                 int currentRegionMinutes = adjacentRegionsToVisit[currentRegionWithTool];
+
                 // Remove current region with tool from visit list
                 adjacentRegionsToVisit.Remove(currentRegionWithTool);
 
