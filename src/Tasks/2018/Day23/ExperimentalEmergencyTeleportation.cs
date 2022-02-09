@@ -1,11 +1,17 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace App.Tasks.Year2018.Day23
 {
     public class ExperimentalEmergencyTeleportation
     {
+        private static readonly Position originPosition = new Position
+        {
+            X = 0,
+            Y = 0,
+            Z = 0
+        };
+
         public int CountNanobotsWhichAreInRangeOfTheLargestSignalRadius(Nanobot[] nanobots)
         {
             Nanobot nanobotWithLargestSignalRadius = GetNanobotWithLargestSignalRadius(nanobots);
@@ -16,40 +22,59 @@ namespace App.Tasks.Year2018.Day23
             return nanobotsWhichAreInRangeOfTheLargestSignalRadius;
         }
 
-        public int CalculateShortestManhattanDistanceForPositionInRangeOfLargestNumberOfNanobots(
-            Nanobot[] nanobots,
-            Position myPosition
-        )
+        public int CalculateShortestManhattanDistanceForPositionInRangeOfLargestNumberOfNanobots(Nanobot[] nanobots)
         {
             int shortestManhattanDistance = int.MaxValue;
             int maxNanobotsWhichHavePositionInRange = 0;
+            Position bestPosition = nanobots.First().Position;
 
             (Position min, Position max) = GetPositionsRange(nanobots);
+            int xRange = max.X - min.X;
+            int yRange = max.Y - min.Y;
+            int zRange = max.Z - min.Z;
 
-            for (int x = min.X; x <= max.X; x++)
+            while (xRange >= 1 && yRange >= 1 && zRange >= 1)
             {
-                for (int y = min.Y; y <= max.Y; y++)
+                for (int x = min.X; x <= max.X; x += xRange)
                 {
-                    for (int z = min.Z; z <= max.Z; z++)
+                    for (int y = min.Y; y <= max.Y; y += yRange)
                     {
-                        Position position = new Position
+                        for (int z = min.Z; z <= max.Z; z += zRange)
                         {
-                            X = x,
-                            Y = y,
-                            Z = z
-                        };
+                            Position position = new Position
+                            {
+                                X = x,
+                                Y = y,
+                                Z = z
+                            };
 
-                        int nanobotsWhichHavePositionInRange =
-                            CountNanobotsWhichHavePositionInRange(nanobots, position);
+                            int nanobotsWhichHavePositionInRange =
+                                CountNanobotsWhichHavePositionInRange(nanobots, position);
 
-                        if (nanobotsWhichHavePositionInRange > maxNanobotsWhichHavePositionInRange)
-                        {
-                            shortestManhattanDistance = Math.Abs(x - myPosition.X)
-                                + Math.Abs(y - myPosition.Y) + Math.Abs(z - myPosition.Z);
-                            maxNanobotsWhichHavePositionInRange = nanobotsWhichHavePositionInRange;
+                            if (nanobotsWhichHavePositionInRange > maxNanobotsWhichHavePositionInRange)
+                            {
+                                shortestManhattanDistance = Math.Abs(x - originPosition.X)
+                                    + Math.Abs(y - originPosition.Y)
+                                    + Math.Abs(z - originPosition.Z);
+
+                                bestPosition = position;
+                                maxNanobotsWhichHavePositionInRange = nanobotsWhichHavePositionInRange;
+                            }
                         }
                     }
                 }
+
+                min.X = bestPosition.X - xRange / 4;
+                min.Y = bestPosition.Y - yRange / 4;
+                min.Z = bestPosition.Z - zRange / 4;
+
+                max.X = bestPosition.X + xRange / 4;
+                max.Y = bestPosition.Y + yRange / 4;
+                max.Z = bestPosition.Z + zRange / 4;
+
+                xRange = max.X - min.X;
+                yRange = max.Y - min.Y;
+                zRange = max.Z - min.Z;
             }
 
             return shortestManhattanDistance;

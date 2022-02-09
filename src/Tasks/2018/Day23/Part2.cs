@@ -31,13 +31,6 @@ namespace App.Tasks.Year2018.Day23
 {
     public class Part2 : ITask<int>
     {
-        private readonly Position myPosition = new Position
-        {
-            X = 0,
-            Y = 0,
-            Z = 0
-        };
-
         private readonly NanobotsRepository nanobotsRepository;
 
         private readonly ExperimentalEmergencyTeleportation experimentalEmergencyTeleportation;
@@ -52,7 +45,7 @@ namespace App.Tasks.Year2018.Day23
         {
             Nanobot[] nanobots = nanobotsRepository.GetNanobots(input);
             int shortestManhattanDistance = experimentalEmergencyTeleportation
-                .CalculateShortestManhattanDistanceForPositionInRangeOfLargestNumberOfNanobots(nanobots, myPosition);
+                .CalculateShortestManhattanDistanceForPositionInRangeOfLargestNumberOfNanobots(nanobots);
 
             return shortestManhattanDistance;
         }
