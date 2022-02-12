@@ -129,6 +129,7 @@ namespace App.Tasks.Year2018.Day25
             fixedPointsRepository = new FixedPointsRepository();
             constellations = new Constellations();
         }
+
         public int Solution(string input)
         {
             FixedPoint[] fixedPoints = fixedPointsRepository.GetFixedPointsInSpacetime(input);

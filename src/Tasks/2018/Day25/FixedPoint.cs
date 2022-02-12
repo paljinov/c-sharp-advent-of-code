@@ -1,6 +1,6 @@
 namespace App.Tasks.Year2018.Day25
 {
-    public class FixedPoint
+    public struct FixedPoint
     {
         public int X { get; set; }
         public int Y { get; set; }
