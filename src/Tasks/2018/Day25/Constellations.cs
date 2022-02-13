@@ -12,44 +12,46 @@ namespace App.Tasks.Year2018.Day25
         {
             List<List<FixedPoint>> constellations = new List<List<FixedPoint>>();
 
-            while (fixedPoints.Length > 0)
+            HashSet<FixedPoint> remainingFixedPoints = fixedPoints.ToHashSet();
+            while (remainingFixedPoints.Count > 0)
             {
-                (fixedPoints, List<FixedPoint> constellation) = FormConstellation(fixedPoints.ToHashSet());
+                List<FixedPoint> constellation = FormConstellation(remainingFixedPoints);
                 constellations.Add(constellation);
             }
 
             return constellations.Count;
         }
 
-        private (FixedPoint[] RemainingFixedPoints, List<FixedPoint> Constellation) FormConstellation(
-            HashSet<FixedPoint> fixedPoints
-        )
+        private List<FixedPoint> FormConstellation(HashSet<FixedPoint> remainingFixedPoints)
         {
             int previousConstellationSize = 0;
-            List<FixedPoint> constellation = new List<FixedPoint>() { fixedPoints.First() };
+            List<FixedPoint> constellation = new List<FixedPoint>() { remainingFixedPoints.First() };
+            remainingFixedPoints.Remove(remainingFixedPoints.First());
 
             // Until constellation keeps increasing
             while (constellation.Count > previousConstellationSize)
             {
                 previousConstellationSize = constellation.Count;
 
-                foreach (FixedPoint fixedPoint in fixedPoints)
+                foreach (FixedPoint fixedPoint in remainingFixedPoints)
                 {
-                    foreach (FixedPoint constellationFixedPoint in constellation.ToList())
+                    foreach (FixedPoint constellationFixedPoint in constellation)
                     {
                         int manhattanDistance = CalculateManhattanDistanceBetweenFixedPointsInSpacetime(
                             fixedPoint, constellationFixedPoint);
 
+                        // If fixed point belongs to this constellation
                         if (manhattanDistance <= CONSTELLATION_MAX_DISTANCE)
                         {
                             constellation.Add(fixedPoint);
-                            fixedPoints.Remove(fixedPoint);
+                            remainingFixedPoints.Remove(fixedPoint);
+                            break;
                         }
                     };
                 }
             }
 
-            return (fixedPoints.ToArray(), constellation);
+            return constellation;
         }
 
         private int CalculateManhattanDistanceBetweenFixedPointsInSpacetime(FixedPoint a, FixedPoint b)
