@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace App.Tasks.Year2018.Day23
@@ -25,21 +26,35 @@ namespace App.Tasks.Year2018.Day23
         public int CalculateShortestManhattanDistanceForPositionInRangeOfLargestNumberOfNanobots(Nanobot[] nanobots)
         {
             int shortestManhattanDistance = int.MaxValue;
+
+            IEnumerable<int> xs = nanobots.Select(n => n.Position.X);
+            IEnumerable<int> ys = nanobots.Select(n => n.Position.Y);
+            IEnumerable<int> zs = nanobots.Select(n => n.Position.Z);
+
+            int maxX = xs.Max();
+            int maxY = ys.Max();
+            int maxZ = zs.Max();
+
+            int minX = xs.Min();
+            int minY = ys.Min();
+            int minZ = zs.Min();
+
+            int xRange = maxX - minX;
+            int yRange = maxY - minY;
+            int zRange = maxZ - minZ;
+
+            int scanResolution = GetScanResolution(xRange, yRange, zRange);
+
             int maxNanobotsWhichHavePositionInRange = 0;
             Position bestPosition = nanobots.First().Position;
 
-            (Position min, Position max) = GetPositionsRange(nanobots);
-            int xRange = max.X - min.X;
-            int yRange = max.Y - min.Y;
-            int zRange = max.Z - min.Z;
-
-            while (xRange >= 1 && yRange >= 1 && zRange >= 1)
+            while (scanResolution >= 1)
             {
-                for (int x = min.X; x <= max.X; x += xRange)
+                for (int x = minX; x <= maxX; x += scanResolution)
                 {
-                    for (int y = min.Y; y <= max.Y; y += yRange)
+                    for (int y = minY; y <= maxY; y += scanResolution)
                     {
-                        for (int z = min.Z; z <= max.Z; z += zRange)
+                        for (int z = minZ; z <= maxZ; z += scanResolution)
                         {
                             Position position = new Position
                             {
@@ -51,31 +66,36 @@ namespace App.Tasks.Year2018.Day23
                             int nanobotsWhichHavePositionInRange =
                                 CountNanobotsWhichHavePositionInRange(nanobots, position);
 
-                            if (nanobotsWhichHavePositionInRange > maxNanobotsWhichHavePositionInRange)
+                            // If this position is in range of max nanobots
+                            if (nanobotsWhichHavePositionInRange >= maxNanobotsWhichHavePositionInRange)
                             {
-                                shortestManhattanDistance = Math.Abs(x - originPosition.X)
-                                    + Math.Abs(y - originPosition.Y)
-                                    + Math.Abs(z - originPosition.Z);
+                                int positionManhattanDistance = CalculateManhattanDistance(position, originPosition);
 
-                                bestPosition = position;
-                                maxNanobotsWhichHavePositionInRange = nanobotsWhichHavePositionInRange;
+                                // If this position is only one in range of max nanobots
+                                // or if it has the shortest manhattan distance
+                                if (nanobotsWhichHavePositionInRange > maxNanobotsWhichHavePositionInRange
+                                    || positionManhattanDistance < shortestManhattanDistance)
+                                {
+                                    bestPosition = position;
+                                    shortestManhattanDistance = positionManhattanDistance;
+                                    maxNanobotsWhichHavePositionInRange = nanobotsWhichHavePositionInRange;
+                                }
                             }
                         }
                     }
                 }
 
-                min.X = bestPosition.X - xRange / 4;
-                min.Y = bestPosition.Y - yRange / 4;
-                min.Z = bestPosition.Z - zRange / 4;
+                scanResolution /= 2;
 
-                max.X = bestPosition.X + xRange / 4;
-                max.Y = bestPosition.Y + yRange / 4;
-                max.Z = bestPosition.Z + zRange / 4;
+                minX = bestPosition.X - scanResolution / 2;
+                minY = bestPosition.Y - scanResolution / 2;
+                minZ = bestPosition.Z - scanResolution / 2;
 
-                xRange = max.X - min.X;
-                yRange = max.Y - min.Y;
-                zRange = max.Z - min.Z;
+                maxX = bestPosition.X + scanResolution / 2;
+                maxY = bestPosition.Y + scanResolution / 2;
+                maxZ = bestPosition.Z + scanResolution / 2;
             }
+
 
             return shortestManhattanDistance;
         }
@@ -106,9 +126,8 @@ namespace App.Tasks.Year2018.Day23
 
             foreach (Nanobot nanobot in nanobots)
             {
-                int manhattanDistance = Math.Abs(nanobotWithLargestSignalRadius.Position.X - nanobot.Position.X)
-                    + Math.Abs(nanobotWithLargestSignalRadius.Position.Y - nanobot.Position.Y)
-                    + Math.Abs(nanobotWithLargestSignalRadius.Position.Z - nanobot.Position.Z);
+                int manhattanDistance =
+                    CalculateManhattanDistance(nanobotWithLargestSignalRadius.Position, nanobot.Position);
 
                 if (nanobotWithLargestSignalRadius.SignalRadius >= manhattanDistance)
                 {
@@ -119,52 +138,9 @@ namespace App.Tasks.Year2018.Day23
             return nanobotsWhichAreInRangeOfTheLargestSignalRadius;
         }
 
-        private (Position Min, Position Max) GetPositionsRange(Nanobot[] nanobots)
+        private int CalculateManhattanDistance(Position a, Position b)
         {
-            Position min = new Position
-            {
-                X = 0,
-                Y = 0,
-                Z = 0
-            };
-
-            Position max = new Position
-            {
-                X = 0,
-                Y = 0,
-                Z = 0
-            };
-
-            foreach (Nanobot nanobot in nanobots)
-            {
-                if (nanobot.Position.X < min.X)
-                {
-                    min.X = nanobot.Position.X;
-                }
-                if (nanobot.Position.Y < min.Y)
-                {
-                    min.Y = nanobot.Position.Y;
-                }
-                if (nanobot.Position.Z < min.Z)
-                {
-                    min.Z = nanobot.Position.Z;
-                }
-
-                if (nanobot.Position.X > max.X)
-                {
-                    max.X = nanobot.Position.X;
-                }
-                if (nanobot.Position.Y > max.Y)
-                {
-                    max.Y = nanobot.Position.Y;
-                }
-                if (nanobot.Position.Z > max.Z)
-                {
-                    max.Z = nanobot.Position.Z;
-                }
-            }
-
-            return (min, max);
+            return Math.Abs(a.X - b.X) + Math.Abs(a.Y - b.Y) + Math.Abs(a.Z - b.Z);
         }
 
         private int CountNanobotsWhichHavePositionInRange(Nanobot[] nanobots, Position position)
@@ -173,9 +149,7 @@ namespace App.Tasks.Year2018.Day23
 
             foreach (Nanobot nanobot in nanobots)
             {
-                int manhattanDistance = Math.Abs(position.X - nanobot.Position.X)
-                    + Math.Abs(position.Y - nanobot.Position.Y)
-                    + Math.Abs(position.Z - nanobot.Position.Z);
+                int manhattanDistance = CalculateManhattanDistance(position, nanobot.Position);
 
                 if (nanobot.SignalRadius >= manhattanDistance)
                 {
@@ -184,6 +158,20 @@ namespace App.Tasks.Year2018.Day23
             }
 
             return nanobotsWhichHavePositionInRange;
+        }
+
+        private int GetScanResolution(int xRange, int yRange, int zRange)
+        {
+            int exponent = 0;
+
+            int scanResolution = 0;
+            while (scanResolution < xRange || scanResolution < yRange || scanResolution < zRange)
+            {
+                exponent++;
+                scanResolution = (int)Math.Pow(2, exponent);
+            }
+
+            return scanResolution;
         }
     }
 }
