@@ -6,5 +6,10 @@ namespace App.Tasks.Year2018.Day13
         {
             return string.Empty;
         }
+
+        public string FindLocationOfTheLastCartThatHasNotCrashed(char[,] tracksMap)
+        {
+            return string.Empty;
+        }
     }
 }
