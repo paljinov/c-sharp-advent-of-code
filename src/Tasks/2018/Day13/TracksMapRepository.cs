@@ -5,6 +5,8 @@ namespace App.Tasks.Year2018.Day13
 {
     public class TracksMapRepository
     {
+        private const char EMPTY_SPACE = ' ';
+
         public char[,] GetTracksMap(string input)
         {
             string[] tracksMapString = input.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
@@ -14,11 +16,15 @@ namespace App.Tasks.Year2018.Day13
 
             char[,] tracksMap = new char[rows, columns];
 
-            for (int i = 0; i < tracksMapString.Length; i++)
+            for (int i = 0; i < rows; i++)
             {
-                for (int j = 0; j < tracksMapString[i].Length; j++)
+                for (int j = 0; j < columns; j++)
                 {
-                    tracksMap[i, j] = tracksMapString[i][j];
+                    tracksMap[i, j] = EMPTY_SPACE;
+                    if (j < tracksMapString[i].Length)
+                    {
+                        tracksMap[i, j] = tracksMapString[i][j];
+                    }
                 }
             }
 
