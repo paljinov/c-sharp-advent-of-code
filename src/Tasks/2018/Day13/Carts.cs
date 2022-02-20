@@ -25,22 +25,35 @@ namespace App.Tasks.Year2018.Day13
 
         private const int TURN_OPTIONS = 3;
 
-        private readonly char[] straightPaths = new char[] { VERTICAL_STRAIGHT_PATH, HORIZONTAL_STRAIGHT_PATH };
-
-        private readonly char[] curves = new char[] { SLASH_CURVE, BACKSLASH_CURVE };
-
         public string FindFirstCrashLocation(char[,] tracksMap)
         {
-            Dictionary<(int X, int Y), Facing> carts = FindCarts(tracksMap);
-            (int X, int Y) firstCrashLocation = DoFindFirstCrashLocation(
-                carts,
-                tracksMap,
-                carts.First().Key,
-                carts.First().Value,
-                IntersectionTurnOption.Left
-            );
+            (int X, int Y)? firstCrashLocation = null;
 
-            return $"{firstCrashLocation.Y},{firstCrashLocation.X}";
+            Dictionary<(int X, int Y), (Facing, IntersectionTurnOption)> carts = FindCarts(tracksMap);
+
+            while (!firstCrashLocation.HasValue)
+            {
+                Dictionary<(int X, int Y), (Facing, IntersectionTurnOption)> cartsAfterMove =
+                    new Dictionary<(int X, int Y), (Facing, IntersectionTurnOption)>();
+
+                foreach (KeyValuePair<(int X, int Y), (Facing, IntersectionTurnOption)> cart in carts)
+                {
+                    ((int X, int Y) location, Facing facing, IntersectionTurnOption intersectionTurnOption)
+                        = MoveCart(tracksMap, cart.Key, cart.Value.Item1, cart.Value.Item2);
+
+                    if (carts.ContainsKey(location) || cartsAfterMove.ContainsKey(location))
+                    {
+                        firstCrashLocation = location;
+                        break;
+                    }
+
+                    cartsAfterMove[location] = (facing, intersectionTurnOption);
+                }
+
+                carts = cartsAfterMove;
+            }
+
+            return $"{firstCrashLocation.Value.Y},{firstCrashLocation.Value.X}";
         }
 
         public string FindLocationOfTheLastCartThatHasNotCrashed(char[,] tracksMap)
@@ -48,9 +61,10 @@ namespace App.Tasks.Year2018.Day13
             return string.Empty;
         }
 
-        private Dictionary<(int X, int Y), Facing> FindCarts(char[,] tracksMap)
+        private Dictionary<(int X, int Y), (Facing, IntersectionTurnOption)> FindCarts(char[,] tracksMap)
         {
-            Dictionary<(int X, int Y), Facing> carts = new Dictionary<(int X, int Y), Facing>();
+            Dictionary<(int X, int Y), (Facing, IntersectionTurnOption)> carts =
+                new Dictionary<(int X, int Y), (Facing, IntersectionTurnOption)>();
 
             for (int x = 0; x < tracksMap.GetLength(0); x++)
             {
@@ -59,19 +73,19 @@ namespace App.Tasks.Year2018.Day13
                     switch (tracksMap[x, y])
                     {
                         case FACE_UP:
-                            carts[(x, y)] = Facing.Up;
+                            carts[(x, y)] = (Facing.Up, IntersectionTurnOption.Left);
                             tracksMap[x, y] = VERTICAL_STRAIGHT_PATH;
                             break;
                         case FACE_DOWN:
-                            carts[(x, y)] = Facing.Down;
+                            carts[(x, y)] = (Facing.Down, IntersectionTurnOption.Left);
                             tracksMap[x, y] = VERTICAL_STRAIGHT_PATH;
                             break;
                         case FACE_LEFT:
-                            carts[(x, y)] = Facing.Left;
+                            carts[(x, y)] = (Facing.Left, IntersectionTurnOption.Left);
                             tracksMap[x, y] = HORIZONTAL_STRAIGHT_PATH;
                             break;
                         case FACE_RIGHT:
-                            carts[(x, y)] = Facing.Right;
+                            carts[(x, y)] = (Facing.Right, IntersectionTurnOption.Left);
                             tracksMap[x, y] = HORIZONTAL_STRAIGHT_PATH;
                             break;
                     }
@@ -81,37 +95,31 @@ namespace App.Tasks.Year2018.Day13
             return carts;
         }
 
-        private (int X, int Y) DoFindFirstCrashLocation(
-            Dictionary<(int X, int Y), Facing> carts,
+        private ((int X, int Y) location, Facing facing, IntersectionTurnOption intersectionTurnOption) MoveCart(
             char[,] tracksMap,
             (int X, int Y) currentCartLocation,
             Facing currentCartFacing,
             IntersectionTurnOption currentCartNextTurn
         )
         {
-            (int X, int Y) firstCrashLocation = (0, 0);
-
+            (int X, int Y) nextLocation = currentCartLocation;
             Facing nextFacing = currentCartFacing;
             int nextTurn = (int)currentCartNextTurn;
 
             switch (currentCartFacing)
             {
                 case Facing.Up:
-                    if (carts.ContainsKey((currentCartLocation.X, currentCartLocation.Y - 1)))
-                    {
-                        firstCrashLocation = (currentCartLocation.X, currentCartLocation.Y - 1);
-                        break;
-                    }
+                    nextLocation = (currentCartLocation.X - 1, currentCartLocation.Y);
 
-                    if (tracksMap[currentCartLocation.X, currentCartLocation.Y - 1] == SLASH_CURVE)
+                    if (tracksMap[nextLocation.X, nextLocation.Y] == SLASH_CURVE)
                     {
                         nextFacing = Facing.Right;
                     }
-                    else if (tracksMap[currentCartLocation.X, currentCartLocation.Y - 1] == BACKSLASH_CURVE)
+                    else if (tracksMap[nextLocation.X, nextLocation.Y] == BACKSLASH_CURVE)
                     {
                         nextFacing = Facing.Left;
                     }
-                    else if (tracksMap[currentCartLocation.X, currentCartLocation.Y - 1] == INTERSECTION)
+                    else if (tracksMap[nextLocation.X, nextLocation.Y] == INTERSECTION)
                     {
                         nextTurn += 1;
                         if (nextTurn >= TURN_OPTIONS)
@@ -129,31 +137,19 @@ namespace App.Tasks.Year2018.Day13
                                 break;
                         }
                     }
-
-                    firstCrashLocation = DoFindFirstCrashLocation(
-                        carts,
-                        tracksMap,
-                        (currentCartLocation.X, currentCartLocation.Y - 1),
-                        nextFacing,
-                        (IntersectionTurnOption)nextTurn
-                    );
                     break;
                 case Facing.Down:
-                    if (carts.ContainsKey((currentCartLocation.X, currentCartLocation.Y + 1)))
-                    {
-                        firstCrashLocation = (currentCartLocation.X, currentCartLocation.Y + 1);
-                        break;
-                    }
+                    nextLocation = (currentCartLocation.X + 1, currentCartLocation.Y);
 
-                    if (tracksMap[currentCartLocation.X, currentCartLocation.Y + 1] == SLASH_CURVE)
+                    if (tracksMap[nextLocation.X, nextLocation.Y] == SLASH_CURVE)
                     {
                         nextFacing = Facing.Left;
                     }
-                    else if (tracksMap[currentCartLocation.X, currentCartLocation.Y + 1] == BACKSLASH_CURVE)
+                    else if (tracksMap[nextLocation.X, nextLocation.Y] == BACKSLASH_CURVE)
                     {
                         nextFacing = Facing.Right;
                     }
-                    else if (tracksMap[currentCartLocation.X, currentCartLocation.Y + 1] == INTERSECTION)
+                    else if (tracksMap[nextLocation.X, nextLocation.Y] == INTERSECTION)
                     {
                         nextTurn += 1;
                         if (nextTurn >= TURN_OPTIONS)
@@ -171,31 +167,19 @@ namespace App.Tasks.Year2018.Day13
                                 break;
                         }
                     }
-
-                    firstCrashLocation = DoFindFirstCrashLocation(
-                        carts,
-                        tracksMap,
-                        (currentCartLocation.X, currentCartLocation.Y + 1),
-                        nextFacing,
-                        (IntersectionTurnOption)nextTurn
-                    );
                     break;
                 case Facing.Left:
-                    if (carts.ContainsKey((currentCartLocation.X - 1, currentCartLocation.Y)))
-                    {
-                        firstCrashLocation = (currentCartLocation.X - 1, currentCartLocation.Y);
-                        break;
-                    }
+                    nextLocation = (currentCartLocation.X, currentCartLocation.Y - 1);
 
-                    if (tracksMap[currentCartLocation.X - 1, currentCartLocation.Y] == SLASH_CURVE)
+                    if (tracksMap[nextLocation.X, nextLocation.Y] == SLASH_CURVE)
                     {
                         nextFacing = Facing.Down;
                     }
-                    else if (tracksMap[currentCartLocation.X - 1, currentCartLocation.Y] == BACKSLASH_CURVE)
+                    else if (tracksMap[nextLocation.X, nextLocation.Y] == BACKSLASH_CURVE)
                     {
                         nextFacing = Facing.Up;
                     }
-                    else if (tracksMap[currentCartLocation.X - 1, currentCartLocation.Y] == INTERSECTION)
+                    else if (tracksMap[nextLocation.X, nextLocation.Y] == INTERSECTION)
                     {
                         nextTurn += 1;
                         if (nextTurn >= TURN_OPTIONS)
@@ -213,31 +197,19 @@ namespace App.Tasks.Year2018.Day13
                                 break;
                         }
                     }
-
-                    firstCrashLocation = DoFindFirstCrashLocation(
-                        carts,
-                        tracksMap,
-                        (currentCartLocation.X - 1, currentCartLocation.Y),
-                        nextFacing,
-                        (IntersectionTurnOption)nextTurn
-                    );
                     break;
                 case Facing.Right:
-                    if (carts.ContainsKey((currentCartLocation.X + 1, currentCartLocation.Y)))
-                    {
-                        firstCrashLocation = (currentCartLocation.X + 1, currentCartLocation.Y);
-                        break;
-                    }
+                    nextLocation = (currentCartLocation.X, currentCartLocation.Y + 1);
 
-                    if (tracksMap[currentCartLocation.X + 1, currentCartLocation.Y] == SLASH_CURVE)
+                    if (tracksMap[nextLocation.X, nextLocation.Y] == SLASH_CURVE)
                     {
                         nextFacing = Facing.Up;
                     }
-                    else if (tracksMap[currentCartLocation.X + 1, currentCartLocation.Y] == BACKSLASH_CURVE)
+                    else if (tracksMap[nextLocation.X, nextLocation.Y] == BACKSLASH_CURVE)
                     {
                         nextFacing = Facing.Down;
                     }
-                    else if (tracksMap[currentCartLocation.X + 1, currentCartLocation.Y] == INTERSECTION)
+                    else if (tracksMap[nextLocation.X, nextLocation.Y] == INTERSECTION)
                     {
                         nextTurn += 1;
                         if (nextTurn >= TURN_OPTIONS)
@@ -255,18 +227,10 @@ namespace App.Tasks.Year2018.Day13
                                 break;
                         }
                     }
-
-                    firstCrashLocation = DoFindFirstCrashLocation(
-                        carts,
-                        tracksMap,
-                        (currentCartLocation.X + 1, currentCartLocation.Y),
-                        nextFacing,
-                        (IntersectionTurnOption)nextTurn
-                    );
                     break;
             }
 
-            return firstCrashLocation;
+            return (nextLocation, nextFacing, (IntersectionTurnOption)nextTurn);
         }
     }
 }
