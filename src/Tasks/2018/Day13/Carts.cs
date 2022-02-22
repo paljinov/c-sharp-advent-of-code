@@ -46,6 +46,9 @@ namespace App.Tasks.Year2018.Day13
 
                     carts[i] = cartAfterMove;
                 }
+
+                // Carts on the top row move first (acting from left to right)
+                carts = carts.OrderBy(c => c.Location.Y).ThenBy(c => c.Location.X).ToList();
             }
 
             return $"{firstCrashLocation.Value.Y},{firstCrashLocation.Value.X}";
@@ -53,7 +56,38 @@ namespace App.Tasks.Year2018.Day13
 
         public string FindLocationOfTheLastCartThatHasNotCrashed(char[,] tracksMap)
         {
-            return string.Empty;
+            Dictionary<int, Cart> carts = FindCarts(tracksMap)
+                .Select((cart, index) => new { cart, index })
+                .ToDictionary(c => c.index, c => c.cart);
+
+            while (carts.Count > 1)
+            {
+                foreach (int cartIndex in carts.Keys)
+                {
+                    Cart cartAfterMove = MoveCart(tracksMap, carts[cartIndex]);
+
+                    // Check if crash location
+                    if (carts.Select(c => c.Value.Location).Contains(cartAfterMove.Location))
+                    {
+                        int secondCrashedCartIndex = carts.First(c => c.Value.Location == cartAfterMove.Location).Key;
+
+                        // Remove crashed pair
+                        carts.Remove(cartIndex);
+                        carts.Remove(secondCrashedCartIndex);
+                    }
+                    else
+                    {
+                        carts[cartIndex] = cartAfterMove;
+                    }
+                }
+
+                // Carts on the top row move first (acting from left to right)
+                carts = carts.OrderBy(c => c.Value.Location.Y).ThenBy(c => c.Value.Location.X).ToDictionary(c => c.Key, c => c.Value);
+            }
+
+            (int X, int Y) lastCartLocation = carts.First().Value.Location;
+
+            return $"{lastCartLocation.Y},{lastCartLocation.X}";
         }
 
         private List<Cart> FindCarts(char[,] tracksMap)
