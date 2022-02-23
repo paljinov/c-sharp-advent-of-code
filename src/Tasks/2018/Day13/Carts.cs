@@ -27,35 +27,23 @@ namespace App.Tasks.Year2018.Day13
 
         public string FindFirstCrashLocation(char[,] tracksMap)
         {
-            (int X, int Y)? firstCrashLocation = null;
-
-            List<Cart> carts = FindCarts(tracksMap);
-
-            while (!firstCrashLocation.HasValue)
-            {
-                for (int i = 0; i < carts.Count; i++)
-                {
-                    Cart cartAfterMove = MoveCart(tracksMap, carts[i]);
-
-                    // Check if crash location
-                    if (carts.Select(c => c.Location).Contains(cartAfterMove.Location))
-                    {
-                        firstCrashLocation = cartAfterMove.Location;
-                        break;
-                    }
-
-                    carts[i] = cartAfterMove;
-                }
-
-                // Carts on the top row move first (acting from left to right)
-                carts = carts.OrderBy(c => c.Location.Y).ThenBy(c => c.Location.X).ToList();
-            }
-
+            ((int X, int Y)? firstCrashLocation, _) = MoveCarts(tracksMap);
             return $"{firstCrashLocation.Value.Y},{firstCrashLocation.Value.X}";
         }
 
         public string FindLocationOfTheLastCartThatHasNotCrashed(char[,] tracksMap)
         {
+            (_, (int X, int Y)? lastNonCrashedCartLocation) = MoveCarts(tracksMap);
+            return $"{lastNonCrashedCartLocation.Value.Y},{lastNonCrashedCartLocation.Value.X}";
+        }
+
+        private ((int X, int Y)? FirstCrashLocation, (int X, int Y)? LastNonCrashedCartLocation) MoveCarts(
+            char[,] tracksMap
+        )
+        {
+            (int X, int Y)? firstCrashLocation = null;
+            (int X, int Y)? lastNonCrashedCartLocation = null;
+
             Dictionary<int, Cart> carts = FindCarts(tracksMap)
                 .Select((cart, index) => new { cart, index })
                 .ToDictionary(c => c.index, c => c.cart);
@@ -69,8 +57,12 @@ namespace App.Tasks.Year2018.Day13
                     // Check if crash location
                     if (carts.Select(c => c.Value.Location).Contains(cartAfterMove.Location))
                     {
-                        int secondCrashedCartIndex = carts.First(c => c.Value.Location == cartAfterMove.Location).Key;
+                        if (!firstCrashLocation.HasValue)
+                        {
+                            firstCrashLocation = (cartAfterMove.Location.X, cartAfterMove.Location.Y);
+                        }
 
+                        int secondCrashedCartIndex = carts.First(c => c.Value.Location == cartAfterMove.Location).Key;
                         // Remove crashed pair
                         carts.Remove(cartIndex);
                         carts.Remove(secondCrashedCartIndex);
@@ -82,12 +74,19 @@ namespace App.Tasks.Year2018.Day13
                 }
 
                 // Carts on the top row move first (acting from left to right)
-                carts = carts.OrderBy(c => c.Value.Location.Y).ThenBy(c => c.Value.Location.X).ToDictionary(c => c.Key, c => c.Value);
+                carts = carts
+                    .OrderBy(c => c.Value.Location.Y)
+                    .ThenBy(c => c.Value.Location.X)
+                    .ToDictionary(c => c.Key, c => c.Value);
             }
 
-            (int X, int Y) lastCartLocation = carts.First().Value.Location;
 
-            return $"{lastCartLocation.Y},{lastCartLocation.X}";
+            if (carts.Count > 0)
+            {
+                lastNonCrashedCartLocation = carts.First().Value.Location;
+            }
+
+            return (firstCrashLocation, lastNonCrashedCartLocation);
         }
 
         private List<Cart> FindCarts(char[,] tracksMap)
