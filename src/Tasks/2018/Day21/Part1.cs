@@ -64,11 +64,11 @@ namespace App.Tasks.Year2018.Day21
             int instructionPointer = instructionsRepository.GetInstructionPointer(input);
             Instruction[] instructions = instructionsRepository.GetInstructions(input);
 
-            int registerZeroValueWhenTheBackgroundProcessHalts = program.
-                CalculateLowestRegisterZeroValueWhichCausesTheProgramToHaltWithFewestInstructionsExecuted(
+            int lowestNonNegativeRegisterZeroValueWhichCausesTheProgramToHaltWithFewestInstructionsExecuted = program.
+                CalculateLowestNonNegativeRegisterZeroValueWhichCausesTheProgramToHaltWithFewestInstructionsExecuted(
                     instructionPointer, instructions);
 
-            return registerZeroValueWhenTheBackgroundProcessHalts;
+            return lowestNonNegativeRegisterZeroValueWhichCausesTheProgramToHaltWithFewestInstructionsExecuted;
         }
     }
 }
