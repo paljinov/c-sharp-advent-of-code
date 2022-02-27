@@ -4,17 +4,17 @@ using Xunit;
 
 namespace Tests.Tasks.Year2018.Day21
 {
-    public class Part1Tests
+    public class Part2Tests
     {
-        private readonly Part1 task;
+        private readonly Part2 task;
 
-        public Part1Tests()
+        public Part2Tests()
         {
-            task = new Part1();
+            task = new Part2();
         }
 
         [Fact]
-        public void Solution_InstructionsExample_LowestNonNegativeRegisterZeroValueWhichCausesTheProgramToHaltWithFewestInstructionsExecuted()
+        public void Solution_InstructionsExample_LowestNonNegativeRegisterZeroValueWhichCausesTheProgramToHaltWithMostInstructionsExecuted()
         {
             string instructions = "#ip 4"
                 + $"{Environment.NewLine}addi 4 16 4"
@@ -54,7 +54,7 @@ namespace Tests.Tasks.Year2018.Day21
                 + $"{Environment.NewLine}seti 0 0 0"
                 + $"{Environment.NewLine}seti 0 2 4";
 
-            Assert.Equal(1658634, task.Solution(instructions));
+            Assert.Equal(3650572, task.Solution(instructions));
         }
     }
 }
