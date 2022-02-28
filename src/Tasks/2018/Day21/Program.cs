@@ -1,41 +1,20 @@
-using System.Collections.Generic;
-using System.Linq;
-
 namespace App.Tasks.Year2018.Day21
 {
     public class Program
     {
         private const int INSTRUCTION_POINTER_START = 0;
         private const int MOVE_INCREMENT = 1;
-        private const int REGISTER_ZERO = 0;
-        private const int REGISTER_FIVE = 5;
         private const int TOTAL_REGISTERS = 6;
-        private const int VALUES_SEEN_TIMES = 5;
-
+        private const int REGISTER_FOUR = 4;
+        private const int INSTRUCTION_ON_WHICH_REGISTER_ZERO_IS_USED = 28;
 
         public int CalculateLowestNonNegativeRegisterZeroValueWhichCausesTheProgramToHaltWithFewestInstructionsExecuted(
             int instructionPointer,
             Instruction[] instructions
         )
         {
-            int lowestNonNegativeRegisterZeroValue = int.MaxValue;
-            int fewestInstructionsExecuted = int.MaxValue;
-
-            int registerZeroStartValue = 0;
-            while (lowestNonNegativeRegisterZeroValue == int.MaxValue)
-            {
-                int instructionsExecuted = CalculateInstructionsExecutedWhenTheBackgroundProcessHalts(
-                    instructionPointer, instructions, fewestInstructionsExecuted, registerZeroStartValue);
-
-                if (instructionsExecuted < fewestInstructionsExecuted)
-                {
-                    fewestInstructionsExecuted = instructionsExecuted;
-                    lowestNonNegativeRegisterZeroValue = registerZeroStartValue;
-                    break;
-                }
-
-                registerZeroStartValue++;
-            }
+            int lowestNonNegativeRegisterZeroValue =
+                DoCalculateLowestNonNegativeRegisterZeroValue(instructionPointer, instructions);
 
             return lowestNonNegativeRegisterZeroValue;
         }
@@ -49,17 +28,11 @@ namespace App.Tasks.Year2018.Day21
             return 0;
         }
 
-        public int CalculateInstructionsExecutedWhenTheBackgroundProcessHalts(
-            int instructionPointer,
-            Instruction[] instructions,
-            int fewestInstructionsExecuted,
-            int registerZeroStartValue
-        )
+        public int DoCalculateLowestNonNegativeRegisterZeroValue(int instructionPointer, Instruction[] instructions)
         {
-            Dictionary<int, int> valueSeenTimes = new Dictionary<int, int>();
+            int lowestNonNegativeRegisterZeroValue = -1;
 
             int[] registers = new int[TOTAL_REGISTERS];
-            registers[REGISTER_ZERO] = registerZeroStartValue;
 
             // Instruction pointer is bound to a register
             int boundRegister = instructionPointer;
@@ -69,7 +42,7 @@ namespace App.Tasks.Year2018.Day21
             int instructionsCount = 0;
             // If the instruction pointer ever causes the device to attempt to load an instruction outside
             // the instructions defined in the program, the program instead immediately halts
-            while (instructionPointer < instructions.Length && instructionsCount < fewestInstructionsExecuted)
+            while (lowestNonNegativeRegisterZeroValue == -1 && instructionPointer < instructions.Length)
             {
                 // Program indirectly access the instruction pointer itself
                 Instruction instruction = instructions[instructionPointer];
@@ -136,30 +109,13 @@ namespace App.Tasks.Year2018.Day21
 
                 instructionsCount++;
 
-                // If register five is modified
-                if (instruction.OutputC == REGISTER_FIVE)
+                if (instructionPointer == INSTRUCTION_ON_WHICH_REGISTER_ZERO_IS_USED)
                 {
-                    // Check for cycle
-                    if (valueSeenTimes.ContainsKey(registers[instruction.OutputC]))
-                    {
-                        if (valueSeenTimes[registers[instruction.OutputC]] < VALUES_SEEN_TIMES)
-                        {
-                            valueSeenTimes[registers[instruction.OutputC]]++;
-                        }
-                        else
-                        {
-                            return fewestInstructionsExecuted;
-                        }
-                    }
-                    // If value is not seen yet
-                    else
-                    {
-                        valueSeenTimes[registers[instruction.OutputC]] = 1;
-                    }
+                    lowestNonNegativeRegisterZeroValue = registers[REGISTER_FOUR];
                 }
             }
 
-            return instructionsCount;
+            return lowestNonNegativeRegisterZeroValue;
         }
 
         private void AddRegister(int[] registers, Instruction instruction)
