@@ -1,19 +1,21 @@
+using System.Collections.Generic;
+using System.Linq;
+
 namespace App.Tasks.Year2018.Day21
 {
     public class Program
     {
         private const int INSTRUCTION_POINTER_START = 0;
         private const int MOVE_INCREMENT = 1;
+        private const int REGISTER_ZERO = 0;
         private const int TOTAL_REGISTERS = 6;
-        private const int REGISTER_FOUR = 4;
-        private const int INSTRUCTION_ON_WHICH_REGISTER_ZERO_IS_USED = 28;
 
         public int CalculateLowestNonNegativeRegisterZeroValueWhichCausesTheProgramToHaltWithFewestInstructionsExecuted(
             int instructionPointer,
             Instruction[] instructions
         )
         {
-            int lowestNonNegativeRegisterZeroValue =
+            (int lowestNonNegativeRegisterZeroValue, _) =
                 DoCalculateLowestNonNegativeRegisterZeroValue(instructionPointer, instructions);
 
             return lowestNonNegativeRegisterZeroValue;
@@ -25,24 +27,33 @@ namespace App.Tasks.Year2018.Day21
             Instruction[] instructions
         )
         {
-            return 0;
+            (_, int lowestNonNegativeRegisterZeroValue) =
+                DoCalculateLowestNonNegativeRegisterZeroValue(instructionPointer, instructions);
+
+            return lowestNonNegativeRegisterZeroValue;
         }
 
-        public int DoCalculateLowestNonNegativeRegisterZeroValue(int instructionPointer, Instruction[] instructions)
+        public (int, int) DoCalculateLowestNonNegativeRegisterZeroValue(
+            int instructionPointer,
+            Instruction[] instructions
+        )
         {
-            int lowestNonNegativeRegisterZeroValue = -1;
+            int lowestNonNegativeRegisterZeroValueWithFewestInstructions = -1;
+            int lowestNonNegativeRegisterZeroValueWithMostInstructions = -1;
+
+            (int instructionOnWhichRegisterZeroIsOnlyTimeBeingUsed, int inputRegister) = (28, 4);
+            HashSet<int> inputRegisterValues = new HashSet<int>();
 
             int[] registers = new int[TOTAL_REGISTERS];
 
             // Instruction pointer is bound to a register
             int boundRegister = instructionPointer;
             // The instruction pointer starts at 0
-            instructionPointer = INSTRUCTION_POINTER_START;
+            instructionPointer = INSTRUCTION_POINTER_START; ;
 
-            int instructionsCount = 0;
             // If the instruction pointer ever causes the device to attempt to load an instruction outside
             // the instructions defined in the program, the program instead immediately halts
-            while (lowestNonNegativeRegisterZeroValue == -1 && instructionPointer < instructions.Length)
+            while (instructionPointer < instructions.Length)
             {
                 // Program indirectly access the instruction pointer itself
                 Instruction instruction = instructions[instructionPointer];
@@ -107,15 +118,31 @@ namespace App.Tasks.Year2018.Day21
                 // Move to the next instruction by adding one to the instruction pointer
                 instructionPointer += MOVE_INCREMENT;
 
-                instructionsCount++;
-
-                if (instructionPointer == INSTRUCTION_ON_WHICH_REGISTER_ZERO_IS_USED)
+                // If instruction on which register zero is only time being used
+                if (instructionPointer == instructionOnWhichRegisterZeroIsOnlyTimeBeingUsed)
                 {
-                    lowestNonNegativeRegisterZeroValue = registers[REGISTER_FOUR];
+                    // First input register value for instruction on which register zero is only time being used
+                    if (lowestNonNegativeRegisterZeroValueWithFewestInstructions == -1)
+                    {
+                        lowestNonNegativeRegisterZeroValueWithFewestInstructions = registers[inputRegister];
+                    }
+
+                    // When the value of input register repeats
+                    if (inputRegisterValues.Contains(registers[inputRegister]))
+                    {
+                        break;
+                    }
+
+                    inputRegisterValues.Add(registers[inputRegister]);
+                    // Last non repeating value causes the most instructions
+                    lowestNonNegativeRegisterZeroValueWithMostInstructions = registers[inputRegister];
                 }
             }
 
-            return lowestNonNegativeRegisterZeroValue;
+            return (
+                lowestNonNegativeRegisterZeroValueWithFewestInstructions,
+                lowestNonNegativeRegisterZeroValueWithMostInstructions
+            );
         }
 
         private void AddRegister(int[] registers, Instruction instruction)
