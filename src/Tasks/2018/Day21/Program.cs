@@ -41,7 +41,8 @@ namespace App.Tasks.Year2018.Day21
             int lowestNonNegativeRegisterZeroValueWithFewestInstructions = -1;
             int lowestNonNegativeRegisterZeroValueWithMostInstructions = -1;
 
-            (int instructionOnWhichRegisterZeroIsOnlyTimeBeingUsed, int inputRegister) = (28, 4);
+            (int instructionOnWhichRegisterZeroIsOnlyTimeBeingUsed, int inputRegister) =
+                FindInstructionAndOtherInputRegisterOnWhichRegisterZeroIsOnlyTimeBeingUsed(instructions);
             HashSet<int> inputRegisterValues = new HashSet<int>();
 
             int[] registers = new int[TOTAL_REGISTERS];
@@ -143,6 +144,44 @@ namespace App.Tasks.Year2018.Day21
                 lowestNonNegativeRegisterZeroValueWithFewestInstructions,
                 lowestNonNegativeRegisterZeroValueWithMostInstructions
             );
+        }
+
+        private (int, int) FindInstructionAndOtherInputRegisterOnWhichRegisterZeroIsOnlyTimeBeingUsed(
+            Instruction[] instructions
+        )
+        {
+            int instructionOnWhichRegisterZeroIsOnlyTimeBeingUsed = 0;
+            int inputRegister = 1;
+
+            InstructionType[] registersInputsInstructionTypes = new InstructionType[] {
+                InstructionType.AddRegister,
+                InstructionType.MultiplyRegister,
+                InstructionType.BitwiseAndRegister,
+                InstructionType.BitwiseOrRegister,
+                InstructionType.GreaterThanRegisterRegister,
+                InstructionType.EqualRegisterRegister
+            };
+
+            for (int i = 0; i < instructions.Length; i++)
+            {
+                if (registersInputsInstructionTypes.Contains(instructions[i].InstructionType))
+                {
+                    instructionOnWhichRegisterZeroIsOnlyTimeBeingUsed = i;
+
+                    if (instructions[i].InputA == REGISTER_ZERO)
+                    {
+                        inputRegister = instructions[i].InputB;
+                        break;
+                    }
+                    else if (instructions[i].InputB == REGISTER_ZERO)
+                    {
+                        inputRegister = instructions[i].InputA;
+                        break;
+                    }
+                }
+            }
+
+            return (instructionOnWhichRegisterZeroIsOnlyTimeBeingUsed, inputRegister);
         }
 
         private void AddRegister(int[] registers, Instruction instruction)
