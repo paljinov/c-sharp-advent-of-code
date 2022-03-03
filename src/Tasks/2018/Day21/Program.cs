@@ -15,8 +15,8 @@ namespace App.Tasks.Year2018.Day21
             Instruction[] instructions
         )
         {
-            (int lowestNonNegativeRegisterZeroValue, _) =
-                DoCalculateLowestNonNegativeRegisterZeroValue(instructionPointer, instructions);
+            int lowestNonNegativeRegisterZeroValue = DoCalculateLowestNonNegativeRegisterZeroValue(
+                instructionPointer, instructions, LowestNonNegativeRegisterZeroValueType.FewestInstructionsExecuted);
 
             return lowestNonNegativeRegisterZeroValue;
         }
@@ -27,19 +27,19 @@ namespace App.Tasks.Year2018.Day21
             Instruction[] instructions
         )
         {
-            (_, int lowestNonNegativeRegisterZeroValue) =
-                DoCalculateLowestNonNegativeRegisterZeroValue(instructionPointer, instructions);
+            int lowestNonNegativeRegisterZeroValue = DoCalculateLowestNonNegativeRegisterZeroValue(
+                instructionPointer, instructions, LowestNonNegativeRegisterZeroValueType.MostInstructionsExecuted);
 
             return lowestNonNegativeRegisterZeroValue;
         }
 
-        public (int, int) DoCalculateLowestNonNegativeRegisterZeroValue(
+        public int DoCalculateLowestNonNegativeRegisterZeroValue(
             int instructionPointer,
-            Instruction[] instructions
+            Instruction[] instructions,
+            LowestNonNegativeRegisterZeroValueType lowestNonNegativeRegisterZeroValueType
         )
         {
-            int lowestNonNegativeRegisterZeroValueWithFewestInstructions = -1;
-            int lowestNonNegativeRegisterZeroValueWithMostInstructions = -1;
+            int lowestNonNegativeRegisterZeroValue = -1;
 
             (int instructionOnWhichRegisterZeroIsOnlyTimeBeingUsed, int inputRegister) =
                 FindInstructionAndOtherInputRegisterOnWhichRegisterZeroIsOnlyTimeBeingUsed(instructions);
@@ -123,9 +123,11 @@ namespace App.Tasks.Year2018.Day21
                 if (instructionPointer == instructionOnWhichRegisterZeroIsOnlyTimeBeingUsed)
                 {
                     // First input register value for instruction on which register zero is only time being used
-                    if (lowestNonNegativeRegisterZeroValueWithFewestInstructions == -1)
+                    if (lowestNonNegativeRegisterZeroValueType ==
+                        LowestNonNegativeRegisterZeroValueType.FewestInstructionsExecuted)
                     {
-                        lowestNonNegativeRegisterZeroValueWithFewestInstructions = registers[inputRegister];
+                        lowestNonNegativeRegisterZeroValue = registers[inputRegister];
+                        break;
                     }
 
                     // When the value of input register repeats
@@ -136,14 +138,11 @@ namespace App.Tasks.Year2018.Day21
 
                     inputRegisterValues.Add(registers[inputRegister]);
                     // Last non repeating value causes the most instructions
-                    lowestNonNegativeRegisterZeroValueWithMostInstructions = registers[inputRegister];
+                    lowestNonNegativeRegisterZeroValue = registers[inputRegister];
                 }
             }
 
-            return (
-                lowestNonNegativeRegisterZeroValueWithFewestInstructions,
-                lowestNonNegativeRegisterZeroValueWithMostInstructions
-            );
+            return lowestNonNegativeRegisterZeroValue;
         }
 
         private (int, int) FindInstructionAndOtherInputRegisterOnWhichRegisterZeroIsOnlyTimeBeingUsed(
