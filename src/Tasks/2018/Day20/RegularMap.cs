@@ -16,6 +16,27 @@ namespace App.Tasks.Year2018.Day20
 
         public int CalculateLargestNumberOfDoorsNeededToPassThroughToReachRoom(string regex)
         {
+            Dictionary<(int, int), int> doors = GetDoors(regex);
+
+            int largestNumberOfDoorsNeededToPassThroughToReachRoom = doors.Values.Max();
+            return largestNumberOfDoorsNeededToPassThroughToReachRoom;
+        }
+
+        public int CountRoomsThatHaveShortestPathFromCurrentLocationThatPassThroughAtLeastGivenNumberOfDoors(
+            string regex,
+            int minDoors
+        )
+        {
+            Dictionary<(int, int), int> doors = GetDoors(regex);
+
+            int roomsThatHaveShortestPathFromCurrentLocationThatPassThroughAtLeastDoors =
+                doors.Count(d => d.Value >= minDoors);
+
+            return roomsThatHaveShortestPathFromCurrentLocationThatPassThroughAtLeastDoors;
+        }
+
+        public Dictionary<(int, int), int> GetDoors(string regex)
+        {
             Stack<(int X, int Y)> path = new Stack<(int X, int Y)>();
             Dictionary<(int, int), int> doors = new Dictionary<(int, int), int>();
 
@@ -28,17 +49,17 @@ namespace App.Tasks.Year2018.Day20
             {
                 char character = regex[i];
 
-                // Start branch
+                // Branch start
                 if (character == '(')
                 {
                     path.Push((x, y));
                 }
-                // End branch
+                // Branch end
                 else if (character == ')')
                 {
                     (x, y) = path.Pop();
                 }
-                // Door
+                // Branch option
                 else if (character == '|')
                 {
                     (x, y) = path.Peek();
@@ -67,9 +88,7 @@ namespace App.Tasks.Year2018.Day20
                 (previousX, previousY) = (x, y);
             }
 
-            int largestNumberOfDoorsNeededToPassThroughToReachRoom = doors.Values.Max();
-
-            return largestNumberOfDoorsNeededToPassThroughToReachRoom;
+            return doors;
         }
     }
 }
