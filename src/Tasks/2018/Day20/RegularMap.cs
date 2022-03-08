@@ -6,6 +6,12 @@ namespace App.Tasks.Year2018.Day20
 {
     public class RegularMap
     {
+        private const char BRANCH_START = '(';
+
+        private const char BRANCH_END = ')';
+
+        private const char BRANCH_OPTION = '|';
+
         private static readonly Dictionary<char, (int X, int Y)> directions = new Dictionary<char, (int X, int Y)>()
         {
             { 'N', (0, 1) },
@@ -14,12 +20,12 @@ namespace App.Tasks.Year2018.Day20
             { 'W', (-1, 0) },
         };
 
-        public int CalculateLargestNumberOfDoorsNeededToPassThroughToReachRoom(string regex)
+        public int CalculateLargestNumberOfDoorsNeededToPassThroughToReachARoom(string regex)
         {
-            Dictionary<(int, int), int> doors = GetDoors(regex);
+            Dictionary<(int, int), int> doors = GetDoorsOnPositions(regex);
 
-            int largestNumberOfDoorsNeededToPassThroughToReachRoom = doors.Values.Max();
-            return largestNumberOfDoorsNeededToPassThroughToReachRoom;
+            int largestNumberOfDoorsNeededToPassThroughToReachARoom = doors.Values.Max();
+            return largestNumberOfDoorsNeededToPassThroughToReachARoom;
         }
 
         public int CountRoomsThatHaveShortestPathFromCurrentLocationThatPassThroughAtLeastGivenNumberOfDoors(
@@ -27,7 +33,7 @@ namespace App.Tasks.Year2018.Day20
             int minDoors
         )
         {
-            Dictionary<(int, int), int> doors = GetDoors(regex);
+            Dictionary<(int, int), int> doors = GetDoorsOnPositions(regex);
 
             int roomsThatHaveShortestPathFromCurrentLocationThatPassThroughAtLeastDoors =
                 doors.Count(d => d.Value >= minDoors);
@@ -35,7 +41,7 @@ namespace App.Tasks.Year2018.Day20
             return roomsThatHaveShortestPathFromCurrentLocationThatPassThroughAtLeastDoors;
         }
 
-        public Dictionary<(int, int), int> GetDoors(string regex)
+        public Dictionary<(int, int), int> GetDoorsOnPositions(string regex)
         {
             Stack<(int X, int Y)> path = new Stack<(int X, int Y)>();
             Dictionary<(int, int), int> doors = new Dictionary<(int, int), int>();
@@ -49,18 +55,15 @@ namespace App.Tasks.Year2018.Day20
             {
                 char character = regex[i];
 
-                // Branch start
-                if (character == '(')
+                if (character == BRANCH_START)
                 {
                     path.Push((x, y));
                 }
-                // Branch end
-                else if (character == ')')
+                else if (character == BRANCH_END)
                 {
                     (x, y) = path.Pop();
                 }
-                // Branch option
-                else if (character == '|')
+                else if (character == BRANCH_OPTION)
                 {
                     (x, y) = path.Peek();
                 }

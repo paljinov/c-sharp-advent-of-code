@@ -203,10 +203,10 @@ namespace App.Tasks.Year2018.Day20
 
         public int Solution(string input)
         {
-            int largestNumberOfDoorsNeededToPassThroughToReachRoom =
-                regularMap.CalculateLargestNumberOfDoorsNeededToPassThroughToReachRoom(input);
+            int largestNumberOfDoorsNeededToPassThroughToReachARoom =
+                regularMap.CalculateLargestNumberOfDoorsNeededToPassThroughToReachARoom(input);
 
-            return largestNumberOfDoorsNeededToPassThroughToReachRoom;
+            return largestNumberOfDoorsNeededToPassThroughToReachARoom;
         }
     }
 }

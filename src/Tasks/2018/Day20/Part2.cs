@@ -11,7 +11,7 @@ namespace App.Tasks.Year2018.Day20
 {
     public class Part2 : ITask<int>
     {
-        private const int MIN_DOORS = 1000;
+        private readonly int minDoors = 1000;
 
         private readonly RegularMap regularMap;
 
@@ -24,7 +24,7 @@ namespace App.Tasks.Year2018.Day20
         {
             int roomsThatHaveShortestPathFromCurrentLocationThatPassThroughAtLeastGivenNumberOfDoors =
                 regularMap.CountRoomsThatHaveShortestPathFromCurrentLocationThatPassThroughAtLeastGivenNumberOfDoors(
-                    input, MIN_DOORS);
+                    input, minDoors);
 
             return roomsThatHaveShortestPathFromCurrentLocationThatPassThroughAtLeastGivenNumberOfDoors;
         }

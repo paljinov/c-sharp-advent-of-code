@@ -1,57 +1,61 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using App.Tasks.Year2018.Day20;
 using Xunit;
 
 namespace Tests.Tasks.Year2018.Day20
 {
-    public class Part1Tests
+    public class Part2Tests
     {
-        private readonly Part1 task;
+        private readonly Part2 task;
 
-        public Part1Tests()
+        public Part2Tests()
         {
-            task = new Part1();
+            task = new Part2();
+            task.GetType()
+                .GetField("minDoors", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(task, 10);
         }
 
         [Theory]
-        [ClassData(typeof(Regex_LargestNumberOfDoorsNeededToPassThroughToReachARoom_TestData))]
-        public void Solution_RegexExample_LargestNumberOfDoorsNeededToPassThroughToReachARoomEquals(
+        [ClassData(typeof(Regex_RoomsThatHaveShortestPathFromCurrentLocationThatPassThroughAtLeastGivenNumberOfDoors_TestData))]
+        public void Solution_RegexExample_RoomsThatHaveShortestPathFromCurrentLocationThatPassThroughAtLeastGivenNumberOfDoorsEquals(
             string regex,
-            int largestNumberOfDoorsNeededToPassThroughToReachARoom
+            int roomsThatHaveShortestPathFromCurrentLocationThatPassThroughAtLeastGivenNumberOfDoors
         )
         {
-            Assert.Equal(largestNumberOfDoorsNeededToPassThroughToReachARoom, task.Solution(regex));
+            Assert.Equal(roomsThatHaveShortestPathFromCurrentLocationThatPassThroughAtLeastGivenNumberOfDoors, task.Solution(regex));
         }
 
-        public class Regex_LargestNumberOfDoorsNeededToPassThroughToReachARoom_TestData
+        public class Regex_RoomsThatHaveShortestPathFromCurrentLocationThatPassThroughAtLeastGivenNumberOfDoors_TestData
             : IEnumerable<object[]>
         {
             public IEnumerator<object[]> GetEnumerator()
             {
                 yield return new object[] {
                     "^WNE$",
-                    3
+                    0
                 };
 
                 yield return new object[] {
                     "^ENWWW(NEEE|SSE(EE|N))$",
-                    10
+                    1
                 };
 
                 yield return new object[] {
                     "^ENNWSWW(NEWS|)SSSEEN(WNSE|)EE(SWEN|)NNN$",
-                    18
+                    13
                 };
 
                 yield return new object[] {
                     "^ESSWWN(E|NNENN(EESS(WNSE|)SSS|WWWSSSSE(SW|NNNE)))$",
-                    23
+                    25
                 };
 
                 yield return new object[] {
                     "^WSSEESWWWNW(S|NENNEEEENN(ESSSSW(NWSW|SSEN)|WSWWN(E|WWS(E|SS))))$",
-                    31
+                    39
                 };
             }
 
