@@ -212,8 +212,9 @@ namespace App.Tasks.Year2018.Day24
 
         public int Solution(string input)
         {
-            string reindeerCondition = reindeerConditionRepository.GetReindeerCondition(input);
-            int winningArmyUnitsCount = immuneSystemSimulator.CountWinningArmyUnits(reindeerCondition);
+            Group[] immuneSystemArmy = reindeerConditionRepository.GetImmuneSystemArmy(input);
+            Group[] infectionArmy = reindeerConditionRepository.GetInfectionArmy(input);
+            int winningArmyUnitsCount = immuneSystemSimulator.CountWinningArmyUnits(immuneSystemArmy, infectionArmy);
 
             return winningArmyUnitsCount;
         }
