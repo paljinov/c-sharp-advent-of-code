@@ -1,24 +1,22 @@
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace App.Tasks.Year2018.Day24
 {
     public class ReindeerConditionRepository
     {
-        public Group[] GetImmuneSystemArmy(string input)
+        public Group[] GetImmuneSystemArmyGroups(string input)
         {
             string[] inputParts = ParseInput(input);
-
             Group[] groups = GetArmyGroups(inputParts[0]);
 
             return groups;
         }
 
-        public Group[] GetInfectionArmy(string input)
+        public Group[] GetInfectionArmyGroups(string input)
         {
             string[] inputParts = ParseInput(input);
-
             Group[] groups = GetArmyGroups(inputParts[1]);
 
             return groups;
@@ -26,31 +24,56 @@ namespace App.Tasks.Year2018.Day24
 
         private Group[] GetArmyGroups(string input)
         {
-            Regex armyRegex = new Regex(@"^(\d+\sunits)\seach\swith\s(\d+\shit\spoints)\s\((weak\sto\sfire;\simmune\sto\scold\))\swith\san\sattack\sthat\sdoes\s(\d+\sradiation\sdamage)\sat\s(initiative\s\d+)$");
             string[] groupsArray = input.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+            Group[] armyGroups = new Group[groupsArray.Length - 1];
 
-            Group[] groups = new Group[input.Length - 1];
+            Regex armyGroupRegex = new Regex(@"^(\d+)\sunits\seach\swith\s(\d+)\shit\spoints"
+                + @"(?:\s\((.+)\))?\swith\san\sattack\sthat\sdoes\s(\d+)\s(\w+)\sdamage\sat\sinitiative\s(\d+)$");
+
+            Regex weaknessesOrImmunitiesRegex = new Regex(@"^(\w+)\sto\s(.+)$");
 
             for (int i = 1; i < groupsArray.Length; i++)
             {
-                Match armyMatch = armyRegex.Match(groupsArray[i]);
-                GroupCollection groupCollection = armyMatch.Groups;
+                Match armyMatch = armyGroupRegex.Match(groupsArray[i]);
+                GroupCollection groups = armyMatch.Groups;
 
-                Group group = new Group
+                string[] weaknesses = Array.Empty<string>();
+                string[] immunities = Array.Empty<string>();
+                string[] weaknessesAndImmunities = groups[3].Value.Split(';');
+
+                for (int j = 0; j < weaknessesAndImmunities.Length; j++)
                 {
-                    Units = int.Parse(groupCollection[1].Value),
-                    UnitHitPoints = int.Parse(groupCollection[2].Value),
-                    UnitAttackDamage = int.Parse(groupCollection[3].Value),
-                    AttackType = groupCollection[4].Value,
-                    Initiative = int.Parse(groupCollection[1].Value),
-                    Weaknesses = new List<string>(),
-                    Immunities = new List<string>()
+                    Match weaknessesOrImmunitiesMatch =
+                        weaknessesOrImmunitiesRegex.Match(weaknessesAndImmunities[j].Trim());
+                    GroupCollection weaknessesOrImmunitiesGroups = weaknessesOrImmunitiesMatch.Groups;
+
+                    string[] weakOrImmuneTo = weaknessesOrImmunitiesGroups[2].Value.Split(", ").ToArray();
+
+                    if (weaknessesOrImmunitiesGroups[1].Value == "weak")
+                    {
+                        weaknesses = weakOrImmuneTo;
+                    }
+                    else if (weaknessesOrImmunitiesGroups[1].Value == "immune")
+                    {
+                        immunities = weakOrImmuneTo;
+                    }
+                }
+
+                Group armyGroup = new Group
+                {
+                    Units = int.Parse(groups[1].Value),
+                    UnitHitPoints = int.Parse(groups[2].Value),
+                    UnitAttackDamage = int.Parse(groups[4].Value),
+                    AttackType = groups[5].Value,
+                    Initiative = int.Parse(groups[6].Value),
+                    Weaknesses = weaknesses,
+                    Immunities = immunities
                 };
 
-                groups[i - 1] = group;
+                armyGroups[i - 1] = armyGroup;
             }
 
-            return groups;
+            return armyGroups;
         }
 
         private string[] ParseInput(string input)

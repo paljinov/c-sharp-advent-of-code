@@ -199,7 +199,6 @@ namespace App.Tasks.Year2018.Day24
 {
     public class Part1 : ITask<int>
     {
-
         private readonly ReindeerConditionRepository reindeerConditionRepository;
 
         private readonly ImmuneSystemSimulator immuneSystemSimulator;
@@ -212,8 +211,8 @@ namespace App.Tasks.Year2018.Day24
 
         public int Solution(string input)
         {
-            Group[] immuneSystemArmy = reindeerConditionRepository.GetImmuneSystemArmy(input);
-            Group[] infectionArmy = reindeerConditionRepository.GetInfectionArmy(input);
+            Group[] immuneSystemArmy = reindeerConditionRepository.GetImmuneSystemArmyGroups(input);
+            Group[] infectionArmy = reindeerConditionRepository.GetInfectionArmyGroups(input);
             int winningArmyUnitsCount = immuneSystemSimulator.CountWinningArmyUnits(immuneSystemArmy, infectionArmy);
 
             return winningArmyUnitsCount;
