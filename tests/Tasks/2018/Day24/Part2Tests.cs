@@ -4,17 +4,17 @@ using Xunit;
 
 namespace Tests.Tasks.Year2018.Day24
 {
-    public class Part1Tests
+    public class Part2Tests
     {
-        private readonly Part1 task;
+        private readonly Part2 task;
 
-        public Part1Tests()
+        public Part2Tests()
         {
-            task = new Part1();
+            task = new Part2();
         }
 
         [Fact]
-        public void Solution_ReindeerConditionExample_WinningArmyUnitsCountEquals()
+        public void Solution_ReindeerConditionExample_ImmuneSystemUnitsCountWhichAreLeftAfterGettingTheSmallestBoostNeededToWinEquals()
         {
             string reindeerCondition = "Immune System:"
                 + $"{Environment.NewLine}17 units each with 5390 hit points (weak to radiation, bludgeoning) with"
@@ -28,7 +28,7 @@ namespace Tests.Tasks.Year2018.Day24
                 + $"{Environment.NewLine}4485 units each with 2961 hit points (immune to radiation; weak to fire,"
                 + " cold) with an attack that does 12 slashing damage at initiative 4";
 
-            Assert.Equal(5216, task.Solution(reindeerCondition));
+            Assert.Equal(51, task.Solution(reindeerCondition));
         }
     }
 }
