@@ -1,6 +1,6 @@
 namespace App.Tasks.Year2018.Day24
 {
-    public class Group
+    public struct Group
     {
         public int Units { get; set; }
         public int UnitHitPoints { get; set; }

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 
 namespace App.Tasks.Year2018.Day24
@@ -8,7 +9,9 @@ namespace App.Tasks.Year2018.Day24
         {
             while (immuneSystemArmy.Length > 0 && infectionArmy.Length > 0)
             {
-                SortAttackersByInitiative(immuneSystemArmy, infectionArmy);
+                SortAttackers(immuneSystemArmy, infectionArmy);
+
+                int remainingUnits = CalculateRemainingDefenderUnits(infectionArmy.First(), immuneSystemArmy.First());
             }
 
             return immuneSystemArmy.Length + infectionArmy.Length;
@@ -19,31 +22,46 @@ namespace App.Tasks.Year2018.Day24
             Group[] infectionArmy
         )
         {
-            while (immuneSystemArmy.Length > 0 && infectionArmy.Length > 0)
-            {
-                SortAttackersByInitiative(immuneSystemArmy, infectionArmy);
-            }
-
             return immuneSystemArmy.Length + infectionArmy.Length;
         }
 
-        private void SortAttackersByInitiative(Group[] immuneSystemArmy, Group[] infectionArmy)
-        {
-            immuneSystemArmy = immuneSystemArmy.OrderByDescending(isa => isa.Initiative).ToArray();
-            infectionArmy = infectionArmy.OrderByDescending(ia => ia.Initiative).ToArray();
-        }
-
-        private void SortDefendersByEffectivePower(Group[] immuneSystemArmy, Group[] infectionArmy)
+        private void SortAttackers(Group[] immuneSystemArmy, Group[] infectionArmy)
         {
             immuneSystemArmy = immuneSystemArmy
-                .OrderBy(isa => isa.Units * isa.UnitAttackDamage)
-                .ThenByDescending(isa => isa.Initiative)
+                .OrderBy(g => g.Units * g.UnitAttackDamage)
+                .ThenByDescending(g => g.Initiative)
                 .ToArray();
 
             infectionArmy = infectionArmy
-                .OrderBy(ia => ia.Units * ia.UnitAttackDamage)
-                .ThenByDescending(ia => ia.Initiative)
-                .ToArray();
+               .OrderBy(g => g.Units * g.UnitAttackDamage)
+               .ThenByDescending(g => g.Initiative)
+               .ToArray();
+        }
+
+        private int CalculateDamage(Group attacker, Group defender)
+        {
+            if (defender.Immunities.Contains(attacker.AttackType))
+            {
+                return 0;
+            }
+
+            int damage = attacker.Units * attacker.UnitAttackDamage;
+            if (defender.Weaknesses.Contains(attacker.AttackType))
+            {
+                damage *= 2;
+            }
+
+            return damage;
+        }
+
+        private int CalculateRemainingDefenderUnits(Group attacker, Group defender)
+        {
+            int damage = CalculateDamage(attacker, defender);
+            int remainingHitPoints = defender.Units * defender.UnitHitPoints - damage;
+
+            int remainingUnits = (int)Math.Ceiling((double)remainingHitPoints / defender.UnitHitPoints);
+
+            return remainingUnits;
         }
     }
 }
