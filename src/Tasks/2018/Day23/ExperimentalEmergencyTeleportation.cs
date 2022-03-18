@@ -44,12 +44,11 @@ namespace App.Tasks.Year2018.Day23
             int zRange = maxZ - minZ;
 
             int scanResolution = GetScanResolution(xRange, yRange, zRange);
-
-            int maxNanobotsWhichHavePositionInRange = 0;
             Position bestPosition = nanobots.First().Position;
 
             while (scanResolution >= 1)
             {
+                int maxNanobotsWhichHavePositionInRange = 0;
                 for (int x = minX; x <= maxX; x += scanResolution)
                 {
                     for (int y = minY; y <= maxY; y += scanResolution)
@@ -64,7 +63,8 @@ namespace App.Tasks.Year2018.Day23
                             };
 
                             int nanobotsWhichHavePositionInRange =
-                                CountNanobotsWhichHavePositionInRange(nanobots, position);
+                                CountNanobotsWhichHavePositionInRangeForScanResolution(
+                                    nanobots, position, scanResolution);
 
                             // If this position is in range of max nanobots
                             if (nanobotsWhichHavePositionInRange >= maxNanobotsWhichHavePositionInRange)
@@ -85,17 +85,14 @@ namespace App.Tasks.Year2018.Day23
                     }
                 }
 
+                minX = bestPosition.X - scanResolution;
+                maxX = bestPosition.X + scanResolution;
+                minY = bestPosition.Y - scanResolution;
+                maxY = bestPosition.Y + scanResolution;
+                minZ = bestPosition.Z - scanResolution;
+                maxZ = bestPosition.Z + scanResolution;
                 scanResolution /= 2;
-
-                minX = bestPosition.X - scanResolution / 2;
-                minY = bestPosition.Y - scanResolution / 2;
-                minZ = bestPosition.Z - scanResolution / 2;
-
-                maxX = bestPosition.X + scanResolution / 2;
-                maxY = bestPosition.Y + scanResolution / 2;
-                maxZ = bestPosition.Z + scanResolution / 2;
             }
-
 
             return shortestManhattanDistance;
         }
@@ -143,7 +140,11 @@ namespace App.Tasks.Year2018.Day23
             return Math.Abs(a.X - b.X) + Math.Abs(a.Y - b.Y) + Math.Abs(a.Z - b.Z);
         }
 
-        private int CountNanobotsWhichHavePositionInRange(Nanobot[] nanobots, Position position)
+        private int CountNanobotsWhichHavePositionInRangeForScanResolution(
+            Nanobot[] nanobots,
+            Position position,
+            int scanResolution
+        )
         {
             int nanobotsWhichHavePositionInRange = 0;
 
@@ -151,7 +152,7 @@ namespace App.Tasks.Year2018.Day23
             {
                 int manhattanDistance = CalculateManhattanDistance(position, nanobot.Position);
 
-                if (nanobot.SignalRadius >= manhattanDistance)
+                if (manhattanDistance - nanobot.SignalRadius < scanResolution)
                 {
                     nanobotsWhichHavePositionInRange++;
                 }
