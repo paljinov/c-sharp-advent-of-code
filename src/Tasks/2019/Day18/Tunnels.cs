@@ -229,21 +229,36 @@ namespace App.Tasks.Year2019.Day18
             // If current robot can't move, switch to next robot
             else
             {
-                int nextRobot = currentRobot + 1 >= robotsPositions.Count ? 0 : currentRobot + 1;
+                int nextRobot = currentRobot;
+                int i = 0;
+                while (i < robotsPositions.Count)
+                {
+                    nextRobot++;
+                    if (nextRobot == robotsPositions.Count)
+                    {
+                        nextRobot = 0;
+                    }
+                    i++;
 
-                DoCountStepsOfShortestPathThatCollectsAllOfTheKeysForRemoteControlledRobots(
-                    tunnelsMap,
-                    robotsPositions[nextRobot],
-                    nextRobot,
-                    robotsPositions.ToList(),
-                    keysPositions,
-                    doorsPositions,
-                    stepsFromKeyToKeys,
-                    statesCache.ToDictionary(sc => sc.Key, sc => sc.Value),
-                    foundKeys.ToDictionary(fk => fk.Key, fk => fk.Value),
-                    steps,
-                    ref minSteps
-                );
+                    if (nextRobot == currentRobot)
+                    {
+                        continue;
+                    }
+
+                    DoCountStepsOfShortestPathThatCollectsAllOfTheKeysForRemoteControlledRobots(
+                        tunnelsMap,
+                        robotsPositions[nextRobot],
+                        nextRobot,
+                        robotsPositions.ToList(),
+                        keysPositions,
+                        doorsPositions,
+                        stepsFromKeyToKeys,
+                        statesCache.ToDictionary(sc => sc.Key, sc => sc.Value),
+                        foundKeys.ToDictionary(fk => fk.Key, fk => fk.Value),
+                        steps,
+                        ref minSteps
+                    );
+                }
             }
         }
 
