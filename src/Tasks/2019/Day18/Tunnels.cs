@@ -63,39 +63,58 @@ namespace App.Tasks.Year2019.Day18
 
         public int CountFewestStepsNecessaryToCollectAllOfTheKeysForRemoteControlledRobots(char[,] tunnelsMap)
         {
-            int minSteps = int.MaxValue;
+            int totalMinSteps = 0;
 
             tunnelsMap = UpdateMap(tunnelsMap);
-            List<(int X, int Y)> robotsPositions = GetCharacterPositions(ENTRANCE, tunnelsMap);
 
-            (int X, int Y) entrance = GetCharacterPositions(ENTRANCE, tunnelsMap).First();
+            List<(int X, int Y)> robotsPositions = GetCharacterPositions(ENTRANCE, tunnelsMap);
             Dictionary<char, (int X, int Y)> keysPositions = GetKeysPositions(tunnelsMap);
             Dictionary<char, (int X, int Y)> doorsPositions = GetDoorsPositions(tunnelsMap);
-            Dictionary<char, bool> foundKeys = keysPositions.ToDictionary(kl => kl.Key, kl => false);
-
-            Dictionary<int, Dictionary<char, Dictionary<char, (int Steps, string DoorsBetween)>>> stepsFromKeyToKeys =
-                new Dictionary<int, Dictionary<char, Dictionary<char, (int Steps, string DoorsBetween)>>>();
 
             for (int robot = 0; robot < robotsPositions.Count; robot++)
             {
-                stepsFromKeyToKeys[robot] = GetStepsFromKeysToOtherKeys(tunnelsMap, robotsPositions[robot]);
+                Dictionary<char, Dictionary<char, (int Steps, string DoorsBetween)>> stepsFromKeyToKeys =
+                    GetStepsFromKeysToOtherKeys(tunnelsMap, robotsPositions[robot]);
+
+                // Reacheable keys for this robot
+                List<char> reacheableKeys = stepsFromKeyToKeys.Select(s => s.Key).Where(k => k != ENTRANCE).ToList();
+                Dictionary<char, bool> foundKeys = reacheableKeys.ToDictionary(rk => rk, rk => false);
+
+                // Assume that other robots opened doors for keys which are in their area
+                foreach (KeyValuePair<char, Dictionary<char, (int Steps, string DoorsBetween)>> fromKey in stepsFromKeyToKeys)
+                {
+                    foreach (KeyValuePair<char, (int Steps, string DoorsBetween)> toKey in fromKey.Value)
+                    {
+                        string doorsBetween = string.Empty;
+                        foreach (char c in toKey.Value.DoorsBetween)
+                        {
+                            if (reacheableKeys.Contains(c))
+                            {
+                                doorsBetween += c;
+                            }
+                        }
+
+                        stepsFromKeyToKeys[fromKey.Key][toKey.Key] = (toKey.Value.Steps, doorsBetween);
+                    }
+                }
+
+                int minSteps = int.MaxValue;
+                DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(
+                    tunnelsMap,
+                    robotsPositions[robot],
+                    keysPositions,
+                    doorsPositions,
+                    stepsFromKeyToKeys,
+                    new Dictionary<string, int>(),
+                    foundKeys,
+                    0,
+                    ref minSteps
+                );
+
+                totalMinSteps += minSteps;
             }
 
-            DoCountStepsOfShortestPathThatCollectsAllOfTheKeysForRemoteControlledRobots(
-                tunnelsMap,
-                robotsPositions[0],
-                0,
-                robotsPositions,
-                keysPositions,
-                doorsPositions,
-                stepsFromKeyToKeys,
-                new Dictionary<string, int>(),
-                foundKeys,
-                0,
-                ref minSteps
-            );
-
-            return minSteps;
+            return totalMinSteps;
         }
 
         private void DoCountStepsOfShortestPathThatCollectsAllOfTheKeys(
@@ -154,111 +173,6 @@ namespace App.Tasks.Year2019.Day18
                     newSteps,
                     ref minSteps
                 );
-            }
-        }
-
-        private void DoCountStepsOfShortestPathThatCollectsAllOfTheKeysForRemoteControlledRobots(
-            char[,] tunnelsMap,
-            (int X, int Y) currentPosition,
-            int currentRobot,
-            List<(int X, int Y)> robotsPositions,
-            Dictionary<char, (int X, int Y)> keysPositions,
-            Dictionary<char, (int X, int Y)> doorsPositions,
-            Dictionary<int, Dictionary<char, Dictionary<char, (int Steps, string DoorsBetween)>>> stepsFromKeyToKeys,
-            Dictionary<string, int> statesCache,
-            Dictionary<char, bool> foundKeys,
-            int steps,
-            ref int minSteps
-        )
-        {
-            // If better solution is already found
-            if (steps >= minSteps)
-            {
-                return;
-            }
-
-            string foundKeysString = string.Concat(foundKeys.Where(fk => fk.Value == true).Select(fk => fk.Key));
-            string state = StringifyState(foundKeysString, currentPosition);
-            // If this tunnel map state and current position already exists in equal or less number of steps
-            if (statesCache.ContainsKey(state) && steps >= statesCache[state])
-            {
-                return;
-            }
-            statesCache[state] = steps;
-
-            // If all keys are collected in minimum number of steps
-            if (!foundKeys.Where(fk => fk.Value == false).Any())
-            {
-                minSteps = steps;
-                return;
-            }
-
-            // Update current robot position
-            robotsPositions[currentRobot] = (currentPosition.X, currentPosition.Y);
-
-            char currentKey = tunnelsMap[currentPosition.X, currentPosition.Y];
-            Dictionary<char, int> reachableKeys =
-                GetKeysReachableFromKey(stepsFromKeyToKeys[currentRobot][currentKey], foundKeys);
-
-            // If current robot can move
-            if (reachableKeys.Count > 0)
-            {
-                foreach (KeyValuePair<char, int> reachableKey in reachableKeys)
-                {
-                    char nextKey = reachableKey.Key;
-                    int newSteps = steps + reachableKey.Value;
-
-                    Dictionary<char, bool> nextFoundKeys = foundKeys.ToDictionary(fk => fk.Key, fk => fk.Value);
-                    nextFoundKeys[nextKey] = true;
-
-                    DoCountStepsOfShortestPathThatCollectsAllOfTheKeysForRemoteControlledRobots(
-                        tunnelsMap,
-                        keysPositions[nextKey],
-                        currentRobot,
-                        robotsPositions,
-                        keysPositions,
-                        doorsPositions,
-                        stepsFromKeyToKeys,
-                        statesCache.ToDictionary(sc => sc.Key, sc => sc.Value),
-                        nextFoundKeys,
-                        newSteps,
-                        ref minSteps
-                    );
-                }
-            }
-            // If current robot can't move, switch to next robot
-            else
-            {
-                int nextRobot = currentRobot;
-                int i = 0;
-                while (i < robotsPositions.Count)
-                {
-                    nextRobot++;
-                    if (nextRobot == robotsPositions.Count)
-                    {
-                        nextRobot = 0;
-                    }
-                    i++;
-
-                    if (nextRobot == currentRobot)
-                    {
-                        continue;
-                    }
-
-                    DoCountStepsOfShortestPathThatCollectsAllOfTheKeysForRemoteControlledRobots(
-                        tunnelsMap,
-                        robotsPositions[nextRobot],
-                        nextRobot,
-                        robotsPositions.ToList(),
-                        keysPositions,
-                        doorsPositions,
-                        stepsFromKeyToKeys,
-                        statesCache.ToDictionary(sc => sc.Key, sc => sc.Value),
-                        foundKeys.ToDictionary(fk => fk.Key, fk => fk.Value),
-                        steps,
-                        ref minSteps
-                    );
-                }
             }
         }
 
