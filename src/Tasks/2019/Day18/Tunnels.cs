@@ -225,26 +225,24 @@ namespace App.Tasks.Year2019.Day18
                     );
                 }
             }
-            // If current robot can't move, switch to next robot
-            else
+
+            // Move other robots also for each step
+            for (int nextRobot = 0; nextRobot < robotsPositions.Count; nextRobot++)
             {
-                for (int nextRobot = 0; nextRobot < robotsPositions.Count; nextRobot++)
+                if (nextRobot != currentRobot)
                 {
-                    if (nextRobot != currentRobot)
-                    {
-                        DoCountStepsOfShortestPathThatCollectsAllOfTheKeysForRemoteControlledRobots(
-                            tunnelsMap,
-                            nextRobot,
-                            robotsPositions.ToList(),
-                            keysPositions,
-                            doorsPositions,
-                            stepsFromKeyToKeys,
-                            statesCache,
-                            foundKeys.ToDictionary(fk => fk.Key, fk => fk.Value),
-                            steps,
-                            ref minSteps
-                        );
-                    }
+                    DoCountStepsOfShortestPathThatCollectsAllOfTheKeysForRemoteControlledRobots(
+                        tunnelsMap,
+                        nextRobot,
+                        robotsPositions.ToList(),
+                        keysPositions,
+                        doorsPositions,
+                        stepsFromKeyToKeys,
+                        statesCache,
+                        foundKeys.ToDictionary(fk => fk.Key, fk => fk.Value),
+                        steps,
+                        ref minSteps
+                    );
                 }
             }
         }
