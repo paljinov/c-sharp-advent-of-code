@@ -1,7 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace App.Tasks.Year2019.Day25
 {
@@ -15,77 +16,154 @@ namespace App.Tasks.Year2019.Day25
 
         private const string ITEMS = "Items here";
 
-        private const string TAKE = "take";
-
-        private const string DROP = "drop";
-
-        private const string LIST_ITEMS = "inv";
-
-        private readonly Random random;
-
-        public Ship()
-        {
-            random = new Random();
-        }
-
         public long FindThePasswordForTheMainAirlock(long[] integersArray)
         {
-            StringBuilder password = new StringBuilder();
-
             Dictionary<long, long> integers = InitIntegersMemory(integersArray);
             Queue<int> inputs = new Queue<int>();
-
-            int output;
-            bool halted = false;
 
             // IntCode program current index and relative base value
             long index = 0;
             long relativeBase = 0;
 
-            StringBuilder instructionSb = new StringBuilder();
+            long? password = MoveDroid(
+                integers,
+                inputs,
+                index,
+                relativeBase,
+                new HashSet<string>(),
+                new HashSet<string>(),
+                string.Empty
+            );
 
-            while (!halted)
+            return password ?? 0;
+        }
+
+        private long? MoveDroid(
+            Dictionary<long, long> integers,
+            Queue<int> inputs,
+            long index,
+            long relativeBase,
+            HashSet<string> takenItems,
+            HashSet<string> statesCache,
+            string commands
+        )
+        {
+            string instruction = GetInstruction(integers, new Queue<int>(inputs), ref index, ref relativeBase);
+
+            long? password = GetPassword(instruction);
+            if (password.HasValue)
             {
-                (output, halted) = CalculateOutputSignal(integers, inputs, ref index, ref relativeBase);
-                instructionSb.Append((char)output);
+                return password;
+            }
 
-                if (instructionSb.Length >= COMMAND.Length
-                    && instructionSb.ToString(instructionSb.Length - COMMAND.Length, COMMAND.Length) == COMMAND)
+            // System.Console.WriteLine(instruction);
+            System.Console.WriteLine(commands);
+
+            string room = GetRoom(instruction);
+
+            string state = StringifyState(room, takenItems);
+            // If state repeats
+            if (statesCache.Contains(state))
+            {
+                return null;
+            }
+            statesCache.Add(state);
+
+            List<string> directions = GetChoices(instruction, DOORS);
+            string item = GetChoices(instruction, ITEMS).FirstOrDefault();
+
+            foreach (string direction in directions)
+            {
+                Queue<int> expandedInputs = new Queue<int>(inputs);
+                List<int> moveCommandAsciiInput = ConvertInstructionToAsciiInputs(direction);
+
+                EnqueueCommandToInputs(expandedInputs, moveCommandAsciiInput);
+
+                // System.Console.WriteLine(direction);
+                password = MoveDroid(integers, expandedInputs, index, relativeBase, takenItems, statesCache, $"{commands}, {direction}");
+                if (password != null)
                 {
-                    string instruction = instructionSb.ToString();
-                    instructionSb.Clear();
-                    // Console.WriteLine(instruction);
+                    break;
+                }
 
-                    List<string> answers = new List<string>();
-                    if (instruction.Contains(DOORS))
-                    {
-                        answers = GetChoices(instruction, DOORS);
-                    }
-                    else if (instruction.Contains(ITEMS))
-                    {
-                        answers = GetChoices(instruction, ITEMS);
-                        for (int i = 0; i < answers.Count; i++)
-                        {
-                            answers[i] = $"{TAKE} {answers[i]}";
-                        }
-                    }
-                    else
-                    {
+                // Take item variant
+                if (item != null && item.Length > 0)
+                {
+                    expandedInputs = new Queue<int>(inputs);
 
-                    }
+                    string takeItemString = $"{Instruction.TAKE_ITEM} {item}";
+                    List<int> takeItemCommandAsciiInput = ConvertInstructionToAsciiInputs(takeItemString);
+                    EnqueueCommandToInputs(expandedInputs, takeItemCommandAsciiInput);
 
-                    if (answers.Count > 0)
+                    HashSet<string> expandedTakenItems = takenItems.ToHashSet();
+                    expandedTakenItems.Add(item);
+
+                    EnqueueCommandToInputs(expandedInputs, moveCommandAsciiInput);
+
+                    password = MoveDroid(integers, expandedInputs, index, relativeBase, expandedTakenItems, statesCache, $"{commands}, {takeItemString}, {direction}");
+                    if (password != null)
                     {
-                        int answerIndex = random.Next(answers.Count);
-                        string commandInput = answers[answerIndex];
-                        List<int> commandAsciiInput = ConvertInstructionToAsciiInputs(commandInput);
-                        inputs = new Queue<int>(commandAsciiInput);
-                        inputs.Enqueue(ASCII_NEWLINE);
+                        break;
                     }
                 }
             }
 
-            return long.Parse(password.ToString());
+            return password;
+        }
+
+        private string GetInstruction(
+            Dictionary<long, long> integers,
+            Queue<int> inputs,
+            ref long index,
+            ref long relativeBase
+        )
+        {
+            int output;
+            bool halted = false;
+
+            StringBuilder instruction = new StringBuilder();
+
+            while (!halted)
+            {
+                (output, halted) = CalculateOutputSignal(integers, inputs, ref index, ref relativeBase);
+                instruction.Append((char)output);
+
+                if (instruction.Length >= COMMAND.Length
+                    && instruction.ToString(instruction.Length - COMMAND.Length, COMMAND.Length) == COMMAND)
+                {
+                    return instruction.ToString();
+                }
+            }
+
+            return string.Empty;
+        }
+
+        private long? GetPassword(string instruction)
+        {
+            long? password = null;
+
+            Regex passwordRegex = new Regex(@"by\styping\s(\d+)\son\sthe\skeypad");
+
+            Match passwordMatch = passwordRegex.Match(instruction);
+            if (passwordMatch.Success)
+            {
+                GroupCollection passwordGroups = passwordMatch.Groups;
+                password = long.Parse(passwordGroups[1].Value);
+            }
+
+            return password;
+        }
+
+        private string GetRoom(string instruction)
+        {
+            Regex roomRegex = new Regex(@"==\s(.+)?\s==");
+
+            Match roomMatch = roomRegex.Match(instruction);
+            GroupCollection roomGroups = roomMatch.Groups;
+
+            string room = roomGroups[1].Value;
+
+            return room;
         }
 
         private List<string> GetChoices(string instruction, string choiceType)
@@ -122,6 +200,23 @@ namespace App.Tasks.Year2019.Day25
             }
 
             return asciiInput;
+        }
+
+        private string StringifyState(string room, HashSet<string> items)
+        {
+            string itemsString = string.Join(",", items.ToArray());
+
+            return $"({room}),({itemsString})";
+        }
+
+        private void EnqueueCommandToInputs(Queue<int> queue, List<int> list)
+        {
+            foreach (int input in list)
+            {
+                queue.Enqueue(input);
+            }
+
+            queue.Enqueue(ASCII_NEWLINE);
         }
 
         private (int, bool) CalculateOutputSignal(
