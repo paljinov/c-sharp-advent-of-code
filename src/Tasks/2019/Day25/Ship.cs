@@ -16,6 +16,8 @@ namespace App.Tasks.Year2019.Day25
 
         private const string ITEMS = "Items here";
 
+        private const string TAKE_ITEM = "take";
+
         public long FindThePasswordForTheMainAirlock(long[] integersArray)
         {
             Dictionary<long, long> integers = InitIntegersMemory(integersArray);
@@ -31,8 +33,7 @@ namespace App.Tasks.Year2019.Day25
                 index,
                 relativeBase,
                 new HashSet<string>(),
-                new HashSet<string>(),
-                string.Empty
+                new HashSet<string>()
             );
 
             return password ?? 0;
@@ -44,20 +45,25 @@ namespace App.Tasks.Year2019.Day25
             long index,
             long relativeBase,
             HashSet<string> takenItems,
-            HashSet<string> statesCache,
-            string commands
+            HashSet<string> statesCache
         )
         {
-            string instruction = GetInstruction(integers, new Queue<int>(inputs), ref index, ref relativeBase);
+            string instruction = GetInstruction(integers, inputs, ref index, ref relativeBase);
+
+            System.Console.WriteLine(instruction);
 
             long? password = GetPassword(instruction);
+            // IF password is found
             if (password.HasValue)
             {
                 return password;
             }
 
-            // System.Console.WriteLine(instruction);
-            System.Console.WriteLine(commands);
+            // If game ended without needing to input command
+            if (!instruction.Contains(COMMAND))
+            {
+                return null;
+            }
 
             string room = GetRoom(instruction);
 
@@ -74,37 +80,39 @@ namespace App.Tasks.Year2019.Day25
 
             foreach (string direction in directions)
             {
-                Queue<int> expandedInputs = new Queue<int>(inputs);
-                List<int> moveCommandAsciiInput = ConvertInstructionToAsciiInputs(direction);
-
-                EnqueueCommandToInputs(expandedInputs, moveCommandAsciiInput);
-
-                // System.Console.WriteLine(direction);
-                password = MoveDroid(integers, expandedInputs, index, relativeBase, takenItems, statesCache, $"{commands}, {direction}");
-                if (password != null)
+                // Take item and move droid
+                if (!string.IsNullOrEmpty(item))
                 {
-                    break;
-                }
+                    password = TakeItemAndMoveDroid(
+                        integers,
+                        new Queue<int>(inputs),
+                        index,
+                        relativeBase,
+                        new HashSet<string>(takenItems),
+                        statesCache,
+                        direction,
+                        item
+                    );
 
-                // Take item variant
-                if (item != null && item.Length > 0)
-                {
-                    expandedInputs = new Queue<int>(inputs);
-
-                    string takeItemString = $"{Instruction.TAKE_ITEM} {item}";
-                    List<int> takeItemCommandAsciiInput = ConvertInstructionToAsciiInputs(takeItemString);
-                    EnqueueCommandToInputs(expandedInputs, takeItemCommandAsciiInput);
-
-                    HashSet<string> expandedTakenItems = takenItems.ToHashSet();
-                    expandedTakenItems.Add(item);
-
-                    EnqueueCommandToInputs(expandedInputs, moveCommandAsciiInput);
-
-                    password = MoveDroid(integers, expandedInputs, index, relativeBase, expandedTakenItems, statesCache, $"{commands}, {takeItemString}, {direction}");
                     if (password != null)
                     {
                         break;
                     }
+                }
+
+                password = JustMoveDroid(
+                    integers,
+                    new Queue<int>(inputs),
+                    index,
+                    relativeBase,
+                    new HashSet<string>(takenItems),
+                    statesCache,
+                    direction
+                );
+
+                if (password != null)
+                {
+                    break;
                 }
             }
 
@@ -121,21 +129,21 @@ namespace App.Tasks.Year2019.Day25
             int output;
             bool halted = false;
 
+            index = 0;
+            relativeBase = 0;
+
             StringBuilder instruction = new StringBuilder();
 
             while (!halted)
             {
                 (output, halted) = CalculateOutputSignal(integers, inputs, ref index, ref relativeBase);
-                instruction.Append((char)output);
-
-                if (instruction.Length >= COMMAND.Length
-                    && instruction.ToString(instruction.Length - COMMAND.Length, COMMAND.Length) == COMMAND)
+                if (!halted)
                 {
-                    return instruction.ToString();
+                    instruction.Append((char)output);
                 }
             }
 
-            return string.Empty;
+            return instruction.ToString();
         }
 
         private long? GetPassword(string instruction)
@@ -191,6 +199,56 @@ namespace App.Tasks.Year2019.Day25
             return choices;
         }
 
+        private long? TakeItemAndMoveDroid(
+            Dictionary<long, long> integers,
+            Queue<int> inputs,
+            long index,
+            long relativeBase,
+            HashSet<string> takenItems,
+            HashSet<string> statesCache,
+            string direction,
+            string item
+        )
+        {
+            List<int> takeItemCommandAsciiInput = ConvertInstructionToAsciiInputs($"{TAKE_ITEM} {item}");
+            EnqueueCommandToInputs(inputs, takeItemCommandAsciiInput);
+
+            string instruction = GetInstruction(integers, inputs, ref index, ref relativeBase);
+            System.Console.WriteLine(instruction);
+            if (!instruction.Contains("You take the"))
+            {
+                return null;
+            }
+
+            HashSet<string> expandedTakenItems = takenItems.ToHashSet();
+            expandedTakenItems.Add(item);
+
+            List<int> moveCommandAsciiInput = ConvertInstructionToAsciiInputs(direction);
+            EnqueueCommandToInputs(inputs, moveCommandAsciiInput);
+
+            long? password = MoveDroid(integers, inputs, index, relativeBase, expandedTakenItems, statesCache);
+
+            return password;
+        }
+
+        private long? JustMoveDroid(
+            Dictionary<long, long> integers,
+            Queue<int> inputs,
+            long index,
+            long relativeBase,
+            HashSet<string> takenItems,
+            HashSet<string> statesCache,
+            string direction
+        )
+        {
+            List<int> moveCommandAsciiInput = ConvertInstructionToAsciiInputs(direction);
+            EnqueueCommandToInputs(inputs, moveCommandAsciiInput);
+
+            long? password = MoveDroid(integers, inputs, index, relativeBase, takenItems, statesCache);
+
+            return password;
+        }
+
         private List<int> ConvertInstructionToAsciiInputs(string instruction)
         {
             List<int> asciiInput = new List<int>();
@@ -228,6 +286,7 @@ namespace App.Tasks.Year2019.Day25
         {
             int outputSignal = -1;
 
+            int iterations = 0;
             while (integers[i] != (int)Operation.Halt)
             {
                 if (outputSignal != -1)
@@ -333,6 +392,12 @@ namespace App.Tasks.Year2019.Day25
                             }
                         }
                         break;
+                }
+
+                iterations++;
+                if (iterations >= 1000000)
+                {
+                    return (0, true);
                 }
             }
 
