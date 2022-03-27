@@ -19,6 +19,8 @@ namespace App.Tasks.Year2019.Day25
 
         private const string TAKE_ITEM = "take";
 
+        private const int INSTRUCTION_MAX_ITERATIONS = 10000;
+
         public long FindThePasswordForTheMainAirlock(long[] integersArray)
         {
             Dictionary<long, long> integers = InitIntegersMemory(integersArray);
@@ -52,12 +54,7 @@ namespace App.Tasks.Year2019.Day25
             Dictionary<long, long> integersCopy = integers.ToDictionary(i => i.Key, i => i.Value);
             string instruction = GetInstruction(integers, inputs, ref index, ref relativeBase);
 
-            if (instruction.Contains("dark matter"))
-            {
-                // System.Console.WriteLine(instruction.ToString());
-            }
-
-            System.Console.WriteLine(instruction);
+            // Console.Write(instruction);
 
             long? password = GetPassword(instruction);
             // IF password is found
@@ -88,7 +85,7 @@ namespace App.Tasks.Year2019.Day25
             foreach (string direction in directions)
             {
                 // Take item and move droid
-                if (!string.IsNullOrEmpty(item) && true)
+                if (!string.IsNullOrEmpty(item))
                 {
                     password = TakeItemAndMoveDroid(
                         integers.ToDictionary(i => i.Key, i => i.Value),
@@ -133,27 +130,26 @@ namespace App.Tasks.Year2019.Day25
             ref long relativeBase
         )
         {
-            int output;
-            bool halted = false;
-
-            StringBuilder instruction = new StringBuilder();
-
             Dictionary<long, long> previousIntegers = integers.ToDictionary(i => i.Key, i => i.Value);
             Queue<int> previousInputs = new Queue<int>(inputs);
             long previousIndex = index;
             long previousRelativeBase = relativeBase;
 
+            int output;
+            bool halted = false;
+
+            StringBuilder instruction = new StringBuilder();
+
             while (!halted)
             {
-                (output, halted, long ind, long rb, Dictionary<long, long> pi) =
-                    CalculateOutputSignal(integers, inputs, ref index, ref relativeBase);
+                (output, halted) = CalculateOutputSignal(integers, inputs, ref index, ref relativeBase);
 
                 // If instruction didn't finish
                 if (!halted)
                 {
                     instruction.Append((char)output);
 
-                    if (output != ASCII_NEWLINE)
+                    if (output == ASCII_NEWLINE)
                     {
                         previousIntegers = integers.ToDictionary(i => i.Key, i => i.Value);
                         previousInputs = new Queue<int>(inputs);
@@ -164,12 +160,23 @@ namespace App.Tasks.Year2019.Day25
                 // If instruction finished
                 else
                 {
-                    integers = previousIntegers;
-                    inputs = previousInputs;
+                    integers.Clear();
+                    foreach (KeyValuePair<long, long> previousInteger in previousIntegers)
+                    {
+                        integers[previousInteger.Key] = previousInteger.Value;
+                    }
+
+                    inputs.Clear();
+                    foreach (int previousInput in previousInputs)
+                    {
+                        inputs.Enqueue(previousInput);
+                    }
+
                     index = previousIndex;
                     relativeBase = previousRelativeBase;
                 }
             }
+
 
             return instruction.ToString();
         }
@@ -242,7 +249,6 @@ namespace App.Tasks.Year2019.Day25
             EnqueueCommandToInputs(inputs, takeItemCommandAsciiInput);
 
             string instruction = GetInstruction(integers, inputs, ref index, ref relativeBase);
-            System.Console.WriteLine(instruction);
             if (!instruction.Contains("You take the"))
             {
                 return null;
@@ -305,17 +311,13 @@ namespace App.Tasks.Year2019.Day25
             queue.Enqueue(ASCII_NEWLINE);
         }
 
-        private (int, bool, long, long, Dictionary<long, long>) CalculateOutputSignal(
+        private (int, bool) CalculateOutputSignal(
             Dictionary<long, long> integers,
             Queue<int> inputs,
             ref long i,
             ref long relativeBase
         )
         {
-            long previousIndex = i;
-            long previousRelativeBase = relativeBase;
-            Dictionary<long, long> previousIntegers = integers.ToDictionary(i => i.Key, i => i.Value);
-
             int outputSignal = -1;
 
             int iterations = 0;
@@ -323,12 +325,8 @@ namespace App.Tasks.Year2019.Day25
             {
                 if (outputSignal != -1)
                 {
-                    return (outputSignal, false, previousIndex, previousRelativeBase, previousIntegers);
+                    return (outputSignal, false);
                 }
-
-                previousIndex = i;
-                previousRelativeBase = relativeBase;
-                previousIntegers = integers.ToDictionary(i => i.Key, i => i.Value);
 
                 // Pad first instruction with leading zeros
                 string instruction = integers[i].ToString("D5");
@@ -431,13 +429,13 @@ namespace App.Tasks.Year2019.Day25
                 }
 
                 iterations++;
-                if (iterations >= 1000)
+                if (iterations >= INSTRUCTION_MAX_ITERATIONS)
                 {
-                    return (0, true, previousIndex, previousRelativeBase, previousIntegers);
+                    return (0, true);
                 }
             }
 
-            return (outputSignal, true, previousIndex, previousRelativeBase, previousIntegers);
+            return (outputSignal, true);
         }
 
         private Dictionary<long, long> InitIntegersMemory(long[] integersArray)
