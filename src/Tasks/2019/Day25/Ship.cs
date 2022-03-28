@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,6 +8,8 @@ namespace App.Tasks.Year2019.Day25
 {
     public class Ship
     {
+        private const int INSTRUCTION_MAX_ITERATIONS = 10000;
+
         private const int ASCII_NEWLINE = 10;
 
         private const string COMMAND = "Command?";
@@ -19,7 +20,7 @@ namespace App.Tasks.Year2019.Day25
 
         private const string TAKE_ITEM = "take";
 
-        private const int INSTRUCTION_MAX_ITERATIONS = 10000;
+        private const string INFINITE_LOOP_ITEM = "infinite loop";
 
         public long FindThePasswordForTheMainAirlock(long[] integersArray)
         {
@@ -54,7 +55,15 @@ namespace App.Tasks.Year2019.Day25
             Dictionary<long, long> integersCopy = integers.ToDictionary(i => i.Key, i => i.Value);
             string instruction = GetInstruction(integers, inputs, ref index, ref relativeBase);
 
-            // Console.Write(instruction);
+            string room = GetRoom(instruction);
+
+            string state = StringifyState(room, takenItems);
+            // If state repeats
+            if (statesCache.Contains(state))
+            {
+                return null;
+            }
+            statesCache.Add(state);
 
             long? password = GetPassword(instruction);
             // IF password is found
@@ -69,30 +78,20 @@ namespace App.Tasks.Year2019.Day25
                 return null;
             }
 
-            string room = GetRoom(instruction);
-
-            string state = StringifyState(room, takenItems);
-            // If state repeats
-            if (statesCache.Contains(state))
-            {
-                return null;
-            }
-            statesCache.Add(state);
-
             List<string> directions = GetChoices(instruction, DOORS);
             string item = GetChoices(instruction, ITEMS).FirstOrDefault();
 
             foreach (string direction in directions)
             {
-                // Take item and move droid
-                if (!string.IsNullOrEmpty(item))
+                // Take item if not taken already and move droid
+                if (!string.IsNullOrEmpty(item) && !takenItems.Contains(item))
                 {
                     password = TakeItemAndMoveDroid(
                         integers.ToDictionary(i => i.Key, i => i.Value),
                         new Queue<int>(inputs),
                         index,
                         relativeBase,
-                        new HashSet<string>(takenItems),
+                        takenItems.ToHashSet(),
                         statesCache,
                         direction,
                         item
@@ -109,7 +108,7 @@ namespace App.Tasks.Year2019.Day25
                     new Queue<int>(inputs),
                     index,
                     relativeBase,
-                    new HashSet<string>(takenItems),
+                    takenItems.ToHashSet(),
                     statesCache,
                     direction
                 );
@@ -155,6 +154,11 @@ namespace App.Tasks.Year2019.Day25
                         previousInputs = new Queue<int>(inputs);
                         previousIndex = index;
                         previousRelativeBase = relativeBase;
+
+                        if (instruction.ToString().Contains(COMMAND))
+                        {
+                            halted = true;
+                        }
                     }
                 }
                 // If instruction finished
@@ -245,11 +249,17 @@ namespace App.Tasks.Year2019.Day25
             string item
         )
         {
+            if (item == INFINITE_LOOP_ITEM)
+            {
+                return null;
+            }
+
             List<int> takeItemCommandAsciiInput = ConvertInstructionToAsciiInputs($"{TAKE_ITEM} {item}");
             EnqueueCommandToInputs(inputs, takeItemCommandAsciiInput);
 
             string instruction = GetInstruction(integers, inputs, ref index, ref relativeBase);
-            if (!instruction.Contains("You take the"))
+            // If instruction doesn't contain command item did something bad to us
+            if (!instruction.Contains(COMMAND))
             {
                 return null;
             }
@@ -296,7 +306,9 @@ namespace App.Tasks.Year2019.Day25
 
         private string StringifyState(string room, HashSet<string> items)
         {
-            string itemsString = string.Join(",", items.ToArray());
+            List<string> sortedItems = items.ToList();
+            sortedItems.Sort();
+            string itemsString = string.Join(",", sortedItems);
 
             return $"({room}),({itemsString})";
         }
