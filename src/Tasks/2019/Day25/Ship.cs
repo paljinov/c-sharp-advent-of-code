@@ -31,19 +31,19 @@ namespace App.Tasks.Year2019.Day25
             long index = 0;
             long relativeBase = 0;
 
-            long? password = MoveDroid(
+            long password = DoFindPassword(
                 integers,
                 inputs,
                 index,
                 relativeBase,
                 new HashSet<string>(),
                 new HashSet<string>()
-            );
+            ).Value;
 
-            return password ?? 0;
+            return password;
         }
 
-        private long? MoveDroid(
+        private long? DoFindPassword(
             Dictionary<long, long> integers,
             Queue<int> inputs,
             long index,
@@ -52,7 +52,6 @@ namespace App.Tasks.Year2019.Day25
             HashSet<string> statesCache
         )
         {
-            Dictionary<long, long> integersCopy = integers.ToDictionary(i => i.Key, i => i.Value);
             string instruction = GetInstruction(integers, inputs, ref index, ref relativeBase);
 
             string room = GetRoom(instruction);
@@ -70,12 +69,6 @@ namespace App.Tasks.Year2019.Day25
             if (password.HasValue)
             {
                 return password;
-            }
-
-            // If game ended without needing to input command
-            if (!instruction.Contains(COMMAND))
-            {
-                return null;
             }
 
             List<string> directions = GetChoices(instruction, DOORS);
@@ -103,7 +96,7 @@ namespace App.Tasks.Year2019.Day25
                     }
                 }
 
-                password = JustMoveDroid(
+                password = MoveDroid(
                     integers.ToDictionary(i => i.Key, i => i.Value),
                     new Queue<int>(inputs),
                     index,
@@ -129,11 +122,6 @@ namespace App.Tasks.Year2019.Day25
             ref long relativeBase
         )
         {
-            Dictionary<long, long> previousIntegers = integers.ToDictionary(i => i.Key, i => i.Value);
-            Queue<int> previousInputs = new Queue<int>(inputs);
-            long previousIndex = index;
-            long previousRelativeBase = relativeBase;
-
             int output;
             bool halted = false;
 
@@ -148,39 +136,12 @@ namespace App.Tasks.Year2019.Day25
                 {
                     instruction.Append((char)output);
 
-                    if (output == ASCII_NEWLINE)
+                    if (output == ASCII_NEWLINE && instruction.ToString().Contains(COMMAND))
                     {
-                        previousIntegers = integers.ToDictionary(i => i.Key, i => i.Value);
-                        previousInputs = new Queue<int>(inputs);
-                        previousIndex = index;
-                        previousRelativeBase = relativeBase;
-
-                        if (instruction.ToString().Contains(COMMAND))
-                        {
-                            halted = true;
-                        }
+                        halted = true;
                     }
-                }
-                // If instruction finished
-                else
-                {
-                    integers.Clear();
-                    foreach (KeyValuePair<long, long> previousInteger in previousIntegers)
-                    {
-                        integers[previousInteger.Key] = previousInteger.Value;
-                    }
-
-                    inputs.Clear();
-                    foreach (int previousInput in previousInputs)
-                    {
-                        inputs.Enqueue(previousInput);
-                    }
-
-                    index = previousIndex;
-                    relativeBase = previousRelativeBase;
                 }
             }
-
 
             return instruction.ToString();
         }
@@ -264,18 +225,14 @@ namespace App.Tasks.Year2019.Day25
                 return null;
             }
 
-            HashSet<string> expandedTakenItems = takenItems.ToHashSet();
-            expandedTakenItems.Add(item);
+            takenItems.Add(item);
 
-            List<int> moveCommandAsciiInput = ConvertInstructionToAsciiInputs(direction);
-            EnqueueCommandToInputs(inputs, moveCommandAsciiInput);
-
-            long? password = MoveDroid(integers, inputs, index, relativeBase, expandedTakenItems, statesCache);
+            long? password = MoveDroid(integers, inputs, index, relativeBase, takenItems, statesCache, direction);
 
             return password;
         }
 
-        private long? JustMoveDroid(
+        private long? MoveDroid(
             Dictionary<long, long> integers,
             Queue<int> inputs,
             long index,
@@ -288,7 +245,7 @@ namespace App.Tasks.Year2019.Day25
             List<int> moveCommandAsciiInput = ConvertInstructionToAsciiInputs(direction);
             EnqueueCommandToInputs(inputs, moveCommandAsciiInput);
 
-            long? password = MoveDroid(integers, inputs, index, relativeBase, takenItems, statesCache);
+            long? password = DoFindPassword(integers, inputs, index, relativeBase, takenItems, statesCache);
 
             return password;
         }
