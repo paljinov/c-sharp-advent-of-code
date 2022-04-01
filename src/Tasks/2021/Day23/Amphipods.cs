@@ -1,9 +1,12 @@
+using System;
 using System.Collections.Generic;
 
 namespace App.Tasks.Year2021.Day23
 {
     public class Amphipods
     {
+
+        private const char OPEN_SPACE = '.';
 
         private const int HALLWAY_HORIZONTAL_POSITION = 1;
 
@@ -25,32 +28,90 @@ namespace App.Tasks.Year2021.Day23
 
         public int CalculateLeastEnergyRequiredToOrganizeTheAmphipods(char[,] amphipodsBurrow)
         {
+            int leastEnergyRequired = int.MaxValue;
+
             Dictionary<int, char> hallway = GetHallway(amphipodsBurrow);
             Dictionary<char, Queue<char>> roomsAmphipods = GetRoomsAmphipods(amphipodsBurrow);
 
-            int leastEnergyRequired = DoCalculateLeastEnergyRequiredToOrganize(hallway, roomsAmphipods);
+            DoCalculateLeastEnergyRequiredToOrganize(hallway, roomsAmphipods, 0, leastEnergyRequired);
 
             return leastEnergyRequired;
         }
 
         public int CalculateLeastEnergyRequiredToOrganizeTheAmphipodsForFullDiagram(char[,] amphipodsBurrow)
         {
+            int leastEnergyRequired = int.MaxValue;
+
             Dictionary<int, char> hallway = GetHallway(amphipodsBurrow);
             Dictionary<char, Queue<char>> roomsAmphipods = GetRoomsAmphipods(amphipodsBurrow);
 
-            int leastEnergyRequired = DoCalculateLeastEnergyRequiredToOrganize(hallway, roomsAmphipods);
+            DoCalculateLeastEnergyRequiredToOrganize(hallway, roomsAmphipods, 0, leastEnergyRequired);
 
             return leastEnergyRequired;
         }
 
-        private int DoCalculateLeastEnergyRequiredToOrganize(
+        private void DoCalculateLeastEnergyRequiredToOrganize(
             Dictionary<int, char> hallway,
-            Dictionary<char, Queue<char>> roomsAmphipods
+            Dictionary<char, Queue<char>> roomsAmphipods,
+            int energyRequired,
+            int leastEnergyRequired
         )
         {
-            int leastEnergyRequired = int.MaxValue;
+            // If energy required is greater than or equal to least energy required
+            if (energyRequired >= leastEnergyRequired)
+            {
+                return;
+            }
 
-            return leastEnergyRequired;
+            bool areAmphipodsOrganized = AreAmphipodsOrganized(roomsAmphipods);
+            if (areAmphipodsOrganized)
+            {
+                leastEnergyRequired = energyRequired;
+            }
+
+            foreach (KeyValuePair<char, Queue<char>> roomAmphipods in roomsAmphipods)
+            {
+                Queue<char> amphipods = roomAmphipods.Value;
+
+                while (amphipods.Count > 0)
+                {
+                    Dictionary<char, Queue<char>> nextRoomsAmphipods =
+                        new Dictionary<char, Queue<char>>(roomsAmphipods);
+
+                    // Step out the room
+                    foreach (KeyValuePair<int, char> position in hallway)
+                    {
+                        if (position.Value == OPEN_SPACE)
+                        {
+                            char amphipod = amphipods.Dequeue();
+                            int steps = Math.Abs(position.Key - roomsVerticalPositions[amphipod]);
+                            energyRequired += steps * amphipodsEnergy[amphipod];
+
+                            DoCalculateLeastEnergyRequiredToOrganize(
+                                hallway,
+                                roomsAmphipods,
+                                energyRequired,
+                                leastEnergyRequired
+                            );
+                        }
+                    }
+
+                    // Step in the room
+                    foreach (KeyValuePair<int, char> position in hallway)
+                    {
+                        char amphipod = amphipods.Dequeue();
+                        int steps = Math.Abs(position.Key - roomsVerticalPositions[amphipod]);
+                        energyRequired += steps * amphipodsEnergy[amphipod];
+
+                        DoCalculateLeastEnergyRequiredToOrganize(
+                            hallway,
+                            roomsAmphipods,
+                            energyRequired,
+                            leastEnergyRequired
+                        );
+                    }
+                }
+            }
         }
 
         private Dictionary<int, char> GetHallway(char[,] amphipodsBurrow)
@@ -85,6 +146,36 @@ namespace App.Tasks.Year2021.Day23
             }
 
             return roomsAmphipods;
+        }
+
+        private bool AreAmphipodsOrganized(Dictionary<char, Queue<char>> roomsAmphipods)
+        {
+            foreach (KeyValuePair<char, Queue<char>> roomAmphipods in roomsAmphipods)
+            {
+                char amphipodsTypeForRoom = roomAmphipods.Key;
+                Queue<char> amphipods = roomAmphipods.Value;
+
+                while (amphipods.Count > 0)
+                {
+                    char amphipod = amphipods.Dequeue();
+                    if (amphipodsTypeForRoom != amphipod)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        private bool ShouldLeaveTheRoom()
+        {
+            return true;
+        }
+
+        private int FillRoomPosition()
+        {
+            return 0;
         }
     }
 }
