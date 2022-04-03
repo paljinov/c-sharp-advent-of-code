@@ -117,7 +117,7 @@ namespace App.Tasks.Year2021.Day24
 
         public long Solution(string input)
         {
-            Instruction[] instructions = instructionsRepository.GetInstructions(input);
+            string[] instructions = instructionsRepository.GetInstructions(input);
             long largestModelNumberAcceptedByMonad =
                 arithmeticLogicUnit.CalculateLargestModelNumberAcceptedByMonad(instructions);
 
