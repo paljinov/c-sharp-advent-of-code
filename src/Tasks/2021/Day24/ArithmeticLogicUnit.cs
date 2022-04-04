@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace App.Tasks.Year2021.Day24
@@ -7,6 +6,16 @@ namespace App.Tasks.Year2021.Day24
     public class ArithmeticLogicUnit
     {
         private const int SUBMARINE_MODEL_NUMBERS_LENGTH = 14;
+
+        private const int OPTYPE_INDEX = 4;
+
+        private const int CORRECTION_INDEX = 5;
+
+        private const int OFFSET_INDEX = 15;
+
+        private const int INSTRUCTIONS_BATCH = 18;
+
+        private const int SKIP = 6;
 
         public long CalculateLargestModelNumberAcceptedByMonad(string[] instructions)
         {
@@ -17,62 +26,86 @@ namespace App.Tasks.Year2021.Day24
 
         public long CalculateSmallestModelNumberAcceptedByMonad(string[] instructions)
         {
-            return instructions.Length;
+            (_, long smallestModelNumberAcceptedByMonad) = CalculateModelNumberAcceptedByMonad(instructions);
+
+            return smallestModelNumberAcceptedByMonad;
         }
 
         public (long LargestNumber, long SmallestNumber) CalculateModelNumberAcceptedByMonad(string[] instructions)
+        {
+            long largestModelNumber = long.MinValue;
+            long smallestModelNumber = long.MaxValue;
+
+            Bits[] parameters = GetParameters(instructions);
+
+            long minNumber = MinWithXDigits(SUBMARINE_MODEL_NUMBERS_LENGTH);
+            long maxNumber = MaxWithXDigits(SUBMARINE_MODEL_NUMBERS_LENGTH);
+            for (long number = minNumber; number <= maxNumber; number++)
+            {
+                int[] digits = GetDigits(number);
+                long z = 0;
+
+                for (int i = 0; i < parameters.Length; i++)
+                {
+                    Bits bits = parameters[i];
+
+                    int w = digits[i];
+                    bool corrected = (z % 26) + bits.Correction == w;
+
+                    if (w != 0 && bits.Optype == 26 && corrected)
+                    {
+                        z /= bits.Optype;
+                    }
+                    else if (w != 0 && bits.Optype == 1 && !corrected)
+                    {
+                        z = 26 * (z / bits.Optype) + w + bits.Offset;
+                    }
+                    else
+                    {
+                        number += (long)Math.Pow(10, SUBMARINE_MODEL_NUMBERS_LENGTH - (i + 1)) - 1;
+                        break;
+                    }
+                }
+
+                if (z == 0)
+                {
+                    largestModelNumber = Math.Max(number, largestModelNumber);
+                    smallestModelNumber = Math.Min(number, smallestModelNumber);
+                }
+            }
+
+            return (largestModelNumber, smallestModelNumber);
+        }
+
+        private Bits[] GetParameters(string[] instructions)
         {
             Bits[] parameters = new Bits[SUBMARINE_MODEL_NUMBERS_LENGTH];
             for (int i = 0; i < SUBMARINE_MODEL_NUMBERS_LENGTH; i++)
             {
                 Bits bits = new Bits
                 {
-                    Optype = int.Parse(new string(instructions[4 + i * 18]).Skip(6).ToArray()),
-                    Correction = int.Parse(new string(instructions[5 + i * 18].Skip(6).ToArray())),
-                    Offset = int.Parse(new string(instructions[15 + i * 18].Skip(6).ToArray()))
+                    Optype = int.Parse(new string(instructions[OPTYPE_INDEX + i * INSTRUCTIONS_BATCH])
+                        .Skip(SKIP).ToArray()),
+                    Correction = int.Parse(new string(instructions[CORRECTION_INDEX + i * INSTRUCTIONS_BATCH])
+                        .Skip(SKIP).ToArray()),
+                    Offset = int.Parse(new string(instructions[OFFSET_INDEX + i * INSTRUCTIONS_BATCH])
+                        .Skip(SKIP).ToArray())
                 };
 
                 parameters[i] = bits;
             }
 
-            (long smallestModelNumber, long largestModelNumber) = (long.MaxValue, long.MinValue);
-            for (long number = 10000000000000; number <= 99999999999999; number++)
-            {
-                int[] digits = GetDigits(number);
-                int step = 0;
-                long z = 0;
+            return parameters;
+        }
 
-                foreach (Bits bits in parameters)
-                {
-                    var w = digits[step];
+        private long MaxWithXDigits(int digits)
+        {
+            return Convert.ToInt64(Math.Pow(10, digits) - 1);
+        }
 
-                    if (w != 0 && bits.Optype == 26 && ((z % 26) + bits.Correction == w))
-                    {
-                        z /= bits.Optype;
-                    }
-                    else if (w != 0 && bits.Optype == 1 && ((z % 26) + bits.Correction != w))
-                    {
-                        z = 26 * (z / bits.Optype) + w + bits.Offset;
-                    }
-                    else
-                    {
-                        number += (long)Math.Pow(10, SUBMARINE_MODEL_NUMBERS_LENGTH - 1 - step) - 1;
-                        break;
-                    }
-
-                    step++;
-                }
-
-                if (z == 0)
-                {
-                    (smallestModelNumber, largestModelNumber) = (
-                        Math.Min(number, smallestModelNumber),
-                        Math.Max(number, largestModelNumber)
-                    );
-                }
-            }
-
-            return (largestModelNumber, smallestModelNumber);
+        private long MinWithXDigits(int digits)
+        {
+            return Convert.ToInt64(Math.Pow(10, digits - 1));
         }
 
         private int[] GetDigits(long number)
