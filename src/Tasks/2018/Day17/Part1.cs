@@ -190,19 +190,19 @@ namespace App.Tasks.Year2018.Day17
 {
     public class Part1 : ITask<int>
     {
-        private readonly ScanRepository scanRepository;
+        private readonly ClayVeinsRepository clayVeinsRepository;
 
         private readonly Tiles tiles;
 
         public Part1()
         {
-            scanRepository = new ScanRepository();
+            clayVeinsRepository = new ClayVeinsRepository();
             tiles = new Tiles();
         }
         public int Solution(string input)
         {
-            string scan = scanRepository.GetScan(input);
-            int tilesReached = tiles.CountTilesTheWaterCanReach(scan);
+            ClayVein[] clayVeins = clayVeinsRepository.GetClayVeins(input);
+            int tilesReached = tiles.CountTilesTheWaterCanReach(clayVeins);
 
             return tilesReached;
         }

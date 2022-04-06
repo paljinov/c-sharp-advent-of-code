@@ -2,9 +2,11 @@ namespace App.Tasks.Year2018.Day17
 {
     public class Tiles
     {
-        public int CountTilesTheWaterCanReach(string scan)
+        private readonly (int X, int Y) springOfWater = (500, 0);
+
+        public int CountTilesTheWaterCanReach(ClayVein[] clayVeins)
         {
-            return scan.Length;
+            return clayVeins.Length;
         }
     }
 }
