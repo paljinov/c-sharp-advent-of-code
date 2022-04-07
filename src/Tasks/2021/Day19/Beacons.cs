@@ -8,5 +8,12 @@ namespace App.Tasks.Year2021.Day19
         {
             return beaconsRelativePositions.Count;
         }
+
+        public int CalculateLargestManhattanDistanceBetweenAnyTwoScanners(
+            Dictionary<int, List<BeaconRelativePosition>> beaconsRelativePositions
+        )
+        {
+            return beaconsRelativePositions.Count;
+        }
     }
 }
