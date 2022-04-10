@@ -47,39 +47,24 @@ namespace App.Tasks.Year2021.Day19
 
         private List<List<int>> GetRotations()
         {
-            int[] angles = new int[] { 0, 90, 180, 270 };
+            List<int> angles = new List<int> { 0, 90, 180, 270 };
+            IEnumerable<IEnumerable<int>> rotations = FindRotationsPermutations(angles, 3).ToList();
 
-            List<List<int>> rotations = FindRotations(angles.ToList(), 0, angles.Length, 3).ToList();
-
-            return rotations;
+            return rotations.Select(r => r.ToList()).ToList();
         }
 
-        public IEnumerable<List<int>> FindRotations(List<int> angles, int start, int count, int choose)
+        private IEnumerable<IEnumerable<int>> FindRotationsPermutations(IEnumerable<int> angles, int length)
         {
-            if (choose == 0)
+            if (length == 1)
             {
-                yield return angles;
+                return angles.Select(a => new int[] { a });
             }
-            else
-            {
-                for (int i = 0; i < count; i++)
-                {
-                    IEnumerable<List<int>> rotations = FindRotations(angles, start + 1, count - 1 - i, choose - 1);
-                    foreach (List<int> combination in rotations)
-                    {
-                        yield return combination;
-                    }
 
-                    RotateLeft(angles, start, count);
-                }
-            }
-        }
-
-        private void RotateLeft(List<int> angles, int start, int count)
-        {
-            int tmp = angles[start];
-            angles.RemoveAt(start);
-            angles.Insert(start + count - 1, tmp);
+            return FindRotationsPermutations(angles, length - 1)
+                .SelectMany(
+                    a => angles.Where(o => !a.Contains(o)),
+                    (a1, a2) => a1.Concat(new int[] { a2 })
+                );
         }
 
         private (int X, int Y, int Z) Rotate(int x, int y, int z, int angleX, int angleY, int angleZ)
