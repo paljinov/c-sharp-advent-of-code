@@ -29,7 +29,7 @@ namespace App.Tasks.Year2021.Day19
 
         public int Solution(string input)
         {
-            Dictionary<int, List<BeaconRelativePosition>> beaconsRelativePositions
+            Dictionary<int, List<Position>> beaconsRelativePositions
                 = beaconsRepository.GetBeaconsRelativePositions(input);
 
             int largestManhattanDistanceBetweenAnyTwoScanners =

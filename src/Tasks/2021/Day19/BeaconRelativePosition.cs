@@ -1,6 +1,6 @@
 namespace App.Tasks.Year2021.Day19
 {
-    public class BeaconRelativePosition
+    public struct Position
     {
         public int X { get; set; }
         public int Y { get; set; }
