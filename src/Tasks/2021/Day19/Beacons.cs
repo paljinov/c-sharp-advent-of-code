@@ -8,43 +8,69 @@ namespace App.Tasks.Year2021.Day19
     {
         private const int OVERLAP_BEACONS = 12;
 
-        public int CountBeacons(Dictionary<int, List<Position>> scannersBeaconsRelativePositions)
+        public int CountBeacons(Dictionary<int, List<Position>> beaconsRelativePositions)
         {
-            Dictionary<int, List<Position>> scannersBeaconsAbsolutePositions = new Dictionary<int, List<Position>>
+            Dictionary<int, List<Position>> beaconsAbsolutePositions = new Dictionary<int, List<Position>>
             {
-                [0] = scannersBeaconsRelativePositions[0]
+                [0] = beaconsRelativePositions[0]
             };
 
-            List<List<int>> rotations = GetRotations();
-
-            for (int scanner = 1; scanner < scannersBeaconsRelativePositions.Count; scanner++)
+            List<Rotation> rotations = new List<Rotation>()
             {
-                foreach (KeyValuePair<int, List<Position>> absolutePositions in scannersBeaconsAbsolutePositions)
+                new Rotation{X = "x", Y = "y", Z = "z"},
+                new Rotation{X = "x", Y = "-z", Z = "y"},
+                new Rotation{X = "x", Y = "-y", Z = "-z"},
+                new Rotation{X = "x", Y = "z", Z = "-y"},
+                new Rotation{X = "-y", Y = "x", Z = "z"},
+                new Rotation{X = "z", Y = "x", Z = "y"},
+                new Rotation{X = "y", Y = "x", Z = "-z"},
+                new Rotation{X = "-z", Y = "x", Z = "-y"},
+                new Rotation{X = "-x", Y = "-y", Z = "z"},
+                new Rotation{X = "-x", Y = "-z", Z = "-y"},
+                new Rotation{X = "-x", Y = "y", Z = "-z"},
+                new Rotation{X = "-x", Y = "z", Z = "y"},
+                new Rotation{X = "y", Y = "-x", Z = "z"},
+                new Rotation{X = "z", Y = "-x", Z = "-y"},
+                new Rotation{X = "-y", Y = "-x", Z = "-z"},
+                new Rotation{X = "-z", Y = "-x", Z = "y"},
+                new Rotation{X = "-z", Y = "y", Z = "x"},
+                new Rotation{X = "y", Y = "z", Z = "x"},
+                new Rotation{X = "z", Y = "-y", Z = "x"},
+                new Rotation{X = "-y", Y = "-z", Z = "x"},
+                new Rotation{X = "-z", Y = "-y", Z = "-x"},
+                new Rotation{X = "-y", Y = "z", Z = "-x"},
+                new Rotation{X = "z", Y = "y", Z = "-x"},
+                new Rotation{X = "y", Y = "-z", Z = "-x"}
+            };
+
+            for (int scanner = 1; scanner < beaconsRelativePositions.Count; scanner++)
+            {
+                foreach (KeyValuePair<int, List<Position>> absolutePositions in beaconsAbsolutePositions)
                 {
-                    foreach (List<int> rotation in rotations)
+                    foreach (Rotation rotation in rotations)
                     {
                         List<Position> rotatedBeacons = new List<Position>();
-                        foreach (Position beaconsRelativePositions in scannersBeaconsRelativePositions[scanner])
+                        foreach (Position beacon in beaconsRelativePositions[scanner])
                         {
-                            Position beacon = Rotate(beaconsRelativePositions, rotation);
-                            rotatedBeacons.Add(beacon);
+                            Position rotatedBeacon = RotateBeacon(beacon, rotation);
+                            rotatedBeacons.Add(rotatedBeacon);
                         }
 
                         if (CountSameBeacons(absolutePositions.Value, rotatedBeacons) >= OVERLAP_BEACONS)
                         {
-                            scannersBeaconsAbsolutePositions[scanner] = rotatedBeacons;
+                            beaconsAbsolutePositions[scanner] = rotatedBeacons;
                             break;
                         }
                     }
 
-                    if (scannersBeaconsAbsolutePositions.ContainsKey(scanner))
+                    if (beaconsAbsolutePositions.ContainsKey(scanner))
                     {
                         break;
                     }
                 }
             }
 
-            return scannersBeaconsRelativePositions.Count;
+            return beaconsRelativePositions.Count;
         }
 
         public int CalculateLargestManhattanDistanceBetweenAnyTwoScanners(
@@ -54,49 +80,11 @@ namespace App.Tasks.Year2021.Day19
             return beaconsRelativePositions.Count;
         }
 
-        private List<List<int>> GetRotations()
+        private Position RotateBeacon(Position position, Rotation rotation)
         {
-            List<int> angles = new List<int> { 0, 90, 180, 270 };
-            IEnumerable<IEnumerable<int>> rotations = FindRotationsPermutations(angles, 3).ToList();
-
-            return rotations.Select(r => r.ToList()).ToList();
-        }
-
-        private IEnumerable<IEnumerable<int>> FindRotationsPermutations(IEnumerable<int> angles, int length)
-        {
-            if (length == 1)
-            {
-                return angles.Select(a => new int[] { a });
-            }
-
-            return FindRotationsPermutations(angles, length - 1)
-                .SelectMany(
-                    a => angles,
-                    (a1, a2) => a1.Concat(new int[] { a2 })
-                );
-        }
-
-        private Position Rotate(Position position, List<int> rotation)
-        {
-            int x = position.X;
-            int y = position.Y;
-            int z = position.Z;
-
-            int angleX = rotation[0];
-            int angleY = rotation[1];
-            int angleZ = rotation[2];
-
-            // Rotate vector around the x axis
-            y = y * (int)Math.Cos(angleX) - z * (int)Math.Sin(angleX);
-            z = y * (int)Math.Sin(angleX) + z * (int)Math.Cos(angleX);
-
-            // Rotate vector around the y axis
-            z = z * (int)Math.Cos(angleY) - x * (int)Math.Sin(angleY);
-            x = z * (int)Math.Sin(angleY) + x * (int)Math.Cos(angleY);
-
-            // Rotate vector around the z axis
-            x = x * (int)Math.Cos(angleZ) - y * (int)Math.Sin(angleZ);
-            y = x * (int)Math.Sin(angleZ) + y * (int)Math.Cos(angleZ);
+            int x = RotateAxis(rotation.X, position);
+            int y = RotateAxis(rotation.Y, position);
+            int z = RotateAxis(rotation.Z, position);
 
             return new Position
             {
@@ -104,6 +92,19 @@ namespace App.Tasks.Year2021.Day19
                 Y = y,
                 Z = z
             };
+        }
+
+        private int RotateAxis(string rotateAxis, Position position)
+        {
+            char rotatedAxis = rotateAxis[^1];
+
+            int axis = rotatedAxis == 'x' ? position.X : (rotatedAxis == 'y' ? position.Y : position.Z);
+            if (rotateAxis[0] == '-')
+            {
+                axis = -axis;
+            }
+
+            return axis;
         }
 
         private int CountSameBeacons(List<Position> firstBeacons, List<Position> secondBeacons)
