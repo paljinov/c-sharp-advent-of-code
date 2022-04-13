@@ -56,9 +56,12 @@ namespace App.Tasks.Year2021.Day19
                             rotatedBeacons.Add(rotatedBeacon);
                         }
 
-                        if (CountSameBeacons(absolutePositions.Value, rotatedBeacons) >= OVERLAP_BEACONS)
+                        Offset? offset = CalculateOffsetForWhichScannersDetectAtLeastRequiredNumberOfBeacons(
+                            absolutePositions.Value, rotatedBeacons);
+
+                        if (offset.HasValue)
                         {
-                            beaconsAbsolutePositions[scanner] = rotatedBeacons;
+                            beaconsAbsolutePositions[scanner] = AddOffset(rotatedBeacons, offset.Value);
                             break;
                         }
                     }
@@ -70,7 +73,9 @@ namespace App.Tasks.Year2021.Day19
                 }
             }
 
-            return beaconsRelativePositions.Count;
+            int beaconsCount = CountDifferentBeacons(beaconsAbsolutePositions);
+
+            return beaconsCount;
         }
 
         public int CalculateLargestManhattanDistanceBetweenAnyTwoScanners(
@@ -107,22 +112,81 @@ namespace App.Tasks.Year2021.Day19
             return axis;
         }
 
-        private int CountSameBeacons(List<Position> firstBeacons, List<Position> secondBeacons)
+        private Offset? CalculateOffsetForWhichScannersDetectAtLeastRequiredNumberOfBeacons(
+            List<Position> absolutePositions,
+            List<Position> rotatedBeacons
+        )
         {
-            int sameBeacons = 0;
+            Dictionary<Offset, int> offsets = new Dictionary<Offset, int>();
 
-            foreach (Position first in firstBeacons)
+            foreach (Position absolutePosition in absolutePositions)
             {
-                foreach (Position second in secondBeacons)
+                foreach (Position rotatedBeacon in rotatedBeacons)
                 {
-                    if (first.X == second.X && first.Y == second.Y && first.Z == second.Z)
+                    Offset offset = new Offset
                     {
-                        sameBeacons++;
+                        X = absolutePosition.X - rotatedBeacon.X,
+                        Y = absolutePosition.Y - rotatedBeacon.Y,
+                        Z = absolutePosition.Z - rotatedBeacon.Z
+                    };
+
+                    if (offsets.ContainsKey(offset))
+                    {
+                        offsets[offset]++;
+                    }
+                    else
+                    {
+                        offsets[offset] = 1;
                     }
                 }
             }
 
-            return sameBeacons;
+            int occurrences = offsets.Values.Max();
+            if (occurrences >= OVERLAP_BEACONS)
+            {
+                return offsets.FirstOrDefault(o => o.Value == occurrences).Key;
+            }
+
+            return null;
+        }
+
+        private List<Position> AddOffset(List<Position> rotatedBeacons, Offset offset)
+        {
+            List<Position> beacons = new List<Position>();
+
+            foreach (Position beacon in rotatedBeacons)
+            {
+                beacons.Add(new Position
+                {
+                    X = beacon.X + offset.X,
+                    Y = beacon.Y + offset.Y,
+                    Z = beacon.Z + offset.Z,
+                });
+            }
+
+            return beacons;
+        }
+
+        private int CountDifferentBeacons(Dictionary<int, List<Position>> scannersBeaconsAbsolutePositions)
+        {
+            Dictionary<Position, int> beacons = new Dictionary<Position, int>();
+
+            foreach (KeyValuePair<int, List<Position>> beaconsAbsolutePositions in scannersBeaconsAbsolutePositions)
+            {
+                foreach (Position beacon in beaconsAbsolutePositions.Value)
+                {
+                    if (beacons.ContainsKey(beacon))
+                    {
+                        beacons[beacon]++;
+                    }
+                    else
+                    {
+                        beacons[beacon] = 1;
+                    }
+                }
+            }
+
+            return beacons.Count;
         }
     }
 }
