@@ -10,8 +10,8 @@ namespace App.Tasks.Year2021.Day19
 
         public int CountBeacons(Dictionary<int, List<Position>> beaconsRelativePositions)
         {
-            Dictionary<int, List<Position>> beaconsAbsolutePositions =
-                FindBeaconsAbsolutePositions(beaconsRelativePositions);
+            (_, Dictionary<int, List<Position>> beaconsAbsolutePositions) =
+                FindScannersAndBeaconsAbsolutePositions(beaconsRelativePositions);
 
             List<Position> beacons = FindDifferentBeacons(beaconsAbsolutePositions);
 
@@ -22,23 +22,26 @@ namespace App.Tasks.Year2021.Day19
             Dictionary<int, List<Position>> beaconsRelativePositions
         )
         {
-            Dictionary<int, List<Position>> beaconsAbsolutePositions =
-                FindBeaconsAbsolutePositions(beaconsRelativePositions);
+            (Dictionary<int, Position> scanners, _) =
+                FindScannersAndBeaconsAbsolutePositions(beaconsRelativePositions);
 
-            List<Position> beacons = FindDifferentBeacons(beaconsAbsolutePositions);
-
-            int largestManhattanDistance = 0;
+            int largestManhattanDistance = CalculateLargestManhattanDistanceBetweenPositions(scanners.Values.ToList());
 
             return largestManhattanDistance;
         }
 
-        private Dictionary<int, List<Position>> FindBeaconsAbsolutePositions(
+        private (Dictionary<int, Position>, Dictionary<int, List<Position>>) FindScannersAndBeaconsAbsolutePositions(
             Dictionary<int, List<Position>> beaconsRelativePositions
         )
         {
+            // All "absolute" positions will be expressed relative to scanner 0
+            Dictionary<int, Position> scannersAbsolutePositions = new Dictionary<int, Position>
+            {
+                { 0, new Position { X = 0, Y = 0, Z = 0 } }
+            };
+
             Dictionary<int, List<Position>> beaconsAbsolutePositions = new Dictionary<int, List<Position>>
             {
-                // All "absolute" positions will be expressed relative to scanner 0
                 [0] = beaconsRelativePositions[0]
             };
 
@@ -93,7 +96,10 @@ namespace App.Tasks.Year2021.Day19
 
                         if (offset.HasValue)
                         {
-                            beaconsAbsolutePositions[scanner] = AddOffset(rotatedBeacons, offset.Value);
+                            scannersAbsolutePositions[scanner] =
+                                CalculateAbsolutePosition(scannersAbsolutePositions[0], offset.Value);
+                            beaconsAbsolutePositions[scanner] =
+                                CalculateBeaconsAbsolutePositions(rotatedBeacons, offset.Value);
                             break;
                         }
                     }
@@ -105,7 +111,7 @@ namespace App.Tasks.Year2021.Day19
                 }
             }
 
-            return beaconsAbsolutePositions;
+            return (scannersAbsolutePositions, beaconsAbsolutePositions);
         }
 
         private Position RotateBeacon(Position position, Rotation rotation)
@@ -176,18 +182,23 @@ namespace App.Tasks.Year2021.Day19
             return null;
         }
 
-        private List<Position> AddOffset(List<Position> rotatedBeacons, Offset offset)
+        private Position CalculateAbsolutePosition(Position position, Offset offset)
+        {
+            return new Position
+            {
+                X = position.X + offset.X,
+                Y = position.Y + offset.Y,
+                Z = position.Z + offset.Z,
+            };
+        }
+
+        private List<Position> CalculateBeaconsAbsolutePositions(List<Position> rotatedBeacons, Offset offset)
         {
             List<Position> beacons = new List<Position>();
 
             foreach (Position beacon in rotatedBeacons)
             {
-                beacons.Add(new Position
-                {
-                    X = beacon.X + offset.X,
-                    Y = beacon.Y + offset.Y,
-                    Z = beacon.Z + offset.Z,
-                });
+                beacons.Add(CalculateAbsolutePosition(beacon, offset));
             }
 
             return beacons;
@@ -208,6 +219,24 @@ namespace App.Tasks.Year2021.Day19
             }
 
             return beacons.ToList();
+        }
+
+        private int CalculateLargestManhattanDistanceBetweenPositions(List<Position> positions)
+        {
+            int largestManhattanDistance = 0;
+            foreach (Position first in positions)
+            {
+                foreach (Position second in positions)
+                {
+                    int manhattanDistance = Math.Abs(first.X - second.X)
+                        + Math.Abs(first.Y - second.Y)
+                        + Math.Abs(first.Z - second.Z);
+
+                    largestManhattanDistance = Math.Max(largestManhattanDistance, manhattanDistance);
+                }
+            }
+
+            return largestManhattanDistance;
         }
     }
 }
