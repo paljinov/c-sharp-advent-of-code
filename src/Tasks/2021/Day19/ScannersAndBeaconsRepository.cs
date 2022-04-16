@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace App.Tasks.Year2021.Day19
 {
-    public class BeaconsRepository
+    public class ScannersAndBeaconsRepository
     {
         public Dictionary<int, List<Position>> GetBeaconsRelativePositions(string input)
         {

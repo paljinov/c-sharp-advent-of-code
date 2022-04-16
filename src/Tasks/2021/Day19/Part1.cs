@@ -411,22 +411,22 @@ namespace App.Tasks.Year2021.Day19
 {
     public class Part1 : ITask<int>
     {
-        private readonly BeaconsRepository beaconsRepository;
+        private readonly ScannersAndBeaconsRepository scannersAndBeaconsRepository;
 
-        private readonly Beacons beacons;
+        private readonly ScannersAndBeacons scannersAndBeacons;
 
         public Part1()
         {
-            beaconsRepository = new BeaconsRepository();
-            beacons = new Beacons();
+            scannersAndBeaconsRepository = new ScannersAndBeaconsRepository();
+            scannersAndBeacons = new ScannersAndBeacons();
         }
 
         public int Solution(string input)
         {
             Dictionary<int, List<Position>> beaconsRelativePositions
-                = beaconsRepository.GetBeaconsRelativePositions(input);
+                = scannersAndBeaconsRepository.GetBeaconsRelativePositions(input);
 
-            int beaconsCount = beacons.CountBeacons(beaconsRelativePositions);
+            int beaconsCount = scannersAndBeacons.CountBeacons(beaconsRelativePositions);
 
             return beaconsCount;
         }

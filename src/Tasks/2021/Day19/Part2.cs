@@ -17,23 +17,23 @@ namespace App.Tasks.Year2021.Day19
 {
     public class Part2 : ITask<int>
     {
-        private readonly BeaconsRepository beaconsRepository;
+        private readonly ScannersAndBeaconsRepository scannersAndBeaconsRepository;
 
-        private readonly Beacons beacons;
+        private readonly ScannersAndBeacons scannersAndBeacons;
 
         public Part2()
         {
-            beaconsRepository = new BeaconsRepository();
-            beacons = new Beacons();
+            scannersAndBeaconsRepository = new ScannersAndBeaconsRepository();
+            scannersAndBeacons = new ScannersAndBeacons();
         }
 
         public int Solution(string input)
         {
             Dictionary<int, List<Position>> beaconsRelativePositions
-                = beaconsRepository.GetBeaconsRelativePositions(input);
+                = scannersAndBeaconsRepository.GetBeaconsRelativePositions(input);
 
             int largestManhattanDistanceBetweenAnyTwoScanners =
-                beacons.CalculateLargestManhattanDistanceBetweenAnyTwoScanners(beaconsRelativePositions);
+                scannersAndBeacons.CalculateLargestManhattanDistanceBetweenAnyTwoScanners(beaconsRelativePositions);
 
             return largestManhattanDistanceBetweenAnyTwoScanners;
         }

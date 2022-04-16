@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace App.Tasks.Year2021.Day19
 {
-    public class Beacons
+    public class ScannersAndBeacons
     {
         private const int OVERLAP_BEACONS = 12;
 
