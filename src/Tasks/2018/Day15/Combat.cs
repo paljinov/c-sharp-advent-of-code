@@ -6,5 +6,10 @@ namespace App.Tasks.Year2018.Day15
         {
             return combatDescription.Length;
         }
+
+        public int CalculateCombatOutcomeOfTheBattleWithoutAnyElvesDying(char[,] combatDescription)
+        {
+            return combatDescription.Length;
+        }
     }
 }

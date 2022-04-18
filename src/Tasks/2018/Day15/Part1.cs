@@ -363,6 +363,7 @@ namespace App.Tasks.Year2018.Day15
             combatRepository = new CombatRepository();
             combat = new Combat();
         }
+
         public int Solution(string input)
         {
             char[,] combatDescription = combatRepository.GetCombatDescription(input);
