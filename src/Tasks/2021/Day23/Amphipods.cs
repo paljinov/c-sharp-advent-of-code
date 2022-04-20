@@ -10,20 +10,20 @@ namespace App.Tasks.Year2021.Day23
 
         private const int HALLWAY_HORIZONTAL_POSITION = 1;
 
-        private readonly Dictionary<char, int> amphipodsEnergy = new Dictionary<char, int>()
+        private static readonly Dictionary<char, int> amphipodsEnergy = new Dictionary<char, int>()
         {
-            { 'A', 1},
-            { 'B', 10},
-            { 'C', 100},
-            { 'D', 1000}
+            { (char) AmphipodType.Amber, 1 },
+            { (char) AmphipodType.Bronze, 10 },
+            { (char) AmphipodType.Copper, 100 },
+            { (char) AmphipodType.Desert, 1000 }
         };
 
-        private readonly Dictionary<char, int> roomsVerticalPositions = new Dictionary<char, int>()
+        private static readonly Dictionary<char, int> roomsVerticalPositions = new Dictionary<char, int>()
         {
-            { 'A', 3},
-            { 'B', 5},
-            { 'C', 7},
-            { 'D', 9}
+            { (char) AmphipodType.Amber, 3 },
+            { (char) AmphipodType.Bronze, 5 },
+            { (char) AmphipodType.Copper, 7 },
+            { (char) AmphipodType.Desert, 9 }
         };
 
         public int CalculateLeastEnergyRequiredToOrganizeTheAmphipods(char[,] amphipodsBurrow)
@@ -168,14 +168,12 @@ namespace App.Tasks.Year2021.Day23
             return true;
         }
 
-        private bool ShouldLeaveTheRoom()
+        private void MoveAmphipodOut()
         {
-            return true;
         }
 
-        private int FillRoomPosition()
+        private void MoveAmphipodIn()
         {
-            return 0;
         }
     }
 }
