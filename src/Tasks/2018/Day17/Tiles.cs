@@ -8,5 +8,10 @@ namespace App.Tasks.Year2018.Day17
         {
             return clayVeins.Length;
         }
+
+        public int CountLeftWaterTiles(ClayVein[] clayVeins)
+        {
+            return clayVeins.Length;
+        }
     }
 }
