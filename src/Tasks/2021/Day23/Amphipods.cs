@@ -16,7 +16,7 @@ namespace App.Tasks.Year2021.Day23
 
         private static readonly Dictionary<char, int> amphipodsStepEnergy = new Dictionary<char, int>()
         {
-            { (char) AmphipodType.Amber, 1 },
+            { (char)AmphipodType.Amber, 1 },
             { (char) AmphipodType.Bronze, 10 },
             { (char) AmphipodType.Copper, 100 },
             { (char) AmphipodType.Desert, 1000 }
@@ -44,6 +44,19 @@ namespace App.Tasks.Year2021.Day23
         {
             Dictionary<int, char> hallway = GetHallway(amphipodsBurrow);
             Dictionary<char, List<char>> roomsAmphipods = GetRoomsAmphipods(amphipodsBurrow);
+
+            // Between the first and second lines of text that contain amphipod starting positions
+            // insert the following lines:
+            // #D#C#B#A#
+            // #D#B#A#C#
+            roomsAmphipods[(char)AmphipodType.Amber].Insert(1, (char)AmphipodType.Desert);
+            roomsAmphipods[(char)AmphipodType.Amber].Insert(1, (char)AmphipodType.Desert);
+            roomsAmphipods[(char)AmphipodType.Bronze].Insert(1, (char)AmphipodType.Bronze);
+            roomsAmphipods[(char)AmphipodType.Bronze].Insert(1, (char)AmphipodType.Copper);
+            roomsAmphipods[(char)AmphipodType.Copper].Insert(1, (char)AmphipodType.Amber);
+            roomsAmphipods[(char)AmphipodType.Copper].Insert(1, (char)AmphipodType.Bronze);
+            roomsAmphipods[(char)AmphipodType.Desert].Insert(1, (char)AmphipodType.Copper);
+            roomsAmphipods[(char)AmphipodType.Desert].Insert(1, (char)AmphipodType.Amber);
 
             int leastEnergyRequired = DoCalculateLeastEnergyRequiredToOrganizeTheAmphipods(hallway, roomsAmphipods);
 
@@ -147,12 +160,12 @@ namespace App.Tasks.Year2021.Day23
         {
             List<(State State, int Energy)> nextMoves = new List<(State State, int Energy)>();
 
-            foreach (char room in roomsVerticalPositions.Keys)
+            foreach (KeyValuePair<char, int> roomVerticalPosition in roomsVerticalPositions)
             {
-                List<int> hallwayOpenSpaces = FindHallwayOpenSpaces(state, room);
+                List<int> hallwayOpenSpaces = FindHallwayOpenSpaces(state, roomVerticalPosition.Value);
                 foreach (int hallwayPosition in hallwayOpenSpaces)
                 {
-                    (State? nextState, int energy) = MoveAmphipodOut(state, room, hallwayPosition);
+                    (State? nextState, int energy) = MoveAmphipodOut(state, roomVerticalPosition.Key, hallwayPosition);
                     if (nextState.HasValue)
                     {
                         nextMoves.Add((nextState.Value, energy));
@@ -245,14 +258,14 @@ namespace App.Tasks.Year2021.Day23
             return (newState, spentEnergy);
         }
 
-        private List<int> FindHallwayOpenSpaces(State state, char room)
+        private List<int> FindHallwayOpenSpaces(State state, int roomPosition)
         {
             List<int> openSpaces = new List<int>();
 
-            int roomPosition = roomsVerticalPositions[room];
-
+            // Left
             for (int position = roomPosition - 1; position >= 0; position--)
             {
+                // Until there is amphipod
                 if (state.Hallway[position] != OPEN_SPACE)
                 {
                     break;
@@ -265,17 +278,19 @@ namespace App.Tasks.Year2021.Day23
                 }
             }
 
-            for (int i = roomPosition + 1; i < state.Hallway.Count; i++)
+            // Right
+            for (int position = roomPosition + 1; position < state.Hallway.Count; position++)
             {
-                if (state.Hallway[i] != OPEN_SPACE)
+                // Until there is amphipod
+                if (state.Hallway[position] != OPEN_SPACE)
                 {
                     break;
                 }
 
                 // Amphipods will never stop on the space immediately outside any room
-                if (!roomsVerticalPositions.ContainsValue(i))
+                if (!roomsVerticalPositions.ContainsValue(position))
                 {
-                    openSpaces.Add(i);
+                    openSpaces.Add(position);
                 }
             }
 

@@ -19,8 +19,6 @@ namespace Tests.Tasks.Year2021.Day23
             string amphipodsBurrow = "#############"
                 + $"{Environment.NewLine}#...........#"
                 + $"{Environment.NewLine}###B#C#B#D###"
-                + $"{Environment.NewLine}  #D#C#B#A#  "
-                + $"{Environment.NewLine}  #D#B#A#C#  "
                 + $"{Environment.NewLine}  #A#D#C#A#  "
                 + $"{Environment.NewLine}  #########  ";
 
