@@ -4,8 +4,8 @@ namespace App.Tasks.Year2018.Day17
     {
         Clay = '#',
         Sand = '.',
-        SandWaterPassed = '|',
         WaterSpring = '+',
-        RestWater = '~'
+        FlowingWater = '|',
+        SettledWater = '~'
     }
 }
