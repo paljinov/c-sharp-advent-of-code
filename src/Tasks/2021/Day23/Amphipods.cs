@@ -17,17 +17,17 @@ namespace App.Tasks.Year2021.Day23
         private static readonly Dictionary<char, int> amphipodsStepEnergy = new Dictionary<char, int>()
         {
             { (char)AmphipodType.Amber, 1 },
-            { (char) AmphipodType.Bronze, 10 },
-            { (char) AmphipodType.Copper, 100 },
-            { (char) AmphipodType.Desert, 1000 }
+            { (char)AmphipodType.Bronze, 10 },
+            { (char)AmphipodType.Copper, 100 },
+            { (char)AmphipodType.Desert, 1000 }
         };
 
         private static readonly Dictionary<char, int> roomsVerticalPositions = new Dictionary<char, int>()
         {
-            { (char) AmphipodType.Amber, 2 },
-            { (char) AmphipodType.Bronze, 4 },
-            { (char) AmphipodType.Copper, 6 },
-            { (char) AmphipodType.Desert, 8 }
+            { (char)AmphipodType.Amber, 2 },
+            { (char)AmphipodType.Bronze, 4 },
+            { (char)AmphipodType.Copper, 6 },
+            { (char)AmphipodType.Desert, 8 }
         };
 
         public int CalculateLeastEnergyRequiredToOrganizeTheAmphipods(char[,] amphipodsBurrow)
