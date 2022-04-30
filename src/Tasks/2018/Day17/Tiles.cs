@@ -8,15 +8,15 @@ namespace App.Tasks.Year2018.Day17
     {
         private readonly (int X, int Y) springOfWater = (500, 0);
 
-        private readonly char[] waterTiles = new char[] { (char)TileType.FlowingWater, (char)TileType.SettledWater };
+        private readonly TileType[] waterTiles = new TileType[] { TileType.FlowingWater, TileType.SettledWater };
 
-        private readonly char[] blockTiles = new char[] { (char)TileType.SettledWater, (char)TileType.Clay };
+        private readonly TileType[] blockTiles = new TileType[] { TileType.SettledWater, TileType.Clay };
 
-        private readonly char[] flowOrClayTiles = new char[] { (char)TileType.FlowingWater, (char)TileType.Clay };
+        private readonly TileType[] flowOrClayTiles = new TileType[] { TileType.FlowingWater, TileType.Clay };
 
         public int CountTilesTheWaterCanReach(ClayVein[] clayVeins)
         {
-            Dictionary<(int Y, int X), char> map = GetMap(clayVeins);
+            Dictionary<(int Y, int X), TileType> map = GetMap(clayVeins);
             int minY = map.Select(m => m.Key.Y).Min();
             int maxY = map.Select(m => m.Key.Y).Max();
             int minX = map.Select(m => m.Key.X).Min();
@@ -39,7 +39,7 @@ namespace App.Tasks.Year2018.Day17
 
         public int CountLeftWaterTiles(ClayVein[] clayVeins)
         {
-            Dictionary<(int Y, int X), char> map = GetMap(clayVeins);
+            Dictionary<(int Y, int X), TileType> map = GetMap(clayVeins);
             int minY = map.Select(m => m.Key.Y).Min();
             int maxY = map.Select(m => m.Key.Y).Max();
             int minX = map.Select(m => m.Key.X).Min();
@@ -50,7 +50,7 @@ namespace App.Tasks.Year2018.Day17
             {
                 for (int j = minX; j <= maxX; j++)
                 {
-                    if (map[(i, j)] == (char)TileType.SettledWater)
+                    if (map[(i, j)] == TileType.SettledWater)
                     {
                         leftWaterTiles += 1;
                     }
@@ -60,112 +60,85 @@ namespace App.Tasks.Year2018.Day17
             return leftWaterTiles;
         }
 
-        private Dictionary<(int, int), char> GetMap(ClayVein[] clayVeins)
+        private Dictionary<(int, int), TileType> GetMap(ClayVein[] clayVeins)
         {
-            Dictionary<(int Y, int X), char> map = InitializeScannedMap(clayVeins);
+            Dictionary<(int Y, int X), TileType> map = InitializeScannedMap(clayVeins);
             int minY = map.Select(m => m.Key.Y).Min();
             int maxY = map.Select(m => m.Key.Y).Max();
             int minX = map.Select(m => m.Key.X).Min();
             int maxX = map.Select(m => m.Key.X).Max();
 
-            Queue<(int Y, int X)> nextWaterFlowTiles = new Queue<(int Y, int X)>();
-            nextWaterFlowTiles.Enqueue((springOfWater.Y + 1, springOfWater.X));
+            Queue<(int Y, int X)> nextFlowingWaterTiles = new Queue<(int Y, int X)>();
+            // First flowing water location is at map minimum Y coordinate, and spring X coordinate
+            nextFlowingWaterTiles.Enqueue((minY, springOfWater.X));
 
             // Water flows down
-            while (nextWaterFlowTiles.Count > 0)
+            while (nextFlowingWaterTiles.Count > 0)
             {
-                (int Y, int X) water = nextWaterFlowTiles.Dequeue();
+                (int Y, int X) flowingWater = nextFlowingWaterTiles.Dequeue();
 
-                // If current tiles is sand
-                if (map[(water.Y, water.X)] == (char)TileType.Sand)
+                // If tile is sand
+                if (map[(flowingWater.Y, flowingWater.X)] == TileType.Sand)
                 {
-                    map[(water.Y, water.X)] = (char)TileType.FlowingWater;
+                    map[(flowingWater.Y, flowingWater.X)] = TileType.FlowingWater;
                 }
 
-                // If map edge is reached
-                if (water.Y == minY || water.Y == maxY || water.X == minX || water.X == maxX)
+                // To prevent counting forever, ignore tiles with a y coordinate smaller than
+                // the smallest y coordinate in your scan data or larger than the largest one
+                if (flowingWater.Y < minY || flowingWater.Y >= maxY)
                 {
                     continue;
                 }
 
-                // If next tile is sand
-                if (map[(water.Y + 1, water.X)] == (char)TileType.Sand)
+                // If bottom tile is sand
+                if (map[(flowingWater.Y + 1, flowingWater.X)] == TileType.Sand)
                 {
-                    nextWaterFlowTiles.Enqueue((water.Y + 1, water.X));
+                    nextFlowingWaterTiles.Enqueue((flowingWater.Y + 1, flowingWater.X));
                     continue;
                 }
+
                 // If water cannot flow down
-                else if (blockTiles.Contains(map[(water.Y + 1, water.X)]))
+                if (blockTiles.Contains(map[(flowingWater.Y + 1, flowingWater.X)]))
                 {
                     // Flow left
-                    if (map[(water.Y, water.X - 1)] == (char)TileType.Sand)
+                    if (map[(flowingWater.Y, flowingWater.X - 1)] == TileType.Sand)
                     {
-                        nextWaterFlowTiles.Enqueue((water.Y, water.X - 1));
+                        nextFlowingWaterTiles.Enqueue((flowingWater.Y, flowingWater.X - 1));
                     }
 
                     // Flow right
-                    if (map[(water.Y, water.X + 1)] == (char)TileType.Sand)
+                    if (map[(flowingWater.Y, flowingWater.X + 1)] == TileType.Sand)
                     {
-                        nextWaterFlowTiles.Enqueue((water.Y, water.X + 1));
+                        nextFlowingWaterTiles.Enqueue((flowingWater.Y, flowingWater.X + 1));
                     }
 
-                    // If left and right is flowing water or clay
-                    if (flowOrClayTiles.Contains(map[(water.Y, water.X - 1)])
-                        && flowOrClayTiles.Contains(map[(water.Y, water.X + 1)]))
+                    // If left or right is flowing water or clay
+                    if (flowOrClayTiles.Contains(map[(flowingWater.Y, flowingWater.X - 1)])
+                        || flowOrClayTiles.Contains(map[(flowingWater.Y, flowingWater.X + 1)]))
                     {
-                        // Go left while water tile
-                        int leftX = water.X;
-                        while (leftX > minX && waterTiles.Contains(map[(water.Y, leftX - 1)]))
-                        {
-                            leftX -= 1;
-                        }
-                        // If left boundary is not clay
-                        if (leftX <= minX || map[(water.Y, leftX - 1)] != (char)TileType.Clay)
+                        if (!IsReservoir(flowingWater, map, minX, maxX))
                         {
                             continue;
                         }
 
-                        // Go right while water tile
-                        int rightX = water.X;
-                        while (rightX < maxX && waterTiles.Contains(map[(water.Y, rightX + 1)]))
-                        {
-                            rightX += 1;
-                        }
-                        // If right boundary is not clay
-                        if (rightX >= maxX || map[(water.Y, rightX + 1)] != (char)TileType.Clay)
-                        {
-                            continue;
-                        }
+                        SetReservoirTileAsSettledWaterAndCheckAbove(flowingWater, map, nextFlowingWaterTiles);
 
-                        map[(water.Y, water.X)] = (char)TileType.SettledWater;
-                        // If tile down is flowing water
-                        if (map[(water.Y - 1, water.X)] == (char)TileType.FlowingWater)
+                        int leftX = flowingWater.X;
+                        // Set left tiles as settled water
+                        while (leftX > minX && map[(flowingWater.Y, leftX - 1)] == TileType.FlowingWater)
                         {
-                            nextWaterFlowTiles.Enqueue((water.Y - 1, water.X));
-                        }
-
-                        leftX = water.X;
-                        while (leftX > minX && waterTiles.Contains(map[(water.Y, leftX - 1)]))
-                        {
-                            map[(water.Y, leftX - 1)] = (char)TileType.SettledWater;
                             leftX -= 1;
-
-                            if (map[(water.Y - 1, leftX)] == (char)TileType.FlowingWater)
-                            {
-                                nextWaterFlowTiles.Enqueue((water.Y - 1, leftX));
-                            }
+                            (int Y, int X) leftFlowingWater = (flowingWater.Y, leftX);
+                            SetReservoirTileAsSettledWaterAndCheckAbove(leftFlowingWater, map, nextFlowingWaterTiles);
                         }
 
-                        rightX = water.X;
-                        while (rightX < maxX && waterTiles.Contains(map[(water.Y, rightX + 1)]))
+                        int rightX = flowingWater.X;
+                        // Set right tiles as settled water
+                        while (rightX < maxX && map[(flowingWater.Y, rightX + 1)] == TileType.FlowingWater)
                         {
-                            map[(water.Y, rightX + 1)] = (char)TileType.SettledWater;
                             rightX += 1;
-
-                            if (map[(water.Y - 1, rightX)] == (char)TileType.FlowingWater)
-                            {
-                                nextWaterFlowTiles.Enqueue((water.Y - 1, rightX));
-                            }
+                            (int Y, int X) rightFlowingWater = (flowingWater.Y, rightX);
+                            SetReservoirTileAsSettledWaterAndCheckAbove(rightFlowingWater, map, nextFlowingWaterTiles);
                         }
                     }
                 }
@@ -174,23 +147,23 @@ namespace App.Tasks.Year2018.Day17
             return map;
         }
 
-        private Dictionary<(int Y, int X), char> InitializeScannedMap(ClayVein[] clayVeins)
+        private Dictionary<(int Y, int X), TileType> InitializeScannedMap(ClayVein[] clayVeins)
         {
-            int minX = clayVeins.Select(cv => cv.XFrom).Append(springOfWater.X).Min();
-            int maxX = clayVeins.Select(cv => cv.XTo).Append(springOfWater.X).Max();
-            int minY = clayVeins.Select(cv => cv.YFrom).Append(springOfWater.Y).Min();
-            int maxY = clayVeins.Select(cv => cv.YTo).Append(springOfWater.Y).Max();
+            // If reservoir is at the edge water can overflow
+            int minX = clayVeins.Select(cv => cv.XFrom).Min() - 1;
+            int maxX = clayVeins.Select(cv => cv.XTo).Max() + 1;
+            int minY = clayVeins.Select(cv => cv.YFrom).Min();
+            int maxY = clayVeins.Select(cv => cv.YTo).Max();
 
-            Dictionary<(int Y, int X), char> scannedMap = new Dictionary<(int Y, int X), char>();
+            Dictionary<(int Y, int X), TileType> scannedMap = new Dictionary<(int Y, int X), TileType>();
             for (int i = minY; i <= maxY; i++)
             {
                 for (int j = minX; j <= maxX; j++)
                 {
-                    scannedMap[(i, j)] = (char)TileType.Sand;
+                    scannedMap[(i, j)] = TileType.Sand;
                 }
             }
 
-            scannedMap[(springOfWater.Y, springOfWater.X)] = (char)TileType.WaterSpring;
             foreach (ClayVein clayVein in clayVeins)
             {
                 // If X is fixed
@@ -198,7 +171,7 @@ namespace App.Tasks.Year2018.Day17
                 {
                     for (int i = clayVein.YFrom; i <= clayVein.YTo; i++)
                     {
-                        scannedMap[(i, clayVein.XFrom)] = (char)TileType.Clay;
+                        scannedMap[(i, clayVein.XFrom)] = TileType.Clay;
                     }
                 }
                 // If Y is fixed
@@ -206,12 +179,60 @@ namespace App.Tasks.Year2018.Day17
                 {
                     for (int j = clayVein.XFrom; j <= clayVein.XTo; j++)
                     {
-                        scannedMap[(clayVein.YFrom, j)] = (char)TileType.Clay;
+                        scannedMap[(clayVein.YFrom, j)] = TileType.Clay;
                     }
                 }
             }
 
             return scannedMap;
+        }
+
+        private bool IsReservoir(
+            (int Y, int X) flowingWater,
+            Dictionary<(int Y, int X), TileType> map,
+            int minX,
+            int maxX
+        )
+        {
+            // Go left while water tile
+            int leftX = flowingWater.X;
+            while (leftX > minX && waterTiles.Contains(map[(flowingWater.Y, leftX - 1)]))
+            {
+                leftX -= 1;
+            }
+            // If water left boundary is not clay
+            if (leftX <= minX || map[(flowingWater.Y, leftX - 1)] != TileType.Clay)
+            {
+                return false;
+            }
+
+            // Go right while water tile
+            int rightX = flowingWater.X;
+            while (rightX < maxX && waterTiles.Contains(map[(flowingWater.Y, rightX + 1)]))
+            {
+                rightX += 1;
+            }
+            // If water right boundary is not clay
+            if (rightX >= maxX || map[(flowingWater.Y, rightX + 1)] != TileType.Clay)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private void SetReservoirTileAsSettledWaterAndCheckAbove(
+            (int Y, int X) flowingWater,
+            Dictionary<(int Y, int X), TileType> map,
+            Queue<(int Y, int X)> nextFlowingWaterTiles)
+        {
+            // If water is in reservoir and cannot flow down, it is settled water
+            map[(flowingWater.Y, flowingWater.X)] = TileType.SettledWater;
+            // If tile above is flowing water
+            if (map[(flowingWater.Y - 1, flowingWater.X)] == TileType.FlowingWater)
+            {
+                nextFlowingWaterTiles.Enqueue((flowingWater.Y - 1, flowingWater.X));
+            }
         }
     }
 }
