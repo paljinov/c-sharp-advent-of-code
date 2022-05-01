@@ -9,7 +9,7 @@ namespace App.Tasks.Year2018.Day24
         public Group[] GetImmuneSystemArmyGroups(string input)
         {
             string[] inputParts = ParseInput(input);
-            Group[] groups = GetArmyGroups(inputParts[0]);
+            Group[] groups = GetArmyGroups(inputParts[0], GroupType.ImmuneSystem);
 
             return groups;
         }
@@ -17,12 +17,12 @@ namespace App.Tasks.Year2018.Day24
         public Group[] GetInfectionArmyGroups(string input)
         {
             string[] inputParts = ParseInput(input);
-            Group[] groups = GetArmyGroups(inputParts[1]);
+            Group[] groups = GetArmyGroups(inputParts[1], GroupType.Infection);
 
             return groups;
         }
 
-        private Group[] GetArmyGroups(string input)
+        private Group[] GetArmyGroups(string input, GroupType groupType)
         {
             string[] groupsArray = input.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
             Group[] armyGroups = new Group[groupsArray.Length - 1];
@@ -61,6 +61,7 @@ namespace App.Tasks.Year2018.Day24
 
                 Group armyGroup = new Group
                 {
+                    GroupType = groupType,
                     Units = int.Parse(groups[1].Value),
                     UnitHitPoints = int.Parse(groups[2].Value),
                     UnitAttackDamage = int.Parse(groups[4].Value),

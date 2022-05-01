@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace App.Tasks.Year2018.Day24
@@ -7,14 +8,10 @@ namespace App.Tasks.Year2018.Day24
     {
         public int CountWinningArmyUnits(Group[] immuneSystemArmy, Group[] infectionArmy)
         {
-            while (immuneSystemArmy.Length > 0 && infectionArmy.Length > 0)
-            {
-                SortAttackers(immuneSystemArmy, infectionArmy);
+            List<Group> groups = Fight(immuneSystemArmy, infectionArmy);
+            int winningArmyUnits = groups.Sum(g => g.Units);
 
-                int remainingUnits = CalculateRemainingDefenderUnits(infectionArmy.First(), immuneSystemArmy.First());
-            }
-
-            return immuneSystemArmy.Length + infectionArmy.Length;
+            return winningArmyUnits;
         }
 
         public int CountImmuneSystemUnitsWhichAreLeftAfterGettingTheSmallestBoostNeededToWin(
@@ -25,43 +22,98 @@ namespace App.Tasks.Year2018.Day24
             return immuneSystemArmy.Length + infectionArmy.Length;
         }
 
-        private void SortAttackers(Group[] immuneSystemArmy, Group[] infectionArmy)
+        private List<Group> Fight(Group[] immuneSystemArmy, Group[] infectionArmy)
         {
-            immuneSystemArmy = immuneSystemArmy
-                .OrderBy(g => g.Units * g.UnitAttackDamage)
-                .ThenByDescending(g => g.Initiative)
-                .ToArray();
+            List<Group> groups = immuneSystemArmy.Concat(infectionArmy).ToList();
 
-            infectionArmy = infectionArmy
-               .OrderBy(g => g.Units * g.UnitAttackDamage)
-               .ThenByDescending(g => g.Initiative)
-               .ToArray();
+            while (!IsFightFinished(groups))
+            {
+                Dictionary<Group, Group> selectedTargets = TargetSelection(groups);
+                Attack(groups, selectedTargets);
+            }
+
+            return groups;
         }
 
-        private int CalculateDamage(Group attacker, Group defender)
+        public bool IsFightFinished(List<Group> groups)
+        {
+            // Fight is finished when only one group type remains
+            return groups.GroupBy(g => g.GroupType).Count() == 1;
+        }
+
+        private Dictionary<Group, Group> TargetSelection(List<Group> groups)
+        {
+            // In decreasing order of effective power, groups choose their selectedTargets; in a tie,
+            // the group with the higher initiative chooses first
+            IEnumerable<Group> attackers = groups.ToList()
+               .OrderByDescending(g => g.EffectivePower)
+               .ThenByDescending(g => g.Initiative);
+
+            List<Group> potentialTargets = groups.ToList();
+            Dictionary<Group, Group> selectedTargets = new Dictionary<Group, Group>();
+
+            foreach (Group attacker in attackers)
+            {
+                Group target = potentialTargets
+                    .Where(pt => attacker.GroupType != pt.GroupType)
+                    // If it cannot deal any defending groups damage, it does not choose a target
+                    .Where(pt => CalculateDamage(attacker, pt) > 0)
+                    // The attacking group chooses to target the group in the enemy army
+                    // to which it would deal the most damage
+                    .OrderByDescending(pt => CalculateDamage(attacker, pt))
+                    // If an attacking group is considering two defending groups to which it would deal equal damage,
+                    // it chooses to target the defending group with the largest effective power;
+                    // if there is still a tie, it chooses the defending group with the highest initiative
+                    .ThenByDescending(pt => pt.EffectivePower)
+                    .ThenByDescending(pt => pt.Initiative)
+                    .FirstOrDefault();
+
+                if (target != null)
+                {
+                    selectedTargets[attacker] = target;
+                    potentialTargets.Remove(target);
+                }
+            }
+
+            return selectedTargets;
+        }
+
+        private void Attack(List<Group> groups, Dictionary<Group, Group> selectedTargets)
+        {
+            // Groups attack in decreasing order of initiative
+            IEnumerable<Group> attackers = groups.OrderByDescending(g => g.Initiative);
+
+            foreach (Group attacker in attackers)
+            {
+                if (selectedTargets.ContainsKey(attacker))
+                {
+                    Group defender = selectedTargets[attacker];
+
+                    int damage = CalculateDamage(attacker, defender);
+                    int killedUnits = damage / defender.UnitHitPoints;
+                    defender.Units -= killedUnits;
+
+                    if (defender.Units <= 0)
+                    {
+                        groups.Remove(selectedTargets[attacker]);
+                    }
+                }
+            }
+        }
+
+        public int CalculateDamage(Group attacker, Group defender)
         {
             if (defender.Immunities.Contains(attacker.AttackType))
             {
                 return 0;
             }
 
-            int damage = attacker.Units * attacker.UnitAttackDamage;
             if (defender.Weaknesses.Contains(attacker.AttackType))
             {
-                damage *= 2;
+                return 2 * attacker.EffectivePower;
             }
 
-            return damage;
-        }
-
-        private int CalculateRemainingDefenderUnits(Group attacker, Group defender)
-        {
-            int damage = CalculateDamage(attacker, defender);
-            int remainingHitPoints = defender.Units * defender.UnitHitPoints - damage;
-
-            int remainingUnits = (int)Math.Ceiling((double)remainingHitPoints / defender.UnitHitPoints);
-
-            return remainingUnits;
+            return attacker.EffectivePower;
         }
     }
 }
