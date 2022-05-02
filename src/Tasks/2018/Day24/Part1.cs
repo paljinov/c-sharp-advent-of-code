@@ -195,25 +195,26 @@ You scan the reindeer's condition (your puzzle input); the white-bearded man
 looks nervous. As it stands now, how many units would the winning army have?
 */
 
+using System.Collections.Generic;
+
 namespace App.Tasks.Year2018.Day24
 {
     public class Part1 : ITask<int>
     {
-        private readonly ReindeerConditionRepository reindeerConditionRepository;
+        private readonly ArmiesGroupsRepository armiesGroupsRepository;
 
         private readonly ImmuneSystemSimulator immuneSystemSimulator;
 
         public Part1()
         {
-            reindeerConditionRepository = new ReindeerConditionRepository();
+            armiesGroupsRepository = new ArmiesGroupsRepository();
             immuneSystemSimulator = new ImmuneSystemSimulator();
         }
 
         public int Solution(string input)
         {
-            Group[] immuneSystemArmy = reindeerConditionRepository.GetImmuneSystemArmyGroups(input);
-            Group[] infectionArmy = reindeerConditionRepository.GetInfectionArmyGroups(input);
-            int winningArmyUnitsCount = immuneSystemSimulator.CountWinningArmyUnits(immuneSystemArmy, infectionArmy);
+            List<Group> armiesGroups = armiesGroupsRepository.GetArmiesGroups(input);
+            int winningArmyUnitsCount = immuneSystemSimulator.CountWinningArmyUnits(armiesGroups);
 
             return winningArmyUnitsCount;
         }

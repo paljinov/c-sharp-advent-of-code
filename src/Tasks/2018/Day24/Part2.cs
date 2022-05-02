@@ -147,28 +147,27 @@ How many units does the immune system have left after getting the smallest boost
 it needs to win?
 */
 
+using System.Collections.Generic;
+
 namespace App.Tasks.Year2018.Day24
 {
     public class Part2 : ITask<int>
     {
-        private readonly ReindeerConditionRepository reindeerConditionRepository;
+        private readonly ArmiesGroupsRepository armiesGroupsRepository;
 
         private readonly ImmuneSystemSimulator immuneSystemSimulator;
 
         public Part2()
         {
-            reindeerConditionRepository = new ReindeerConditionRepository();
+            armiesGroupsRepository = new ArmiesGroupsRepository();
             immuneSystemSimulator = new ImmuneSystemSimulator();
         }
 
         public int Solution(string input)
         {
-            Group[] immuneSystemArmy = reindeerConditionRepository.GetImmuneSystemArmyGroups(input);
-            Group[] infectionArmy = reindeerConditionRepository.GetInfectionArmyGroups(input);
-
+            List<Group> armiesGroups = armiesGroupsRepository.GetArmiesGroups(input);
             int immuneSystemUnitsWhichAreLeftAfterGettingTheSmallestBoostNeededToWin = immuneSystemSimulator
-                .CountImmuneSystemUnitsWhichAreLeftAfterGettingTheSmallestBoostNeededToWin(
-                    immuneSystemArmy, infectionArmy);
+                .CountImmuneSystemUnitsWhichAreLeftAfterGettingTheSmallestBoostNeededToWin(armiesGroups);
 
             return immuneSystemUnitsWhichAreLeftAfterGettingTheSmallestBoostNeededToWin;
         }

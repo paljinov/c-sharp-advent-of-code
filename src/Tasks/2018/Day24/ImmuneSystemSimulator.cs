@@ -6,30 +6,37 @@ namespace App.Tasks.Year2018.Day24
 {
     public class ImmuneSystemSimulator
     {
-        public int CountWinningArmyUnits(Group[] immuneSystemArmy, Group[] infectionArmy)
+        public int CountWinningArmyUnits(List<Group> armiesGroups)
         {
-            List<Group> groups = Fight(immuneSystemArmy, infectionArmy);
-            int winningArmyUnits = groups.Sum(g => g.Units);
+            List<Group> winnerGroups = Fight(armiesGroups);
+            int winningArmyUnits = winnerGroups.Sum(g => g.Units);
 
             return winningArmyUnits;
         }
 
-        public int CountImmuneSystemUnitsWhichAreLeftAfterGettingTheSmallestBoostNeededToWin(
-            Group[] immuneSystemArmy,
-            Group[] infectionArmy
-        )
+        public int CountImmuneSystemUnitsWhichAreLeftAfterGettingTheSmallestBoostNeededToWin(List<Group> armiesGroups)
         {
-            return immuneSystemArmy.Length + infectionArmy.Length;
+            return 0;
         }
 
-        private List<Group> Fight(Group[] immuneSystemArmy, Group[] infectionArmy)
+        private List<Group> Fight(List<Group> groups)
         {
-            List<Group> groups = immuneSystemArmy.Concat(infectionArmy).ToList();
+            int previousTotalUnits = groups.Sum(g => g.Units);
 
             while (!IsFightFinished(groups))
             {
                 Dictionary<Group, Group> selectedTargets = TargetSelection(groups);
                 Attack(groups, selectedTargets);
+
+                int totalUnits = groups.Sum(g => g.Units);
+                // If number of units didn't change deadlock happened
+                if (previousTotalUnits == totalUnits)
+                {
+                    // No winners in case of deadlock
+                    return new List<Group>();
+                }
+
+                previousTotalUnits = totalUnits;
             }
 
             return groups;
@@ -90,9 +97,10 @@ namespace App.Tasks.Year2018.Day24
                     Group defender = selectedTargets[attacker];
 
                     int damage = CalculateDamage(attacker, defender);
-                    int killedUnits = damage / defender.UnitHitPoints;
-                    defender.Units -= killedUnits;
+                    // The defending group only loses whole units from damage
+                    int killedUnits = Math.Min(defender.Units, damage / defender.UnitHitPoints);
 
+                    defender.Units -= killedUnits;
                     if (defender.Units <= 0)
                     {
                         groups.Remove(selectedTargets[attacker]);

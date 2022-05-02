@@ -1,25 +1,26 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace App.Tasks.Year2018.Day24
 {
-    public class ReindeerConditionRepository
+    public class ArmiesGroupsRepository
     {
-        public Group[] GetImmuneSystemArmyGroups(string input)
+        public List<Group> GetArmiesGroups(string input)
         {
+            List<Group> armiesGroups = new List<Group>();
+
             string[] inputParts = ParseInput(input);
-            Group[] groups = GetArmyGroups(inputParts[0], GroupType.ImmuneSystem);
 
-            return groups;
-        }
+            GroupType[] groupTypes = Enum.GetValues(typeof(GroupType)).Cast<GroupType>().ToArray();
+            for (int i = 0; i < groupTypes.Length; i++)
+            {
+                Group[] groups = GetArmyGroups(inputParts[i], groupTypes[i]);
+                armiesGroups.AddRange(groups);
+            }
 
-        public Group[] GetInfectionArmyGroups(string input)
-        {
-            string[] inputParts = ParseInput(input);
-            Group[] groups = GetArmyGroups(inputParts[1], GroupType.Infection);
-
-            return groups;
+            return armiesGroups;
         }
 
         private Group[] GetArmyGroups(string input, GroupType groupType)
