@@ -16,7 +16,35 @@ namespace App.Tasks.Year2018.Day24
 
         public int CountImmuneSystemUnitsWhichAreLeftAfterGettingTheSmallestBoostNeededToWin(List<Group> armiesGroups)
         {
-            return 0;
+            List<Group> groupsWithBoostedImmuneSystem;
+            List<Group> winnerGroups;
+
+            int minBoost = 0;
+            int maxBoost = short.MaxValue;
+
+            while (minBoost < maxBoost)
+            {
+                int midBoost = (minBoost + maxBoost) / 2;
+
+                groupsWithBoostedImmuneSystem = GetGroupsWithBoostedImmuneSystem(armiesGroups, midBoost);
+                winnerGroups = Fight(groupsWithBoostedImmuneSystem);
+
+                if (winnerGroups.Count > 0 && winnerGroups.First().GroupType == GroupType.ImmuneSystem)
+                {
+                    maxBoost = midBoost;
+                }
+                else
+                {
+                    minBoost = midBoost + 1;
+                }
+            }
+
+            groupsWithBoostedImmuneSystem = GetGroupsWithBoostedImmuneSystem(armiesGroups, minBoost);
+            winnerGroups = Fight(groupsWithBoostedImmuneSystem);
+
+            int immuneSystemUnitsWhichAreLeftAfterGettingTheSmallestBoostNeededToWin = winnerGroups.Sum(g => g.Units);
+
+            return immuneSystemUnitsWhichAreLeftAfterGettingTheSmallestBoostNeededToWin;
         }
 
         private List<Group> Fight(List<Group> groups)
@@ -122,6 +150,24 @@ namespace App.Tasks.Year2018.Day24
             }
 
             return attacker.EffectivePower;
+        }
+
+        private List<Group> GetGroupsWithBoostedImmuneSystem(List<Group> armiesGroups, int boost)
+        {
+            List<Group> groupsWithBoostedImmuneSystem = new List<Group>();
+            foreach (Group group in armiesGroups)
+            {
+                Group groupClone = group.Clone();
+                // A boost is an integer increase in immune system units' attack damage
+                if (groupClone.GroupType == GroupType.ImmuneSystem)
+                {
+                    groupClone.UnitAttackDamage += boost;
+                }
+
+                groupsWithBoostedImmuneSystem.Add(groupClone);
+            }
+
+            return groupsWithBoostedImmuneSystem;
         }
     }
 }

@@ -11,5 +11,10 @@ namespace App.Tasks.Year2018.Day24
         public string[] Weaknesses { get; set; }
         public string[] Immunities { get; set; }
         public int EffectivePower => Units * UnitAttackDamage;
+
+        public Group Clone()
+        {
+            return (Group)MemberwiseClone();
+        }
     }
 }
