@@ -48,7 +48,7 @@ namespace Tests.Tasks.Year2018.Day15
                     + $"{Environment.NewLine}#...#E#"
                     + $"{Environment.NewLine}#...E.#"
                     + $"{Environment.NewLine}#######",
-                    36334
+                    29064
                 };
 
                 yield return new object[] {

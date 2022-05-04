@@ -97,20 +97,20 @@ namespace App.Tasks.Year2018.Day15
 {
     public class Part2 : ITask<int>
     {
-        private readonly CombatRepository combatRepository;
+        private readonly MapRepository mapRepository;
 
         private readonly Combat combat;
 
         public Part2()
         {
-            combatRepository = new CombatRepository();
+            mapRepository = new MapRepository();
             combat = new Combat();
         }
 
         public int Solution(string input)
         {
-            char[,] combatDescription = combatRepository.GetCombatDescription(input);
-            int combatOutcome = combat.CalculateCombatOutcomeOfTheBattleWithoutAnyElvesDying(combatDescription);
+            char[,] map = mapRepository.GetMap(input);
+            int combatOutcome = combat.CalculateCombatOutcomeOfTheBattleWithoutAnyElvesDying(map);
 
             return combatOutcome;
         }
