@@ -31,7 +31,20 @@ namespace App.Tasks.Year2018.Day15
 
         public int CalculateCombatOutcomeOfTheBattleWithoutAnyElvesDying(char[,] initialMap)
         {
-            return 0;
+            int? combatOutcome = null;
+
+            // Lowest elves attack power
+            int elvesAttackPower = ELVES_LEAST_ATTACK_POWER_WITHOUT_ANY_DYING;
+            while (!combatOutcome.HasValue)
+            {
+                char[,] map = initialMap.Clone() as char[,];
+                List<Unit> units = InitializeUnits(map, elvesAttackPower);
+                combatOutcome = Fight(map, units, true);
+
+                elvesAttackPower++;
+            }
+
+            return combatOutcome.Value;
         }
 
         public List<Unit> InitializeUnits(char[,] map, int elvesAttackPower = UNIT_ATTACK_POWER)
@@ -121,7 +134,7 @@ namespace App.Tasks.Year2018.Day15
         private void Move(char[,] map, Unit unit, IEnumerable<Unit> targets)
         {
             List<(int X, int Y)> positionsAdjacentToTargets = GetOpenPositionsAdjacentToTargets(map, targets);
-            Dictionary<(int X, int Y), List<(int X, int Y)>> reacheablePositionsStartingFrom =
+            Dictionary<(int X, int Y), (int X, int Y)> reacheablePositionsStartingFrom =
                 GetReacheablePositionsStartingFrom(map, unit.Position);
 
             Dictionary<(int X, int Y), List<(int X, int Y)>> pathsToAdjacentPositions =
@@ -201,13 +214,13 @@ namespace App.Tasks.Year2018.Day15
             return positionsAdjacentToTargets;
         }
 
-        private Dictionary<(int X, int Y), List<(int X, int Y)>> GetReacheablePositionsStartingFrom(
+        private Dictionary<(int X, int Y), (int X, int Y)> GetReacheablePositionsStartingFrom(
             char[,] map,
             (int X, int Y) from
         )
         {
-            Dictionary<(int X, int Y), List<(int X, int Y)>> reacheablePositionsStartingFrom =
-                new Dictionary<(int X, int Y), List<(int X, int Y)>>();
+            Dictionary<(int X, int Y), (int X, int Y)> reacheablePositionsStartingFrom =
+                new Dictionary<(int X, int Y), (int X, int Y)>();
 
             Queue<(int X, int Y)> nextPositions = new Queue<(int X, int Y)>();
             nextPositions.Enqueue(from);
@@ -222,12 +235,7 @@ namespace App.Tasks.Year2018.Day15
                     if (!reacheablePositionsStartingFrom.ContainsKey(nextPosition) && IsOpenSpace(map, nextPosition))
                     {
                         nextPositions.Enqueue(nextPosition);
-                        if (!reacheablePositionsStartingFrom.ContainsKey(currentPosition))
-                        {
-                            reacheablePositionsStartingFrom[currentPosition] = new List<(int X, int Y)>();
-                        }
-
-                        reacheablePositionsStartingFrom[currentPosition].Add(nextPosition);
+                        reacheablePositionsStartingFrom[nextPosition] = currentPosition;
                     }
                 }
             }
@@ -238,13 +246,13 @@ namespace App.Tasks.Year2018.Day15
         private List<(int X, int Y)> GetPathFromStartToEndPosition(
             (int X, int Y) from,
             (int X, int Y) to,
-            Dictionary<(int X, int Y), List<(int X, int Y)>> reacheablePositionsStartingFrom
+            Dictionary<(int X, int Y), (int X, int Y)> reacheablePositionsStartingFrom
         )
         {
             List<(int X, int Y)> path = new List<(int X, int Y)>();
 
             // If end position is not reacheable, path is not possible
-            if (!reacheablePositionsStartingFrom.Any(r => r.Value.Contains(to)))
+            if (!reacheablePositionsStartingFrom.ContainsKey(to))
             {
                 return null;
             }
@@ -254,7 +262,7 @@ namespace App.Tasks.Year2018.Day15
             while (x != from.X || y != from.Y)
             {
                 path.Insert(0, (x, y));
-                (x, y) = reacheablePositionsStartingFrom.First(r => r.Value.Contains((x, y))).Key;
+                (x, y) = reacheablePositionsStartingFrom[(x, y)];
             }
 
             return path;
