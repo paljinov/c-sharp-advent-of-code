@@ -38,6 +38,12 @@ namespace App.Tasks.Year2018.Day11
                     largestTotalPower = totalPower;
                     largestTotalPowerSquareSize = squareSize;
                 }
+
+                // With this square further on size total power starts decreasing
+                if (totalPower < largestTotalPower)
+                {
+                    break;
+                }
             }
 
             return (x, y, largestTotalPowerSquareSize);
