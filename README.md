@@ -1,13 +1,15 @@
 # C# (C-Sharp) Advent of Code solutions
 
 ## Tasks solutions:
-* [2015](https://github.com/paljinov/c-sharp-advent-of-code/tree/master/src/Tasks/2015)
-* [2016](https://github.com/paljinov/c-sharp-advent-of-code/tree/master/src/Tasks/2016)
-* [2017](https://github.com/paljinov/c-sharp-advent-of-code/tree/master/src/Tasks/2017)
-* [2018](https://github.com/paljinov/c-sharp-advent-of-code/tree/master/src/Tasks/2018)
-* [2019](https://github.com/paljinov/c-sharp-advent-of-code/tree/master/src/Tasks/2019)
-* [2020](https://github.com/paljinov/c-sharp-advent-of-code/tree/master/src/Tasks/2020)
-* [2021](https://github.com/paljinov/c-sharp-advent-of-code/tree/master/src/Tasks/2021)
+| Year                                                                                  | Stars     |
+| ------------------------------------------------------------------------------------- | --------- |
+| [2015](https://github.com/paljinov/c-sharp-advent-of-code/tree/master/src/Tasks/2015) | 50 :star: |
+| [2016](https://github.com/paljinov/c-sharp-advent-of-code/tree/master/src/Tasks/2016) | 50 :star: |
+| [2017](https://github.com/paljinov/c-sharp-advent-of-code/tree/master/src/Tasks/2017) | 50 :star: |
+| [2018](https://github.com/paljinov/c-sharp-advent-of-code/tree/master/src/Tasks/2018) | 50 :star: |
+| [2019](https://github.com/paljinov/c-sharp-advent-of-code/tree/master/src/Tasks/2019) | 50 :star: |
+| [2020](https://github.com/paljinov/c-sharp-advent-of-code/tree/master/src/Tasks/2020) | 50 :star: |
+| [2021](https://github.com/paljinov/c-sharp-advent-of-code/tree/master/src/Tasks/2021) | 50 :star: |
 
 ## Prerequisites for running project
 Copy `./src/.env.example` to `./src/.env` file and set year, day and part for task you wish to debug or run.
