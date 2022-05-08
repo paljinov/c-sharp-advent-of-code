@@ -3,3 +3,4 @@ description: My AoC solutions made in NET 6.0 C#
 theme: jekyll-theme-slate
 show_downloads: false
 google_analytics: UA-191502149-1
+markdown: GFM
