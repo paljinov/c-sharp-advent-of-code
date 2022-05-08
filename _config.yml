@@ -4,3 +4,5 @@ theme: jekyll-theme-slate
 show_downloads: false
 google_analytics: UA-191502149-1
 markdown: GFM
+plugins:
+  - jemoji
