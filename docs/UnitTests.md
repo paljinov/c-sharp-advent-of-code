@@ -43,3 +43,19 @@ dotnet test
     ```sh
     dotnet test
     ```
+
+### Filter tests:
+Part:
+```sh
+dotnet test --filter "FullyQualifiedName~Tests.Tasks.Year2020.Day20.Part1"
+```
+
+Day:
+```sh
+dotnet test --filter "FullyQualifiedName~Tests.Tasks.Year2020.Day20"
+```
+
+Year:
+```sh
+dotnet test --filter "FullyQualifiedName~Tests.Tasks.Year2020"
+```
