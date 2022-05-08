@@ -1,6 +1,6 @@
 title: C# Advent of Code Solutions
 description: My AoC solutions made in NET 6.0 C#
-remote_theme: pages-themes/slate@v0.2.0
+remote_theme: pages-themes/cayman@v0.2.0
 show_downloads: false
 google_analytics: UA-191502149-1
 markdown: GFM
