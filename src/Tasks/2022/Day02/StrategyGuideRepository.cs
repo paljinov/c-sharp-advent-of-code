@@ -34,6 +34,26 @@ namespace App.Tasks.Year2022.Day2
             return strategyGuide;
         }
 
+        public (Shape OpponentShape, Outcome RoundOutcome)[] GetStrategyGuideWhenSecondColumnSaysHowRoundNeedsToEnd(
+            string input
+        )
+        {
+            string[] strategyGuideString = input.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+            (Shape OpponentShape, Outcome RoundOutcome)[] strategyGuide =
+                new (Shape, Outcome)[strategyGuideString.Length];
+
+            for (int i = 0; i < strategyGuideString.Length; i++)
+            {
+                string[] roundString = strategyGuideString[i].Split(' ');
+                Shape opponentShape = GetOpponentShape(roundString[0][0]);
+                Outcome roundOutcome = GetRoundOutcome(roundString[1][0]);
+
+                strategyGuide[i] = (opponentShape, roundOutcome);
+            }
+
+            return strategyGuide;
+        }
+
         private Shape GetOpponentShape(char shapeChar)
         {
             Shape shape = Shape.Rock;
@@ -64,6 +84,22 @@ namespace App.Tasks.Year2022.Day2
             }
 
             return shape;
+        }
+
+        private Outcome GetRoundOutcome(char outcomeChar)
+        {
+            Outcome roundOutcome = Outcome.Defeat;
+            switch (outcomeChar)
+            {
+                case DRAW_ROUND_OUTCOME:
+                    roundOutcome = Outcome.Draw;
+                    break;
+                case WIN_ROUND_OUTCOME:
+                    roundOutcome = Outcome.Win;
+                    break;
+            }
+
+            return roundOutcome;
         }
     }
 }

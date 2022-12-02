@@ -17,6 +17,23 @@ namespace App.Tasks.Year2022.Day2
             return totalScore;
         }
 
+        public int CalculateTotalScoreWhenSecondColumnSaysHowRoundNeedsToEnd(
+            (Shape OpponentShape, Outcome RoundOutcome)[] strategyGuide
+        )
+        {
+            int totalScore = 0;
+
+            for (int i = 0; i < strategyGuide.Length; i++)
+            {
+                Shape responseShape = GetResponseShape(strategyGuide[i].OpponentShape, strategyGuide[i].RoundOutcome);
+
+                // Score for the shape you selected plus the score for the outcome of the round
+                totalScore += (int)responseShape + (int)strategyGuide[i].RoundOutcome;
+            }
+
+            return totalScore;
+        }
+
         private Outcome GetRoundOutcome(Shape opponentShape, Shape responseShape)
         {
             Outcome roundOutcome;
