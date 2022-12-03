@@ -21,6 +21,8 @@ namespace App.Tasks.Year2022.Day1
 {
     public class Part2 : ITask<int>
     {
+        private const int CARRYING_THE_MOST_ELVES_COUNT = 3;
+
         private readonly CaloriesRepository caloriesRepository;
 
         private readonly Calories calories;
@@ -35,7 +37,7 @@ namespace App.Tasks.Year2022.Day1
         {
             int[][] caloriesPerElf = caloriesRepository.GetCaloriesPerElf(input);
             int totalCaloriesForTopThreeElvesCarryingTheMost =
-                calories.CalculateTotalCaloriesForTopThreeElvesCarryingTheMost(caloriesPerElf);
+                calories.CalculateTotalCaloriesForElvesCarryingTheMost(caloriesPerElf, CARRYING_THE_MOST_ELVES_COUNT);
 
             return totalCaloriesForTopThreeElvesCarryingTheMost;
         }

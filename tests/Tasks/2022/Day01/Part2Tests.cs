@@ -14,7 +14,7 @@ namespace Tests.Tasks.Year2022.Day1
         }
 
         [Fact]
-        public void Solution_CaloriesPerElfExample_TotalCaloriesForTopThreeElvesCarryingTheMostEquals()
+        public void Solution_CaloriesPerElfExample_TotalCaloriesForThreeElvesCarryingTheMostEquals()
         {
             string totalCaloriesForTopThreeElvesCarryingTheMost = "1000"
                 + $"{Environment.NewLine}2000"

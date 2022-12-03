@@ -13,11 +13,11 @@ namespace App.Tasks.Year2022.Day1
             return totalCaloriesForElfCarryingTheMost;
         }
 
-        public int CalculateTotalCaloriesForTopThreeElvesCarryingTheMost(int[][] caloriesPerElf)
+        public int CalculateTotalCaloriesForElvesCarryingTheMost(int[][] caloriesPerElf, int carryingTheMostElvesCount)
         {
             Dictionary<int, int> totalCaloriesPerElf = CalculateTotalCaloriesPerElf(caloriesPerElf);
             int totalCaloriesForTopThreeElvesCarryingTheMost = totalCaloriesPerElf.OrderByDescending(c => c.Value)
-                .Take(3).ToDictionary(c => c.Key, c => c.Value)
+                .Take(carryingTheMostElvesCount).ToDictionary(c => c.Key, c => c.Value)
                 .Values.Sum();
 
             return totalCaloriesForTopThreeElvesCarryingTheMost;
