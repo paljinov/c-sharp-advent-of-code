@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace App.Tasks.Year2022.Day3
 {
-    public class Priorities
+    public class ItemsPriorities
     {
         private const int LOWERCASE_ITEM_SUBSTRACT = 96;
 
@@ -27,7 +27,7 @@ namespace App.Tasks.Year2022.Day3
             return prioritiesSum;
         }
 
-        public int CalculatePrioritiesSumForItemThatCorrespondsToTheBadgesOfEachThreeElfGroup(string[] rucksacksItems)
+        public int CalculatePrioritiesSumForItemsThatCorrespondToTheBadgesOfEachThreeElfGroup(string[] rucksacksItems)
         {
             int prioritiesSum = 0;
 

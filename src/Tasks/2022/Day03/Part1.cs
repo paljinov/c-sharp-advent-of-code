@@ -61,18 +61,19 @@ namespace App.Tasks.Year2022.Day3
     {
         private readonly RucksacksItemsRepository rucksacksItemsRepository;
 
-        private readonly Priorities priorities;
+        private readonly ItemsPriorities itemsPriorities;
 
         public Part1()
         {
             rucksacksItemsRepository = new RucksacksItemsRepository();
-            priorities = new Priorities();
+            itemsPriorities = new ItemsPriorities();
         }
 
         public int Solution(string input)
         {
             string[] rucksacksItems = rucksacksItemsRepository.GetRucksacksItems(input);
-            int prioritiesSum = priorities.CalculatePrioritiesSumForItemsThatAppearInBothCompartments(rucksacksItems);
+            int prioritiesSum =
+                itemsPriorities.CalculatePrioritiesSumForItemsThatAppearInBothCompartments(rucksacksItems);
 
             return prioritiesSum;
         }
