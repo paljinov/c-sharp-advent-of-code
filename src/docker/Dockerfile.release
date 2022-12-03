@@ -8,10 +8,10 @@ RUN dotnet restore
 # Copy everything else and build
 COPY ./src ./
 RUN dotnet publish -c Release -o out \
-    && find ./src/Tasks -name 'input.txt' -exec cp --parents {} ./out \;
+    && find ./Tasks -name 'input.txt' -exec cp --parents {} ./out \;
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:7.0-bullseye-slim AS runtime
+FROM mcr.microsoft.com/dotnet/runtime:7.0-bullseye-slim AS runtime
 WORKDIR /app
 COPY --from=sdk /app/out .
 
