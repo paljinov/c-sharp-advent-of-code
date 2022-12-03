@@ -27,6 +27,23 @@ namespace App.Tasks.Year2022.Day3
             return prioritiesSum;
         }
 
+        public int CalculatePrioritiesSumForItemThatCorrespondsToTheBadgesOfEachThreeElfGroup(string[] rucksacksItems)
+        {
+            int prioritiesSum = 0;
+
+            for (int i = 0; i < rucksacksItems.Length; i += 3)
+            {
+                char badgeItem = rucksacksItems[i]
+                    .Intersect(rucksacksItems[i + 1])
+                    .Intersect(rucksacksItems[i + 2])
+                    .First();
+
+                prioritiesSum += GetItemPriority(badgeItem);
+            }
+
+            return prioritiesSum;
+        }
+
         private int CalculatePrioritiesSum(IEnumerable<char> items)
         {
             int prioritiesSum = 0;
