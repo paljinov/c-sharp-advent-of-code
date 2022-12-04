@@ -8,11 +8,30 @@ namespace App.Tasks.Year2022.Day4
 
             for (int i = 0; i < pairsSections.Length; i++)
             {
-                (int From, int To) firstSectionRange = pairsSections[i].FirstSectionRange;
-                (int From, int To) secondSectionRange = pairsSections[i].SecondSectionRange;
+                (int From, int To) firstRange = pairsSections[i].FirstSectionsRange;
+                (int From, int To) secondRange = pairsSections[i].SecondSectionsRange;
 
-                if (firstSectionRange.From <= secondSectionRange.From && firstSectionRange.To >= secondSectionRange.To
-                 || secondSectionRange.From <= firstSectionRange.From && secondSectionRange.To >= firstSectionRange.To)
+                if (firstRange.From >= secondRange.From && firstRange.To <= secondRange.To
+                    || secondRange.From >= firstRange.From && secondRange.To <= firstRange.To)
+                {
+                    pairsWhereOneRangeFullyContainTheOther++;
+                }
+            }
+
+            return pairsWhereOneRangeFullyContainTheOther;
+        }
+
+        public int CountPairsWhereRangesOverlap(Pair[] pairsSections)
+        {
+            int pairsWhereOneRangeFullyContainTheOther = 0;
+
+            for (int i = 0; i < pairsSections.Length; i++)
+            {
+                (int From, int To) firstRange = pairsSections[i].FirstSectionsRange;
+                (int From, int To) secondRange = pairsSections[i].SecondSectionsRange;
+
+                if (firstRange.From >= secondRange.From && firstRange.From <= secondRange.To
+                    || secondRange.From >= firstRange.From && secondRange.From <= firstRange.To)
                 {
                     pairsWhereOneRangeFullyContainTheOther++;
                 }

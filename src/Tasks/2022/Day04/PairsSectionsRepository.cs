@@ -19,11 +19,11 @@ namespace App.Tasks.Year2022.Day4
 
                 Pair pair = new Pair
                 {
-                    FirstSectionRange = (
+                    FirstSectionsRange = (
                         int.Parse(pairSectionsGroups[1].Value),
                         int.Parse(pairSectionsGroups[2].Value)
                     ),
-                    SecondSectionRange = (
+                    SecondSectionsRange = (
                         int.Parse(pairSectionsGroups[3].Value),
                         int.Parse(pairSectionsGroups[4].Value)
                     ),
