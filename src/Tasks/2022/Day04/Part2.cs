@@ -22,22 +22,23 @@ namespace App.Tasks.Year2022.Day4
 {
     public class Part2 : ITask<int>
     {
-        private readonly PairsSectionsRepository pairsSectionsRepository;
+        private readonly SectionAssignmentPairsRepository sectionAssignmentPairsRepository;
 
-        private readonly PairsSections pairsSections;
+        private readonly SectionAssignmentPairs sectionAssignmentPairs;
 
         public Part2()
         {
-            pairsSectionsRepository = new PairsSectionsRepository();
-            pairsSections = new PairsSections();
+            sectionAssignmentPairsRepository = new SectionAssignmentPairsRepository();
+            sectionAssignmentPairs = new SectionAssignmentPairs();
         }
 
         public int Solution(string input)
         {
-            Pair[] pairsSections = pairsSectionsRepository.GetPairsSections(input);
-            int pairsWhereRangesOverlap = this.pairsSections.CountPairsWhereRangesOverlap(pairsSections);
+            Pair[] sectionAssignmentPairs = sectionAssignmentPairsRepository.GetSectionAssignmentPairs(input);
+            int sectionAssignmentPairsWhereRangesOverlap = this.sectionAssignmentPairs
+                .CountSectionAssignmentPairsWhereRangesOverlap(sectionAssignmentPairs);
 
-            return pairsWhereRangesOverlap;
+            return sectionAssignmentPairsWhereRangesOverlap;
         }
     }
 }

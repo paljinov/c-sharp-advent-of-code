@@ -1,15 +1,15 @@
 namespace App.Tasks.Year2022.Day4
 {
-    public class PairsSections
+    public class SectionAssignmentPairs
     {
-        public int CountPairsWhereOneRangeFullyContainTheOther(Pair[] pairsSections)
+        public int CountSectionAssignmentPairsWhereOneRangeFullyContainTheOther(Pair[] sectionAssignmentPairs)
         {
             int pairsWhereOneRangeFullyContainTheOther = 0;
 
-            for (int i = 0; i < pairsSections.Length; i++)
+            for (int i = 0; i < sectionAssignmentPairs.Length; i++)
             {
-                (int From, int To) firstRange = pairsSections[i].FirstSectionsRange;
-                (int From, int To) secondRange = pairsSections[i].SecondSectionsRange;
+                (int From, int To) firstRange = sectionAssignmentPairs[i].FirstSectionsRange;
+                (int From, int To) secondRange = sectionAssignmentPairs[i].SecondSectionsRange;
 
                 if (firstRange.From >= secondRange.From && firstRange.To <= secondRange.To
                     || secondRange.From >= firstRange.From && secondRange.To <= firstRange.To)
@@ -21,14 +21,14 @@ namespace App.Tasks.Year2022.Day4
             return pairsWhereOneRangeFullyContainTheOther;
         }
 
-        public int CountPairsWhereRangesOverlap(Pair[] pairsSections)
+        public int CountSectionAssignmentPairsWhereRangesOverlap(Pair[] sectionAssignmentPairs)
         {
             int pairsWhereOneRangeFullyContainTheOther = 0;
 
-            for (int i = 0; i < pairsSections.Length; i++)
+            for (int i = 0; i < sectionAssignmentPairs.Length; i++)
             {
-                (int From, int To) firstRange = pairsSections[i].FirstSectionsRange;
-                (int From, int To) secondRange = pairsSections[i].SecondSectionsRange;
+                (int From, int To) firstRange = sectionAssignmentPairs[i].FirstSectionsRange;
+                (int From, int To) secondRange = sectionAssignmentPairs[i].SecondSectionsRange;
 
                 if (firstRange.From >= secondRange.From && firstRange.From <= secondRange.To
                     || secondRange.From >= firstRange.From && secondRange.From <= firstRange.To)

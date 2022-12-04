@@ -14,16 +14,16 @@ namespace Tests.Tasks.Year2022.Day4
         }
 
         [Fact]
-        public void Solution_PairsSectionsExample_PairsWhereOneRangeFullyContainTheOtherCountEquals()
+        public void Solution_SectionAssignmentPairsExample_SectionAssignmentPairsWhereOneRangeFullyContainTheOtherCountEquals()
         {
-            string pairsSections = "2-4,6-8"
+            string sectionAssignmentPairs = "2-4,6-8"
                 + $"{Environment.NewLine}2-3,4-5"
                 + $"{Environment.NewLine}5-7,7-9"
                 + $"{Environment.NewLine}2-8,3-7"
                 + $"{Environment.NewLine}6-6,4-6"
                 + $"{Environment.NewLine}2-6,4-8";
 
-            Assert.Equal(2, task.Solution(pairsSections));
+            Assert.Equal(2, task.Solution(sectionAssignmentPairs));
         }
     }
 }

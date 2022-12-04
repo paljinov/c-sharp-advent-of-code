@@ -65,23 +65,23 @@ namespace App.Tasks.Year2022.Day4
 {
     public class Part1 : ITask<int>
     {
-        private readonly PairsSectionsRepository pairsSectionsRepository;
+        private readonly SectionAssignmentPairsRepository sectionAssignmentPairsRepository;
 
-        private readonly PairsSections pairsSections;
+        private readonly SectionAssignmentPairs sectionAssignmentPairs;
 
         public Part1()
         {
-            pairsSectionsRepository = new PairsSectionsRepository();
-            pairsSections = new PairsSections();
+            sectionAssignmentPairsRepository = new SectionAssignmentPairsRepository();
+            sectionAssignmentPairs = new SectionAssignmentPairs();
         }
 
         public int Solution(string input)
         {
-            Pair[] pairsSections = pairsSectionsRepository.GetPairsSections(input);
-            int pairsWhereOneRangeFullyContainTheOther =
-                this.pairsSections.CountPairsWhereOneRangeFullyContainTheOther(pairsSections);
+            Pair[] sectionAssignmentPairs = sectionAssignmentPairsRepository.GetSectionAssignmentPairs(input);
+            int sectionAssignmentPairsWhereOneRangeFullyContainTheOther = this.sectionAssignmentPairs
+                .CountSectionAssignmentPairsWhereOneRangeFullyContainTheOther(sectionAssignmentPairs);
 
-            return pairsWhereOneRangeFullyContainTheOther;
+            return sectionAssignmentPairsWhereOneRangeFullyContainTheOther;
         }
     }
 }
