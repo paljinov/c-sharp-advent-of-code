@@ -9,14 +9,6 @@ namespace App.Tasks.Year2022.Day5
             Step[] rearrangementProcedureSteps
         )
         {
-            RearrangeCrates(cratesStacks, rearrangementProcedureSteps);
-            string cratesWhichEndUpOnTopOfEachStack = GetStacksTopCrates(cratesStacks);
-
-            return cratesWhichEndUpOnTopOfEachStack;
-        }
-
-        private void RearrangeCrates(Dictionary<int, Stack<char>> cratesStacks, Step[] rearrangementProcedureSteps)
-        {
             foreach (Step step in rearrangementProcedureSteps)
             {
                 for (int i = 0; i < step.Quantity; i++)
@@ -25,6 +17,36 @@ namespace App.Tasks.Year2022.Day5
                     cratesStacks[step.ToStack].Push(crate);
                 }
             }
+
+            string cratesWhichEndUpOnTopOfEachStack = GetStacksTopCrates(cratesStacks);
+
+            return cratesWhichEndUpOnTopOfEachStack;
+        }
+
+        public string GetCratesWhichEndUpOnTopOfEachStackWhenMovingMultipleCratesAtOnce(
+            Dictionary<int, Stack<char>> cratesStacks,
+            Step[] rearrangementProcedureSteps
+        )
+        {
+            foreach (Step step in rearrangementProcedureSteps)
+            {
+                List<char> moveAtOnce = new List<char>();
+
+                for (int i = 0; i < step.Quantity; i++)
+                {
+                    char crate = cratesStacks[step.FromStack].Pop();
+                    moveAtOnce.Add(crate);
+                }
+
+                for (int i = moveAtOnce.Count - 1; i >= 0; i--)
+                {
+                    cratesStacks[step.ToStack].Push(moveAtOnce[i]);
+                }
+            }
+
+            string cratesWhichEndUpOnTopOfEachStack = GetStacksTopCrates(cratesStacks);
+
+            return cratesWhichEndUpOnTopOfEachStack;
         }
 
         private string GetStacksTopCrates(Dictionary<int, Stack<char>> cratesStacks)
