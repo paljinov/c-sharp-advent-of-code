@@ -58,6 +58,8 @@ namespace App.Tasks.Year2022.Day6
 {
     public class Part1 : ITask<int>
     {
+        private const int MARKER_DISTINCT_CHARACTERS = 4;
+
         private readonly Marker marker;
 
         public Part1()
@@ -68,7 +70,7 @@ namespace App.Tasks.Year2022.Day6
         public int Solution(string input)
         {
             int processedCharactersBeforeTheFirstStartOfPacketMarkerIsDetected =
-                marker.CountProcessedCharactersBeforeTheFirstStartOfPacketMarkerIsDetected(input);
+                marker.CountProcessedCharactersBeforeTheFirstStartOfMarkerIsDetected(input, MARKER_DISTINCT_CHARACTERS);
 
             return processedCharactersBeforeTheFirstStartOfPacketMarkerIsDetected;
         }

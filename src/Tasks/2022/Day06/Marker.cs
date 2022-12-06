@@ -5,30 +5,31 @@ namespace App.Tasks.Year2022.Day6
 {
     public class Marker
     {
-        private const int MARKER_LENGTH = 4;
-
-        public int CountProcessedCharactersBeforeTheFirstStartOfPacketMarkerIsDetected(string datastreamBuffer)
+        public int CountProcessedCharactersBeforeTheFirstStartOfMarkerIsDetected(
+            string datastreamBuffer,
+            int markerDistinctCharacters
+        )
         {
-            int processedCharactersBeforeTheFirstStartOfPacketMarkerIsDetected = 0;
+            int processedCharactersBeforeTheFirstStartOfMarkerIsDetected = 0;
 
-            Queue<char> mostRecentFourCharacters = new Queue<char>();
+            Queue<char> mostRecentCharacters = new Queue<char>();
 
             for (int i = 0; i < datastreamBuffer.Length; i++)
             {
-                mostRecentFourCharacters.Enqueue(datastreamBuffer[i]);
-                if (mostRecentFourCharacters.Count == MARKER_LENGTH)
+                mostRecentCharacters.Enqueue(datastreamBuffer[i]);
+                if (mostRecentCharacters.Count == markerDistinctCharacters)
                 {
-                    if (AreAllCharactersDifferent(mostRecentFourCharacters))
+                    if (AreAllCharactersDifferent(mostRecentCharacters))
                     {
-                        processedCharactersBeforeTheFirstStartOfPacketMarkerIsDetected = i + 1;
+                        processedCharactersBeforeTheFirstStartOfMarkerIsDetected = i + 1;
                         break;
                     }
 
-                    mostRecentFourCharacters.Dequeue();
+                    mostRecentCharacters.Dequeue();
                 }
             }
 
-            return processedCharactersBeforeTheFirstStartOfPacketMarkerIsDetected;
+            return processedCharactersBeforeTheFirstStartOfMarkerIsDetected;
         }
 
         private bool AreAllCharactersDifferent(Queue<char> mostRecentFourCharacters)
